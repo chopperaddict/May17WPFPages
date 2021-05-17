@@ -8,26 +8,16 @@ using System . Windows . Input;
 using System . Windows . Media;
 using System . Linq;
 using WPFPages . ViewModels;
-
 namespace WPFPages . Views
 {
-	/// <summary>
-	/// Interaction logic for MultiViewer.xaml
-	/// </summary>
+/// <summary>
+/// Interaction logic for MultiViewer.xaml
+/// </summary>
 	public partial class MultiViewer : Window
 	{
-		public BankAccountViewModel bvm = MainWindow . bvm;
-		public CustomerViewModel cvm = MainWindow . cvm;
-		public DetailsViewModel dvm = MainWindow . dvm;
-
-		public static BankCollection Bankcollection = Flags.BankCollection;
-		public static CustCollection Custcollection = Custcollection;
-		public static DetCollection Detcollection = Detcollection;
-
-
-		public  static BankCollection MultiBankcollection=new BankCollection();
-		public  static CustCollection MultiCustcollection=new CustCollection();
-		public  static DetCollection MultiDetcollection=new DetCollection();
+		public  static BankCollection MultiBankcollection= BankCollection .MultiBankcollection;
+		public static CustCollection MultiCustcollection = CustCollection .MultiCustcollection ;
+		public static DetCollection MultiDetcollection = DetCollection .MultiDetcollection ;
 
 		dynamic  bindex = 0;
 		dynamic  cindex = 0;
@@ -70,14 +60,12 @@ namespace WPFPages . Views
 		private async void Window_Loaded ( object sender , RoutedEventArgs e )
 		{
 			Flags . MultiViewer = this;
-
+			// subscribe to data change events for all 3 types of data sets
 			EventControl . BankDataLoaded += UpdatedDataLoaded;
-
 			EventControl . CustDataLoaded += UpdatedDataLoaded;
-
 			EventControl . DetDataLoaded += UpdatedDataLoaded;
 
-			EventControl . ViewerDataHasBeenChanged += EventControl_ViewerDataHasBeenChanged;
+//			EventControl . ViewerDataHasBeenChanged += EventControl_ViewerDataHasBeenChanged;
 
 			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
 				MultiBankcollection  = BankCollection . LoadBank ( 3 );
@@ -89,23 +77,27 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
+			//Select first record in all grids
+			this . BankGrid . SelectedIndex = 0;
+			this . CustomerGrid . SelectedIndex = 0;
+			this . DetailsGrid . SelectedIndex = 0;
 		}
 
-		private void EventControl_ViewerDataHasBeenChanged ( int EditDbChangeType , int row , string CurentDb )
-		{
-			// This works 14/5/21 - Yeahhhhhhhh  Events rule !!
-			Console . WriteLine ( $"MultiViewer : Data changed event notification received successfully." );
-//			Console . WriteLine ( $"MultiViewer : No code implemented yet to handle the update !!!!." );
-			RefreshAllGrids ( );
-			int x= 0;
-		}
+//		private void EventControl_ViewerDataHasBeenChanged ( int EditDbChangeType , int row , string CurentDb )
+//		{
+//			// This works 14/5/21 - Yeahhhhhhhh  Events rule !!
+//			Console . WriteLine ( $"MultiViewer : Data changed event notification received successfully." );
+////			Console . WriteLine ( $"MultiViewer : No code implemented yet to handle the update !!!!." );
+//			RefreshAllGrids ( );
+//			int x= 0;
+//		}
 
 		private void Window_Closing ( object sender , System . ComponentModel . CancelEventArgs e )
 		{
 			// Unsubscribe from Bank data change event notificatoin
 			EventControl . BankDataLoaded -= UpdatedDataLoaded;
 
-			EventControl.ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
+//			EventControl.ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
 			// Clear databases
 			MultiBankcollection . Clear ( );
 			MultiCustcollection . Clear ( );
@@ -146,6 +138,9 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		public void UpdateOnDataChange ( string CurrentDb , DataGridRowEditEndingEventArgs e )
 		{
+			bindex = this . BankGrid . SelectedIndex;
+			cindex = this . CustomerGrid . SelectedIndex;
+			dindex = this . DetailsGrid . SelectedIndex;
 			// Call Handler to update ALL Db's via SQL
 			SQLHandlers sqlh = new SQLHandlers  ();
 			sqlh . UpdateAllDb ( CurrentDb , e , 2 );
@@ -162,6 +157,9 @@ namespace WPFPages . Views
 
 		private async void ReLoadAllDataBases ( )
 		{
+			int bbindex = this . BankGrid . SelectedIndex;
+			int ccindex = this . CustomerGrid . SelectedIndex;
+			int ddindex = this . DetailsGrid . SelectedIndex;
 			this . BankGrid . ItemsSource = null;
 			this . CustomerGrid . ItemsSource = null;
 			this. DetailsGrid . ItemsSource = null;
@@ -180,12 +178,15 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
-			bindex = b;
-			cindex = c;
-			dindex = d;
+			//bindex = b;
+			//cindex = c;
+			//dindex = d;
 			this . BankGrid . Refresh ( );
 			this . CustomerGrid . Refresh ( );
 			this. DetailsGrid . Refresh ( );
+			this . BankGrid . SelectedIndex = bbindex;
+			this . CustomerGrid . SelectedIndex = ccindex;
+			this . DetailsGrid . SelectedIndex = ddindex;
 
 		}
 
@@ -198,16 +199,14 @@ namespace WPFPages . Views
 			bindex = this . BankGrid . SelectedIndex;
 			cindex = this . CustomerGrid . SelectedIndex;
 			dindex = this. DetailsGrid . SelectedIndex;
-
 			CurrentSelection = this . BankGrid . SelectedIndex;
 			this . BankGrid  . SelectedItem = this . BankGrid  . SelectedIndex;
-			//			if ( CurrentSelection == -1 )
-			//				CurrentSelection = 0;
-			//var item = BankGrid.SelectedItem as BankAccountViewModel;
 			UpdateOnDataChange ( CurrentDb , e );
 			ResetIndexes ( );
 			inprogress = false;
-			return;
+
+			// Notify any other interested parties of data update
+			SendDataChanged ( CurrentDb );
 		}
 
 		public void ResetIndexes ( )
@@ -460,12 +459,12 @@ namespace WPFPages . Views
 			inprogress = false;
 			BankData . DataContext = this . CustomerGrid . SelectedItem;
 		}
-		private int FindMatchingRecord ( string Custno , string Bankno , DataGrid Grid , string CurrentDb )
+		public  int FindMatchingRecord ( string Custno , string Bankno , DataGrid Grid , string CurrentDb )
 		{
 			int index = 0;
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
-				foreach ( var item in this . BankGrid . Items )
+				foreach ( var item in Grid . Items )
 				{
 					BankAccountViewModel cvm = item as  BankAccountViewModel ;
 					if ( cvm == null ) break;
@@ -478,7 +477,7 @@ namespace WPFPages . Views
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
-				foreach ( var item in this . CustomerGrid . Items )
+				foreach ( var item in Grid . Items )
 				{
 					CustomerViewModel cvm = item as     CustomerViewModel;
 					if ( cvm == null ) break;
@@ -491,7 +490,7 @@ namespace WPFPages . Views
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
-				foreach ( var item in this . DetailsGrid . Items )
+				foreach ( var item in Grid . Items )
 				{
 					DetailsViewModel cvm = item as     DetailsViewModel ;
 					if ( cvm == null ) break;
@@ -689,5 +688,71 @@ namespace WPFPages . Views
 			cdbv . Show ( );
 		}
 
+		/// <summary>
+		///  Function that broadcasts a notification to whoever to
+		///  notify that one of the Obs collections has been changed by something
+		/// </summary>
+		/// <param name="o"> The sending object</param>
+		/// <param name="args"> Sender name and Db Type</param>
+		//		private static bool hasupdated = false;
+
+		public void SendDataChanged (string dbName )
+		{
+			// Databases have DEFINITELY been updated successfully after a change
+			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
+
+			//dca . SenderName = o . ToString ( );
+			//dca . DbName = dbName;
+
+			if ( dbName == "BANKACCOUNT" )
+			{
+				EventControl . TriggerBankDataLoaded ( MultiBankcollection,
+					new LoadedEventArgs
+					{
+						CallerDb = "BANKACCOUNT",
+						DataSource = MultiBankcollection,
+						RowCount = this . BankGrid . SelectedIndex
+					} );
+			}
+			else if ( dbName == "CUSTOMER" )
+			{
+				EventControl . TriggerCustDataLoaded ( MultiCustcollection,
+					new LoadedEventArgs
+					{
+						CallerDb = "CUSTOMER",
+						DataSource = MultiCustcollection,
+						RowCount = this . CustomerGrid . SelectedIndex
+
+					} );
+			}
+			else if ( dbName == "DETAILS" )
+			{
+				EventControl . TriggerDetDataLoaded ( MultiDetcollection,
+					new LoadedEventArgs
+					{
+						CallerDb = "DETAILS",
+						DataSource = MultiDetcollection,
+						RowCount = this . DetailsGrid . SelectedIndex
+					} );
+			}
+
+			//if ( dbName == "BANKACCOUNT" )
+			//{
+			//	ReloadCustomerOnUpdateNotification ( o , Grid , dca );
+			//	ReloadDetailsOnUpdateNotification ( o , Grid , dca );
+			//	//				hasupdated = false;
+			//}
+			//else if ( dbName == "CUSTOMER" )
+			//{
+			//	ReloadBankOnUpdateNotification ( o , Grid , dca );
+			//	ReloadDetailsOnUpdateNotification ( o , Grid , dca );
+			//}
+			//else if ( dbName == "DETAILS" )
+			//{
+			//	ReloadCustomerOnUpdateNotification ( o , Grid , dca );
+			//	ReloadBankOnUpdateNotification ( o , Grid , dca );
+			//}
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
 	}
 }

@@ -22,9 +22,9 @@ namespace WPFPages . Views
 
 		public static event DbUpdated NotifyOfDataChange;
 
-		public  static BankCollection EditDbBankcollection=new BankCollection();
-		public  static CustCollection EditDbCustcollection=new CustCollection();
-		public  static DetCollection EditDbDetcollection=new DetCollection();
+		public static BankCollection EditDbBankcollection = BankCollection .EditDbBankcollection ;
+		public static CustCollection EditDbCustcollection = CustCollection .EditDbCustcollection ;
+		public static DetCollection EditDbDetcollection = DetCollection .EditDbDetcollection ;
 
 		public BankAccountViewModel bvm = MainWindow . bvm;
 		public CustomerViewModel cvm = MainWindow . cvm;
@@ -94,6 +94,43 @@ namespace WPFPages . Views
 		}
 
 		#region DELEGATE Handlers
+
+		private void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			int 	currsel = DataGrid1 . SelectedIndex;
+			if ( currsel == -1 ) currsel = 0;
+			this . DataGrid1 . ItemsSource = null;
+			this . DataGrid1 . Items . Clear ( );
+			 EditDbBankcollection = BankCollection . LoadBank (2 );
+			this . DataGrid1 . ItemsSource = EditDbBankcollection;
+			this . DataGrid1 . SelectedIndex = currsel;
+			this . DataGrid1 . Refresh ( );
+			Console . WriteLine ( $"EventControl_BankDataLoaded has Updated the Grid  content to the latest Db collection...." );
+		}
+		private void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			int currsel = DataGrid1 . SelectedIndex;
+			if ( currsel == -1 ) currsel = 0;
+			this . DataGrid2 . ItemsSource = null;
+			this . DataGrid2 . Items . Clear ( );
+			EditDbCustcollection = CustCollection . LoadCust ( EditDbCustcollection );
+			this . DataGrid2 . ItemsSource = EditDbCustcollection;
+			this . DataGrid2 . SelectedIndex = currsel;
+			this . DataGrid2 . Refresh ( );
+			Console . WriteLine ( $"EventControl_BankDataLoaded has Updated the Customer Grid content to the latest Db collection...." );
+		}
+		private void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			int currsel = DataGrid1 . SelectedIndex;
+			if ( currsel == -1 ) currsel = 0;
+			this . DetailsGrid . ItemsSource = null;
+			this . DetailsGrid . Items . Clear ( );
+			EditDbDetcollection = DetCollection . LoadDet( EditDbDetcollection );
+			this . DetailsGrid . ItemsSource = EditDbDetcollection;
+			this . DetailsGrid . SelectedIndex = currsel;
+			this . DetailsGrid . Refresh ( );
+			Console . WriteLine ( $"EventControl_BankDataLoaded has Updated the Details Grid content to the latest Db collection...." );
+		}
 
 		public void EditDbHasChangedIndex ( int a , int b , string s )
 		{
@@ -659,6 +696,10 @@ namespace WPFPages . Views
 			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
 			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
 
+			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
+			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
+			EventControl . DetDataLoaded += EventControl_DetDataLoaded; 
+
 			// moved from 
 			DataUpdated += EditDb_DataUpdated;
 
@@ -667,7 +708,6 @@ namespace WPFPages . Views
 			IsDirty = false;
 			Startup = false;
 		}
-
 
 		public void UpdateOnExternalChange ( )
 		{
@@ -950,8 +990,8 @@ namespace WPFPages . Views
 					SQLHandlers sqlh = new SQLHandlers ( );
 					// This call updates the SQL Db and the main viewer is also updated correctly
 					await sqlh . UpdateDbRow ( "BANKACCOUNT" , e . Row );
-					if ( Flags . CurrentSqlViewer . BankGrid . SelectedItem != null )
-						Flags . CurrentSqlViewer . BankGrid . ScrollIntoView ( curritem );
+//					if ( Flags . CurrentSqlViewer . BankGrid . SelectedItem != null )
+//						Flags . CurrentSqlViewer . BankGrid . ScrollIntoView ( curritem );
 					return;
 				}
 			}
@@ -1010,9 +1050,9 @@ namespace WPFPages . Views
 			{
 				if ( CurrentDb == "DETAILS" )
 				{
-					//DetailsViewModel . SqlUpdating = true;
-					//SQLHandlers sqlh = new SQLHandlers ( );
-					//await sqlh . UpdateDbRow ( "DETAILS", e . Row );
+					DetailsViewModel . SqlUpdating = true;
+					SQLHandlers sqlh = new SQLHandlers ( );
+					await sqlh . UpdateDbRow ( "DETAILS", e . Row );
 					//SqlUpdating = true;
 					//if ( ViewerChangeType == 0 || EditChangeType == 1 )
 					//{
@@ -1023,8 +1063,8 @@ namespace WPFPages . Views
 			}
 
 			//Reset our selected row
-			this . DataGrid1 . SelectedIndex = currindx;
-			this . DataGrid1 . SelectedItem = curritem;
+			this . DetailsGrid. SelectedIndex = currindx;
+			this . DetailsGrid . SelectedItem = curritem;
 			//e . Cancel = true;
 		}
 
@@ -1053,6 +1093,8 @@ namespace WPFPages . Views
 				Flags . CurrentSqlViewer . UpdateBankOnEditDbChange ( CurrentDb , this . DataGrid1 . SelectedIndex , this . DataGrid1 . SelectedItem );
 				dca . SenderName = CurrentDb;
 				dca . DbName = CurrentDb;
+				SendDataChanged ( CurrentDb )
+
 			}
 			else
 			{
@@ -1069,6 +1111,7 @@ namespace WPFPages . Views
 				//				Flags . CurrentSqlViewer . BankGrid. Refresh ( );
 				//SendDataChanged ( Flags . CurrentSqlViewer , DataGrid1 , CurrentDb );
 				Flags . CurrentSqlViewer . UpdateBankOnEditDbChange ( CurrentDb , this . DataGrid1 . SelectedIndex , this . DataGrid1 . SelectedItem );
+				SendDataChanged ( CurrentDb );
 			}
 			Flags . EditDbDataChanged = false;
 		}
@@ -1094,7 +1137,8 @@ namespace WPFPages . Views
 				Flags . CurrentSqlViewer . UpdateCustOnEditDbChange ( CurrentDb , this . DataGrid2 . SelectedIndex , this . DataGrid2 . SelectedItem );
 				dca . SenderName = CurrentDb;
 				dca . DbName = CurrentDb;
-				SendDataChanged ( Flags . CurrentSqlViewer , DataGrid2 , CurrentDb );
+				SendDataChanged ( CurrentDb );
+//				SendDataChanged ( Flags . CurrentSqlViewer , DataGrid2 , CurrentDb );
 			}
 			else
 			{
@@ -1105,7 +1149,8 @@ namespace WPFPages . Views
 				Flags . CurrentSqlViewer . UpdateCustOnEditDbChange ( CurrentDb , this . DataGrid2 . SelectedIndex , this . DataGrid2 . SelectedItem );
 				dca . SenderName = CurrentDb;
 				dca . DbName = CurrentDb;
-				SendDataChanged ( Flags . CurrentSqlViewer , DataGrid2 , CurrentDb );
+				SendDataChanged ( CurrentDb );
+//				SendDataChanged ( Flags . CurrentSqlViewer , DataGrid2 , CurrentDb );
 			}
 			Flags . EditDbDataChanged = false;
 		}
@@ -1131,7 +1176,8 @@ namespace WPFPages . Views
 				Flags . CurrentSqlViewer . UpdateDetailsOnEditDbChange ( CurrentDb , this . DataGrid1 . SelectedIndex , this . DataGrid1 . SelectedItem );
 				dca . SenderName = CurrentDb;
 				dca . DbName = CurrentDb;
-				SendDataChanged ( Flags . CurrentSqlViewer , this . DetailsGrid , CurrentDb );
+				SendDataChanged ( CurrentDb );
+				//				SendDataChanged ( Flags . CurrentSqlViewer , this . DetailsGrid , CurrentDb );
 			}
 			else
 			{
@@ -1143,12 +1189,68 @@ namespace WPFPages . Views
 				Flags . CurrentSqlViewer . UpdateDetailsOnEditDbChange ( CurrentDb , this . DetailsGrid . SelectedIndex , this . DetailsGrid . SelectedItem );
 				dca . SenderName = CurrentDb;
 				dca . DbName = CurrentDb;
-				SendDataChanged ( Flags . CurrentSqlViewer , this . DetailsGrid , CurrentDb );
+				//SendDataChanged ( Flags . CurrentSqlViewer , this . DetailsGrid , CurrentDb );
+				SendDataChanged ( CurrentDb );
 			}
 			Flags . EditDbDataChanged = false;
 		}
+		public void SendDataChanged ( string dbName )
+		{
+			// Databases have DEFINITELY been updated successfully after a change
+			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-		public void SendDataChanged ( SqlDbViewer o , DataGrid Grid , string dbName )
+			if ( dbName == "BANKACCOUNT" )
+			{
+				EventControl . TriggerBankDataLoaded (EditDbBankcollection,
+					new LoadedEventArgs
+					{
+						CallerDb = "BANKACCOUNT",
+						DataSource = EditDbBankcollection,
+						RowCount = this . DataGrid1 . SelectedIndex
+					} );
+			}
+			else if ( dbName == "CUSTOMER" )
+			{
+				EventControl . TriggerCustDataLoaded ( EditDbCustcollection,
+					new LoadedEventArgs
+					{
+						CallerDb = "CUSTOMER",
+						DataSource = EditDbCustcollection,
+						RowCount = this . DataGrid2 . SelectedIndex
+
+					} );
+			}
+			else if ( dbName == "DETAILS" )
+			{
+				EventControl . TriggerDetDataLoaded ( EditDbDetcollection,
+					new LoadedEventArgs
+					{
+						CallerDb = "DETAILS",
+						DataSource = EditDbDetcollection,
+						RowCount = this . DetailsGrid . SelectedIndex
+					} );
+			}
+
+			//if ( dbName == "BANKACCOUNT" )
+			//{
+			//	ReloadCustomerOnUpdateNotification ( o , Grid , dca );
+			//	ReloadDetailsOnUpdateNotification ( o , Grid , dca );
+			//	//				hasupdated = false;
+			//}
+			//else if ( dbName == "CUSTOMER" )
+			//{
+			//	ReloadBankOnUpdateNotification ( o , Grid , dca );
+			//	ReloadDetailsOnUpdateNotification ( o , Grid , dca );
+			//}
+			//else if ( dbName == "DETAILS" )
+			//{
+			//	ReloadCustomerOnUpdateNotification ( o , Grid , dca );
+			//	ReloadBankOnUpdateNotification ( o , Grid , dca );
+			//}
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+
+		public void xSendDataChanged ( SqlDbViewer o , DataGrid Grid , string dbName )
 		{
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
@@ -1156,6 +1258,7 @@ namespace WPFPages . Views
 			dca . SenderName = o . ToString ( );
 			dca . DbName = dbName;
 
+			EventControl . TriggerBankDataLoaded ( );
 			if ( dbName == "BANKACCOUNT" )
 			{
 				Flags . CurrentSqlViewer . ReloadCustomerOnUpdateNotification ( o , Grid , dca );

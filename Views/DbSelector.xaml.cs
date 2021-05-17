@@ -23,7 +23,6 @@ namespace WPFPages . Views
 	public static class ApplicationState
 	{
 		private static SqlDbViewer viewer;
-
 		public static SqlDbViewer Viewer
 		{
 			get { return viewer; }
@@ -41,6 +40,7 @@ namespace WPFPages . Views
 		public int selection = 0;
 		private int CurrentList = -1;
 		private static bool key1 = false;
+		private static bool StartUp = true;
 
 
 		//*********************DELEGATE STUFF **************************************************//
@@ -64,7 +64,7 @@ namespace WPFPages . Views
 		///  103 - Method ended
 		///  111 - General report received
 		/// </summary>
-		public static void MyNotification ( int status , string info , SqlDbViewer NewSqlViewer )
+		public static void MyNotification ( int status, string info, SqlDbViewer NewSqlViewer )
 		{
 			switch ( status )
 			{
@@ -81,7 +81,7 @@ namespace WPFPages . Views
 					break;
 
 				default:
-//					Console . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}], [{info}]" );
+					//					Console . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}], [{info}]" );
 					break;
 			}
 
@@ -105,7 +105,7 @@ namespace WPFPages . Views
 				// info contains the text to be added to the Viewers ListBox
 				Console . WriteLine ( $"\r\nDBSELECTOR - Received request [{status}] to Add Viewer to Current Viewers List.\r\n" );
 				Flags . SqlViewerIsLoading = true;
-				DbSelector . AddViewerToList ( info , NewSqlViewer , -1 );
+				DbSelector . AddViewerToList ( info, NewSqlViewer, -1 );
 				Flags . SqlViewerIsLoading = false;
 				Console . WriteLine ( $"\r\nDBSELECTOR - Viewer ADDED to List of Current Viewers \r\n" );
 			}
@@ -124,12 +124,12 @@ namespace WPFPages . Views
 			sqlSelector . SelectedIndex = 2;
 			sqlSelector . Focus ( );
 			// Assign Handler to delegate SqlViewerNotify
-//			SqlViewerNotify notifier = DbSelectorMessage;
+			//			SqlViewerNotify notifier = DbSelectorMessage;
 
-//			EventHandlers . SendViewerCommand = SqlDbViewer . DbSelectorMessage;
+			//			EventHandlers . SendViewerCommand = SqlDbViewer . DbSelectorMessage;
 			this . MouseDown += delegate { DoDragMove ( ); };
 			//This DOES send a message to SqlDbViewer !!
-//			EventHandlers . SendViewerCommand ( 103 , "<<< Completed DbSelector basic Constructor" , null );
+			//			EventHandlers . SendViewerCommand ( 103 , "<<< Completed DbSelector basic Constructor" , null );
 			Utils . GetWindowHandles ( );
 			OntopChkbox . IsChecked = false;
 			this . Topmost = false;
@@ -153,7 +153,7 @@ namespace WPFPages . Views
 			}
 		}
 
-		public void ClearClosingViewer ( string CallerDb , Guid guid )
+		public void ClearClosingViewer ( string CallerDb, Guid guid )
 		{
 			for ( int x = 0 ; x < MainWindow . gv . MaxViewers ; x++ )
 			{
@@ -171,7 +171,7 @@ namespace WPFPages . Views
 		}
 
 		//********************************************************************************************//
-		public static void UpdateControlFlags ( SqlDbViewer caller , string callertype , string PrettyString )
+		public static void UpdateControlFlags ( SqlDbViewer caller, string callertype, string PrettyString )
 		{
 			int x = 0;
 			// We are starting up a new viewer, so need to create the flags structure
@@ -225,13 +225,13 @@ namespace WPFPages . Views
 					}
 
 					MainWindow . gv . ViewerCount++;
-						MainWindow . gv . SqlViewerWindow = caller;
-						break;
+					MainWindow . gv . SqlViewerWindow = caller;
+					break;
 				}
 			}
 		}
 
-		private async void HandleSelection ( ListBox listbox , string Command )
+		private async void HandleSelection ( ListBox listbox, string Command )
 		{
 			// Called when Opening/ Closing/deleting a Db Viewer window
 			//and most other functionality in this window (All buttons and double clicks)
@@ -249,9 +249,9 @@ namespace WPFPages . Views
 			if ( Command == "NEW" )
 			{
 				selectedItem = listbox . SelectedItem . ToString ( );
-//				BankCollection Bankcollection = new BankCollection    ();
-				CustCollection Custcollection = new CustCollection    ();
-				DetCollection Detcollection = new DetCollection    ();
+				//				BankCollection Bankcollection = new BankCollection    ();
+				CustCollection Custcollection = new CustCollection ( );
+				DetCollection Detcollection = new DetCollection ( );
 				if ( selectedItem . ToUpper ( ) . Contains ( "MULTI BANK ACCOUNTS" ) )
 				{
 					// DETAILS DATABASE
@@ -263,10 +263,10 @@ namespace WPFPages . Views
 					callertype = 2;
 					CallingType = "DETAILS";
 					// LOADS THE WINDOW HERE - it RETURNS IMMEDIATELY even though the data is not yet fully loaded
-					Flags . CurrentSqlViewer = new SqlDbViewer ( "DETAILS" , Detcollection );
+					Flags . CurrentSqlViewer = new SqlDbViewer ( "DETAILS", Detcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
 					Flags . CurrentSqlViewer . Show ( );
-//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
+					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 					//Window is visible & Data is loaded by here .....
 					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == null || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
 					{
@@ -286,10 +286,10 @@ namespace WPFPages . Views
 						SetFocusToExistingViewer ( MainWindow . gv . Bankviewer );
 						return;
 					}
-					Flags . CurrentSqlViewer = new SqlDbViewer ( "BANKACCOUNT" , Bankcollection );
+					Flags . CurrentSqlViewer = new SqlDbViewer ( "BANKACCOUNT", Bankcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
 					Flags . CurrentSqlViewer . Show ( );
-//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
+					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
 					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
@@ -311,11 +311,11 @@ namespace WPFPages . Views
 						SetFocusToExistingViewer ( MainWindow . gv . Custviewer );
 						return;
 					}
-					
-					Flags . CurrentSqlViewer = new SqlDbViewer ( "CUSTOMER" , Custcollection );
+
+					Flags . CurrentSqlViewer = new SqlDbViewer ( "CUSTOMER", Custcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
 					Flags . CurrentSqlViewer . Show ( );
-//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
+					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
 					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
@@ -336,7 +336,7 @@ namespace WPFPages . Views
 				Flags . SqlViewerIsLoading = true;
 				string s = DbSelector . AddViewerToList ( "", Flags . CurrentSqlViewer, callertype );
 				//This call sets up all the Gridview gv[] variables and the related singleton pointers in the gv[] structure
-				UpdateControlFlags ( Flags . CurrentSqlViewer , CallingType , s );
+				UpdateControlFlags ( Flags . CurrentSqlViewer, CallingType, s );
 				Flags . SqlViewerIsLoading = false;
 				//Set the viewer Delete one/All/Select buttons up correctly
 				UpdateSelectorButtons ( );
@@ -349,7 +349,7 @@ namespace WPFPages . Views
 			}
 			else if ( Command == "DELETE" )
 			{
-//				Window win = null;
+				//				Window win = null;
 				//Close selected viewer window
 #pragma TODO  - DOES NOT WORK
 				DeleteCurrentViewer ( );
@@ -465,11 +465,11 @@ namespace WPFPages . Views
 				{
 					//Clear relevant viewer type flag
 					if ( MainWindow . gv . Bankviewer == MainWindow . gv . ListBoxId [ x ] )
-						ClearClosingViewer ( "BANKACCOUNT" , MainWindow . gv . ListBoxId [ x ] );
+						ClearClosingViewer ( "BANKACCOUNT", MainWindow . gv . ListBoxId [ x ] );
 					else if ( MainWindow . gv . Custviewer == MainWindow . gv . ListBoxId [ x ] )
-						ClearClosingViewer ( "BANKACCOUNT" , MainWindow . gv . ListBoxId [ x ] );
+						ClearClosingViewer ( "BANKACCOUNT", MainWindow . gv . ListBoxId [ x ] );
 					else if ( MainWindow . gv . Detviewer == MainWindow . gv . ListBoxId [ x ] )
-						ClearClosingViewer ( "BANKACCOUNT" , MainWindow . gv . ListBoxId [ x ] );
+						ClearClosingViewer ( "BANKACCOUNT", MainWindow . gv . ListBoxId [ x ] );
 
 					SqlDbViewer sqlv = MainWindow . gv . window [ x ] as SqlDbViewer;
 					UpdateDataGridController ( tag );
@@ -495,7 +495,7 @@ namespace WPFPages . Views
 				{
 					Flags . CurrentSqlViewer . UpdateDbSelectorBtns ( Flags . CurrentSqlViewer );
 					// Clear global Flags structure
-					Flags . ClearGridviewControlStructure ( null , null );
+					Flags . ClearGridviewControlStructure ( null, null );
 					return;
 				}
 				else
@@ -525,7 +525,7 @@ namespace WPFPages . Views
 				else if ( MainWindow . gv . ViewerCount == 1 )
 				{
 					//no more opeen viewers, so clear control ctructure entirely
-					Flags . SetGridviewControlFlags ( Flags . CurrentSqlViewer , null );
+					Flags . SetGridviewControlFlags ( Flags . CurrentSqlViewer, null );
 				}
 			}
 			//Reset global flags
@@ -620,7 +620,7 @@ namespace WPFPages . Views
 		/// Adds the details of the newly loaded viewer window to the DbSelectors ViewersList window
 		/// </summary>
 		/// <param name="data"></param>
-		public static string AddViewerToList ( string data , SqlDbViewer viewer , int DbType )
+		public static string AddViewerToList ( string data, SqlDbViewer viewer, int DbType )
 		{
 			if ( viewer == null ) return "";
 			if ( viewer . Tag == null )
@@ -653,7 +653,7 @@ namespace WPFPages . Views
 				else if ( DbType == 1 )
 				{
 					CustomerViewModel rec = new CustomerViewModel ( );
-					rec = Flags . CurrentSqlViewer .  CustomerGrid . SelectedItem as CustomerViewModel;
+					rec = Flags . CurrentSqlViewer . CustomerGrid . SelectedItem as CustomerViewModel;
 					MainWindow . gv . PrettyDetails = $"Customer - A/c # {rec?.BankNo}, Cust # {rec?.CustNo}, Forename: {rec?.FName}, Surname : {rec?.LName}, Town : {rec?.Town}";
 					lbi . Content = MainWindow . gv . PrettyDetails;
 				}
@@ -716,7 +716,7 @@ namespace WPFPages . Views
 			return retstring;
 		}
 
-		public static bool ChangeViewerListEntry ( string currentListentry , string newListEntry , SqlDbViewer viewer )
+		public static bool ChangeViewerListEntry ( string currentListentry, string newListEntry, SqlDbViewer viewer )
 		{
 			bool retval = false;
 			for ( int x = 0 ; x < Flags . DbSelectorOpen . ViewersList . Items . Count ; x++ )
@@ -755,11 +755,11 @@ namespace WPFPages . Views
 			}
 		}
 
-		private void OnWindowLoaded ( object sender , RoutedEventArgs e )
+		private void OnWindowLoaded ( object sender, RoutedEventArgs e )
 		{
 #pragma LOADING  now in HandleSelection()
 
-//			EventHandlers . SendViewerCommand ( 102 , ">>> Starting OnWindowLoaded()" , Flags . CurrentSqlViewer );
+			//			EventHandlers . SendViewerCommand ( 102 , ">>> Starting OnWindowLoaded()" , Flags . CurrentSqlViewer );
 			int counter = 0;
 
 			{
@@ -786,6 +786,7 @@ namespace WPFPages . Views
 				//		//					SelectViewerBtn.IsEnabled = true;
 				//	}
 				//}
+				StartUp = false;
 			}
 			//Set default active item to 1st valid entry
 			counter = ViewersList . Items . Count;
@@ -829,87 +830,87 @@ namespace WPFPages . Views
 		}
 
 		//*****************************************************************************************//
-		private void Cancel_Click ( object sender , RoutedEventArgs e )
+		private void Cancel_Click ( object sender, RoutedEventArgs e )
 		{
 			// close this Db Selector window
 			this . Visibility = Visibility . Collapsed;
 		}
 
-		private void sqlselector_Select ( object sender , MouseButtonEventArgs e )
+		private void sqlselector_Select ( object sender, MouseButtonEventArgs e )
 		{//Select Btn or dbl click on top list, so get a new window of selected type
 			if ( sqlSelector . SelectedIndex == -1 )
 				return;
-			HandleSelection ( sqlSelector , "NEW" );
+			HandleSelection ( sqlSelector, "NEW" );
 		}
 
 		//**************************** LOWER LIST - EXISTING VIEWER *************************************//
-		private void SelectViewer_Click ( object sender , RoutedEventArgs e )
+		private void SelectViewer_Click ( object sender, RoutedEventArgs e )
 		{//Select Btn button for lower viewers list
 		 //open / bring the window to the front
-			HandleSelection ( ViewersList , "SELECT" );
+			HandleSelection ( ViewersList, "SELECT" );
 			//ViewersList_Select (sender, null);
 		}
 
 		//********************************************************************************************//
-		private void ViewersList_Select ( object sender , MouseButtonEventArgs e )
+		private void ViewersList_Select ( object sender, MouseButtonEventArgs e )
 		{// double click on list2 - existing viewer list - pass the selected item data back
 		 // and open/bring the window to the front
 			if ( ViewersList . SelectedIndex == -1 )
 				return;
-			HandleSelection ( ViewersList , "SELECT" );
+			HandleSelection ( ViewersList, "SELECT" );
 		}
 
 		//********************************************************************************************//
-		private void DeleteViewer_Click ( object sender , RoutedEventArgs e )
+		private void DeleteViewer_Click ( object sender, RoutedEventArgs e )
 		{
 			// delete just the selected viewer
 			if ( ViewersList . SelectedIndex < 1 )
 				return;
 
-			HandleSelection ( ViewersList , "DELETE" );
+			HandleSelection ( ViewersList, "DELETE" );
 		}
 
 		//********************************************************************************************//
-		private void SQLlist_Focused ( object sender , RoutedEventArgs e )
+		private void SQLlist_Focused ( object sender, RoutedEventArgs e )
 		{
 			//Set the flag so we know which list is active for key press checking
 			CurrentList = 1;
 		}
 
 		//********************************************************************************************//
-		private void Viewerslist_Focused ( object sender , RoutedEventArgs e )
+		private void Viewerslist_Focused ( object sender, RoutedEventArgs e )
 		{
 			//Set the flag so we know which list is active for key press checking
 			CurrentList = 2;
 		}
 
 		//********************************************************************************************//
-		private void sqlselectorbtn_Select ( object sender , RoutedEventArgs e )
+		private void sqlselectorbtn_Select ( object sender, RoutedEventArgs e )
 		{   // top list Select button pressed - open a new viewer of selected type
 			if ( sqlSelector . SelectedIndex == -1 )
 				return;
 			if ( MainWindow . gv . ViewerCount == MainWindow . gv . MaxViewers )
 			{
-				MessageBox . Show ( $"Sorry, but the maximum of {MainWindow . gv . MaxViewers} Viewer Windows are already open.\r\nPlease close one or more, or select an existing Viewer..." , "Maximum viewer count reached" );
+				MessageBox . Show ( $"Sorry, but the maximum of {MainWindow . gv . MaxViewers} Viewer Windows are already open.\r\nPlease close one or more, or select an existing Viewer...", "Maximum viewer count reached" );
 				return;
 			}
 
-			HandleSelection ( sqlSelector , "NEW" );
+			HandleSelection ( sqlSelector, "NEW" );
 			Utils . GetWindowHandles ( );
 		}
 
 		//********************************************************************************************//
-		private void DeleteAllViewers_Click ( object sender , RoutedEventArgs e )
+		private void DeleteAllViewers_Click ( object sender, RoutedEventArgs e )
 		{
 			if ( ViewersList . Items . Count == 1 )
 				return;
-			HandleSelection ( ViewersList , "DELETEALL" );
+			HandleSelection ( ViewersList, "DELETEALL" );
 		}
 
 		//*******************************MAIN KEY HANDLER FOR LIST BOXES*************************************//
-		private void IsEnterKey ( object sender , KeyEventArgs e )
+		private void IsEnterKey ( object sender, KeyEventArgs e )
 		{
-//			Console . WriteLine ( $"Key1 = {key1}, Key : {e . Key . ToString ( )}" );
+			//			Console . WriteLine ( $"Key1 = {key1}, Key : {e . Key . ToString ( )}" );
 			//PreviewKeyDown - in either list
 			if ( e . Key == Key . LeftCtrl )
 			{
@@ -946,14 +947,14 @@ namespace WPFPages . Views
 				if ( CurrentList == 1 )
 				{ // Top list - new Viewer type
 				  //					sqlselectorbtn_Select (sender, null);
-					HandleSelection ( sqlSelector , "NEW" );
+					HandleSelection ( sqlSelector, "NEW" );
 				}
 				else if ( CurrentList == 2 )
 				{ // Lower list (open Viewers)
 					if ( ViewersList . SelectedIndex == -1 )
 						return;
 
-					HandleSelection ( ViewersList , "SELECT" );
+					HandleSelection ( ViewersList, "SELECT" );
 				}
 				key1 = false;
 				return;
@@ -966,7 +967,7 @@ namespace WPFPages . Views
 				key1 = false;
 				return;
 			}
-			else if (key1 &&  e . Key == Key . F12)
+			else if ( key1 && e . Key == Key . F12 )
 			{
 				if ( key1 )
 				{
@@ -1021,31 +1022,31 @@ namespace WPFPages . Views
 		}
 
 		//********************************************************************************************//
-		private void Window_Closing ( object sender , System . ComponentModel . CancelEventArgs e )
+		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
 			Flags . DbSelectorOpen = null;
 		}
 
-		private void MultiViewer_Click ( object sender , RoutedEventArgs e )
+		private void MultiViewer_Click ( object sender, RoutedEventArgs e )
 		{
-			if ( Flags . CurrentSqlViewer == null )
-			{
-				MultiViewer mv = new MultiViewer ( );
-				mv . Show ( );
-			}
-			else
-			{
-				MessageBox.Show($"Please close ALL open Db Viewers before openking the MultiViewer", "Data Conflict Warning");
-			}
+			//if ( Flags . CurrentSqlViewer == null )
+			//{
+			MultiViewer mv = new MultiViewer ( );
+			mv . Show ( );
+			//}
+			//else
+			//{
+			//	MessageBox.Show($"Please close ALL open Db Viewers before openking the MultiViewer", "Data Conflict Warning");
+			//}
 		}
 
-		private void Window_KeyDown ( object sender , KeyEventArgs e )
+		private void Window_KeyDown ( object sender, KeyEventArgs e )
 		{
 			if ( e . Key == Key . LeftCtrl )
 			{
 				key1 = true;
 			}
-//			Console . WriteLine ( $"Key1 = {key1}, Key = {e . Key}" );
+			//			Console . WriteLine ( $"Key1 = {key1}, Key = {e . Key}" );
 
 			if ( key1 && e . Key == Key . F9 )     // CTRL + F9
 			{
@@ -1210,9 +1211,9 @@ namespace WPFPages . Views
 
 		#endregion GetInstance
 
-		private void ViewersList_PreviewMouseDown ( object sender , MouseButtonEventArgs e )
+		private void ViewersList_PreviewMouseDown ( object sender, MouseButtonEventArgs e )
 		{
-			HandleSelection ( ViewersList , "SELECT" );
+			HandleSelection ( ViewersList, "SELECT" );
 		}
 
 		#region PropertyChanged
@@ -1223,7 +1224,7 @@ namespace WPFPages . Views
 		{
 			if ( null != PropertyChanged )
 			{
-				PropertyChanged ( this ,
+				PropertyChanged ( this,
 					new PropertyChangedEventArgs ( PropertyName ) );
 			}
 		}
@@ -1296,23 +1297,45 @@ namespace WPFPages . Views
 		//			}
 		//		}
 
-	
-		private void OntopChkbox_Click ( object sender , RoutedEventArgs e )
+
+		private void OntopChkbox_Click ( object sender, RoutedEventArgs e )
 		{
 			if ( OntopChkbox . IsChecked == true )
 				this . Topmost = true;
 			else
 				this . Topmost = false;
 		}
-		private void Bankedit_Click ( object sender , RoutedEventArgs e )
+		private void Bankedit_Click ( object sender, RoutedEventArgs e )
 		{
-			BankDbView cdbv = new BankDbView();
+			BankDbView cdbv = new BankDbView ( );
 			cdbv . Show ( );
 		}
 
-		private void Closeapp_Click ( object sender , RoutedEventArgs e )
+		private void Closeapp_Click ( object sender, RoutedEventArgs e )
 		{
 			Application . Current . Shutdown ( );
+		}
+
+		private void ComboBox_SelectionChanged ( object sender, SelectionChangedEventArgs e )
+		{
+			if ( StartUp ) return;
+			// Open selected Db viewer
+			string s = ViewerTypes . SelectedItem . ToString ( );
+			if ( s . Contains ( "Bank" ) )
+			{
+				BankDbView cdbv = new BankDbView ( );
+				cdbv . Show ( );
+			}
+			else if ( s . Contains ( "Customer" ) )
+			{
+				CustDbView cdbv = new CustDbView ( );
+				cdbv . Show ( );
+			}
+			else if ( s . Contains ( "Details" ) )
+			{
+				DetailsDbView cdbv = new DetailsDbView ( );
+				cdbv . Show ( );
+			}
 		}
 	}
 }

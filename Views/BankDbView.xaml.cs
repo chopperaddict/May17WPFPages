@@ -14,7 +14,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class BankDbView : Window
 	{
-		public  static BankCollection BankViewercollection=new BankCollection();
+		public static BankCollection BankViewercollection = BankCollection . EditDbBankcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
 
@@ -129,6 +129,7 @@ namespace WPFPages . Views
 			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
 			//UnSubscribe from Bank Data Changed event declared in EventControl
 			EventControl . BankDataLoaded -= EventControl_BankDataLoaded;
+			BankViewercollection = null;
 
 		}
 
@@ -266,28 +267,45 @@ namespace WPFPages . Views
 
 			if ( MultiAccounts . Content != "Show All" )
 			{
+				int currsel = this . BankGrid . SelectedIndex;
+				BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
 				Flags . IsMultiMode = true;
+
 				BankCollection bank = new BankCollection();
 				bank = await bank . ReLoadBankData ( );
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . ItemsSource = bank;
 				this . BankGrid . Refresh ( );
+
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
 				MultiAccounts . Template = tmp;
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Show All";
 				Count . Text = this . BankGrid . Items . Count.ToString();
+
+				// Get Custno from ACTIVE gridso we can find it in other grids
+				MultiViewer mv = new MultiViewer ( );
+				int rec = mv . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+				this . BankGrid . SelectedIndex = currsel;
+				if ( rec >= 0 )
+					this . BankGrid . SelectedIndex = rec;
+				else
+					this . BankGrid . SelectedIndex = 0;
+				Utils . ScrollRecordIntoView ( this . BankGrid, 1 );
 			}
 			else
 			{
 				Flags . IsMultiMode = false;
+				int currsel = this . BankGrid . SelectedIndex;
+				BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
+
 				BankCollection bank = new BankCollection();
-//				bank = await bank . ReLoadBankData ( );
-				// Just reset our iremssource to man Db
+				bank = await bank . ReLoadBankData ( );
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . ItemsSource =BankViewercollection;
 				this . BankGrid . Refresh ( );
+
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateBlue" );
 				MultiAccounts . Template = tmp;
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushBlue" );
@@ -295,6 +313,16 @@ namespace WPFPages . Views
 				MultiAccounts . Content = "Multi Accounts";
 				Count . Text = this . BankGrid . Items . Count . ToString ( );
 
+				// Get Custno from ACTIVE gridso we can find it in other grids
+				MultiViewer mv = new MultiViewer ( );
+				int rec = mv . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+
+				this . BankGrid . SelectedIndex = 0;
+				if ( rec >= 0 )
+					this . BankGrid . SelectedIndex = rec;
+				else
+					this . BankGrid . SelectedIndex = 0;
+				Utils . ScrollRecordIntoView ( this . BankGrid, 1 );
 			}
 
 

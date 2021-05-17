@@ -172,8 +172,6 @@ namespace WPFPages . Views
 		/// <returns></returns>
 		public async static Task<bool> LoadBankData ( int mode = -1 , bool isMultiMode = false )
 		{
-			//			Console . WriteLine ( $"BANK : Entered LoadBankData in Bankcollection ...." );
-
 			try
 			{
 				SqlConnection con;
@@ -214,7 +212,7 @@ namespace WPFPages . Views
 			catch ( Exception ex )
 			{
 				Console . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
-				MessageBox . Show ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
+//				MessageBox . Show ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
 				return false;
 			}
 			return true;

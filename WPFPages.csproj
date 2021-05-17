@@ -95,9 +95,15 @@
     <Compile Include="Views\BankDbView.xaml.cs">
       <DependentUpon>BankDbView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CustDbView.xaml.cs">
+      <DependentUpon>CustDbView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DataGridNavigation.cs" />
     <Compile Include="Views\DelegateSelection.xaml.cs">
       <DependentUpon>DelegateSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DetailsDbView.xaml.cs">
+      <DependentUpon>DetailsDbView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DetCollection.cs" />
     <Compile Include="DateOnlyConverter.cs" />
@@ -178,11 +184,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\CustDbView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DbSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DelegateSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DetailsDbView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

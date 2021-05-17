@@ -31,7 +31,7 @@ namespace WPFPages . Views
 			if ( Flags . CurrentSqlViewer != null )
 			{
 				Flags . CurrentSqlViewer = obj as SqlDbViewer;
-				Filters = Flags . CurrentSqlViewer . Filters;
+				Filters = Flags . CurrentSqlViewer? . Filters;
 				Filters . Content = "Filtering";
 			}
 			else
