@@ -1,0 +1,468 @@
+﻿<Window x:Class="WPFPages.Views.RowInfoPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+        mc:Ignorable="d"
+        Title="Db Row Information" Height="430" Width="362"
+        MinHeight="370"
+        MinWidth="362">
+    <Grid 
+	    Background="BurlyWood"
+	    >
+	    <Grid.RowDefinitions>
+		    <RowDefinition Height="10"/>
+		    <RowDefinition Height="*"/>
+			<RowDefinition Height="45"/>
+		    <RowDefinition Height="10"/>
+	    </Grid.RowDefinitions>
+	    <Grid.ColumnDefinitions>
+		    <ColumnDefinition Width="10"/>
+		    <ColumnDefinition Width="125"/>
+		    <ColumnDefinition Width="*"/>
+		    <ColumnDefinition Width="10"/>
+	    </Grid.ColumnDefinitions>
+	    <Grid
+		    Grid.Row ="1"						    
+		    Grid.Column="1"
+		    Grid.RowSpan="1"
+		    Background="Coral">
+		    <Border BorderBrush="Aquamarine"
+		            BorderThickness="1"	
+		            Margin="5">
+
+			    <StackPanel
+				    x:Name="BankLabels"
+				    Orientation="Vertical"
+				    VerticalAlignment="Top"
+				    Grid.Column="1"
+				    Grid.Row="1"
+				    Background="Coral"
+				    Width ="170">
+				    
+				    
+    <!--#region Bank labels-->
+				    <TextBlock
+					    Text="Id"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+					    Visibility="Hidden"
+				    />
+				    <TextBlock
+					    Text="Bank A/c #"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <TextBlock
+					    Text="Customer  #"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <TextBlock
+					    Text="A/c Type"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <TextBlock
+					    Text="A/c Balance"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <TextBlock
+					    Text="Interest %"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <TextBlock
+					    Text="Opened"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <TextBlock
+					    Text="Closed"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				    <!--#endregion Bank labels-->
+
+	<!--#region Cust labels-->
+					<StackPanel
+				    x:Name="CustLabels"
+				    Orientation="Vertical"
+				    VerticalAlignment="Top"
+				    Grid.Column="1"
+				    Grid.Row="1"
+				    Background="Coral"
+				    Width ="170">
+
+						<TextBlock
+					    Text="Id"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="Bank A/c #"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="Customer  #"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="A/c Type"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="A/c Balance"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="Interest %"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="Opened"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+						<TextBlock
+					    Text="Closed"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    Background="Coral"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					</StackPanel>
+					<!--#endregion Cust labels-->
+
+				</StackPanel>	 
+		    </Border>
+	   </Grid>
+
+	    <!--#region Bank  Data-->
+
+		<Grid
+			    Grid.Row ="1"						    
+			    Grid.Column="2"
+			    Grid.RowSpan="1"
+			    Background="Coral">
+
+			<Border BorderBrush="Blue"
+			            BorderThickness="1"
+			            Margin="5">
+
+				<StackPanel
+					    x:Name="BankData"
+						    Orientation="Vertical"
+						    VerticalAlignment="top"
+						    Grid.Row="0"
+						    Grid.Column="0"
+						    Background="Coral"
+						    Width ="180">
+
+
+					<TextBlock
+						    Text="{Binding Path=  Item.Id}"
+						    Height="20"
+						    Width="100"
+						    Foreground="White"
+						    Background="Coral"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+					    />
+					<TextBlock
+							    Text="{Binding Path=Item.BankNo}"
+							    Height="20"
+							    Width="100"
+							    Foreground="White"
+							    Background="Coral"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+					<TextBlock
+							    Text="{Binding Path=Item.CustNo }"
+							    Height="20"
+							    Width="100"
+							    Foreground="White"
+							    Background="Coral"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+					<TextBox
+							    Text="{Binding Path= Item.AcType }"
+							    Height="20"
+							    Width="100"
+							    Foreground="Black"
+							    Background="Bisque"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+							    Padding="5,0,5,0"
+						    />
+					<TextBox
+							    Text="{Binding Path=  Item.Balance, StringFormat='£#,###,###.##'}"
+							    Height="20"
+							    Width="100"
+							    Foreground="Black"
+							    Background="Bisque"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+							    Padding="5,0,5,0"
+						    />
+					<TextBox
+						    Text="{Binding Path=  Item.IntRate }"
+						    Height="20"
+						    Width="100"
+						    Foreground="Black"
+						    Background="Bisque"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+					<TextBlock
+						    Text="{Binding Path=  Item.ODate, StringFormat='dd/MM/yyyy'}"
+						    Height="20"
+						    Width="100"
+						    Foreground="White"
+						    Background="Coral"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+						/>
+					<TextBox
+						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' }"
+						    Height="20"
+						    Width="100"
+						    Foreground="Black"
+						    Background="Bisque"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+
+				</StackPanel>
+			</Border>
+
+			<!--#region Cust Data-->
+			<StackPanel
+					    x:Name="CustData"
+						    Orientation="Vertical"
+						    VerticalAlignment="top"
+						    Grid.Row="0"
+						    Grid.Column="0"
+						    Background="Coral"
+						    Width ="180">
+
+
+				<TextBlock
+						    Text="{Binding Path=  Item.Id}"
+						    Height="20"
+						    Width="100"
+						    Foreground="White"
+						    Background="Coral"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+					    />
+				<TextBlock
+							    Text="{Binding Path=Item.BankNo}"
+							    Height="20"
+							    Width="100"
+							    Foreground="White"
+							    Background="Coral"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+				<TextBlock
+							    Text="{Binding Path=Item.CustNo }"
+							    Height="20"
+							    Width="100"
+							    Foreground="White"
+							    Background="Coral"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+				<TextBox
+							    Text="{Binding Path= Item.AcType }"
+							    Height="20"
+							    Width="100"
+							    Foreground="Black"
+							    Background="Bisque"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+							    Padding="5,0,5,0"
+						    />
+				<TextBox
+							    Text="{Binding Path=  Item.Balance, StringFormat='£#,###,###.##'}"
+							    Height="20"
+							    Width="100"
+							    Foreground="Black"
+							    Background="Bisque"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+							    Padding="5,0,5,0"
+						    />
+				<TextBox
+						    Text="{Binding Path=  Item.IntRate }"
+						    Height="20"
+						    Width="100"
+						    Foreground="Black"
+						    Background="Bisque"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+				<TextBlock
+						    Text="{Binding Path=  Item.ODate, StringFormat='dd/MM/yyyy'}"
+						    Height="20"
+						    Width="100"
+						    Foreground="White"
+						    Background="Coral"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+						/>
+				<TextBox
+						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' }"
+						    Height="20"
+						    Width="100"
+						    Foreground="Black"
+						    Background="Bisque"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+			</StackPanel>
+			</Border>
+			<!--#endregion Details Data-->
+	<!--#endregion Bank Data-->
+
+		</Grid>
+
+   <!--#region Buttonbar-->
+		    <Grid
+			    Grid.Row="2"
+			    Grid.Column="1"
+			    Grid.ColumnSpan="2"
+			    Margin="0,5,5,3"
+			    Background="GreenYellow">
+	    <StackPanel
+		    Grid.Column="0"
+		    Grid.Row="0"
+		    Orientation="Horizontal"
+		    HorizontalAlignment="Right"
+		    >
+
+			<Button 
+				Background="DarkSlateGray"
+				Foreground="White"
+				Click="ButtonBase_OnClick"
+				Grid.Column="2"
+				Grid.Row="3"
+				Width="70"
+				Height="30"
+				Content =" Close"/>
+			</StackPanel>
+		    </Grid>
+	    <!--#endregion Buttonbar-->
+
+		 </Grid>
+</Window>

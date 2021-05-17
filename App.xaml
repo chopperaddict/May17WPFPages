@@ -1,0 +1,51 @@
+﻿<Application x:Class="WPFPages.App"
+		 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		 StartupUri="Views/MainWindow.xaml">
+	<!--StartupUri="Page1.xaml"-->
+
+	<Application.Resources>
+
+		<!--NB - You cannot have resources declared in here if you use the ResourceDirectory system as below
+		but you can have multiple Resourcedictionary files listed here, so you can subdivide
+		your styles etc as required
+		-->
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="Dicts\ButtonMainTemplate.xaml" />
+				<ResourceDictionary Source="Dicts\ColorsDictionary.xaml" />
+				<ResourceDictionary Source="Dicts\ButtonsMaster.xaml" />
+				<ResourceDictionary Source="Dicts\DiagonalGradients.xaml" />
+				<ResourceDictionary Source="Dicts\HorizontalGradients.xaml" />
+				<ResourceDictionary Source="Dicts\VerticalGradients.xaml" />
+				<ResourceDictionary Source="Dicts\ControlTemplates.xaml" />
+				<ResourceDictionary Source="Dicts\BaseDictionary.xaml" />
+				<ResourceDictionary Source="Dicts\AppButtonsDictionary.xaml" />
+				<ResourceDictionary Source="Dicts\ButtonDictionary.xaml" />
+				<ResourceDictionary Source="Dicts\TestDictionary.xaml" />
+				<ResourceDictionary Source="Dicts\BaseDictionary.xaml" />
+				<ResourceDictionary Source="Dicts\BtnsDict.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<!--These are Application wide Overrides for that annpoying
+			Focus Rectangle that appears by default on many controls-->
+			<Style TargetType="{x:Type Button}">
+				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+				<Setter Property="Focusable" Value="False" />
+			</Style>
+			<!--<Style TargetType="{x:Type TextBox}">
+				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+				<Setter Property="Focusable" Value="False" />
+			</Style>-->
+			<Style TargetType="{x:Type TextBlock}">
+				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+				<Setter Property="Focusable" Value="False" />
+			</Style>
+			<!--<Style TargetType="{x:Type Ellipse}">
+				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+				<Setter Property="Focusable" Value="False" />
+			</Style>-->
+			<!--End of Focus rectangle Overrides-->
+		</ResourceDictionary>
+	</Application.Resources>
+</Application>

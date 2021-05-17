@@ -1,0 +1,771 @@
+﻿<Window x:Class="WPFPages.Views.RowInfoPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Db Row Information" Height="597" Width="362"
+        MinHeight="370"
+        MinWidth="362" KeyDown="Window_KeyDown"
+        >
+
+
+	<Grid  x:Name="MainGrid">
+
+		<Grid.Background >
+			<!--create an elegant left to right light-> Dark gradient as a background-->
+			<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+				<GradientStop Color="#333333" Offset="0"/>
+				<GradientStop Color="lightGray" Offset="0.97"/>
+			</LinearGradientBrush>
+		</Grid.Background>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="10"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="45"/>
+			<RowDefinition Height="10"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="10"/>
+			<ColumnDefinition Width="125"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="10"/>
+		</Grid.ColumnDefinitions>
+		
+	 <!--#region Left Column GRID-->
+		<Grid x:Name="LeftGridContainer"
+		    Grid.Row ="1"						    
+		    Grid.Column="1"
+		    Grid.RowSpan="1"
+		    >
+			
+
+			<!--#region Left Column Bank BORDER with Bank Labels-->
+		<Border  x:Name ="LeftBankBorder"
+		         BorderBrush="Aquamarine"
+		         BorderThickness="1"	
+		         Margin="5"
+		         Visibility="Visible">
+
+			<Border.Background >
+				<!--create an elegant left to right light-> Dark gradient as a background-->
+				<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+					<GradientStop Color="#333333" Offset="0"/>
+					<GradientStop Color="lightGray" Offset="0.97"/>
+				</LinearGradientBrush>
+			</Border.Background>
+
+				<!--#region LEFT Bank StackPanel for Bank labels-->
+				<StackPanel x:Name="BankLabels"
+					Orientation="Vertical"
+					VerticalAlignment="Top"
+					Grid.Column="1"
+					Grid.Row="1"
+					Width ="170"
+					Visibility="Visible">
+					<TextBlock
+						Text="Id"
+						Height="20"
+						Width="100"
+						Foreground="#ffffff"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Bank A/c #"
+					    Height="20"
+					    Width="100"
+					    Foreground="#eeeeee"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Customer  #"
+					    Height="20"
+					    Width="100"
+					    Foreground="#dddddd"
+					    FontWeight="Bold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="A/c Type"
+					    Height="20"
+					    Width="100"
+					    Foreground="#555555"
+					    FontWeight="DemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="A/c Balance"
+					    Height="20"
+					    Width="100"
+					    Foreground="#444444"
+					    FontWeight="DemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Interest %"
+					    Height="20"
+					    Width="100"
+					    Foreground="#444444"
+					    FontWeight="SemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Opened"
+					    Height="20"
+					    Width="100"
+					    Foreground="#222222"
+					    FontWeight="DemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Closed"
+					    Height="20"
+					    Width="100"
+					    Foreground="Black"
+					    FontWeight="SemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+				</StackPanel>
+			<!--#endregion Bank StackPanel for Bank labels-->
+
+		</Border>
+<!--#endregion Left Column Bank  BORDER-->
+
+			<!--#region Left Column Cust BORDER with Customer Labels-->
+		<Border  x:Name ="LeftCustBorder"
+		         BorderBrush="Aquamarine"
+		         BorderThickness="1"	
+		         Margin="5"
+		         Visibility="Visible">
+
+			<Border.Background >
+				<!--create an elegant left to right light-> Dark gradient as a background-->
+				<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+					<GradientStop Color="#333333" Offset="0"/>
+					<GradientStop Color="lightGray" Offset="0.97"/>
+				</LinearGradientBrush>
+			</Border.Background>
+
+				<!--#region Left Column Cust BORDER with Customer Labels-->
+
+				<StackPanel
+				    x:Name="CustLabels"
+				    Orientation="Vertical"
+				    VerticalAlignment="Top"
+				    Grid.Column="1"
+				    Grid.Row="1"
+				    Width ="170">
+
+					<TextBlock
+					    Text="Id"
+					    Height="20"
+					    Width="100"
+					    FontSize="14"
+					    Foreground="White"
+					    FontWeight="Bold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Bank A/c #"
+					    Height="20"
+					    Width="100"
+					    FontSize="14"
+					    Foreground="#ffffff"
+					    FontWeight="DemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Customer  #"
+					    Height="20"
+					    Width="100"
+					    FontSize="14"
+					    Foreground="#dddddd"
+					    FontWeight="DemiBold"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="A/c Type"
+					    Height="20"
+					    Width="100"
+					    FontSize="14"
+					    Foreground="#dddddd"
+					    FontWeight="Normal"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="First Name"
+					    Height="20"
+					    Width="100"
+					    FontSize="14"
+					    Foreground="White"
+					    FontWeight="Normal"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+					    Text="Surname"
+					    Height="20"
+					    Width="100"
+					    Foreground="White"
+					    FontSize="14"
+					    FontWeight="Light"
+					    VerticalAlignment="Center"
+					    HorizontalAlignment="Left"
+					    Margin="5,5,5,5"
+				    />
+					<TextBlock
+						Text="Address 1"
+						Height="20"
+						Width="100"
+						Foreground="#333333"
+						FontSize="14"
+						FontWeight="Normal"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Address 2"
+						Height="20"
+						Width="100"
+						Foreground="#444444"
+						FontSize="14"
+						FontWeight="DemiBold"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Town"
+						Height="20"
+						Width="100"
+						Foreground="#333333"
+						FontSize="14"
+						FontWeight="SemiBold"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="County"
+						Height="20"
+						Width="100"
+						Foreground="#555555"
+						FontWeight="DemiBold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Postcode"
+						Height="20"
+						Width="100"
+						Foreground="#666666"
+						FontWeight="Bold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Phone #"
+						Height="20"
+						Width="100"
+						Foreground="#555555"
+						FontWeight="DemiBold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Mobile #"
+						Height="20"
+						Width="100"
+						Foreground="#444444"
+						FontWeight="DemiBold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="BirthDay"
+						Height="20"
+						Width="100"
+						Foreground="#333333"
+						FontWeight="Bold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Opened"
+						Height="20"
+						Width="100"
+						Foreground="#222222"
+						FontWeight="Bold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+					<TextBlock
+						Text="Closed"
+						Height="20"
+						Width="100"
+						Foreground="#111111"
+						FontWeight="Bold"
+						FontSize="14"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+					/>
+				</StackPanel>
+				<!--#endregion Left  Customer StackPanel for Customer Labels -->
+
+		</Border>
+<!--#endregion Left Column cust BORDER-->			  
+
+		</Grid>
+ <!--#endregion Left Column GRID-->
+
+	<!--=======================-->
+	<!--End of left column stuff-->
+	<!--=======================-->
+
+	 <!--=======================-->
+	 <!--Start of Right column stuff-->
+	 <!--=======================-->
+
+<!--#region Right Column Control GRID-->
+		<Grid
+			    Grid.Row ="1"						    
+			    Grid.Column="2"
+			    Grid.RowSpan="1">
+
+
+			<!--#region Right Column Holding BORDER for Bank Data-->
+			<Border BorderBrush="Blue"
+			        BorderThickness="1"
+			        Margin="5">
+
+				<Border.Background >
+					<!--create an elegant left to right light-> Dark gradient as a background-->
+					<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+						<GradientStop Color="#333333" Offset="0"/>
+						<GradientStop Color="lightGray" Offset="0.97"/>
+					</LinearGradientBrush>
+				</Border.Background>
+
+<!--#region Right Column Bank Data Fields (BankData)-->
+				<StackPanel
+					    x:Name="BankData"
+						    Orientation="Vertical"
+						    VerticalAlignment="top"
+						    Grid.Row="0"
+						    Grid.Column="0"
+						    Width ="180">
+
+
+					<TextBlock
+						    Text="{Binding Path=  Item.Id}"
+						    Height="20"
+						    Width="100"
+						    FontSize="14"
+						    Foreground="White"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+					    />
+					<TextBlock
+							    Text="{Binding Path=Item.BankNo}"
+							    Height="20"
+							    Width="100"
+							    FontSize="14"
+							    Foreground="White"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+					<TextBlock
+							    Text="{Binding Path=Item.CustNo }"
+							    Height="20"
+							    Width="100"
+							    FontSize="14"
+							    Foreground="White"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+					<TextBox
+							    Text="{Binding Path= Item.AcType }"
+							    Height="20"
+							    Width="20"
+							    FontSize="14"
+							    Foreground="Black"
+							    Background="Bisque"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+							    Padding="5,0,5,0"
+						    />
+					<TextBox
+							    Text="{Binding Path=  Item.Balance, UpdateSourceTrigger=LostFocus, StringFormat='£#,###,###.00'}"
+							    Height="20"
+							    Width="100"
+							    FontSize="14"
+							    Foreground="Black"
+							    Background="Bisque"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+							    
+							    Padding="5,0,5,0"
+						    />
+					<TextBox
+						    Text="{Binding Path=  Item.IntRate, UpdateSourceTrigger=LostFocus }"
+						    Height="20"
+						    Width="40"
+						    FontSize="14"
+						    Foreground="Black"
+						    Background="Bisque"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+					<TextBlock
+						    Text="{Binding Path=  Item.ODate, StringFormat='dd/MM/yyyy'}"
+						    Height="20"
+						    Width="90"
+						    FontSize="14"
+						    Foreground="White"
+						    Background="CadetBlue"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+						/>
+					<TextBox
+						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
+						    Height="20"
+						    Width="90"
+						    FontSize="14"
+						    Foreground="Black"
+						    Background="Bisque"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+
+				</StackPanel>
+				<!--#endregion Right Column Bank Data Fields (BankData)-->				
+		
+			</Border>
+			<!--#endregion Right Column Holding BORDER for Bank data -->
+
+			<!--#region Right Column Cust Data fields BORDER for Customer data-->
+			<Border BorderBrush="Blue"
+				BorderThickness="1"
+				Margin="5">
+
+				<!--<Border.Background >
+					create an elegant left to right light-> Dark gradient as a background
+					<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+						<GradientStop Color="#333333" Offset="0"/>
+						<GradientStop Color="lightGray" Offset="0.97"/>
+					</LinearGradientBrush>
+				</Border.Background>-->
+
+				<!--#region Customer DATA StackPanel-->
+				<StackPanel
+					x:Name="CustData"
+					Orientation="Vertical"
+					VerticalAlignment="top"
+					Grid.Row="0"
+					Grid.Column="0"
+					Width ="180">
+
+					<!--#region Customer Data Fields (CustData)-->
+					<TextBlock
+						    Text="{Binding Path=  Item.Id}"
+						    Height="20"
+						    Width="100"
+						    FontSize="14"
+						    Foreground="White"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+					    />
+					<TextBlock
+							    Text="{Binding Path=Item.BankNo}"
+							    Height="20"
+							    Width="100"
+							    FontSize="14"
+							    Foreground="White"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+					<TextBlock
+							    Text="{Binding Path=Item.CustNo }"
+							    Height="20"
+							    Width="150"
+							    FontSize="14"
+							    Foreground="White"
+							    VerticalAlignment="Center"
+							    HorizontalAlignment="Left"
+							    Margin="5,5,5,5"
+						    />
+					<TextBox
+						Text="{Binding Path= Item.AcType, UpdateSourceTrigger=LostFocus }"
+						Height="20"
+						Width="20"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="AcTypeLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.FName , UpdateSourceTrigger=LostFocus}"
+						Height="20"
+						Width="150"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="FNameLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.LName , UpdateSourceTrigger=LostFocus}"
+						Height="20"
+						Width="150"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="LNameLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.Addr1, UpdateSourceTrigger=LostFocus }"
+						Height="20"
+						Width="180"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						VerticalAlignment="Center"
+						LostFocus="Addr1LostFocus"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.Addr2, UpdateSourceTrigger=LostFocus }"
+						Height="20"
+						Width="180"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						VerticalAlignment="Center"
+						LostFocus="Addr2LostFocus"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.Town , UpdateSourceTrigger=LostFocus}"
+						Height="20"
+						Width="180"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="TownLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.County , UpdateSourceTrigger=LostFocus}"
+						Height="20"
+						Width="180"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="CountyLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.PCode, UpdateSourceTrigger=LostFocus }"
+						Height="20"
+						Width="90"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="PCodeLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.Phone, UpdateSourceTrigger=LostFocus}"
+						Height="20"
+						Width="100"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="PhoneLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						Text="{Binding Path= Item.Mobile , UpdateSourceTrigger=LostFocus}"
+						Height="20"
+						Width="120"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						LostFocus="MobileLostFocus"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBlock
+						Text="{Binding Path=  Item.Dob, StringFormat='dd/MM/yyyy'}"
+						Height="20"
+						Width="80"
+						FontSize="14"
+						Foreground="White"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBlock
+						Text="{Binding Path=  Item.ODate, StringFormat='dd/MM/yyyy'}"
+						Height="20"
+						Width="90"
+						FontSize="14"
+						LostFocus="ODateLostFocus"
+						Foreground="White"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+					<TextBox
+						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
+						    Height="20"
+						    Width="100"
+						    FontSize="14"
+						    Foreground="Black"
+						    Background="Bisque"
+						    LostFocus="CDateLostFocus"
+						    VerticalAlignment="Center"
+						    HorizontalAlignment="Left"
+						    Margin="5,5,5,5"
+						    Padding="5,0,5,0"
+					    />
+					<!--#endregion Customer Data Fields (CustData)-->
+
+				</StackPanel>
+				<!--#endregion Customer DATA StackPanel-->
+
+			</Border>
+			<!--#region Cust Data fields BORDER-->
+
+		</Grid>
+ <!--#end region Right Column Control GRID-->
+ 
+ <!--=======================-->
+ <!--End of Right column stuff-->
+ <!--=======================-->
+
+<!--#region Buttonbar-->
+		<Grid
+			    Grid.Row="2"
+			    Grid.Column="1"
+			    Grid.ColumnSpan="2"
+			    Margin="0,5,5,3"
+>
+			<StackPanel
+		    Grid.Column="0"
+		    Grid.Row="0"
+		    Orientation="Horizontal"
+		    HorizontalAlignment="Right"
+		    >
+
+				<Button  x:Name ="SaveBtn"
+					Background="DarkGreen"
+					Foreground="White"
+					Click="Save_Click"
+					Grid.Column="2"
+					Grid.Row="3"
+					IsEnabled="False"
+					Width="120"
+					Height="30"
+					Margin="5"
+					Content =" Save Changes"
+					Visibility="Hidden"/>
+				<Button 
+					Background="Crimson"
+					Foreground="White"
+					Click="ButtonBase_OnClick"
+					Grid.Column="2"
+					Grid.Row="3"
+					Width="70"
+					Height="30"
+					Content =" Close"/>
+			</StackPanel>
+		</Grid>
+		<!--#endregion Buttonbar-->
+
+	</Grid>
+</Window>

@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="WPFPages.UserControls.CloseReturnButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFPages"
+             mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="160"
+		   x:Name="CloseReturnBtn">
+	<Grid>
+		<Grid>
+			<!-- We place An ELLIPSE shaped button inside a one celled grid.
+			NB Use PreviewMouseDown="PreviewMouseDown_Click" 
+			to access the leftMouseDown anywhere a control does not 
+			support LeftMouseDown of any type -->
+
+			<!--This is how to create a pseudo Button shaped like an Ellipse with 
+			what appears to be normal Button.Content Text on top of it and normal 
+			Button functionality so that any styling of the Ellipse does not get 
+			intefered with by mousing over the TextBlock that contains the 
+			"Buttons" Text/Content Element-->
+			<!--NB to stop the TextBlock from intefering with the Ellipses 
+			MouseOver Event the Property ISHITTESTVISIBLE is set to FALSE
+				so that anything inside it does not receive any Interface events 
+			such as Mouse events-->
+			<Ellipse x:Name="Ellipse9"
+				Style="{StaticResource MyEllipses}"
+				PreviewMouseDown="CloseButton_Click"
+				Stroke="Black"
+				StrokeThickness="2"
+				Opacity=".8"
+				Width="150" Height="58" HorizontalAlignment="Right"  
+				    VerticalAlignment="Bottom" d:LayoutOverrides="Width, Height" />
+
+			<!--//Display the "Button Text"-->
+			<StackPanel HorizontalAlignment="Center"
+					VerticalAlignment="Center" 
+				IsHitTestVisible="false"
+				Background="Transparent">
+				<TextBlock
+					Background="Transparent" Text="Close">
+				</TextBlock>
+			</StackPanel>
+		</Grid>
+
+	</Grid>
+</UserControl>

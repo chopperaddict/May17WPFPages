@@ -1,0 +1,537 @@
+﻿<Page x:Class="WPFPages.Page4"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:local="clr-namespace:WPFPages"
+	xmlns:local1="clr-namespace:WPFPages"
+	xmlns:EllipseBtn="clr-namespace:WPFPages"
+	mc:Ignorable="d" 
+	d:DesignHeight="850" d:DesignWidth="1000"
+	 MinHeight="50"
+	Title="Page4">
+	<Page.Resources>
+		<Style x:Key="GridStyle1" TargetType="Grid">
+			<Setter Property="Width" Value="auto" />
+			<Setter Property="Height" Value="auto" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Style.Triggers>
+				<Trigger Property="ActualHeight" Value="123">
+					<Setter Property="Background" >
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,1" EndPoint="1,0" >
+								<GradientStop Color="#F9A68B" Offset="0"/>
+								<GradientStop Color="#6B1D04" Offset="1"/>
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</Page.Resources>
+
+	<!--Main Page Grid layoyut-->
+	<Grid Background="LightBlue" 
+		 VerticalAlignment="Stretch"
+		 HorizontalAlignment="Stretch" 
+		 Height="auto"
+		 Width="auto"
+		 ShowGridLines="false">
+
+		<Grid.RowDefinitions>
+			<!--Labels-->
+			<RowDefinition Height="20"/><RowDefinition Height="25"/>
+			<!--Flow controls-->
+			<RowDefinition Height="*"/>
+			<!--Print buttons-->
+			<RowDefinition Height="95"/>
+			<!-- Last Row = 5 close buttons-->
+			<RowDefinition Height="75"/>
+		</Grid.RowDefinitions>
+		
+		<Grid.ColumnDefinitions><ColumnDefinition  Width="*"/><ColumnDefinition Width="15"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+
+		<TextBlock Name="Banner" Grid.Row="0" Grid.Column="0"
+		  Grid.ColumnSpan="3"
+			 HorizontalAlignment="Center"
+			VerticalAlignment="Center"					 
+			 Height="15" 
+			Text="This is Page 4"
+			Foreground="Black"/>
+		
+		<!--*************************************************************-->
+		<!--This is the left hand column-->
+		<!--*************************************************************-->
+		
+	<!--#region Left Column-->
+		<Label  Grid.Row="1" Grid.Column="0"
+				HorizontalAlignment="Center" 
+			   Background="AntiqueWhite"
+			   >This is a FlowDocumentScrollViewer</Label>
+
+		<!--Grid for left coloumn-->
+		<Grid x:Name="LeftGrid" 
+			Grid.Row="2" Grid.Column="0" 			 
+			Grid.ColumnSpan="1" Grid.RowSpan="1"
+			VerticalAlignment="Stretch" Margin="15"
+			ShowGridLines="True"
+			HorizontalAlignment="Stretch"
+			>
+			
+			<Grid.RowDefinitions>
+				<RowDefinition Height="auto"/>
+			</Grid.RowDefinitions>
+			
+			<FlowDocumentScrollViewer 
+				Grid.Row="0" Grid.Column="0"
+				BorderBrush="Black" BorderThickness="1" 
+				VerticalScrollBarVisibility="Auto"		
+				VerticalAlignment="Stretch"
+				HorizontalAlignment="Stretch"
+				Margin="5">
+				<FlowDocument x:Name="FlowDoc"
+						    
+						    PagePadding="auto">
+					<Paragraph>
+						<Image Source="http://www.wpf-tutorial.com/images/logo.png" Width="90" Height="90" Margin="0,0,30,0" />
+						<Run FontSize="80">WPF</Run>
+					</Paragraph>
+
+					<Paragraph>
+						WPF, which stands for
+						<Bold>Windows Presentation Foundation</Bold> ,
+		                    is Microsoft's latest approach to a GUI framework, used with the .NET framework.
+				          Some advantages include:
+					</Paragraph>
+
+					<List>
+						<ListItem>
+							<Paragraph>
+								It's newer and thereby more in tune with current standards
+							</Paragraph>
+						</ListItem>
+						<ListItem>
+							<Paragraph>
+								Microsoft is using it for a lot of new applications, e.g. Visual Studio
+							</Paragraph>
+						</ListItem>
+						<ListItem>
+							<Paragraph>
+								It's more flexible, so you can do more things without having to write or buy new controls
+							</Paragraph>
+						</ListItem>
+					</List>
+
+					<Table CellSpacing="0">
+						<TableRowGroup>
+							<TableRow Background="Gainsboro" FontWeight="Bold">
+								<TableCell></TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">WinForms</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">WPF</Paragraph>
+								</TableCell>
+							</TableRow>
+						</TableRowGroup>
+
+						<TableRowGroup>
+							<TableRow>
+								<TableCell Background="Gainsboro" FontWeight="Bold">
+									<Paragraph>Lines of code</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">1.718.000</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">1.542.000</Paragraph>
+								</TableCell>
+							</TableRow>
+						</TableRowGroup>
+						<TableRowGroup>
+							<TableRow>
+								<TableCell Background="Gainsboro" FontWeight="Bold">
+									<Paragraph>Developers</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">633.000</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">981.000</Paragraph>
+								</TableCell>
+							</TableRow>
+						</TableRowGroup>
+					</Table>
+					<Paragraph Foreground="Silver" FontStyle="Italic">A table of made up WinForms/WPF numbers
+					</Paragraph>
+
+					<BlockUIContainer>
+
+						<Button Width="210" Height="80" 							   
+							Foreground="White" 
+							Opacity="0.5"
+							Style="{StaticResource RedToBlackButton}"
+							Click="PrintFlowDoc_Click">
+							<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+							VerticalAlignment="Top">
+								<TextBlock Text="Click me to print Full Contents " FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+								<TextBlock Text="of this FlowDocument Control" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+					</BlockUIContainer>
+				</FlowDocument>
+			</FlowDocumentScrollViewer>
+		</Grid>
+
+		<Button 
+			Grid.Column="0" Grid.Row="3"
+				Width="250" Height="75" 
+				Opacity="0.7"				
+				Foreground="White" 
+				Click="PrintFlowDocImage_Click" 
+				Margin="10" FontSize="12"	
+				Style="{StaticResource StandardYtoRGradientButton}">
+
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+					    VerticalAlignment="Center">
+				<TextBlock Text="Print current FlowDocument" FontSize="12" FontWeight="ExtraBold" VerticalAlignment="Center"/>
+				<TextBlock Text="as currently displayed above" FontSize="12" FontWeight="ExtraBold" VerticalAlignment="Center"/>
+			</StackPanel>
+		</Button>
+	<!--#endregion Left Column-->
+
+
+		<!--*************************************************************-->
+		<!--This is the right hand column-->
+		<!--*************************************************************-->
+	<!--#region right Column-->
+
+
+		<!--Label inside row 0 of main right column grid-->
+		<Label  Grid.Row="1" Grid.Column="2" 
+				HorizontalAlignment="Center" 
+			     Background="AntiqueWhite"
+				>This is a FlowDocumentReader</Label>
+
+		<!--Column 2 grid container-->
+
+			<Grid x:Name="RightGrid" 
+			Grid.Row="2" Grid.Column="2" 			 
+			VerticalAlignment="Stretch" Margin="15"
+			ShowGridLines="true"
+			HorizontalAlignment="Stretch"
+			Height="auto" Width="auto">
+				
+			<!--<Grid.RowDefinitions>
+				<RowDefinition Height="auto"/>
+			</Grid.RowDefinitions>-->
+
+			<!--<ItemsControl Grid.Row="1"
+					    VerticalAlignment="Top">-->
+
+				<FlowDocumentReader 
+					x:Name="FlowReader"
+					Height="600" Width="auto"
+					BorderBrush="Black" BorderThickness="1" Margin="5,5,5,-1"
+					Background="Beige" Opacity="1"
+				VerticalAlignment="Stretch"
+				HorizontalAlignment="Stretch"
+					>
+
+					<FlowDocument x:Name="FlowDoc2"
+						    Background="LightBlue">
+						
+						<Paragraph>
+							<Image Source="http://www.wpf-tutorial.com/images/logo.png" Width="90" Height="90" Margin="0,0,30,0" />
+							<Run FontSize="80">WPF</Run>
+						</Paragraph>
+
+						<Paragraph>
+							WPF, which stands for
+							<Bold>Windows Presentation Foundation</Bold> ,
+							is Microsoft's latest approach to a GUI framework, used with the .NET framework.
+							Some advantages include:
+						</Paragraph>
+
+						<List>
+							<ListItem>
+								<Paragraph>
+									It's newer and thereby more in tune with current standards
+								</Paragraph>
+							</ListItem>
+							<ListItem>
+								<Paragraph>
+									Microsoft is using it for a lot of new applications, e.g. Visual Studio
+								</Paragraph>
+							</ListItem>
+							<ListItem>
+								<Paragraph>
+									It's more flexible, so you can do more things without having to write or buy new controls
+								</Paragraph>
+							</ListItem>
+						</List>
+
+						<Table CellSpacing="0">
+							<TableRowGroup>
+								<TableRow Background="Gainsboro" FontWeight="Bold">
+									<TableCell></TableCell>
+									<TableCell>
+										<Paragraph TextAlignment="Right">WinForms</Paragraph>
+									</TableCell>
+									<TableCell>
+										<Paragraph TextAlignment="Right">WPF</Paragraph>
+									</TableCell>
+								</TableRow>
+							</TableRowGroup>
+
+							<TableRowGroup>
+								<TableRow>
+									<TableCell Background="Gainsboro" FontWeight="Bold">
+										<Paragraph>Lines of code</Paragraph>
+									</TableCell>
+									<TableCell>
+										<Paragraph TextAlignment="Right">1.718.000</Paragraph>
+									</TableCell>
+									<TableCell>
+										<Paragraph TextAlignment="Right">1.542.000</Paragraph>
+									</TableCell>
+								</TableRow>
+							</TableRowGroup>
+							<TableRowGroup>
+								<TableRow>
+									<TableCell Background="Gainsboro" FontWeight="Bold">
+										<Paragraph>Developers</Paragraph>
+									</TableCell>
+									<TableCell>
+										<Paragraph TextAlignment="Right">633.000</Paragraph>
+									</TableCell>
+									<TableCell>
+										<Paragraph TextAlignment="Right">981.000</Paragraph>
+									</TableCell>
+								</TableRow>
+							</TableRowGroup>
+						</Table>
+						<Paragraph Foreground="Silver" FontStyle="Italic">A table of made up WinForms/WPF numbers
+						</Paragraph>
+
+						<BlockUIContainer>
+							<Button Width="210" Height="80" 
+							   Opacity="0.5"
+							Foreground="White" 
+							Style="{StaticResource RedToBlackButton}"
+							Click="PrintFlowDoc_Click">
+								<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+								VerticalAlignment="Top">
+									<TextBlock Text="Click me to print Full Contents " FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+									<TextBlock Text="of this FlowDocument Control" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+								</StackPanel>
+							</Button>
+						</BlockUIContainer>
+					</FlowDocument>
+				</FlowDocumentReader>
+
+
+			<!--<FlowDocumentScrollViewer 
+				Grid.Row="0" Grid.Column="0"
+				BorderBrush="Black" BorderThickness="1" 
+				Height="auto" Width="auto"
+				MinHeight="50"
+				Margin="5">
+				<FlowDocument x:Name="FlowDoc2">
+					<Paragraph>
+						<Image Source="http://www.wpf-tutorial.com/images/logo.png" Width="90" Height="90" Margin="0,0,30,0" />
+						<Run FontSize="80">WPF</Run>
+					</Paragraph>
+
+					<Paragraph>
+						WPF, which stands for
+						<Bold>Windows Presentation Foundation</Bold> ,
+		                    is Microsoft's latest approach to a GUI framework, used with the .NET framework.
+				          Some advantages include:
+					</Paragraph>
+
+					<List>
+						<ListItem>
+							<Paragraph>
+								It's newer and thereby more in tune with current standards
+							</Paragraph>
+						</ListItem>
+						<ListItem>
+							<Paragraph>
+								Microsoft is using it for a lot of new applications, e.g. Visual Studio
+							</Paragraph>
+						</ListItem>
+						<ListItem>
+							<Paragraph>
+								It's more flexible, so you can do more things without having to write or buy new controls
+							</Paragraph>
+						</ListItem>
+					</List>
+
+					<Table CellSpacing="0">
+						<TableRowGroup>
+							<TableRow Background="Gainsboro" FontWeight="Bold">
+								<TableCell></TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">WinForms</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">WPF</Paragraph>
+								</TableCell>
+							</TableRow>
+						</TableRowGroup>
+
+						<TableRowGroup>
+							<TableRow>
+								<TableCell Background="Gainsboro" FontWeight="Bold">
+									<Paragraph>Lines of code</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">1.718.000</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">1.542.000</Paragraph>
+								</TableCell>
+							</TableRow>
+						</TableRowGroup>
+						<TableRowGroup>
+							<TableRow>
+								<TableCell Background="Gainsboro" FontWeight="Bold">
+									<Paragraph>Developers</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">633.000</Paragraph>
+								</TableCell>
+								<TableCell>
+									<Paragraph TextAlignment="Right">981.000</Paragraph>
+								</TableCell>
+							</TableRow>
+						</TableRowGroup>
+					</Table>
+					<Paragraph Foreground="Silver" FontStyle="Italic">A table of made up WinForms/WPF numbers
+					</Paragraph>
+
+					<BlockUIContainer>
+
+						<Button Width="210" Height="80" 							   
+							Foreground="White" 
+							Opacity="0.5"
+							Style="{StaticResource RedToBlackButton}"
+							Click="PrintFlowDoc_Click">
+							<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+							VerticalAlignment="Top">
+								<TextBlock Text="Click me to print Full Contents " FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+								<TextBlock Text="of this FlowDocument Control" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+					</BlockUIContainer>
+				</FlowDocument>
+			</FlowDocumentScrollViewer>-->
+
+
+			<!--</ItemsControl>-->
+
+		</Grid>
+		<!--Print Control Image button-->
+
+		<Button 
+			Grid.Column="2" Grid.Row="3"
+				Width="250" Height="75" 
+				Opacity="0.7"				
+				Foreground="White" 
+				Click="PrintFlowDocImage_Click" 
+				Margin="10" FontSize="12"	
+				Style="{StaticResource StandardYtoRGradientButton}">
+
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+					    VerticalAlignment="Center">
+				<TextBlock Text="Print current FlowDocument" FontSize="12" FontWeight="ExtraBold" VerticalAlignment="Center"/>
+				<TextBlock Text="as currently displayed above" FontSize="12" FontWeight="ExtraBold" VerticalAlignment="Center"/>
+			</StackPanel>
+		</Button>
+		<!--#endregion right Column-->
+
+
+
+		<!--#region controlbuttons-->
+		<!--CloseDown buttons panel-->
+		<Grid Name="ClosedownGrid" 
+			 Grid.Row="5" Grid.Column="2" 
+			 HorizontalAlignment="Right" 
+			 VerticalAlignment="Bottom"
+			 Grid.ColumnSpan="2"
+			 Margin="0,-10,0,0">
+
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="170"/>
+				<ColumnDefinition Width="170"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="80" />
+			</Grid.RowDefinitions>
+
+			<!-- We place An ELLIPSE shaped button inside a one celled grid.
+			NB Use PreviewMouseDown="PreviewMouseDown_Click" 
+			to access the leftMouseDown anywhere a control does not 
+			support LeftMouseDown of any type -->
+
+			<!--This is how to create a pseudo Button shaped like an Ellipse with 
+			what appears to be normal Button.Content Text on top of it and normal 
+			Button functionality so that any styling of the Ellipse does not get 
+			intefered with by mousing over the TextBlock that contains the 
+			"Buttons" Text/Content Element-->
+			<!--NB to stop the TextBlock from intefering with the Ellipses 
+			MouseOver Event the Property ISHITTESTVISIBLE is set to FALSE
+				so that anything inside it does not receive any Interface events 
+			such as Mouse events-->
+			<Grid Grid.Column="0" 
+				Width="170" Height="80">
+				<Ellipse x:Name="Ellipse9"
+					Style="{StaticResource MyEllipses}"
+					PreviewMouseDown="CloseButton_Click"
+					Stroke="Black"
+					StrokeThickness="2"
+					Opacity=".8"
+					Width="150" Height="58"/>
+
+				<!--//Display the "Button Text"-->
+				<StackPanel HorizontalAlignment="Center"
+					VerticalAlignment="Center" 
+					IsHitTestVisible="false"
+					Background="Transparent">
+					<TextBlock
+						Background="Transparent" Text="Close Page">
+					</TextBlock>
+				</StackPanel>
+			</Grid>
+			<!--This is how to load and use a UserControl, this
+			one is my own ExitButton based on an Ellipse
+			It also relies on the inclusion of a headerline as shown below
+			that defines the user Control's (file) name
+			xmlns:EllipseExitButton="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:local1="clr-namespace:WPFPages"
+			-->
+			<Grid Grid.Column="1">
+				<local1:EllipseExitButton Foreground="White" FontSize="18"/>
+			</Grid>
+
+
+		</Grid>
+		<!--#endregion controlbuttons-->
+
+
+
+
+		<!--This is outside column grids - but is inside Main Page Grid only-->
+		<!--<Viewbox Grid.Row="5"
+			     Grid.Column="2"
+			    VerticalAlignment="Stretch">
+			<TextBlock>dfsgddsfffssssgddfgfdgffsf</TextBlock>
+		</Viewbox>-->
+
+
+
+	</Grid>
+
+</Page>

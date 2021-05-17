@@ -1,0 +1,505 @@
+﻿<Window x:Class="WPFPages.Views.DbSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+	KeyDown="Window_KeyDown"
+	Left="1220"
+	Margin="33,3,3,3"
+	MaxWidth="850"
+	MaxHeight="325"
+	MinWidth="680"
+	MinHeight="325"
+	Top="680"
+	Topmost="false"
+	WindowStartupLocation="Manual"
+	Closing="Window_Closing"
+	Title="DbViewer" Height="335"
+	Width="600"
+	WindowStyle="None">
+
+	<Window.Resources>
+
+		<!--<Style x:Key="FocusVisualStyle1">
+			<Setter Property="Control.Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Rectangle Margin="-2" StrokeThickness="1" Stroke="Violet" />
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>-->
+
+		<!--Style for full LISTBOXes (not listboxitems) on this form-->
+		<Style x:Key="_styletest"
+			TargetType="ListBox">
+			<Setter Property="Control.Background" Value="{StaticResource Gray2}" />
+			<!--<Setter Property="Control.Foreground" Value="{StaticResource Gray2}" />-->
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<!--<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ListBox">
+						<ScrollViewer x:Name="ScrollViewer"
+						              HorizontalAlignment="Stretch">
+							<ItemsPresenter Height="35" HorizontalAlignment="Stretch" />
+						</ScrollViewer>
+					</ControlTemplate>
+				</Setter.Value>
+				</Setter>-->
+			<Style.Triggers>
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<!--<Condition Property="IsMouseOver" Value="true" />-->
+						<Condition Property="IsFocused" Value="true" />
+					</MultiTrigger.Conditions>
+					<MultiTrigger.Setters>
+						<Setter Property="Background" Value="{StaticResource Gray2}" />
+					</MultiTrigger.Setters>
+				</MultiTrigger>
+				<Trigger Property="IsMouseOver" Value="true">
+					<Setter Property="Control.Background" Value="{StaticResource Gray3}" />
+					<Setter Property="BorderBrush" Value="{StaticResource Black1}" />
+					<Setter Property="Control.FontWeight" Value="SemiBold" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+		<!--Base Style for listbox Items on this form-->
+		<!--
+		<Style x:Key="_BaseListBoxItemStyle"
+			TargetType="ListBoxItem">
+			-->
+		<!--<Setter Property="MinWidth" Value="545" />-->
+		<!--
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ListBoxItem">
+						<Border Name="_Border"
+							Padding="100"
+							HorizontalAlignment="Center"
+							SnapsToDevicePixels="true">
+							<ContentPresenter />
+						</Border>
+						-->
+		<!--<ControlTemplate.Triggers>
+							<Trigger Property="IsSelected" Value="true">
+								<Setter TargetName="_Border" Property="Background" Value="{StaticResource Gray2}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="FontWeight" Value="SemiBold" />
+							</Trigger>
+						</ControlTemplate.Triggers>-->
+		<!--
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>-->
+
+		<!--Style for ListBoxItems in (Top) viewer listbox-->
+		<Style x:Key="_ListBoxItemStyle1"
+			TargetType="ListBoxItem">
+			<Setter Property="Background" Value="{StaticResource Gray2}" />
+			<Setter Property="Foreground" Value="{StaticResource Black0}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="Width" Value="650" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Width" Value="{Binding Path=Width, ElementName=ViewersList}" />
+			<!--Remove focus rectangle - IT WORKS-->
+			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ListBoxItem">
+						<Border Name="_Border"
+							Padding="3"
+							HorizontalAlignment="Center">
+							<ContentPresenter />
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsFocused" Value="true">
+								<Setter TargetName="_Border" Property="Background" Value="{StaticResource Gray2}" />
+								<Setter Property="Control.Foreground" Value="{StaticResource White0}" />
+								<Setter Property="Control.FontWeight" Value="Normal" />
+								<Setter Property="FontStyle" Value="Italic" />
+								<Setter Property="FontSize" Value="14" />
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter TargetName="_Border" Property="Control.Background" Value="{StaticResource Gray2}" />
+								<Setter TargetName="_Border" Property="Control.Foreground" Value="{StaticResource White0}" />
+								<Setter Property="Foreground" Value="{StaticResource White0}" />
+								<Setter Property="Control.FontWeight" Value="Normal" />
+								<Setter Property="FontStyle" Value="Italic" />
+								<Setter Property="FontSize" Value="14" />
+							</Trigger>
+							<Trigger Property="IsSelected" Value="true">
+								<Setter TargetName="_Border" Property="Control.Foreground" Value="{StaticResource Blue0}" />
+								<Setter Property="FontWeight" Value="SemiBold" />
+								<!--<Setter Property="HorizontalContentAlignment" Value="Stretch" />-->
+							</Trigger>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="true" />
+									<Condition Property="IsSelected" Value="true" />
+								</MultiTrigger.Conditions>
+								<MultiTrigger.Setters>
+									<Setter TargetName="_Border" Property="Control.Foreground" Value="{StaticResource Red0}" />
+									<Setter TargetName="_Border" Property="Background" Value="{StaticResource White2}" />
+									<Setter Property="FontSize" Value="14" />
+									<Setter Property="FontWeight" Value="DemiBold" />
+								</MultiTrigger.Setters>
+							</MultiTrigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!--Style for (Lower) Currently open viewers-->
+		<Style x:Key="_ListBoxItemStyle2" TargetType="ListBoxItem">
+			<!--BasedOn="{StaticResource _BaseListBoxItemStyle}">-->
+			<!--<Setter Property="Background" Value="{StaticResource Gray1}" />-->
+			<Setter Property="Background" Value="{StaticResource Gray2}" />
+			<Setter Property="Foreground" Value="{StaticResource Black0}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="Control.Width" Value="450" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Width" Value="{Binding Path=Width, ElementName=ViewersList}" />
+			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ListBoxItem">
+						<Border Name="_Border"
+							Padding="3"
+							HorizontalAlignment="Center"
+							SnapsToDevicePixels="true">
+							<ContentPresenter />
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter TargetName="_Border" Property="Background" Value="{StaticResource Gray2}" />
+								<Setter Property="Foreground" Value="{StaticResource White0}" />
+								<Setter Property="Control.FontWeight" Value="Normal" />
+								<Setter Property="FontStyle" Value="Italic" />
+								<Setter Property="FontSize" Value="14" />
+							</Trigger>
+							<Trigger Property="IsSelected" Value="true">
+								<!--<Setter TargetName="_Border" Property="Background" Value="{StaticResource Gray1}" />-->
+								<Setter TargetName="_Border" Property="Control.Foreground" Value="{StaticResource Blue0}" />
+								<!--<Setter TargetName="_Border" Property="Control.BorderBrush" Value="{StaticResource Blue0}" />
+								<Setter TargetName="_Border" Property="Control.BorderThickness" Value="1" />-->
+								<Setter Property="FontWeight" Value="SemiBold" />
+								<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+								<!--<Setter Property="FontSize" Value="14" />-->
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter TargetName="_Border" Property="Background" Value="{StaticResource Gray2}" />
+								<Setter Property="Foreground" Value="{StaticResource Black0}" />
+								<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+								<!--<Setter  Property="Control.Background" Value="{StaticResource Gray1}" />
+								<Setter Property="Control.Foreground" Value="White" />-->
+								<Setter TargetName="_Border" Property="Control.FontWeight" Value="Bold" />
+							</Trigger>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="true" />
+									<Condition Property="IsSelected" Value="true" />
+								</MultiTrigger.Conditions>
+								<MultiTrigger.Setters>
+									<Setter TargetName="_Border" Property="Background" Value="{StaticResource White2}" />
+									<Setter TargetName="_Border" Property="Control.Foreground" Value="{StaticResource Red0}" />
+									<Setter Property="FontSize" Value="14" />
+									<Setter Property="FontWeight" Value="DemiBold" />
+								</MultiTrigger.Setters>
+							</MultiTrigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!--Button Style to handle disabled etc-->
+		<Style x:Key="dimbutton" TargetType="Button">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Name="_Border"
+							Padding="3"
+							HorizontalAlignment="Center"
+							SnapsToDevicePixels="true">
+							<ContentPresenter />
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter TargetName="_Border" Property="Background" Value="{StaticResource Red0}" />
+								<Setter Property="Control.Foreground" Value="{StaticResource White0}" />
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter TargetName="_Border" Property="Background" Value="{StaticResource Gray2}" />
+								<Setter TargetName="_Border" Property="Control.Foreground" Value="{StaticResource Gray3}" />
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+
+	<Grid
+		HorizontalAlignment="Stretch"
+		Margin="0,0,0,0">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="10" />
+			<RowDefinition Height="83" />
+			<RowDefinition Height="45" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="50" />
+			<RowDefinition Height="15" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="15" />
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="15" />
+		</Grid.ColumnDefinitions>
+		<Grid.Background>
+			<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+				<GradientStop Color="Black" Offset="0" />
+				<GradientStop Color="Gainsboro" Offset="0.972" />
+			</LinearGradientBrush>
+		</Grid.Background>
+
+		<!--Top list for creating new viewers-->
+		<ListBox x:Name="sqlSelector"
+			BorderBrush="Black"
+			BorderThickness="1"
+
+			FontSize="14"
+			Grid.Row="1" Grid.Column="1"
+			Height="80"
+			Visibility="Visible"
+			HorizontalContentAlignment="Stretch"
+			MinWidth="455"
+			SelectedIndex="0"
+			VerticalAlignment="Top"
+			PreviewKeyDown="IsEnterKey"
+			MouseDoubleClick="sqlselector_Select"
+			GotFocus="SQLlist_Focused"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			ScrollViewer.VerticalScrollBarVisibility="Disabled"
+			Style="{StaticResource _styletest}"
+			IsTabStop="True"
+			TabIndex="0">
+			<ListBox.ItemContainerStyle>
+				<Style TargetType="ListBoxItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				</Style>
+			</ListBox.ItemContainerStyle>
+
+			<!--This makes the selected row visible when window looses focus - works on any grid-->
+
+			<ListBox.Resources>
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
+			</ListBox.Resources>
+
+			<ListBoxItem Content="Bank Accounts"
+			             IsTabStop="false"
+					 IsSelected="true"
+					 Width="auto"
+					 Style="{StaticResource _ListBoxItemStyle1}" />
+			<ListBoxItem Content="Customer Accounts"
+					 IsTabStop="false"
+					 Width="auto"
+					 Style="{StaticResource _ListBoxItemStyle1}" />
+			<ListBoxItem Content="Multi Bank Accounts"
+
+					 IsTabStop="false"
+					 Width="auto"
+					 Style="{StaticResource _ListBoxItemStyle1}" />
+		</ListBox>
+
+		<Grid  x:Name="Grid2"
+			Grid.Row="2"
+			Grid.Column="1" Margin="3.5,4,0,7">
+			<StackPanel
+				Orientation="Horizontal"
+				HorizontalAlignment="Right"
+				>
+				<Button x:Name="CloseApp"
+					   Background="{StaticResource HeaderBrushBlue}"
+					   Content="Close Program"
+					   Click="Closeapp_Click"
+					   FontSize="14"
+					   Foreground="White"
+					   Height="30"  
+					   HorizontalAlignment="Right"
+					   IsTabStop="True"
+					   Margin="2,2,5,2"
+					   Template="{StaticResource HorizontalGradientTemplateBlue}"
+					   TabIndex="1"
+					   Width="108"
+								  />
+				<Button x:Name="CancelBtn"
+				Background="{StaticResource HeaderBrushBlue}"
+				Content="Close"
+				Click="Cancel_Click"
+				FontSize="14"
+				Foreground="White"
+				Height="30"  
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				TabIndex="1"
+				Width="68"
+				  />
+			
+			<Button x:Name="BankEdit"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="Bankedit_Click"
+				Content="Bank A/C Editor"
+				FontSize="14"
+				Foreground="White"
+				Height="30" 
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="1"
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="128"
+				  />
+			
+			<Button x:Name="MultiViewer"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="MultiViewer_Click"
+				Content="Open MultiViewer"
+				FontSize="14"
+				Foreground="White"
+				Height="30"
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="2" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="120" />
+
+			<Button x:Name="SelectBtn"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="sqlselectorbtn_Select"
+				Content="Open Db Viewer"
+				FontSize="14"
+				Foreground="White"
+				Height="30"  
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="3" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="120"
+				/>
+				
+				</StackPanel>
+		</Grid>
+
+		<!--List of (Lower) currently open viewers-->
+		<ListBox x:Name="ViewersList"
+			BorderBrush="Black"
+			BorderThickness="1"
+			Focusable="True"
+			MinHeight="100"
+			GotFocus="Viewerslist_Focused"
+			Grid.Row="3"
+			Grid.Column="1"
+			Loaded="OnWindowLoaded"
+			HorizontalAlignment="stretch"
+			HorizontalContentAlignment="Stretch"
+			IsTabStop="True"
+			ItemContainerStyle="{DynamicResource _ListBoxItemStyle2}"
+			PreviewMouseDown="ViewersList_PreviewMouseDown"
+			MouseDoubleClick="ViewersList_Select"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			TabIndex="3"
+			PreviewKeyDown="IsEnterKey"
+			Style="{StaticResource _styletest}"
+			VerticalAlignment="Stretch"
+			VerticalContentAlignment="Stretch"
+			ScrollViewer.VerticalScrollBarVisibility="Disabled"
+			Visibility="Visible">
+			<!--MouseUp="ViewersList_Select"-->
+
+			<ListBoxItem  Content="Currently Open Viewers"
+				HorizontalContentAlignment="Stretch"
+				FontWeight="SemiBold"
+				IsTabStop="false"
+				IsEnabled ="false"
+	  			Style="{StaticResource _ListBoxItemStyle2}" />
+
+			<!--The lastline above allows me to set the listbox
+				items exactly as I want them - See Style in Resources above-->
+		</ListBox>
+
+		<Grid
+			  Grid.Row="4"
+			  Grid.Column="1"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Bottom"
+			Height="45"
+			Width="550">
+			<Button x:Name="SelectViewerBtn"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="SelectViewer_Click"
+				Content="Select"
+				FontSize="14"
+				Foreground="White"
+				Grid.Column="0"
+				Grid.Row="0"
+				Height="30"
+				HorizontalAlignment="Right"
+				IsEnabled="True"
+				IsTabStop="True"
+				Margin="0,0.5,-1,-0.5"
+				Style="{StaticResource dimbutton}"
+				TabIndex="4"
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="110" />
+
+			<Button x:Name="ViewerDelete"
+				  Grid.Row="0"
+				  Grid.Column="0"
+			  Height="30"
+			Content="Close Selected Viewer"
+			FontSize="14"
+			Foreground="White"
+			Background="{StaticResource HeaderBrushBlue}"
+			Template="{StaticResource HorizontalGradientTemplateBlue}"
+			Style="{StaticResource dimbutton}"
+			Click="DeleteViewer_Click"
+			IsTabStop="True"
+			IsEnabled="true"
+			TabIndex="5" Margin="286,0.5,116,-0.5" />
+
+			<CheckBox x:Name="OntopChkbox"
+                      Click="OntopChkbox_Click"
+					Content="Keep on Top"
+					Margin="0,0,0,0"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Center"
+					Width="100" />
+			<Button x:Name="ViewerDeleteAll"
+					Grid.Row="0"
+					Grid.Column="0"
+					Content="Close All Viewers"
+					Height="30"
+					FontSize="14"
+					Foreground="White"
+					Background="{StaticResource HeaderBrushBlue}"
+					Template="{StaticResource HorizontalGradientTemplateBlue}"
+					Style="{StaticResource dimbutton}"
+					Click="DeleteAllViewers_Click"
+					IsTabStop="True"
+					IsEnabled="true"
+					TabIndex="5" Margin="130,8,270,7" />
+		</Grid>
+	</Grid>
+</Window>
