@@ -162,7 +162,7 @@ namespace WPFPages . Views
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
-			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
+//			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
 											    //UnSubscribe from Bank Data Changed event declared in EventControl
 			EventControl . BankDataLoaded -= EventControl_DetDataLoaded;
 		}

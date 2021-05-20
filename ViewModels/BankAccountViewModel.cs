@@ -145,24 +145,24 @@ namespace WPFPages . ViewModels
 		/// </summary>
 		/// <param name="sender"></param>
 		//**************************************************************************************************************************************************************//
-		public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
-		{
-			if ( Grid . Name == "BankGrid" )
-				return;         // Nothing to do, it was us that sent the broadcast
+		//public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
+		//{
+		//	if ( Grid . Name == "BankGrid" )
+		//		return;         // Nothing to do, it was us that sent the broadcast
 
-			// Send it to the correct open viewer window
-			if ( Flags . SqlBankViewer != null )
-				Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
-			if ( Flags . SqlCustViewer != null )
-				Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
-			if ( Flags . SqlDetViewer != null )
-				Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
+		//	// Send it to the correct open viewer window
+		//	if ( Flags . SqlBankViewer != null )
+		//		Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
+		//	if ( Flags . SqlCustViewer != null )
+		//		Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
+		//	if ( Flags . SqlDetViewer != null )
+		//		Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
 
-			// See if we need to update EditDb window as well
-			//if ( Flags . CurrentEditDbViewer != null )
-			//	Flags . CurrentEditDbViewer . DbChangedHandler ( sender , Grid , args );
-			return;
-		}
+		//	// See if we need to update EditDb window as well
+		//	//if ( Flags . CurrentEditDbViewer != null )
+		//	//	Flags . CurrentEditDbViewer . DbChangedHandler ( sender , Grid , args );
+		//	return;
+		//}
 
 		#endregion EVENT CALLBACKS
 

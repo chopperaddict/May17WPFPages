@@ -1,18 +1,11 @@
 ﻿using System;
-using System . Collections . Generic;
 using System . ComponentModel;
 using System . Diagnostics;
-using System . Reflection;
-using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
-using System . Windows . Data;
 using System . Windows . Input;
-using System . Windows . Media;
 
 using WPFPages . ViewModels;
-
-using static WPFPages . SqlDbViewer;
 
 namespace WPFPages . Views
 {
@@ -24,6 +17,7 @@ namespace WPFPages . Views
 	public static class ApplicationState
 	{
 		private static SqlDbViewer viewer;
+
 		public static SqlDbViewer Viewer
 		{
 			get { return viewer; }
@@ -43,7 +37,6 @@ namespace WPFPages . Views
 		private static bool key1 = false;
 		private static bool StartUp = true;
 
-	
 		//*****************************************************//
 		//DELEGATE in use is : Notifyviewer
 
@@ -156,67 +149,7 @@ namespace WPFPages . Views
 			}
 		}
 
-		//********************************************************************************************//
-		public static void UpdateControlFlags ( SqlDbViewer caller, string callertype, string PrettyString )
-		{
-			int x = 0;
-			// We are starting up a new viewer, so need to create the flags structure
-			// Get the first empty set of structures  and fill them out ofr this NEW Viewer Window
-			for ( x = 0 ; x < 3 ; x++ )
-			{
-				// inserted here 29/4/21 to clear Viewerslist when a viewer window closes
-				if ( caller == null && callertype == null )
-				{
-					ListBoxItem lbi = new ListBoxItem ( );
-
-					for ( int i = 1 ; i < MainWindow . gv . DbSelectorWindow . ViewersList . Items . Count ; i++ )
-					{
-						if ( i >= MainWindow . gv . DbSelectorWindow . ViewersList . Items . Count )
-							return;
-						if ( MainWindow . gv . PrettyDetails == PrettyString )
-						{
-							lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
-							if ( lbi != null )
-								lbi . Content = "";
-							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( i );
-							Flags . DbSelectorOpen . ViewersList . Refresh ( );
-							break;
-						}
-					}
-					return;
-				}
-				if ( MainWindow . gv . ListBoxId [ x ] == Guid . Empty )
-				{
-					MainWindow . gv . CurrentDb [ x ] = callertype;
-					MainWindow . gv . window [ x ] = Flags . CurrentSqlViewer;
-					MainWindow . gv . PrettyDetails = PrettyString;
-
-					if ( callertype == "BANKACCOUNT" )
-					{
-						MainWindow . gv . Datagrid [ x ] = Flags . SqlBankGrid;
-						MainWindow . gv . Bankviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
-						MainWindow . gv . SqlBankViewer = caller;
-					}
-					else if ( callertype == "CUSTOMER" )
-					{
-						MainWindow . gv . Datagrid [ x ] = Flags . SqlCustGrid;
-						MainWindow . gv . Custviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
-						MainWindow . gv . SqlCustViewer = caller;
-					}
-					else if ( callertype == "DETAILS" )
-					{
-						MainWindow . gv . Datagrid [ x ] = Flags . SqlDetGrid;
-						MainWindow . gv . Detviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
-						MainWindow . gv . SqlDetViewer = caller;
-					}
-
-					MainWindow . gv . ViewerCount++;
-					MainWindow . gv . SqlViewerWindow = caller;
-					break;
-				}
-			}
-		}
-
+	
 		private async void HandleSelection ( ListBox listbox, string Command )
 		{
 			// Called when Opening/ Closing/deleting a Db Viewer window
@@ -251,18 +184,18 @@ namespace WPFPages . Views
 					// LOADS THE WINDOW HERE - it RETURNS IMMEDIATELY even though the data is not yet fully loaded
 					Flags . CurrentSqlViewer = new SqlDbViewer ( "DETAILS", Detcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					Flags . CurrentSqlViewer . Show ( );
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 					//Window is visible & Data is loaded by here .....
-					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == null || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-					{
+//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == null)// || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
+//					{
 						Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 						MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 						// This is fine, new windows do NOT have their Guid when they arrive here
 						this . Tag = Flags . CurrentSqlViewer . Tag;
-					}
+//					}
 					callertype = 2;
 					CallingType = "DETAILS";
+					Flags . CurrentSqlViewer . Show ( );
 				}
 				else if ( selectedItem . ToUpper ( ) . Contains ( "BANK ACCOUNTS" ) )
 				{
@@ -274,18 +207,18 @@ namespace WPFPages . Views
 					}
 					Flags . CurrentSqlViewer = new SqlDbViewer ( "BANKACCOUNT", Bankcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					Flags . CurrentSqlViewer . Show ( );
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
-					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-					{
+//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
+//					{
 						Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 						MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 
 						// This is fine, new windows do NOT have their Guid when they arrive here
 						this . Tag = Flags . CurrentSqlViewer . Tag;
-					}
+					//					}
+					Flags . CurrentSqlViewer . Show ( );
 					callertype = 0;
 					CallingType = "BANKACCOUNT";
 				}
@@ -300,20 +233,20 @@ namespace WPFPages . Views
 
 					Flags . CurrentSqlViewer = new SqlDbViewer ( "CUSTOMER", Custcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					Flags . CurrentSqlViewer . Show ( );
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
-					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-					{
+//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
+//					{
 						Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 						MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 
 						// This is fine, new windows do NOT have their Guid when they arrive here
 						this . Tag = Flags . CurrentSqlViewer . Tag;
-					}
+//					}
 					callertype = 1;
 					CallingType = "CUSTOMER";
+					Flags . CurrentSqlViewer . Show ( );
 				}
 				//When loading a new viewer, the  MainWindow.gv structure is completed correctly !!!!
 				//				MessageBox.Show ("DbSelector has completed the load");
@@ -1279,7 +1212,6 @@ namespace WPFPages . Views
 		//			}
 		//		}
 
-
 		private void OntopChkbox_Click ( object sender, RoutedEventArgs e )
 		{
 			if ( OntopChkbox . IsChecked == true )
@@ -1287,6 +1219,7 @@ namespace WPFPages . Views
 			else
 				this . Topmost = false;
 		}
+
 		private void Bankedit_Click ( object sender, RoutedEventArgs e )
 		{
 			BankDbView cdbv = new BankDbView ( );
@@ -1303,7 +1236,7 @@ namespace WPFPages . Views
 			if ( StartUp ) return;
 			// Open selected Db viewer
 			var p = ViewerTypes . SelectedItem;// as PropertyInfo ;
-			string s = ViewerTypes.Text;
+			string s = ViewerTypes . Text;
 			//var q = 	 GetValue ( p);
 			s = p . ToString ( );
 			//Color selectedColor = ( Color ) ( cmbColors . SelectedItem as PropertyInfo ) . GetValue ( null, null );
@@ -1324,5 +1257,74 @@ namespace WPFPages . Views
 				cdbv . Show ( );
 			}
 		}
+
+		//********************************************************************************************//
+		public static void UpdateControlFlags ( SqlDbViewer caller, string callertype, string PrettyString )
+		{
+			int x = 0;
+			Console . WriteLine ($"In UpdateControlFlags setting up gv[] structure variables...");
+			// We are starting up a new viewer, so need to create the flags structure
+			// Get the first empty set of structures  and fill them out ofr this NEW Viewer Window
+			for ( x = 0 ; x < 3 ; x++ )
+			{
+				// inserted here 29/4/21 to clear Viewerslist when a viewer window closes
+				if ( caller == null && callertype == null )
+				{
+					ListBoxItem lbi = new ListBoxItem ( );
+
+					for ( int i = 1 ; i < MainWindow . gv . DbSelectorWindow . ViewersList . Items . Count ; i++ )
+					{
+						if ( i >= MainWindow . gv . DbSelectorWindow . ViewersList . Items . Count )
+							return;
+						if ( MainWindow . gv . PrettyDetails == PrettyString )
+						{
+							lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
+							if ( lbi != null )
+								lbi . Content = "";
+							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( i );
+							Flags . DbSelectorOpen . ViewersList . Refresh ( );
+							break;
+						}
+					}
+					return;
+				}
+				if ( MainWindow . gv . ListBoxId [ x ] == Guid . Empty )
+				{
+					MainWindow . gv . CurrentDb [ x ] = callertype;
+					MainWindow . gv . window [ x ] = Flags . CurrentSqlViewer;
+					MainWindow . gv . PrettyDetails = PrettyString;
+
+					if ( callertype == "BANKACCOUNT" )
+					{
+						MainWindow . gv . Datagrid [ x ] = Flags . SqlBankGrid;
+						MainWindow . gv . Bankviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
+						MainWindow . gv . SqlBankViewer = caller;
+						Flags . SqlBankViewer = caller;
+						Flags . SqlBankViewer . Tag = ( Guid ) caller . Tag;
+					}
+					else if ( callertype == "CUSTOMER" )
+					{
+						MainWindow . gv . Datagrid [ x ] = Flags . SqlCustGrid;
+						MainWindow . gv . Custviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
+						MainWindow . gv . SqlCustViewer = caller;
+						Flags . SqlCustViewer = caller;
+						Flags . SqlCustViewer . Tag = ( Guid ) caller . Tag;
+					}
+					else if ( callertype == "DETAILS" )
+					{
+						MainWindow . gv . Datagrid [ x ] = Flags . SqlDetGrid;
+						MainWindow . gv . Detviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
+						MainWindow . gv . SqlDetViewer = caller;
+						Flags . SqlDetViewer = caller;
+						Flags . SqlDetViewer . Tag = ( Guid ) caller . Tag;
+					}
+
+					MainWindow . gv . ViewerCount++;
+					MainWindow . gv . SqlViewerWindow = caller;
+					break;
+				}
+			}
+		}
+
 	}
 }

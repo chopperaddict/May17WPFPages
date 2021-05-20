@@ -116,12 +116,14 @@ namespace WPFPages . Views
 				if ( currsel == -1 ) currsel = 0;
 				this  . DataGrid1 . ItemsSource = null;
 				this  . DataGrid1 . Items . Clear ( );
+				Mouse . OverrideCursor = Cursors . Wait;
 				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, 2 );
 				this  . DataGrid1 . ItemsSource = EditDbBankcollection;
 				this  . DataGrid1 . SelectedIndex = e . RowCount;
 				this  . DataGrid1 . Refresh ( );
 				Utils . ScrollRecordInGrid ( DataGrid1, e . RowCount );
 				Console . WriteLine ( $"EventControl_BankDataLoaded has Updated the Grid  content to the latest Db collection...." );
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
@@ -131,13 +133,14 @@ namespace WPFPages . Views
 				if ( currsel == -1 ) currsel = 0;
 				this  . DataGrid2 . ItemsSource = null;
 				this  . DataGrid2 . Items . Clear ( );
+				Mouse . OverrideCursor = Cursors . Wait;
 				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection );
 				this  . DataGrid2 . ItemsSource = EditDbCustcollection;
 				this  . DataGrid2 . SelectedIndex = e . RowCount;
 				this  . DataGrid2 . Refresh ( );
 				Utils . ScrollRecordInGrid ( DataGrid2, e . RowCount );
-
 				Console . WriteLine ( $"EventControl_BankDataLoaded has Updated the Customer Grid content to the latest Db collection...." );
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
@@ -147,12 +150,14 @@ namespace WPFPages . Views
 				if ( currsel == -1 ) currsel = 0;
 				this  . DetailsGrid . ItemsSource = null;
 				this  . DetailsGrid . Items . Clear ( );
+				Mouse . OverrideCursor = Cursors . Wait;
 				EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection );
 				this  . DetailsGrid . ItemsSource = EditDbDetcollection;
 				this  . DetailsGrid . SelectedIndex = e . RowCount;
 				this  . DetailsGrid . Refresh ( );
 				Utils . ScrollRecordInGrid ( DetailsGrid, e . RowCount );
 				Console . WriteLine ( $"EventControl_BankDataLoaded has Updated the Details Grid content to the latest Db collection...." );
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 		}
 
@@ -244,7 +249,9 @@ namespace WPFPages . Views
 		private async Task<DetCollection> LoadDetailsAsync ( )
 		{
 			if ( EditDbDetcollection == null || EditDbDetcollection . Count == 0 )
-				EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection, 2 );
+				Mouse . OverrideCursor = Cursors . Wait;
+			EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection, 2 );
+			Mouse . OverrideCursor = Cursors . Arrow;
 			//this  . DetailsGrid . ItemsSource = EditDbDetcollection;
 			return EditDbDetcollection;
 		}
@@ -554,8 +561,9 @@ namespace WPFPages . Views
 		}
 
 		#endregion Display utilities
-
 		#region Window Handling Methods
+
+		#region Window Open/Close code
 		private async void WindowLoaded ( object sender, RoutedEventArgs e )
 		{
 			//===============================================
@@ -768,7 +776,8 @@ namespace WPFPages . Views
 			ViewerChangeType = 0;        // Change made in Viewer
 
 			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
-			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
+								//			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
+			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
 
 			// Main update notification handler
 			EventControl . ViewerDataUpdated += EventControl_ViewerDataUpdated;
@@ -777,80 +786,11 @@ namespace WPFPages . Views
 
 			// SqlViewer has changed index
 			EventControl . ViewerIndexChanged += EventControl_ViewerIndexChanged;
-
+			EventControl.MultiViewerIndexChanged += EventControl_ViewerIndexChanged;
 			// set up our windows dragging
 			this . MouseDown += delegate { DoDragMove ( ); };
 			IsDirty = false;
 			Startup = false;
-		}
-
-		private void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
-		{
-			if ( e . Row == -1 )
-			{
-				return;
-			}
-			Console . WriteLine ( $" 6-1 *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Entering" );
-			if ( Flags . EditDbIndexIsChanging )
-				return;
-			// Handle  index change in another window
-			if ( e.Sender == "BANKACCOUNT" )
-			{
-				if ( DataGrid1 . Items . Count == 0 ) return;
-				Console . WriteLine ( $" 6-2-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Scrolling Bankaccount" );
-				if ( this . DataGrid1== null ) return;
-				if ( this . DataGrid1 . SelectedIndex != e . Row )
-					this . DataGrid1 . SelectedIndex = e . Row;
-				// force record to scroll into view correctly
-				Utils . ScrollRecordInGrid ( DataGrid1, e . Row );
-			}
-			else if ( e . Sender == "CUSTOMER" )
-			{
-				if ( DataGrid2 . Items . Count == 0 ) return;
-				Console . WriteLine ( $" 6-2-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Scrolling Customer" );
-				if ( this . DataGrid2 == null ) return;
-				if ( DataGrid2 . SelectedIndex != e . Row )
-				{
-					this . DataGrid2 . SelectedIndex = e . Row;
-					this . DataGrid2 . SelectedItem= e . Row;
-				}
-				// force record to scroll into view correctly
-				Utils . ScrollRecordInGrid ( DataGrid2, e . Row );
-			}
-			else if ( e . Sender == "DETAILS" )
-			{
-				if ( DetailsGrid . Items . Count == 0 ) return;
-				Console . WriteLine ( $" 6-2-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Scrolling Details" );
-				if ( this . DetailsGrid == null ) return;
-				if ( this . DetailsGrid . SelectedIndex != e . Row )
-					this . DetailsGrid . SelectedIndex = e . Row;
-				// force record to scroll into view correctly
-				Utils . ScrollRecordInGrid ( DetailsGrid, e . Row );
-			}
-			Console . WriteLine ( $" 6-3-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Exiting" );
-		}
-
-
-		public void UpdateOnExternalChange ( )
-		{
-			// received notification of data change by a Viewer
-			if ( CurrentDb == "BANKACCOUNT" )
-			{
-				this  . DataGrid1 . ItemsSource = null;
-				this  . DataGrid1 . ItemsSource = EditDbBankcollection;
-			}
-			else if ( CurrentDb == "CUSTOMER" )
-			{
-				this  . DataGrid2 . ItemsSource = null;
-				this  . DataGrid2 . ItemsSource = EditDbCustcollection; ;
-			}
-			else if ( CurrentDb == "DETAILS" )
-			{
-				this  . DetailsGrid . ItemsSource = null;
-				this  . DetailsGrid . ItemsSource = EditDbDetcollection;
-				this  . DetailsGrid . Refresh ( );
-			}
-
 		}
 		private void Window_Closing ( object sender, CancelEventArgs e )
 		{
@@ -869,7 +809,7 @@ namespace WPFPages . Views
 			else if ( CurrentDb == "DETAILS" )
 			{
 				Flags . DetEditDb = null;
-				Flags . CurrentEditDbViewerDetailsGrid= null;
+				Flags . CurrentEditDbViewerDetailsGrid = null;
 			}
 			Flags . ActiveEditGrid = null;
 			Flags . CurrentEditDbViewer = null;
@@ -881,13 +821,15 @@ namespace WPFPages . Views
 			if ( NotifyOfDataChange != null )
 				NotifyOfDataChange -= DbChangedHandler;
 
-			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
+//			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
 
 			if ( NotifyOfDataChange != null )
 				NotifyOfDataChange -= DbChangedHandler;
 
-			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
+//			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
 			EventControl . EditIndexChanged -= EventControl_ViewerIndexChanged;
+			EventControl . ViewerIndexChanged -= EventControl_ViewerIndexChanged;
+			EventControl . MultiViewerIndexChanged -= EventControl_ViewerIndexChanged;
 
 			// Changes made by SqlDbviewer window
 			EventControl . ViewerDataUpdated -= EventControl_ViewerDataUpdated;
@@ -925,15 +867,84 @@ namespace WPFPages . Views
 		{
 			Flags . CurrentEditDbViewer = this;
 		}
+		#endregion Winow Open/Close code
+		private void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			if ( e . Row == -1 )
+			{
+				return;
+			}
+//			Console . WriteLine ( $" 6-1 *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Entering" );
+			if ( Flags . EditDbIndexIsChanging )
+				return;
+			// Handle  index change in another window
+			if ( e.Sender == "BANKACCOUNT" )
+			{
+				if ( DataGrid1 . Items . Count == 0 ) return;
+//				Console . WriteLine ( $" 6-2-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Scrolling Bankaccount" );
+				if ( this . DataGrid1== null ) return;
+				if ( this . DataGrid1 . SelectedIndex != e . Row )
+					this . DataGrid1 . SelectedIndex = e . Row;
+				// force record to scroll into view correctly
+				Utils . ScrollRecordInGrid ( DataGrid1, e . Row );
+			}
+			else if ( e . Sender == "CUSTOMER" )
+			{
+				if ( DataGrid2 . Items . Count == 0 ) return;
+//				Console . WriteLine ( $" 6-2-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Scrolling Customer" );
+				if ( this . DataGrid2 == null ) return;
+				if ( DataGrid2 . SelectedIndex != e . Row )
+				{
+					this . DataGrid2 . SelectedIndex = e . Row;
+					this . DataGrid2 . SelectedItem= e . Row;
+				}
+				// force record to scroll into view correctly
+				Utils . ScrollRecordInGrid ( DataGrid2, e . Row );
+			}
+			else if ( e . Sender == "DETAILS" )
+			{
+				if ( DetailsGrid . Items . Count == 0 ) return;
+//				Console . WriteLine ( $" 6-2-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Scrolling Details" );
+				if ( this . DetailsGrid == null ) return;
+				if ( this . DetailsGrid . SelectedIndex != e . Row )
+					this . DetailsGrid . SelectedIndex = e . Row;
+				// force record to scroll into view correctly
+				Utils . ScrollRecordInGrid ( DetailsGrid, e . Row );
+			}
+//			Console . WriteLine ( $" 6-3-END *** TRACE *** EDITDB : EventControl_ViewerIndexChanged Event Handler - Exiting" );
+		}
 
+
+		public void UpdateOnExternalChange ( )
+		{
+			// received notification of data change by a Viewer
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				this  . DataGrid1 . ItemsSource = null;
+				this  . DataGrid1 . ItemsSource = EditDbBankcollection;
+			}
+			else if ( CurrentDb == "CUSTOMER" )
+			{
+				this  . DataGrid2 . ItemsSource = null;
+				this  . DataGrid2 . ItemsSource = EditDbCustcollection; ;
+			}
+			else if ( CurrentDb == "DETAILS" )
+			{
+				this  . DetailsGrid . ItemsSource = null;
+				this  . DetailsGrid . ItemsSource = EditDbDetcollection;
+				this  . DetailsGrid . Refresh ( );
+			}
+
+		}
+	
 		private void Window_PreviewKeyDown ( object sender, KeyEventArgs e )
 		{
 			Console . WriteLine ( $"Key : {e . Key}" );
 			DataGrid dg = null;
 			if ( Utils . DataGridHasFocus ( this ) == false )
 				return;
-			if ( e . Key == Key . Escape )
-				Close ( );
+			//if ( e . Key == Key . Escape )
+			//	Close ( );
 			else if ( e . Key == Key . LeftCtrl )
 				key1 = true;
 			else if ( e . Key == Key . RightAlt )
@@ -1121,7 +1132,7 @@ namespace WPFPages . Views
 		//		if ( CurrentDb == "BANKACCOUNT" )
 		//		{
 		//			SQLHandlers sqlh = new SQLHandlers ( );
-		//			await sqlh . UpdateDbRow ( "BANKACCOUNT", e . Row );
+		//			sqlh . UpdateDbRow ( "BANKACCOUNT", e . Row );
 		//			SqlUpdating = true;
 		//			//return;
 		//		}
@@ -1133,7 +1144,7 @@ namespace WPFPages . Views
 		//			BankAccountViewModel . SqlUpdating = true;
 		//			SQLHandlers sqlh = new SQLHandlers ( );
 		//			// This call updates the SQL Db and the main viewer is also updated correctly
-		//			await sqlh . UpdateDbRow ( "BANKACCOUNT", e . Row );
+		//			sqlh . UpdateDbRow ( "BANKACCOUNT", e . Row );
 		//			//					if ( Flags . CurrentSqlViewer . BankGrid . SelectedItem != null )
 		//			//						Flags . CurrentSqlViewer . BankGrid . ScrollIntoView ( curritem );
 		//			//return;
@@ -1155,7 +1166,7 @@ namespace WPFPages . Views
 		//		if ( CurrentDb == "CUSTOMER" )
 		//		{
 		//			SQLHandlers sqlh = new SQLHandlers ( );
-		//			await sqlh . UpdateDbRow ( "CUSTOMER", e . Row );
+		//			sqlh . UpdateDbRow ( "CUSTOMER", e . Row );
 		//			SqlUpdating = true;
 		//			return;
 		//		}
@@ -1166,7 +1177,7 @@ namespace WPFPages . Views
 		//		{
 		//			BankAccountViewModel . SqlUpdating = true;
 		//			SQLHandlers sqlh = new SQLHandlers ( );
-		//			await sqlh . UpdateDbRow ( "CUSTOMER", e . Row );
+		//			sqlh . UpdateDbRow ( "CUSTOMER", e . Row );
 		//			return;
 		//		}
 		//	}
@@ -1186,7 +1197,7 @@ namespace WPFPages . Views
 		//		if ( CurrentDb == "DETAILS" )
 		//		{
 		//			SQLHandlers sqlh = new SQLHandlers ( );
-		//			await sqlh . UpdateDbRow ( "DETAILS", e . Row );
+		//			sqlh . UpdateDbRow ( "DETAILS", e . Row );
 		//			SqlUpdating = true;
 		//		}
 		//	}
@@ -1196,7 +1207,7 @@ namespace WPFPages . Views
 		//		{
 		//			DetailsViewModel . SqlUpdating = true;
 		//			SQLHandlers sqlh = new SQLHandlers ( );
-		//			await sqlh . UpdateDbRow ( "DETAILS", e . Row );
+		//			sqlh . UpdateDbRow ( "DETAILS", e . Row );
 		//			//SqlUpdating = true;
 		//			//if ( ViewerChangeType == 0 || EditChangeType == 1 )
 		//			//{
@@ -1235,7 +1246,7 @@ namespace WPFPages . Views
 				// Row Deleted ???
 				BankAccountViewModel . SqlUpdating = true;
 				Console . WriteLine ( $"DataGrid1_RowEditEnding() Starting Db Update " );
-				await sqlh . UpdateDbRowAsync ( CurrentDb, this  . DataGrid1 . SelectedItem, this  . DataGrid1 . SelectedIndex );
+				sqlh . UpdateDbRowAsync ( CurrentDb, this  . DataGrid1 . SelectedItem, this  . DataGrid1 . SelectedIndex );
 				Console . WriteLine ( $"DataGrid1_RowEditEnding() Db Update finished" );
 				this  . DataGrid1 . SelectedIndex = EditdbchangeInProgress;
 				Console . WriteLine ( $"DataGrid1_RowEditEnding() Db Update finished" );
@@ -1244,16 +1255,16 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				Console . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Entering to trigger SendDataChanged" );
+//				Console . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Entering to trigger SendDataChanged" );
 				// Row has been changed
 				BankAccountViewModel . SqlUpdating = true;
-				Console . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid1_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
-				await sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid1 . SelectedItem );
-				Console . WriteLine ( $" 2-3 *** TRACE *** EDITDB : DataGrid1_RowEditEnding({this . DataGrid1 . SelectedIndex}) Sending \"SendDataChanged\" Event Trigger" );
+//				Console . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid1_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
+				sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid1 . SelectedItem );
+//				Console . WriteLine ( $" 2-3 *** TRACE *** EDITDB : DataGrid1_RowEditEnding({this . DataGrid1 . SelectedIndex}) Sending \"SendDataChanged\" Event Trigger" );
 				SendDataChanged ( CurrentDb );
-				Console . WriteLine ( $" 2-4 *** TRACE *** EDITDB : DataGrid1_RowEditEnding({this . DataGrid1 . SelectedIndex})  \"SendDataChanged\" Event Trigger sent" );
+//				Console . WriteLine ( $" 2-4 *** TRACE *** EDITDB : DataGrid1_RowEditEnding({this . DataGrid1 . SelectedIndex})  \"SendDataChanged\" Event Trigger sent" );
 			}
-			Console . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
+//			Console . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
 			Flags . EditDbDataChanged = false;	
 		}
 
@@ -1271,7 +1282,7 @@ namespace WPFPages . Views
 				// Row Deleted ???
 				CustomerViewModel . SqlUpdating = true;
 				Console . WriteLine ( $"DataGrid2_RowEditEnding({this  . DataGrid2 . SelectedIndex}) Starting Db Update " );
-				await sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid2 . SelectedItem );
+				sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid2 . SelectedItem );
 				Console . WriteLine ( $"DataGrid2_RowEditEnding({this  . DataGrid2 . SelectedIndex}) Db Update finished" );
 				// Crucial flag for updating
 				Flags . DataLoadIngInProgress = true;
@@ -1280,15 +1291,15 @@ namespace WPFPages . Views
 			else
 			{
 				// Row has been changed
-				Console . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Entering to trigger SendDataChanged" );
+//				Console . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Entering to trigger SendDataChanged" );
 				CustomerViewModel . SqlUpdating = true;
-				Console . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid2_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
-				await sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid2 . SelectedItem );
-				Console . WriteLine ( $" 2-3 *** TRACE *** EDITDB : DataGrid2_RowEditEnding({this . DataGrid1 . SelectedIndex}) Sending \"SendDataChanged\" Event Trigger" );
+//				Console . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid2_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
+				sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid2 . SelectedItem );
+//				Console . WriteLine ( $" 2-3 *** TRACE *** EDITDB : DataGrid2_RowEditEnding({this . DataGrid1 . SelectedIndex}) Sending \"SendDataChanged\" Event Trigger" );
 				SendDataChanged ( CurrentDb );
-				Console . WriteLine ( $" 2-4 *** TRACE *** EDITDB : DataGrid2_RowEditEnding({this . DataGrid1 . SelectedIndex})  \"SendDataChanged\" Event Trigger sent" );
+//				Console . WriteLine ( $" 2-4 *** TRACE *** EDITDB : DataGrid2_RowEditEnding({this . DataGrid1 . SelectedIndex})  \"SendDataChanged\" Event Trigger sent" );
 			}
-			Console . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
+//			Console . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
 			Flags . EditDbDataChanged = false;
 		}
 
@@ -1303,27 +1314,27 @@ namespace WPFPages . Views
 			{
 				// Row Deleted ???
 				DetailsViewModel . SqlUpdating = true;
-				Console . WriteLine ( $"DetailsGrid_RowEditEnding({this  . DetailsGrid . SelectedIndex}) Starting Db Update " );
-				await sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid1 . SelectedItem );
-				Console . WriteLine ( $"DetailsGrid_RowEditEnding({this  . DetailsGrid . SelectedIndex}) Db Update finished" );
+//				Console . WriteLine ( $"DetailsGrid_RowEditEnding({this  . DetailsGrid . SelectedIndex}) Starting Db Update " );
+				sqlh . UpdateDbRow ( CurrentDb, this  . DataGrid1 . SelectedItem );
+//				Console . WriteLine ( $"DetailsGrid_RowEditEnding({this  . DetailsGrid . SelectedIndex}) Db Update finished" );
 				//Flags . EditDbDataChanged = true;
 				Flags . DataLoadIngInProgress = true;
 				SendDataChanged ( CurrentDb );
-				Console . WriteLine ( $"DetailsGrid_RowEditEnding() Broadcasting Changes" );
+//				Console . WriteLine ( $"DetailsGrid_RowEditEnding() Broadcasting Changes" );
 			}
 			else
 			{
 				// Row data has been changed, update the Db's first, then notify other viewers
-				Console . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DetailsGrid_RowEditEnding - Entering to trigger SendDataChanged" );
+//				Console . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DetailsGrid_RowEditEnding - Entering to trigger SendDataChanged" );
 				DetailsViewModel . SqlUpdating = true;
-				Console . WriteLine ( $" 2-2 *** TRACE *** EDITDB : Details_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
-				await sqlh . UpdateDbRow ( CurrentDb, this  . DetailsGrid . SelectedItem );
-				Console . WriteLine ( $" 2-3 *** TRACE *** EDITDB : Details RowEditEnding({this . DataGrid1 . SelectedIndex}) Sending \"SendDataChanged\" Event Trigger" );
-				Console . WriteLine ( $"DetailsGrid_RowEditEnding({this  . DetailsGrid . SelectedIndex}) Db Update finished" );
+//				Console . WriteLine ( $" 2-2 *** TRACE *** EDITDB : Details_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
+				sqlh . UpdateDbRow ( CurrentDb, this  . DetailsGrid . SelectedItem );
+//				Console . WriteLine ( $" 2-3 *** TRACE *** EDITDB : Details RowEditEnding({this . DataGrid1 . SelectedIndex}) Sending \"SendDataChanged\" Event Trigger" );
+//				Console . WriteLine ( $"DetailsGrid_RowEditEnding({this  . DetailsGrid . SelectedIndex}) Db Update finished" );
 				SendDataChanged ( CurrentDb );
-				Console . WriteLine ( $" 2-4 *** TRACE *** EDITDB : Details_RowEditEnding({this . DataGrid1 . SelectedIndex})  \"SendDataChanged\" Event Trigger sent" );
+//				Console . WriteLine ( $" 2-4 *** TRACE *** EDITDB : Details_RowEditEnding({this . DataGrid1 . SelectedIndex})  \"SendDataChanged\" Event Trigger sent" );
 			}
-			Console . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DetailsGrid_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
+//			Console . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DetailsGrid_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
 			Flags . EditDbDataChanged = false;
 		}
 		public void SendDataChanged ( string dbName )
@@ -1379,7 +1390,7 @@ namespace WPFPages . Views
 		/// </summary>
 		public void DataGrid1_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
-			Console . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
+//			Console . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
 			if ( SelectDone )
 			{
 				SelectDone = false;
@@ -1409,7 +1420,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
-				Console . WriteLine ( $" 1-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sending TriggerEditDbIndexChanged" );
+//				Console . WriteLine ( $" 1-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 						new IndexChangedArgs
 						{
@@ -1418,8 +1429,8 @@ namespace WPFPages . Views
 							Row = this  . DataGrid1 . SelectedIndex
 						} );
 			}
-			else
-				Console . WriteLine ( $" 1-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - TriggerEditDbIndexChanged IGNORED" );
+//			else
+//				Console . WriteLine ( $" 1-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - TriggerEditDbIndexChanged IGNORED" );
 
 
 			ViewerButton . IsEnabled = false;
@@ -1427,7 +1438,7 @@ namespace WPFPages . Views
 			Flags . EditDbIndexIsChanging = false;
 			SelectDone = false;
 			e . Handled = true;
-			Console . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
+//			Console . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
 		}
 
 		//Customer Db
@@ -1438,7 +1449,7 @@ namespace WPFPages . Views
 		/// </summary>
 		public void DataGrid2_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
-			Console . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
+//			Console . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
 			if ( SelectDone )
 			{
 				SelectDone = false;
@@ -1480,7 +1491,7 @@ namespace WPFPages . Views
 			IsDirty = false;
 			Flags . EditDbIndexIsChanging = false;
 			SelectDone = false;
-			Console . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
+//			Console . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
 
 		}
 
@@ -1492,7 +1503,7 @@ namespace WPFPages . Views
 		/// </summary>
 		public void DetailsGrid_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
-			Console . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
+//			Console . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
 			if ( SelectDone )
 			{
 				SelectDone = false;
@@ -1534,7 +1545,7 @@ namespace WPFPages . Views
 			IsDirty = false;
 			Flags . EditDbIndexIsChanging = false;
 			SelectDone = false;
-			Console . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
+//			Console . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
 		}
 
 		#endregion RowSelection handlers
@@ -1648,17 +1659,20 @@ namespace WPFPages . Views
 
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
-				await sqlh . UpdateDbRow ( CurrentDb, Grid . SelectedItem );
+				Mouse . OverrideCursor = Cursors . Wait;
+				sqlh . UpdateDbRow ( CurrentDb, Grid . SelectedItem );
 				BankCollection . LoadBank ( EditDbBankcollection , 2, false );
 				Grid . ItemsSource = null;
 				Grid . ItemsSource = EditDbBankcollection;
 				Grid . SelectedIndex = currsel;
 				Grid . Refresh ( );
 				Utils . ScrollRecordInGrid ( Grid, currsel );
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
-				await sqlh . UpdateDbRow ( CurrentDb, Grid . SelectedItem );
+				Mouse . OverrideCursor = Cursors . Wait;
+				sqlh . UpdateDbRow ( CurrentDb, Grid . SelectedItem );
 				CustCollection . LoadCust ( EditDbCustcollection );
 				Grid . ItemsSource = null;
 				Grid . ItemsSource = EditDbCustcollection;
@@ -1666,10 +1680,12 @@ namespace WPFPages . Views
 				Grid . SelectedIndex = currsel;
 				Grid . Refresh ( );
 				Utils . ScrollRecordInGrid ( Grid, currsel );
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
-				await sqlh . UpdateDbRow ( CurrentDb, Grid . SelectedItem );
+				Mouse . OverrideCursor = Cursors . Wait;
+				sqlh . UpdateDbRow ( CurrentDb, Grid . SelectedItem );
 				//				DetCollection dc = new DetCollection();
 				//				Detcollection = await dc . LoadDetailsTaskInSortOrderAsync ( true , Grid . SelectedIndex );
 				DetCollection . LoadDet ( EditDbDetcollection, 2 );
@@ -1680,7 +1696,7 @@ namespace WPFPages . Views
 				Utils . ScrollRecordInGrid ( Grid, currsel );
 				// Crucial flag for updating
 				Flags . DataLoadIngInProgress = true;
-				//				SendDataChanged ( CurrentDb );
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			// now we need to tell anny other viewers about the changes
 			Flags . EditDbDataChanged = false;
@@ -1808,7 +1824,8 @@ namespace WPFPages . Views
 			{
 				int currsel = this . DataGrid1 . SelectedIndex;
 				dGrid = DataGrid1;
-				await sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
+				Mouse . OverrideCursor = Cursors . Wait;
+				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
 				IsDirty = false;
 				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, 2 );
 				dGrid . ItemsSource = null;
@@ -1820,13 +1837,15 @@ namespace WPFPages . Views
 				dGrid . Refresh ( );
 				Utils . ScrollRecordInGrid ( dGrid, currsel );
 				dGrid . SelectedIndex = currsel;
+				Mouse . OverrideCursor = Cursors . Arrow;
 
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
 				int currsel = this . DataGrid2 . SelectedIndex;
 				dGrid = DataGrid2;
-				await sqlh . UpdateDbRow ( CurrentDb, this . DataGrid2 . SelectedItem );
+				Mouse . OverrideCursor = Cursors . Wait;
+				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid2 . SelectedItem );
 				IsDirty = false;
 				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection );
 				dGrid . ItemsSource = null;
@@ -1838,12 +1857,14 @@ namespace WPFPages . Views
 				dGrid . Refresh ( );
 				Utils . ScrollRecordInGrid ( dGrid, currsel );
 				dGrid . SelectedIndex = currsel;
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
 				int currsel = this . DetailsGrid . SelectedIndex;
 				dGrid = DetailsGrid;
-				await sqlh . UpdateDbRow ( CurrentDb, this . DetailsGrid . SelectedItem );
+				Mouse . OverrideCursor = Cursors . Wait;
+				sqlh . UpdateDbRow ( CurrentDb, this . DetailsGrid . SelectedItem );
 				IsDirty = false;
 				EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection, 2 );
 				dGrid . ItemsSource = null;
@@ -1855,6 +1876,7 @@ namespace WPFPages . Views
 				dGrid . Refresh ( );
 				Utils . ScrollRecordInGrid ( dGrid, currsel );
 				dGrid . SelectedIndex = currsel;
+				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			Flags . EditDbDataChanged = false;
 			EditStart = false;

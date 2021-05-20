@@ -46,6 +46,7 @@ namespace WPFPages . Views
 
 		public static event EventHandler<IndexChangedArgs> ViewerIndexChanged;
 		public static event EventHandler<IndexChangedArgs> EditIndexChanged;
+		public static event EventHandler<IndexChangedArgs> MultiViewerIndexChanged;
 
 		// Used to broadcast to everyone
 		public static event EventHandler<LoadedEventArgs> ViewerDataUpdated;
@@ -55,7 +56,7 @@ namespace WPFPages . Views
 		public static event EventHandler<LoadedEventArgs> DataUpdated;
 		// Event we TRIGGER to notify SqlViewer of  a selectedindex change
 		// uses delegate : public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
-		public static event EditDbDataChanged ViewerDataHasBeenChanged;
+//		public static event EditDbDataChanged ViewerDataHasBeenChanged;
 
 		// Uses Delegate : public delegate void DbUpdated ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args );
 		public static event DbUpdated NotifyOfDataChange;
@@ -95,6 +96,10 @@ namespace WPFPages . Views
 		{
 			ViewerIndexChanged?.Invoke ( obj, e );
 		}
+		public static void TriggerMultiViewerIndexChanged ( object obj, IndexChangedArgs e )
+		{
+			MultiViewerIndexChanged?.Invoke ( obj, e );
+		}
 		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
 			ViewerDataUpdated?.Invoke ( obj, e );
@@ -119,10 +124,10 @@ namespace WPFPages . Views
 		{
 			DetDataLoaded?.Invoke ( obj , e );
 		}
-		public static void TriggerViewerDataChanged ( int EditDbChangeType , int row , string CurentDb )
-		{
-			ViewerDataHasBeenChanged?.Invoke ( EditDbChangeType , row , CurentDb );
-		}
+		//public static void TriggerViewerDataChanged ( int EditDbChangeType , int row , string CurentDb )
+		//{
+		//	ViewerDataHasBeenChanged?.Invoke ( EditDbChangeType , row , CurentDb );
+		//}
 		public static void TriggerNotifyOfDataChange ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
 		{
 			NotifyOfDataChange?.Invoke ( sender , Grid , args );
@@ -134,35 +139,35 @@ namespace WPFPages . Views
 		}
 
 		#region DEBUG utilities
-		public static Delegate [ ] GetEventCount ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( ViewerDataHasBeenChanged != null )
-				dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
-			return dglist2;
-		}
+		//public static Delegate [ ] GetEventCount ( )
+		//{
+		//	Delegate [ ] dglist2 = null;
+		//	if ( ViewerDataHasBeenChanged != null )
+		//		dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
+		//	return dglist2;
+		//}
 
-		public static Delegate [ ] GetEventCount2 ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( NotifyOfDataChange != null )
-				dglist2 = NotifyOfDataChange?.GetInvocationList ( );
-			return dglist2;
-		}
+		//public static Delegate [ ] GetEventCount2 ( )
+		//{
+		//	Delegate [ ] dglist2 = null;
+		//	if ( NotifyOfDataChange != null )
+		//		dglist2 = NotifyOfDataChange?.GetInvocationList ( );
+		//	return dglist2;
+		//}
 
-		public static Delegate [ ] GetEventCount3 ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( ViewerDataHasBeenChanged != null )
-				dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
-			return dglist2;
-		}
+		//public static Delegate [ ] GetEventCount3 ( )
+		//{
+		//	Delegate [ ] dglist2 = null;
+		//	if ( ViewerDataHasBeenChanged != null )
+		//		dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
+		//	return dglist2;
+		//}
 
 		public static Delegate [ ] GetEventCount4 ( )
 		{
 			Delegate [ ] dglist2 = null;
 			if ( EditIndexChanged != null )
-				dglist2 = DataUpdated?.GetInvocationList ( );
+				dglist2 = EditIndexChanged?.GetInvocationList ( );
 			return dglist2;
 		}
 
@@ -170,7 +175,7 @@ namespace WPFPages . Views
 		{
 			Delegate [ ] dglist2 = null;
 			if ( ViewerIndexChanged != null )
-				dglist2 = DataUpdated?.GetInvocationList ( );
+				dglist2 = ViewerIndexChanged?.GetInvocationList ( );
 			return dglist2;
 		}
 		
@@ -198,11 +203,18 @@ namespace WPFPages . Views
 			return dglist2;
 		}
 
-		public static Delegate [ ] GetEventCount11 ( )
+		public static Delegate [ ] GetEventCount9 ( )
 		{
 			Delegate [ ] dglist2 = null;
-			if ( NotifyOfDataChange != null )
+			if ( RecordDeleted != null )
 				dglist2 = RecordDeleted?.GetInvocationList ( );
+			return dglist2;
+		}
+		public static Delegate [ ] GetEventCount10 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( ViewerIndexChanged != null )
+				dglist2 = ViewerIndexChanged?.GetInvocationList ( );
 			return dglist2;
 		}
 

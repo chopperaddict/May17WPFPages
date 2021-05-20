@@ -87,89 +87,133 @@ namespace WPFPages . Views
 			if ( !BankAccountViewModel . ShowSubscribeData )
 				return;
 			//ViewerDataHasBeenChanged
-			Delegate [ ] dg = EventControl . GetEventCount ( );
-			if ( dg != null ) count = dg . Length;
+			//Delegate [ ] dg = EventControl . GetEventCount ( );
+			//if ( dg != null ) count = dg . Length;
 			// NotifyOfDataChange
-			dg = EventControl . GetEventCount2 ( );
-			if ( dg != null ) count2 = dg . Length;
-			// NotifyOfDataLoaded
-			dg = EventControl . GetEventCount3 ( );
-			if ( dg != null ) count3 = dg . Length;
-
+			//dg = EventControl . GetEventCount2 ( );
+			//if ( dg != null ) count2 = dg . Length;
+			
+			// ViewerDataHasBeenChanged
+			//Delegate [ ] dg = EventControl . GetEventCount3 ( );
+			//if ( dg != null ) count3 = dg . Length;
+			
 			//EditIndexChanged
-			dg = EventControl . GetEventCount4 ( );
+			Delegate[] dg = EventControl . GetEventCount4 ( );
 			if ( dg != null ) count4 = dg . Length;
-			//ViewerIndexChanged
+			
+			/// ViewerIndexChanged
 			dg = EventControl . GetEventCount5 ( );
-			if ( dg != null ) count4 = dg . Length;
+			if ( dg != null ) count5 = dg . Length;
+
 			// DetCollection. BankDataLoaded
 			dg = EventControl . GetEventCount6 ( );
 			if ( dg != null ) count6 = dg . Length;
+			
 			// CustCollection. CustDataLoaded 
 			dg = EventControl . GetEventCount7 ( );
 			if ( dg != null ) count7 = dg . Length;
+			
 			// CustCollection. DetDataLoaded 
 			dg = EventControl . GetEventCount8 ( );
 			if ( dg != null ) count8 = dg . Length;
-			//SQLHandlers. DataUpdated
-			dg = EditDb . GetEventCount9 ( );
+			//RecordDeleted
+			dg = EventControl . GetEventCount9 ( );
 			if ( dg != null ) count9 = dg . Length;
-			//AllViewersUpdate
-			dg = EditDb . GetEventCount9 ( );
+			//MultiViewerIndexChanged
+			dg = EventControl . GetEventCount10 ( );
 			if ( dg != null ) count10 = dg . Length;
 
-			//RecordDeleted
-			dg = EventControl . GetEventCount11 ( );
-			if ( dg != null ) count11 = dg . Length;
-
+			//			Output . Clear ( );
 			Console . WriteLine ( $"\n *** Currently Subscribed Events  ***" );
-			if ( count < 0 )
-				Console . WriteLine ( $"ViewerDataHasBeenChanged=  " );
+
+			//if ( count3 < 0 )
+			//	Console . WriteLine ( $"ViewerDataHasBeenChanged		= 0" );
+			//else
+			//	Console . WriteLine ( $"ViewerDataHasBeenChanged		= {count3}" );
+			if ( count4 < 0 )
+				Console . WriteLine ( $"EditIndexChanged				= 0" );
 			else
-				Console . WriteLine ( $"ViewerDataHasBeenChanged		= {count} " );
-			if ( count2 < 0 )
-				Console . WriteLine ( $"NotifyOfDataChange				= " );
-			else
-				Console . WriteLine ( $"NotifyOfDataChange				= {count2}" );
-			if ( count3 < 0 )
-				Console . WriteLine ( $"EditIndexChanged					= " );
-			else
-				Console . WriteLine ( $"EditIndexChanged					= {count3}" );
+				Console . WriteLine ( $"EditIndexChanged				= {count4}" );
 			if ( count5 < 0 )
-				Console . WriteLine ( $"ViewerIndexChanged				= " );
+				Console . WriteLine ( $"ViewerIndexChanged				= 0" );
 			else
 				Console . WriteLine ( $"ViewerIndexChanged				= {count5}" );
-			if ( count4 < 0 )
-				Console . WriteLine ( $"NotifyOfDataLoaded				= " );
+			if ( count10 < 0 )
+				Console . WriteLine ( $"MultiViewerIndexChanged			= 0" );
 			else
-				Console . WriteLine ( $"NotifyOfDataLoaded				= {count4}" );
+				Console . WriteLine ( $"MultiViewerIndexChanged			= {count10}" );
 			if ( count6 < 0 )
-				Console . WriteLine ( $"BankCollection. BankDataLoaded	= " );
+				Console . WriteLine ( $"BankCollection. BankDataLoaded	= 0" );
 			else
 				Console . WriteLine ( $"BankCollection. BankDataLoaded	= {count6}" );
 			if ( count7 < 0 )
-				Console . WriteLine ( $"CustCollection. CustDataLoaded	= " );
+				Console . WriteLine ( $"CustCollection. CustDataLoaded	= 0" );
 			else
 				Console . WriteLine ( $"CustCollection. CustDataLoaded	= {count7}" );
 			if ( count8 < 0 )
-				Console . WriteLine ( $"DetCollection. DetDataLoaded	= " );
+				Console . WriteLine ( $"DetCollection. DetDataLoaded	= 0" );
 			else
 				Console . WriteLine ( $"DetCollection. DetDataLoaded	= {count8}" );
 			if ( count9 < 0 )
-				Console . WriteLine ( $"SQLHandler.DataUpdated			= " );
+				Console . WriteLine ( $"RecordDeleted					= 0" );
 			else
-				Console . WriteLine ( $"SQLHandler.DataUpdated			= {count9}" );
-			if ( count10 < 0 )
-				Console . WriteLine ( $"DbEdit.AllViewersUpdate			= " );
-			else
-				Console . WriteLine ( $"DbEdit.AllViewersUpdate			= {count10}" );
-			if ( count11 < 0 )
-				Console . WriteLine ( $"RecordDeleted					= " );
-			else
-				Console . WriteLine ( $"RecordDeleted					= {count11}" );
+				Console . WriteLine ( $"RecordDeleted					= {count9}" );
 
 			bool first = true;
-			Delegate [ ] dglist2 = EventControl . GetEventCount ( );
+			//Delegate [ ] dglist2 = EventControl . GetEventCount ( );
+			//if ( dglist2 != null )
+			//{
+			//	int cnt = 0;
+			//	if ( !first )
+			//	{
+			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//	}
+			//	Console . WriteLine ( $"=====================================================================================" );
+			//	first = true;
+			//	foreach ( var item in dglist2 )
+			//	{
+			//		if ( cnt > 0 ) Console . WriteLine ( );
+			//		//item . CurrentDb;
+			//		Console . WriteLine ( $"Delegate : VIEWERDATAHASBEENCHANGED :\n >>> {item . Target}\nMethod = {item . Method . Name . ToString ( )}" );
+			//		cnt++;
+			//	}
+			//}
+			//dglist2 = EventControl . GetEventCount2 ( );
+			//if ( dglist2 != null )
+			//{
+			//	int cnt = 0;
+			//	if ( !first )
+			//	{
+			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//	}
+			//	first = true;
+			//	Console . WriteLine ( $"=====================================================================================" );
+			//	foreach ( var item in dglist2 )
+			//	{
+			//		if ( cnt > 0 ) Console . WriteLine ( );
+			//		Console . WriteLine ( $"Delegate : NOTIFYOFDATACHANGE : \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+			//		cnt++;
+			//	}
+			//}
+			//Delegate [] dglist2 = EventControl . GetEventCount3 ( );
+			//if ( dglist2 != null )
+			//{
+			//	int cnt = 0;
+			//	if ( !first )
+			//	{
+			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//	}
+			//	first = true;
+			//	Console . WriteLine ( $"=====================================================================================" );
+			//	foreach ( var item in dglist2 )
+			//	{
+			//		if ( cnt > 0 ) Console . WriteLine ( );
+			//		Console . WriteLine ( $"Delegate : VIEWERDATAHASBEENCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+			//		cnt++;
+			//	}
+			//}
+
+			Delegate[]  dglist2 = EventControl . GetEventCount4 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;
@@ -177,17 +221,16 @@ namespace WPFPages . Views
 				{
 					Console . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
 				first = true;
+				Console . WriteLine ( $"=====================================================================================" );
 				foreach ( var item in dglist2 )
 				{
 					if ( cnt > 0 ) Console . WriteLine ( );
-					//item . CurrentDb;
-					Console . WriteLine ( $"Delegate : VIEWERDATAHASBEENCHANGED :\n >>> {item . Target}\nMethod = {item . Method . Name . ToString ( )}" );
+					Console . WriteLine ( $"Delegate : EDITINDEXCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
-			dglist2 = EventControl . GetEventCount2 ( );
+			dglist2 = EventControl . GetEventCount5 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;
@@ -195,16 +238,19 @@ namespace WPFPages . Views
 				{
 					Console . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				first = true;
 				Console . WriteLine ( $"=====================================================================================" );
+				first = true;
 				foreach ( var item in dglist2 )
 				{
 					if ( cnt > 0 ) Console . WriteLine ( );
-					Console . WriteLine ( $"Delegate : NOTIFYOFDATACHANGE : \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					if ( item . Target != null )
+						Console . WriteLine ( $"Delegate : VIEWERINDEXCHANGED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					else
+						Console . WriteLine ( $"Delegate : VIEWERINDEXCHANGED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
-			dglist2 = EventControl . GetEventCount3 ( );
+			dglist2 = EventControl . GetEventCount10 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;
@@ -212,30 +258,15 @@ namespace WPFPages . Views
 				{
 					Console . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				first = true;
 				Console . WriteLine ( $"=====================================================================================" );
+				first = true;
 				foreach ( var item in dglist2 )
 				{
 					if ( cnt > 0 ) Console . WriteLine ( );
-					Console . WriteLine ( $"Delegate : NOTIFYOFDATALOADED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-					cnt++;
-				}
-			}
-			
-			dglist2 = EventControl . GetEventCount4 ( );
-			if ( dglist2 != null )
-			{
-				int cnt = 0;
-				if ( !first )
-				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
-				}
-				first = true;
-				Console . WriteLine ( $"=====================================================================================" );
-				foreach ( var item in dglist2 )
-				{
-					if ( cnt > 0 ) Console . WriteLine ( );
-					Console . WriteLine ( $"Delegate : NOTIFYOFDATALOADED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					if ( item . Target != null )
+						Console . WriteLine ( $"Delegate : MULTIVIEWERINDEXCHANGED :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					else
+						Console . WriteLine ( $"Delegate : MULTIVIEWERINDEXCHANGED :\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
@@ -313,49 +344,9 @@ namespace WPFPages . Views
 				{
 					if ( cnt > 0 ) Console . WriteLine ( );
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : SQLHandlers.DATAUPDATED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Console . WriteLine ( $"Delegate : SQLHandlers.RECORDDELETED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : SQLHandlers.DATAUPDATED::\n >>> \nMethod = {item . Method . ToString ( )}" );
-					cnt++;
-				}
-			}
-			//dglist2 = EditDb . GetEventCount10 ( );
-			//if ( dglist2 != null )
-			//{
-			//	int cnt = 0;
-			//	if ( !first )
-			//	{
-			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
-			//	}
-			//	Console . WriteLine ( $"=====================================================================================" );
-			//	first = true;
-			//	foreach ( var item in dglist2 )
-			//	{
-			//		if ( cnt > 0 ) Console . WriteLine ( );
-			//		if ( item . Target != null )
-			//			Console . WriteLine ( $"Delegate : DbEdit.ALLVIEWERSUPDATE :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-			//		else
-			//			Console . WriteLine ( $"Delegate : DbEdit.ALLVIEWERSUPDATE :\n >>> \nMethod = {item . Method . ToString ( )}" );
-			//		cnt++;
-			//	}
-			//}
-			dglist2 = EventControl . GetEventCount11 ( );
-			if ( dglist2 != null )
-			{
-				int cnt = 0;
-				if ( !first )
-				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
-				}
-				Console . WriteLine ( $"=====================================================================================" );
-				first = true;
-				foreach ( var item in dglist2 )
-				{
-					if ( cnt > 0 ) Console . WriteLine ( );
-					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : RECORDDELETED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-					else
-						Console . WriteLine ( $"Delegate : RECORDDELETED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Console . WriteLine ( $"Delegate : SQLHandlers.RECORDDELETED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}

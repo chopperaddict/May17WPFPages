@@ -34,16 +34,16 @@ namespace WPFPages . Views
 		/// so we need to update OURSELVES
 		/// </summary>
 		/// <param name="sender"></param>
-		public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
-		{
-			if ( Flags . SqlBankViewer != null )
-				Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
-			if ( Flags . SqlCustViewer != null )
-				Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
-			if ( Flags . SqlDetViewer != null )
-				Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
-			return;
-		}
+		//public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
+		//{
+		//	if ( Flags . SqlBankViewer != null )
+		//		Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
+		//	if ( Flags . SqlCustViewer != null )
+		//		Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
+		//	if ( Flags . SqlDetViewer != null )
+		//		Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
+		//	return;
+		//}
 
 		public void CustomersObs_CollectionChanged ( object sender , System . Collections . Specialized . NotifyCollectionChangedEventArgs e )
 		{

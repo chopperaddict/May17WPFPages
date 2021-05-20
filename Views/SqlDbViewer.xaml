@@ -6,8 +6,8 @@
         mc:Ignorable="d"
 	  DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		Title="Database Edit/View Utility"
-		Height="550" Width="860"
-		MinHeight="450" MinWidth="827"
+		Height="550" Width="867"
+		MinHeight="450" MinWidth="867"
 		Left="1050"
 		Loaded="OnWindowLoaded"
 		Top="20"
@@ -420,7 +420,7 @@
 				Content="A/c Id#"
 				FontWeight="Normal"
 				Foreground="{StaticResource Black4}"
-				Width="100"
+				Width="70"				
 				Height="35"
 				Click="Id_option_Click" />
 			<CheckBox
@@ -434,7 +434,7 @@
 			<CheckBox
 				x:Name="Bankno_option"
 				Content="Bank #"
-				Width="100"
+				Width="70"
 				FontWeight="DemiBold"
 				Foreground="{StaticResource Black0}"
 				Height="35"
@@ -444,7 +444,7 @@
 				Content="A/c Type #"
 				FontWeight="Normal"
 				Foreground="{StaticResource Gray4}"
-				Width="100"
+				Width="90"
 				Height="35"
 				Click="actype_option_Click" />
 			<CheckBox
@@ -452,7 +452,7 @@
 				Content="Birthday"
 				FontWeight="DemiBold"
 				Foreground="{StaticResource White1}"
-				Width="100"
+				Width="80"
 				Height="35"
 				Click="Dob_option_Click" />
 			<CheckBox
@@ -480,6 +480,15 @@
 				Width="100"
 				Height="35"
 				Click="Default_option_Click" />
+			<CheckBox
+				x:Name="LinkRecords"
+				Content="Link Viewers"
+				FontWeight="Bold"
+				Foreground="{StaticResource White0}"
+				IsChecked="False"
+				Width="100"
+				Height="35"
+				Click="LinkRecords_Click " />
 		</WrapPanel>
 		<!--#endregion Checkboxes-->
 
@@ -503,6 +512,7 @@
 				Grid.Column="3"
 				Grid.Row="1"
 				Height="20"
+			HorizontalAlignment="Right"
 				MouseDown="Window_MouseDown"
 				Opacity="50"
 				Template="{StaticResource HorizontalGradientTemplateGray}"
@@ -812,6 +822,7 @@
 				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
 				SelectedCellsChanged="CustomerGrid_SelectedCellsChanged"
 				SelectionChanged="ItemsView_OnSelectionChanged"
+				SelectionMode="Single"
 				SelectionUnit="FullRow"
 				TargetUpdated="CustomerGrid_TargetUpdated"
 				TabIndex="2"
@@ -928,6 +939,7 @@
 					ScrollViewer.ScrollChanged="DetailsGrid_ScrollChanged"
 	    				SelectedCellsChanged="DetailsGrid_SelectedCellsChanged"
 					SelectionChanged="ItemsView_OnSelectionChanged"
+					SelectionMode="Single"
 					TabIndex="3"
 					Visibility="Collapsed"
 					VerticalAlignment="Stretch"
@@ -1019,9 +1031,10 @@
 				/>
 			<Button		
 					x:Name="RefreshBtn"
+					Background="{StaticResource HeaderBrushGray}"
+					Foreground="White"
 					Click="Refresh_Click"
 					Content="Refresh"
-					Foreground =" White"
 					Grid.Row="0"
 					Grid.Column="2"
 					IsEnabled="True"
@@ -1044,7 +1057,6 @@
 				Margin="0,5,5,5"
 				Padding="6"
 				Style="{StaticResource gradientblue}"
-				Text="Please wait, loading data from SQL Database...."
 				TextAlignment="Center"
 				VerticalAlignment="Center"			
 			

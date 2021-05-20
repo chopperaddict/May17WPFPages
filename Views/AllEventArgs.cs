@@ -11,6 +11,7 @@ namespace WPFPages . Views
 
 	public class IndexChangedArgs : EventArgs
 	{
+		public string SenderId { get; set; }
 		public string Sender { get; set; }
 		public int Row { get; set; }
 		public DataGrid dGrid {get; set;}

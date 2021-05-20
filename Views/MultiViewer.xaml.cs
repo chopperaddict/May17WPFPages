@@ -30,7 +30,7 @@ namespace WPFPages . Views
 
 		#region DELEGATES / EVENTS Declarations
 
-//		public static event EventHandler<LoadedEventArgs> DetDataLoaded;
+		//		public static event EventHandler<LoadedEventArgs> DetDataLoaded;
 
 		#endregion DELEGATES / EVENTS Declarations
 
@@ -60,11 +60,8 @@ namespace WPFPages . Views
 			Flags . SqlCustGrid = this . CustomerGrid;
 			Flags . SqlDetGrid = this . DetailsGrid;
 			Flags . MultiViewer = this;
+			Flags . SqlMultiViewer = this;
 
-			// subscribe to data change events for all 3 types of data sets
-			// Main update notification handler
-			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
-			EventControl . EditDbDataUpdated += EventControl_DataUpdated;
 
 
 			this . BankGrid . ItemsSource = MultiBankcollection;
@@ -75,6 +72,76 @@ namespace WPFPages . Views
 			this . CustomerGrid . SelectedIndex = 0;
 			this . DetailsGrid . SelectedIndex = 0;
 		}
+
+		private void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			if ( Flags . LinkviewerRecords )
+			{
+				object RowTofind = null;
+				object gr = null;
+				int rec = 0;
+				// Listen for index changes
+				if ( e . Sender == "BANKACCOUNT" )
+				{
+					BankAccountViewModel bgr = null;
+					RowTofind = e . dGrid . SelectedItem as BankAccountViewModel;
+					bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
+					if ( bgr == null ) return;
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+					this . BankGrid . SelectedIndex = rec;
+					bindex = rec;
+					Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+					this . CustomerGrid . SelectedIndex = rec;
+					cindex = rec;
+					BankData . DataContext = this . CustomerGrid . SelectedItem;
+					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+					this . DetailsGrid . SelectedIndex = rec;
+					dindex = rec;
+				}
+				else if ( e . Sender == "CUSTOMER" )
+				{
+					CustomerViewModel bgr = null;
+					RowTofind = e . dGrid . SelectedItem as CustomerViewModel;
+					bgr = this . CustomerGrid . SelectedItem as CustomerViewModel;
+					if ( bgr == null ) return;
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+					this . BankGrid . SelectedIndex = rec;
+					bindex = rec;
+					Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+					this . CustomerGrid . SelectedIndex = rec;
+					cindex = rec;
+					BankData . DataContext = this . CustomerGrid . SelectedItem;
+					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+					this . DetailsGrid . SelectedIndex = rec;
+					dindex = rec;
+				}
+				else if ( e . Sender == "DETAILS" )
+				{
+					DetailsViewModel bgr = null;
+					RowTofind = e . dGrid . SelectedItem as DetailsViewModel;
+					bgr = this . DetailsGrid . SelectedItem as DetailsViewModel;
+					if ( bgr == null ) return;
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+					this . BankGrid . SelectedIndex = rec;
+					bindex = rec;
+					Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+					this . CustomerGrid . SelectedIndex = rec;
+					cindex = rec;
+					BankData . DataContext = this . CustomerGrid . SelectedItem;
+					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+					rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+					this . DetailsGrid . SelectedIndex = rec;
+					dindex = rec;
+				}
+				// Get Custno from ACTIVE gridso we can find it in other grids
+			}
+		}
+
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
 			// Unsubscribe from Bank data change event notificatoin
@@ -82,6 +149,8 @@ namespace WPFPages . Views
 			//			EventControl . DataUpdated -= EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl . EditDbDataUpdated -= EventControl_DataUpdated;
+			// Listen ofr index changes
+			EventControl . ViewerIndexChanged -= EventControl_ViewerIndexChanged;
 
 			// Clear databases
 			MultiBankcollection . Clear ( );
@@ -94,6 +163,11 @@ namespace WPFPages . Views
 			Flags . MultiViewer = null;
 		}
 
+		/// <summary>
+		/// Main Event handkler for data changes made by other windows
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			// Update ALL datagrids - IF we didnt   truiigger the change
@@ -111,7 +185,7 @@ namespace WPFPages . Views
 		{
 			// load the data
 			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
-				BankCollection . LoadBank ( MultiBankcollection, 3, false);
+				BankCollection . LoadBank ( MultiBankcollection, 3, false );
 			BankGrid . ItemsSource = MultiBankcollection;
 			if ( MultiCustcollection == null || MultiCustcollection . Count == 0 )
 				CustCollection . LoadCust ( MultiCustcollection );
@@ -124,7 +198,7 @@ namespace WPFPages . Views
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
 		}
 
-	#endregion STARTUP/CLOSE
+		#endregion STARTUP/CLOSE
 
 		#region EVENT HANDLERS
 
@@ -166,12 +240,12 @@ namespace WPFPages . Views
 			RefreshAllGrids ( CurrentDb, e . Row . GetIndex ( ) );
 			inprogress = false;
 		}
-		public void RefreshAllGrids ( string CurrentDb, int row )
+		public async void RefreshAllGrids ( string CurrentDb, int row )
 		{
-			ReLoadAllDataBases ( CurrentDb, row );
+			await ReLoadAllDataBases ( CurrentDb, row );
 		}
 
-		private async void ReLoadAllDataBases ( string CurrentD, int row )
+		private async Task ReLoadAllDataBases ( string CurrentD, int row )
 		{
 			int bbindex = 0;
 			int ccindex = 0;
@@ -180,18 +254,18 @@ namespace WPFPages . Views
 			if ( row == -1 ) row = 0;
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
-				return;
+				//				return;
 				bbindex = row;
 				this . BankGrid . ItemsSource = null;
 			}
 			else if ( CurrentDb == "BANKACCOUNT" )
 			{
-				return;
+				//				return;
 				ccindex = row;
 			}
 			else if ( CurrentDb == "BANKACCOUNT" )
 			{
-				return;
+				//				return;
 				ccindex = row;
 				ddindex = row;
 			}
@@ -202,21 +276,12 @@ namespace WPFPages . Views
 			this . CustomerGrid . Items . Clear ( );
 			this . DetailsGrid . Items . Clear ( );
 
-			BankCollection . LoadBank ( MultiBankcollection, 3 );
-			CustCollection . LoadCust ( MultiCustcollection );
-			DetCollection . LoadDet ( MultiDetcollection );
-			//int b = bindex;
-			//int c = cindex;
-			//int d = dindex;
+			await BankCollection . LoadBank ( MultiBankcollection, 3 );
+			await CustCollection . LoadCust ( MultiCustcollection );
+			await DetCollection . LoadDet ( MultiDetcollection );
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
-			//bindex = b;
-			//cindex = c;
-			//dindex = d;
-			//this . BankGrid . Refresh ( );
-			//this . CustomerGrid . Refresh ( );
-			//this . DetailsGrid . Refresh ( );
 
 			this . BankGrid . SelectedIndex = bbindex;
 			this . CustomerGrid . SelectedIndex = ccindex;
@@ -224,9 +289,6 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedItem = bbindex;
 			this . CustomerGrid . SelectedItem = ccindex;
 			this . DetailsGrid . SelectedItem = ddindex;
-			//this . BankGrid . ScrollIntoView ( bbindex );
-			//this . CustomerGrid . ScrollIntoView ( ccindex );
-			//this . DetailsGrid . ScrollIntoView ( ddindex );
 
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
@@ -251,7 +313,7 @@ namespace WPFPages . Views
 			{
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				CustomerViewModel bgr = new CustomerViewModel ( );
-				bgr = this . CustomerGrid. SelectedItem as CustomerViewModel;
+				bgr = this . CustomerGrid . SelectedItem as CustomerViewModel;
 				if ( bgr == null ) return;
 				rec = FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 				this . BankGrid . SelectedIndex = rec;
@@ -284,15 +346,9 @@ namespace WPFPages . Views
 				this . DetailsGrid . SelectedIndex = rec;
 				dindex = rec;
 			}
-			//this . BankGrid . SelectedIndex = bbindex;
-			//this . CustomerGrid . SelectedIndex = ccindex;
-			//this . DetailsGrid . SelectedIndex = ddindex;
-			//this . BankGrid . SelectedItem = bbindex;
-			//this . CustomerGrid . SelectedItem = ccindex;
-			//this . DetailsGrid . SelectedItem = ddindex;
 		}
 
-		#endregion DATA UPDATING
+		#endregion EVENT DATA UPDATING
 
 		private void ViewerGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
 		{
@@ -493,6 +549,18 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedIndex = currsel;
 			Utils . ScrollRecordIntoView ( this . BankGrid, currsel );
 
+			if ( Flags . LinkviewerRecords )
+			{
+				// Send message to othrr viewers teling them of our index change
+				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
+				new IndexChangedArgs
+				{
+					SenderId = "MultiBank",
+					dGrid = this . BankGrid,
+					Sender = "BANKACCOUNT",
+					Row = this . BankGrid . SelectedIndex
+				} );
+			}
 			// Get Custno from ACTIVE gridso we can find it in other grids
 			BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
 			if ( bgr == null ) return;
@@ -531,6 +599,18 @@ namespace WPFPages . Views
 			this . CustomerGrid . SelectedIndex = currsel;
 			Utils . ScrollRecordIntoView ( this . CustomerGrid, cindex );
 
+			if ( Flags . LinkviewerRecords )
+			{
+				// Send message to othrr viewers teling them of our index change
+				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
+				new IndexChangedArgs
+				{
+					SenderId = "Multicust",
+					dGrid = this . CustomerGrid,
+					Sender = "CUSTOMER",
+					Row = this . CustomerGrid . SelectedIndex
+				} );
+			}
 			// Get Custno from ACTIVE grid so we can find it in other grids
 			CustomerViewModel cgr = CustomerGrid . SelectedItem as CustomerViewModel;
 			if ( cgr == null ) return;
@@ -569,6 +649,18 @@ namespace WPFPages . Views
 			this . DetailsGrid . SelectedIndex = currsel;
 			Utils . ScrollRecordIntoView ( DetailsGrid, dindex );
 
+			if ( Flags . LinkviewerRecords )
+			{
+				// Send message to othrr viewers teling them of our index change
+				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
+					new IndexChangedArgs
+					{
+						SenderId = "MultiDet",
+						dGrid = this . DetailsGrid,
+						Sender = "DETAILS",
+						Row = this . DetailsGrid . SelectedIndex
+					} );
+			}
 			// Get Custno from ACTIVE gridso we can find it in other grids
 			DetailsViewModel dgr = DetailsGrid . SelectedItem as DetailsViewModel;
 			if ( dgr == null ) return;
@@ -932,6 +1024,28 @@ namespace WPFPages . Views
 			//	ReloadBankOnUpdateNotification ( o , Grid , dca );
 			//}
 			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
+		{
+			// force viewers to change records in line with each other
+			if ( LinkRecords . IsChecked == true )
+				Flags . LinkviewerRecords = true;
+			else
+				Flags . LinkviewerRecords = false;
+			if ( Flags . SqlBankViewer != null )
+				Flags . SqlBankViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlCustViewer != null )
+				Flags . SqlCustViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlDetViewer != null )
+				Flags . SqlDetViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlMultiViewer != null )
+				Flags . SqlMultiViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			LinkRecords . Refresh ( );
+		}
+
+		private void LinkRecords_Click_1 ( object sender, RoutedEventArgs e )
+		{
+
 		}
 	}
 }

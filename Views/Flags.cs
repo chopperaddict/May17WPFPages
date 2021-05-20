@@ -78,6 +78,8 @@ namespace WPFPages
 		public static SqlDbViewer SqlDetViewer = null;
 		public static  DataGrid CurrentEditDbViewerDetailsGrid = null;
 
+		public static MultiViewer SqlMultiViewer = null;
+		
 		public static List< DataGrid > CurrentEditDbViewerBankGridList;
 		public static List< DataGrid > CurrentEditDbViewerCustomerGridList;
 		public static List< DataGrid > CurrentEditDbViewerDetailsGridList;
@@ -132,6 +134,8 @@ namespace WPFPages
 		//Control CW output of event handlers
 		public static bool EventHandlerDebug = false;
 		public static bool IsMultiMode = false;
+
+		public static bool LinkviewerRecords = false;
 
 		/// <summary>
 		///  Holds the DataGrid pointer fort each open SqlDbViewer Window as they

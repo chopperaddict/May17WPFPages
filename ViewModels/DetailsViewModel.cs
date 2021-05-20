@@ -26,16 +26,16 @@ namespace WPFPages . ViewModels
 		/// Callback for db change notifications
 		/// </summary>
 		/// <param name="sender"></param>
-		public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
-		{
-			if ( Flags . SqlBankViewer != null )
-				Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
-			if ( Flags . SqlCustViewer != null )
-				Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
-			if ( Flags . SqlDetViewer != null )
-				Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
-			return;
-		}
+		//public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
+		//{
+		//	if ( Flags . SqlBankViewer != null )
+		//		Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
+		//	if ( Flags . SqlCustViewer != null )
+		//		Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
+		//	if ( Flags . SqlDetViewer != null )
+		//		Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
+		//	return;
+		//}
 
 		public static bool SqlUpdating = false;
 		public static int CurrentSelectedIndex = 0;
