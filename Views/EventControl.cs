@@ -42,8 +42,17 @@ namespace WPFPages . Views
 		// Main Event handlersfor when DB's load data from disk
 		public static  event EventHandler<LoadedEventArgs> BankDataLoaded;
 		public static  event EventHandler<LoadedEventArgs> CustDataLoaded;
-		public   static event EventHandler<LoadedEventArgs> DetDataLoaded;
+		public static  event EventHandler<LoadedEventArgs> DetDataLoaded;
 
+		public static event EventHandler<IndexChangedArgs> ViewerIndexChanged;
+		public static event EventHandler<IndexChangedArgs> EditIndexChanged;
+
+		// Used to broadcast to everyone
+		public static event EventHandler<LoadedEventArgs> ViewerDataUpdated;
+		public static event EventHandler<LoadedEventArgs> EditDbDataUpdated;
+		public static event EventHandler<LoadedEventArgs> MultiViewerDataUpdated;
+
+		public static event EventHandler<LoadedEventArgs> DataUpdated;
 		// Event we TRIGGER to notify SqlViewer of  a selectedindex change
 		// uses delegate : public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
 		public static event EditDbDataChanged ViewerDataHasBeenChanged;
@@ -55,6 +64,7 @@ namespace WPFPages . Views
 		// to assing methods to dynamically
 		// used delegate : public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
 		public static event DeletionHandler RecordDeleted;
+
 
 
 		#endregion ALL NEW EVENTS
@@ -69,6 +79,34 @@ namespace WPFPages . Views
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="e"></param>
+
+//dummy to stop error only
+		public static void TriggerDataUpdated ( object obj, LoadedEventArgs e )
+		{
+			DataUpdated?.Invoke ( obj, e );
+		}
+
+
+		public static void TriggerEditDbIndexChanged ( object obj, IndexChangedArgs e )
+		{
+			EditIndexChanged?.Invoke ( obj, e );
+		}
+		public static void TriggerViewerIndexChanged ( object obj, IndexChangedArgs e )
+		{
+			ViewerIndexChanged?.Invoke ( obj, e );
+		}
+		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
+		{
+			ViewerDataUpdated?.Invoke ( obj, e );
+		}
+		public static void TriggerEditDbDataUpdated ( object obj, LoadedEventArgs e )
+		{
+			EditDbDataUpdated?.Invoke ( obj, e );
+		}
+		public static void TriggerMultiViewerDataUpdated ( object obj, LoadedEventArgs e )
+		{
+			MultiViewerDataUpdated?.Invoke ( obj, e );
+		}
 		public static void TriggerBankDataLoaded ( object obj , LoadedEventArgs e )
 		{
 			BankDataLoaded?.Invoke ( obj , e );
@@ -96,32 +134,19 @@ namespace WPFPages . Views
 		}
 
 		#region DEBUG utilities
-		public static Delegate [ ] GetEventCount6 ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( EventControl . BankDataLoaded != null )
-				dglist2 = BankDataLoaded?.GetInvocationList ( );
-			return dglist2;
-		}
-		public static Delegate [ ] GetEventCount7 ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( CustDataLoaded != null )
-				dglist2 = CustDataLoaded?.GetInvocationList ( );
-			return dglist2;
-		}
-		public static Delegate [ ] GetEventCount8 ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( DetDataLoaded != null )
-				dglist2 = DetDataLoaded?.GetInvocationList ( );
-			return dglist2;
-		}
 		public static Delegate [ ] GetEventCount ( )
 		{
 			Delegate [ ] dglist2 = null;
 			if ( ViewerDataHasBeenChanged != null )
 				dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
+			return dglist2;
+		}
+
+		public static Delegate [ ] GetEventCount2 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( NotifyOfDataChange != null )
+				dglist2 = NotifyOfDataChange?.GetInvocationList ( );
 			return dglist2;
 		}
 
@@ -132,13 +157,47 @@ namespace WPFPages . Views
 				dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
 			return dglist2;
 		}
-		public static Delegate [ ] GetEventCount2 ( )
+
+		public static Delegate [ ] GetEventCount4 ( )
 		{
 			Delegate [ ] dglist2 = null;
-			if ( NotifyOfDataChange != null )
-				dglist2 = NotifyOfDataChange?.GetInvocationList ( );
+			if ( EditIndexChanged != null )
+				dglist2 = DataUpdated?.GetInvocationList ( );
 			return dglist2;
 		}
+
+		public static Delegate [ ] GetEventCount5 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( ViewerIndexChanged != null )
+				dglist2 = DataUpdated?.GetInvocationList ( );
+			return dglist2;
+		}
+		
+		public static Delegate [ ] GetEventCount6 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( EventControl . BankDataLoaded != null )
+				dglist2 = BankDataLoaded?.GetInvocationList ( );
+			return dglist2;
+		}
+
+		public static Delegate [ ] GetEventCount7 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( CustDataLoaded != null )
+				dglist2 = CustDataLoaded?.GetInvocationList ( );
+			return dglist2;
+		}
+
+		public static Delegate [ ] GetEventCount8 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( DetDataLoaded != null )
+				dglist2 = DetDataLoaded?.GetInvocationList ( );
+			return dglist2;
+		}
+
 		public static Delegate [ ] GetEventCount11 ( )
 		{
 			Delegate [ ] dglist2 = null;

@@ -327,18 +327,19 @@
 				HorizontalAlignment="Right"
 				>
 				<ComboBox x:Name="ViewerTypes"					
-				    Background="Yellow"
-					Width="200" IsReadOnly="True" 
-					SelectedIndex="0" 
-					VerticalAlignment="Center" 
-					HorizontalAlignment="Center" 
-					HorizontalContentAlignment="Center"
-					IsDropDownOpen="True"					    
-					SelectionChanged="ComboBox_SelectionChanged"
-					>
+						Background="Yellow"
+						Width="200" IsReadOnly="True" 
+						VerticalAlignment="Center" 
+						HorizontalAlignment="Center" 
+						HorizontalContentAlignment="Center"
+						IsEditable="False"
+					    IsSelected =" True"
+						IsDropDownOpen="False"						    
+						SelectionChanged="ComboBox_SelectionChanged">
+
 					<ComboBoxItem>
 						<TextBlock
-							Text="Bank Database Viewer"
+							Text="Bank Database Viewer"							
 							/>
 					</ComboBoxItem>
 					<ComboBoxItem>

@@ -8,6 +8,13 @@ using System . Windows . Controls;
 namespace WPFPages . Views
 {
 	#region EventArg Declarations
+
+	public class IndexChangedArgs : EventArgs
+	{
+		public string Sender { get; set; }
+		public int Row { get; set; }
+		public DataGrid dGrid {get; set;}
+	}
 	public class DeletionEventArgs : EventArgs	{		
 		public string Sender { get; set; }
 		public string Bankno { get; set; }

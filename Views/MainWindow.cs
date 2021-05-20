@@ -69,8 +69,8 @@ namespace WPFPages
 			BaseDataText = "Starting text";
 			RandomText1 = "button1";
 			RandomText2 = "button2";
-			this . Topmost = false;
-
+			this . Topmost = true;
+			OntopChkbox . IsChecked = true;
 			gv = GridViewer . Viewer_instance;
 			//			NewFlags flags = new NewFlags ( );
 			//*Flags = NewFlags;
@@ -429,8 +429,11 @@ namespace WPFPages
 
 		private void Main_PreviewKeyDown ( object sender, KeyEventArgs e )
 		{
-			if ( e . Key == Key . RightCtrl || e . Key == Key . Home )
+			if ( e . Key == Key . RightCtrl || e . Key == Key . Home || e . Key == Key . Enter )
+			{
 				Page6_Click ( sender, null );
+				this . Hide ( );
+			}
 			else if ( e . Key == Key . OemQuotes )
 			{
 				EventHandlers . ShowSubscribersCount ( );

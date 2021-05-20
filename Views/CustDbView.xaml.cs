@@ -20,7 +20,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class CustDbView : Window
 	{
-		public static CustCollection CustViewercollection = CustCollection .Custcollection;
+		public static CustCollection CustViewerDbcollection = CustCollection . CustViewerDbcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
 
@@ -46,28 +46,42 @@ namespace WPFPages . Views
 		#endregion Mouse support
 
 		#region Startup/ Closedown
-		private void Window_Loaded ( object sender, RoutedEventArgs e )
+		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
 			Startup = true;
 			// Data source is handled in XAML !!!!
 			if ( this . CustGrid . Items . Count > 0 )
 				this . CustGrid . Items . Clear ( );
-			this . CustGrid . ItemsSource = CustViewercollection;
+			this . CustGrid . ItemsSource = CustViewerDbcollection;
 
-			if ( CustViewercollection . Count == 0 )
-				CustViewercollection = CustCollection . LoadCust ( CustViewercollection );
-			this . CustGrid . ItemsSource = CustViewercollection;
+			if ( CustViewerDbcollection . Count == 0 )
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
+			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . MouseDown += delegate { DoDragMove ( ); };
 			this . CustGrid . SelectedIndex = 0;
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 
-			EventControl . ViewerDataHasBeenChanged += ExternalDataUpdate;      // Callback in THIS FILE
-											    //Subscribe to Cust Data Changed event declared in EventControl
-			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
+			// Main update notification handler
+			EventControl . DataUpdated += EventControl_DataUpdated;		
 			SaveBttn . IsEnabled = false;
 			Startup = false;
 			Count . Text = this . CustGrid . Items . Count . ToString ( );
+			this . CustGrid . SelectedIndex = 0;
 
+		}
+
+		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
+		{
+			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
+			Console . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
+
+			int currsel = this . CustGrid . SelectedIndex;
+			this . CustGrid . ItemsSource = null;
+			this . CustGrid . Items . Clear ( );
+			CustViewerDbcollection = await CustCollection . LoadCust( CustViewerDbcollection );
+			this . CustGrid . SelectedIndex = currsel;
+			this . CustGrid . ItemsSource = CustViewerDbcollection;
+			this . CustGrid . Refresh ( );
 		}
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
@@ -76,7 +90,7 @@ namespace WPFPages . Views
 			Console . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
-			this . CustGrid . ItemsSource = CustViewercollection;
+			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . Refresh ( );
 		}
 		#endregion Startup/ Closedown
@@ -94,30 +108,45 @@ namespace WPFPages . Views
 			int currow = 0;
 			currow = this . CustGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
-			Flags . SqlCustCurrentIndex = currow;
+//			Flags . SqlCustCurrentIndex = currow;
 			CustomerViewModel ss = new CustomerViewModel ( );
 			ss = this . CustGrid . SelectedItem as CustomerViewModel;
 			// This is the NEW DATA from the current row
 			SQLHandlers sqlh = new SQLHandlers ( );
 			sqlh . UpdateDbRowAsync ( "CUSTOMER", ss, this . CustGrid . SelectedIndex );
 
-			this . CustGrid . SelectedIndex = Flags . SqlCustCurrentIndex;
-			this . CustGrid . ScrollIntoView ( Flags . SqlCustCurrentIndex );
+			this . CustGrid . SelectedIndex = currow;
+			this . CustGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "CUSTOMER" );
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerViewerDataChanged ( 2, this . CustGrid . SelectedIndex, "CUSTOMER" );
+			EventControl . TriggerBankDataLoaded ( CustViewerDbcollection,
+				new LoadedEventArgs
+				{
+					CallerDb = "CUSTOMER",
+					DataSource = CustViewerDbcollection,
+					RowCount = this . CustGrid . SelectedIndex
+				} );
+			EventControl . TriggerDetDataLoaded ( CustViewerDbcollection,
+				new LoadedEventArgs
+				{
+					CallerDb = "CUSTOMER",
+					DataSource = CustViewerDbcollection,
+					RowCount = this . CustGrid . SelectedIndex
+				} );
+
 
 		}
 
-		private void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
+		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for CustDataLoaded
 			this . CustGrid . ItemsSource = null;
-			this . CustGrid . ItemsSource = CustViewercollection;
+			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
+			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . Refresh ( );
 		}
 
@@ -133,11 +162,8 @@ namespace WPFPages . Views
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
-			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
-											    //UnSubscribe from Cust Data Changed event declared in EventControl
-			EventControl . CustDataLoaded -= EventControl_CustDataLoaded;
-			CustViewercollection = null;
-
+			EventControl . DataUpdated -= EventControl_DataUpdated;
+		
 		}
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -154,10 +180,10 @@ namespace WPFPages . Views
 				SaveBttn . IsEnabled = false;
 				IsDirty = false;
 			}
-			if ( this . CustGrid . SelectedItem == null )
-				return;
-			this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
-			Startup = true;
+			//if ( this . CustGrid . SelectedItem == null )
+			//	return;
+			//this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
+			//Startup = true;
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 			Startup = false;
 		}
@@ -188,11 +214,12 @@ namespace WPFPages . Views
 			// Call Handler to update ALL Db's via SQL
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "CUSTOMER", bvm );
-			EventControl . TriggerCustDataLoaded ( CustViewercollection,
+			
+			EventControl . TriggerDataUpdated ( CustViewerDbcollection,
 				new LoadedEventArgs
 				{
 					CallerDb = "CUSTOMER",
-					DataSource = CustViewercollection,
+					DataSource = CustViewerDbcollection,
 					RowCount = this . CustGrid . SelectedIndex
 				} );
 
@@ -278,9 +305,9 @@ namespace WPFPages . Views
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
 				Flags . IsMultiMode = true;
 
-				CustViewercollection = CustCollection . LoadCust ( CustViewercollection, 3);
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3);
 				this . CustGrid . ItemsSource = null;
-				this . CustGrid . ItemsSource = CustViewercollection;
+				this . CustGrid . ItemsSource = CustViewerDbcollection;
 				this . CustGrid . Refresh ( );
 
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
@@ -298,17 +325,17 @@ namespace WPFPages . Views
 					this . CustGrid . SelectedIndex = rec;
 				else
 					this . CustGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . CustGrid, 1 );
+				Utils . ScrollRecordIntoView ( this . CustGrid, this . CustGrid . SelectedIndex );
 			}
 			else
 			{
 				Flags . IsMultiMode = false;
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
-				CustViewercollection = CustCollection . LoadCust ( CustViewercollection );
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
 
 				// Just reset our iremssource to man Db
 				this . CustGrid . ItemsSource = null;
-				this . CustGrid . ItemsSource = CustViewercollection;
+				this . CustGrid . ItemsSource = CustViewerDbcollection;
 				this . CustGrid . Refresh ( );
 
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateYellow" );
@@ -325,26 +352,43 @@ namespace WPFPages . Views
 					this . CustGrid . SelectedIndex = rec;
 				else
 					this . CustGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . CustGrid, 1 );
+				Utils . ScrollRecordIntoView ( this . CustGrid, this . CustGrid . SelectedIndex );
 			}
+		}
+		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
+		{
+			// Databases have DEFINITELY been updated successfully after a change
+			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
+			//dca . SenderName = o . ToString ( );
+			//dca . DbName = dbName;
 
-			//			BankAccountViewModel bank = new BankAccountViewModel();
-			//			var filtered = from bank inCustViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;
-			//		   GroupBy bank.CustNo having count(*) > 1
-			//where  
-			//having COUNT (*) > 1
-			//	select bank;
-			//	Where ( b.CustNo = "1055033") ;
-			/*
-						commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
-				+ $"(SELECT CUSTNO FROM BANKACCOUNT "
-				+ $" GROUP BY CUSTNO"
-				+ $" HAVING COUNT(*) > 1) ORDER BY ";
-
-			    */
-
-
+			EventControl . TriggerDataUpdated ( CustViewerDbcollection,
+			new LoadedEventArgs
+			{
+				CallerDb = "DETAILS",
+				DataSource = CustViewerDbcollection,
+				RowCount = this . CustGrid . SelectedIndex
+			} );
+			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 	}
 }
+
+/*			BankAccountViewModel bank = new BankAccountViewModel();
+//			var filtered = from bank inCustViewerDbcollection . Where ( x => bank . CustNo = "1055033" ) select x;
+//		   GroupBy bank.CustNo having count(*) > 1
+//where  
+//having COUNT (*) > 1
+//	select bank;
+//	Where ( b.CustNo = "1055033") ;
+
+
+			commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
+	+ $"(SELECT CUSTNO FROM BANKACCOUNT "
+	+ $" GROUP BY CUSTNO"
+	+ $" HAVING COUNT(*) > 1) ORDER BY ";
+
+    */
+
+

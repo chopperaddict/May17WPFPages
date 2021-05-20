@@ -19,9 +19,9 @@ namespace WPFPages
 	public static class Flags
 	{
 	
-		public static DataGrid SqlBankGrid = null;
-		public static SqlDbViewer SqlBankViewer = null;
-		public static  DataGrid CurrentEditDbViewerBankGrid = null;
+		public static DataGrid SqlBankGrid;// = null;
+		public static SqlDbViewer SqlBankViewer;// = null;
+		public static  DataGrid CurrentEditDbViewerBankGrid;// = null;
 
 		// Pointers to our data colections
 		public static DetCollection DetCollection = null;
@@ -49,11 +49,11 @@ namespace WPFPages
 			//			bool isEditDbCaller;
 			//			bool SqlDataChanged;
 			//			bool EditDbDataChanged;
-			EditDb BankEditDb;
-			EditDb CustEditDb;
-			EditDb DetEditDb;
+//			EditDb BankEditDb;
+//			EditDb CustEditDb;
+//			EditDb DetEditDb;
 			//			DbSelector DbSelectorOpen;
-			EditDb CurrentEditDbViewer;
+//			EditDb CurrentEditDbViewer;
 			//			SqlDbViewer CurrentSqlViewer;
 			//			SqlDbViewer SqlUpdateOriginatorViewer;
 			//			bool EditDbChangeHandled;
@@ -70,9 +70,9 @@ namespace WPFPages
 			int SqlDetCurrentIndex;
 		}
 
-		public static DataGrid SqlCustGrid = null;
-		public static SqlDbViewer SqlCustViewer = null;
-		public static  DataGrid CurrentEditDbViewerCustomerGrid = null;
+		public static DataGrid SqlCustGrid;// = null;
+		public static SqlDbViewer SqlCustViewer;// = null;
+		public static  DataGrid CurrentEditDbViewerCustomerGrid;//= null;
 
 		public static DataGrid SqlDetGrid = null;
 		public static SqlDbViewer SqlDetViewer = null;
@@ -98,8 +98,6 @@ namespace WPFPages
 		public static bool isMultiMode = false;
 		public static string MultiAccountCommandString = "";
 
-#pragma TODO add other Edit Db windows 2/4/21
-
 		public static bool isEditDbCaller = false;
 		public static bool SqlDataChanged = false;
 		public static bool EditDbDataChanged = false;
@@ -107,16 +105,16 @@ namespace WPFPages
 		public static bool  DataLoadIngInProgress = false;
 		public static bool UpdateInProgress = false;
 
-		public static EditDb BankEditDb = null;
-		public static EditDb CustEditDb = null;
-		public static EditDb DetEditDb = null;
+		public static EditDb BankEditDb;//= null;
+		public static EditDb CustEditDb;// = null;
+		public static EditDb DetEditDb;// = null;
 
 		//Flags to hold pointers to current DbSelector & SqlViewer Windows
 		// Needed to avoi dInstance issues when calling methods from inside Static methods
 		// that are needed to handle the interprocess messaging system I have designed for this thing
-		public static DbSelector DbSelectorOpen = null;
-		public static EditDb CurrentEditDbViewer = null;
-		public static SqlDbViewer CurrentSqlViewer = null;
+		public static DbSelector DbSelectorOpen;// = null;
+		public static EditDb CurrentEditDbViewer;// = new EditDb ( );
+		public static SqlDbViewer CurrentSqlViewer;// = new SqlDbViewer();
 		//		public static SqlDbViewer SqlUpdateOriginatorViewer = null;
 
 		// pointers  to any open Viewers
@@ -139,7 +137,7 @@ namespace WPFPages
 		///  Holds the DataGrid pointer fort each open SqlDbViewer Window as they
 		///  can each have diffrent datasets in use at any one time
 		/// </summary>
-		public static SqlDbViewer ActiveSqlViewer= null;
+		public static SqlDbViewer ActiveSqlViewer;//= null;
 
 		/// <summary>
 		///  Used to  control the initial load of Viewer windows to avoid 
@@ -147,7 +145,9 @@ namespace WPFPages
 		/// </summary>
 		public static bool SqlViewerIsLoading = false;
 		public static bool SqlViewerIndexIsChanging= false;
-
+		public static bool EditDbIndexIsChanging = false;
+		public static bool EditDbDataChange = false;
+		public static bool ViewerDataChange = false;
 		/*
 		 *	Sorting Checkbox enumeration
 		 *	Default_option . IsChecked = true;		// 0

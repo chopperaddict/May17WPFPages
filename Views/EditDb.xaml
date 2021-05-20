@@ -366,8 +366,9 @@
 				SelectionChanged="DataGrid1_SelectionChanged"
 				RowEditEnding="DataGrid1_RowEditEnding"
 				Visibility="Visible"
-				VirtualizingPanel.ScrollUnit="Pixel"
-				CellEditEnding="DataGrid1_CellEditEnding">
+				>
+			<!--VirtualizingPanel.ScrollUnit="Pixel"-->
+			<!--CellEditEnding="DataGrid1_CellEditEnding"-->
 			<!--ItemsSource="{Binding Source={StaticResource BankData}}"-->
 			<!--SelectedItem="{Binding myData:BankAccountViewModel, Mode=TwoWay}"-->
 			<DataGrid.Resources>
@@ -900,7 +901,6 @@
 		<DataGrid x:Name="DataGrid2"
 				AutoGenerateColumns="False"
 				CanUserAddRows="False"
-				CellEditEnding="DataGrid2_CellEditEnding"
 				Grid.Row="1"
 				Grid.Column="4"
 				HorizontalAlignment="Stretch"
@@ -914,6 +914,7 @@
 				Visibility="Collapsed"
 				VirtualizingPanel.ScrollUnit="Pixel"
 				VerticalAlignment="Stretch">
+			<!--CellEditEnding="DataGrid2_CellEditEnding"-->
 			<!--ItemsSource="{Binding Source={StaticResource CustData}}"-->
 			<!--SelectedItem="{Binding CustModel, Mode=TwoWay}"-->
 			<DataGrid.Resources>
@@ -1053,7 +1054,6 @@
 		<DataGrid x:Name="DetailsGrid"
 			AutoGenerateColumns="False"
 			CanUserAddRows="False"
-			CellEditEnding="DetailsGrid_CellEditEnding"
 			Grid.Row="1"
 			Grid.Column="4"
 			Grid.RowSpan="1"
@@ -1066,8 +1066,9 @@
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
 			VerticalAlignment="Stretch"
-			VirtualizingPanel.ScrollUnit="Pixel"
 			Visibility="Visible">
+			<!--VirtualizingPanel.ScrollUnit="Pixel"-->
+			<!--CellEditEnding="DetailsGrid_CellEditEnding"-->
 			<!--ItemsSource="{Binding Source={StaticResource DetData}}"-->
 			<!--ItemTemplate=""-->
 			<!--SelectedItem="{Binding DetModel, Mode=TwoWay}"-->

@@ -18,58 +18,58 @@ namespace WPFPages . Views
 	{
 
 		//		//Declare a global pointer to Observable BankAccount Collection
-		public  static BankCollection BankViewerDbcollection=new BankCollection();
-		public  static BankCollection SqlViewerBankcollection=new BankCollection();
-		public  static BankCollection EditDbBankcollection=new BankCollection();
-		public  static BankCollection MultiBankcollection=new BankCollection();
-		public  static BankCollection Bankinternalcollection=new BankCollection();
-		public  static BankCollection temp =new BankCollection();
+		public static BankCollection BankViewerDbcollection = new BankCollection ( );
+		public static BankCollection SqlViewerBankcollection = new BankCollection ( );
+		public static BankCollection EditDbBankcollection = new BankCollection ( );
+		public static BankCollection MultiBankcollection = new BankCollection ( );
+		public static BankCollection Bankinternalcollection = new BankCollection ( );
+		public static BankCollection temp = new BankCollection ( );
 
-		public static DataTable dtBank = new DataTable("BankDataTable");
+		public static DataTable dtBank = new DataTable ( "BankDataTable" );
 
 		#region CONSTRUCTOR
 
 		public BankCollection ( )
 		{
 		}
-
-
-		/// <summary>
-		/// Main Method for loading Bank Account data to our global BankCollection.Basnkcollection
-		/// </summary>
-		/// <returns></returns>		
-		public static BankCollection LoadBank (int ViewerType , bool NotifyAll = false)
+		public async static Task<BankCollection> LoadBank ( BankCollection cc, int ViewerType = 1, bool NotifyAll = false )
+		//public async static Task<BankCollection> LoadBank ( int ViewerType, bool NotifyAll = false , BankCollection bankdata = null)
 		{
 			// Called to Load/reload the One & Only Bankcollection data source
 			if ( dtBank . Rows . Count > 0 )
 				dtBank . Clear ( );
 
-			if ( Bankinternalcollection == null )
+			if ( cc != null )
+				Bankinternalcollection = cc;
+			else
 			{
 				Bankinternalcollection = new BankCollection ( );
-				Console . WriteLine ($"\n ***** SQL WARNING Created a NEW MasterBankCollection ...................");
+				Console . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 			}
 
-			// Load data fro SQL into dtBank Datatable
-			LoadBankData ( );
-
-			if ( Bankinternalcollection == null )
-			{
-				Bankinternalcollection = new BankCollection ( );
-				Console . WriteLine ( $"\n ***** SQL WARNING Created a NEW Bankinternalcollection ..................." );
-			}
-			if ( Bankinternalcollection . Count > 0 )
-				Bankinternalcollection . ClearItems ( );
-
-			// this returns "Bankinternalcollection" as a pointer to the correct viewer
-			LoadBankCollection ( );
+			Bankinternalcollection . ClearItems ( );
+			// Abstract the mail data load call to a method that uses AWAITABLE  calles
+			ProcessRequest ( ).ConfigureAwait(false);
 
 			// We now have the pointer to the the Bank data in variable Bankinternalcollection
 			if ( Flags . IsMultiMode == false )
 			{
 				// Finally fill and return The global Dataset
-				SelectViewer ( ViewerType, Bankinternalcollection );
-				return Bankinternalcollection;
+				BankCollection db  = new BankCollection (  );
+				SelectViewer ( ViewerType, Bankinternalcollection , out db);
+				if ( ViewerType == 1 )
+					return SqlViewerBankcollection;
+				if ( ViewerType == 2 )
+					return EditDbBankcollection;
+				if ( ViewerType == 3 )
+				{
+					cc = MultiBankcollection;
+					return MultiBankcollection;
+				}
+				if ( ViewerType == 4 )
+					return BankViewerDbcollection;
+				else
+					return ( BankCollection ) db;
 			}
 			else
 			{
@@ -77,27 +77,34 @@ namespace WPFPages . Views
 				return Bankinternalcollection;
 			}
 		}
-
-		public static bool SelectViewer ( int ViewerType, BankCollection tmp )
+		private static async Task ProcessRequest ( )
 		{
-			bool result = false;
+			// Load data fro SQL into dtBank Datatable
+			 LoadBankData ( );
+			// this returns "Bankinternalcollection" as a pointer to the correct viewer
+			Bankinternalcollection = await LoadBankCollection ( ) . ConfigureAwait ( false );
+		}
+		public static BankCollection  SelectViewer ( int ViewerType, BankCollection tmp , out BankCollection db)
+		{
+			db = null;
 			switch ( ViewerType )
 			{
 				case 1:
 					SqlViewerBankcollection = tmp;
-					result = true;
+					db = SqlViewerBankcollection;
 					break;
 				case 2:
 					EditDbBankcollection = tmp;
-					result = true;
+					db = 
+					db = EditDbBankcollection;
 					break;
 				case 3:
 					MultiBankcollection = tmp;
-					result = true;
+					db = MultiBankcollection;
 					break;
 				case 4:
 					BankViewerDbcollection = tmp;
-					result = true;
+					db =  BankViewerDbcollection;
 					break;
 				//case 5:
 				//	CustViewerDbcollection = tmp;
@@ -116,11 +123,10 @@ namespace WPFPages . Views
 				//	result = true;
 				//	break;
 				case 9:
-//					= tmp;
-					result = true;
+					//					= tmp;
 					break;
 			}
-			return result;
+			return db;
 		}
 		#endregion CONSTRUCTOR
 
@@ -133,51 +139,54 @@ namespace WPFPages . Views
 		/// <param name="b"></param>
 		/// <param name="mode"></param>
 		/// <returns></returns>
-		public async Task<BankCollection> ReLoadBankData ( bool b = false , int mode = -1 )
+		public async Task<BankCollection> ReLoadBankData ( bool b = false, int mode = -1 )
 		{
 			if ( dtBank . Rows . Count > 0 )
 				dtBank . Clear ( );
 
-			//await LoadBankTaskInSortOrderasync ( false );
-			BankCollection temp = new BankCollection  ();
-			if ( temp. Count > 0 )
+			//LoadBankTaskInSortOrderasync ( false );
+			BankCollection temp = new BankCollection ( );
+			if ( temp . Count > 0 )
 			{
-				temp. ClearItems ( );
+				temp . ClearItems ( );
 			}
-			LoadBankData ( );
-			if ( Flags . IsMultiMode )
-			{
-				// Loading  subset of multi accounts only
-				//				BankCollection bank = new BankCollection();
-				temp = LoadBankTest (temp );
-				// Just return  the subset of data without updating our
-				// //Flags pointer or class Bankcollection pointer
-				return temp;
-			}
-			else
-			{
-				// :Loading full total or data
-				Bankinternalcollection = LoadBank( mode);
-				SelectViewer ( mode , Bankinternalcollection );
 
-				// Set our globals etc
-				//				Bankcollection = Bankinternalcollection;
-				//				Flags . BankCollection = Bankcollection = Bankinternalcollection;
-				return Bankinternalcollection;
-			}
+			await ProcessRequest ( );
+
+			//await LoadBankData ( );
+			//if ( Flags . IsMultiMode )
+			//{
+			//	// Loading  subset of multi accounts only
+			//	//				BankCollection bank = new BankCollection();
+			//	temp = await LoadBankTest (temp );
+			//	// Just return  the subset of data without updating our
+			//	// //Flags pointer or class Bankcollection pointer
+			//	return temp;
+			//}
+			//else
+			//{
+			//	// :Loading full total or data
+			//	Bankinternalcollection = LoadBank( mode);
+			//	SelectViewer ( mode , Bankinternalcollection );
+
+			//	// Set our globals etc
+			//	//				Bankcollection = Bankinternalcollection;
+			//	//				Flags . BankCollection = Bankcollection = Bankinternalcollection;
+			return Bankinternalcollection;
+			//			}
 		}
 
 		/// Handles the actual conneciton ot SQL to load the Details Db data required
 		/// </summary>
 		/// <returns></returns>
-		public async static Task<bool> LoadBankData ( int mode = -1 , bool isMultiMode = false )
+		public static  void LoadBankData ( int mode = -1, bool isMultiMode = false )
 		{
 			try
 			{
 				SqlConnection con;
 				string ConString = "";
-				
-//				ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
+
+				//				ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 				//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
 				con = new SqlConnection ( ConString );
@@ -211,14 +220,14 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
-//				MessageBox . Show ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
-				return false;
+				Console . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return ;
+				//				MessageBox . Show ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
+				return ;
 			}
-			return true;
+			return ;
 		}
 
-		public async static Task<bool> LoadBankCollection ( bool Notify = false )
+		public static async Task<BankCollection> LoadBankCollection ( bool Notify = false )
 		{
 			int count = 0;
 			try
@@ -228,14 +237,14 @@ namespace WPFPages . Views
 				{
 					Bankinternalcollection . Add ( new BankAccountViewModel
 					{
-						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ) ,
-						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ) ,
-						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ) ,
-						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ) ,
-						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ) ,
-						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ) ,
-						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ) ,
-						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ) ,
+						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
+						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
+						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
+						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
 					} );
 					count = i;
 				}
@@ -247,18 +256,20 @@ namespace WPFPages . Views
 			}
 			finally
 			{
-				BankCollection bc = new BankCollection ( );
+				// This is ONLY called  if a requestor specifies the argument as TRUE
 				if ( Notify )
-					EventControl . TriggerBankDataLoaded ( null ,
+				{
+					EventControl . TriggerBankDataLoaded ( null,
 						new LoadedEventArgs
 						{
-							CallerDb = "BankAccount" ,
-							DataSource = bc ,
+							CallerDb = "BankAccount",
+							DataSource = Bankinternalcollection,
 							RowCount = Bankinternalcollection . Count
 						} );
+				}
 			}
 			//			Flags . BankCollection = Bankcollection;
-			return true;
+			return Bankinternalcollection;
 		}
 
 
@@ -266,7 +277,7 @@ namespace WPFPages . Views
 		/// A specialist version  to reload data WITHOUT changing global version
 		/// </summary>
 		/// <returns></returns>
-		public static BankCollection LoadBankTest (BankCollection temp )
+		public async static Task<BankCollection> LoadBankTest ( BankCollection temp )
 		{
 			try
 			{
@@ -274,14 +285,14 @@ namespace WPFPages . Views
 				{
 					temp . Add ( new BankAccountViewModel
 					{
-						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ) ,
-						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ) ,
-						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ) ,
-						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ) ,
-						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ) ,
-						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ) ,
-						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ) ,
-						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ) ,
+						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
+						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
+						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
+						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
 					} );
 				}
 			}
@@ -303,7 +314,7 @@ namespace WPFPages . Views
 			// Run a specified delegate sent by SqlDbViewer
 			KeyBoardDelegate ( 1 );
 		}
-		public async Task<BankCollection> LoadBankTaskInSortOrderasync ( bool Notify = false , int i = -1 )
+		public async Task<BankCollection> LoadBankTaskInSortOrderasync ( bool Notify = false, int i = -1 )
 		// No longer used
 		{
 			//if ( dtBank . Rows . Count > 0 )
@@ -321,7 +332,7 @@ namespace WPFPages . Views
 			//Task t1 = Task . Run(
 			//		async ( ) =>
 			//		{
-			//			await LoadBankData ( );
+			//			LoadBankData ( );
 			//		}
 			//	);
 			//#region Continuations
@@ -330,7 +341,7 @@ namespace WPFPages . Views
 			//	async ( Bankinternalcollection ) =>
 			//	{
 			//		//					Console . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
-			//		await LoadBankCollection ( Notify );
+			//		LoadBankCollection ( Notify );
 			//	} , TaskScheduler . FromCurrentSynchronizationContext ( )
 			// );
 			//#endregion process code to load data

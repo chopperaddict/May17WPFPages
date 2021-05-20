@@ -35,7 +35,7 @@ namespace WPFPages . Views
 
 		#endregion CONSTRUCTOR
 
-		public static DetCollection LoadDet ( DetCollection dc , int ViewerType = 1)
+		public async static Task<DetCollection> LoadDet ( DetCollection dc , int ViewerType = 1)
 		{
 			// Called to Load/reload the One & Only Bankcollection data source
 			if ( dtDetails. Rows . Count > 0 )
@@ -49,16 +49,39 @@ namespace WPFPages . Views
 			if ( Detinternalcollection . Count > 0 )
 				Detinternalcollection . ClearItems ( );
 
-			DetCollection d = new DetCollection();
-			d.LoadDetailsDataSql ( );
-			if(dtDetails.Rows.Count > 0)
-				LoadDetTest ( Detinternalcollection );
+			Detinternalcollection = await ProcessRequest (ViewerType );
+			return Detinternalcollection;
+			//DetCollection d = new DetCollection();
+			//d.LoadDetailsDataSql ( );
+			//if(dtDetails.Rows.Count > 0)
+			//	LoadDetTest ( Detinternalcollection );
+			//// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
+			//Flags . DetCollection = Detinternalcollection;
+			//if ( Flags . IsMultiMode == false )
+			//{
+			//	// Finally fill and return The global Dataset
+			//	SelectViewer ( ViewerType , Detinternalcollection );
+			//	return Detinternalcollection;
+			//}
+			//else
+			//{
+			//	// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+			//	return Detinternalcollection;
+			//}
+		}
+		private static async Task<DetCollection> ProcessRequest (int ViewerType )
+		{
+			DetCollection d = new DetCollection ( );
+			await d  . LoadDetailsDataSql ( ).ConfigureAwait(false);
+			if ( dtDetails . Rows . Count > 0 )
+				await LoadDetTest  ( Detinternalcollection ).ConfigureAwait(false);
+			
 			// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
 			Flags . DetCollection = Detinternalcollection;
 			if ( Flags . IsMultiMode == false )
 			{
 				// Finally fill and return The global Dataset
-				SelectViewer ( ViewerType , Detinternalcollection );
+				SelectViewer ( ViewerType, Detinternalcollection );
 				return Detinternalcollection;
 			}
 			else
@@ -71,7 +94,7 @@ namespace WPFPages . Views
 		#region startup/load data / load collection (Detinternalcollection)
 
 		// Entry point for all data load/Reload
-		CancellationTokenSource  cts = new CancellationTokenSource();
+		CancellationTokenSource cts = new CancellationTokenSource();
 
 		//**************************************************************************************************************************************************************//
 		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false , int row = 0 )

@@ -14,6 +14,21 @@ namespace WPFPages
 	/// </summary>
 	public class Utils
 	{
+		/// <summary>
+		/// Metohd that almost GUARANTESS ot force a record into view in any DataGrid
+		/// </summary>
+		/// <param name="dGrid"></param>
+		/// <param name="row"></param>
+		public static void ScrollRecordInGrid(DataGrid dGrid,  int row)
+		{
+			if ( dGrid . CurrentItem == null ) return;
+				dGrid . UpdateLayout ( );
+			dGrid . ScrollIntoView ( dGrid . Items . Count - 1 );
+			dGrid . UpdateLayout ( );
+			dGrid . ScrollIntoView ( row );
+			dGrid . UpdateLayout ( );
+			Utils . ScrollRecordIntoView ( dGrid, row );
+		}
 		public static bool DataGridHasFocus ( DependencyObject instance )
 		{
 			//how to fibnd out whether a datagrid has focus or not to handle key previewers
@@ -25,42 +40,44 @@ namespace WPFPages
 			else
 				return false;
 		}
-		public static void ScrollRecordIntoView ( DataGrid Dgrid , int caller )
+		public static void ScrollRecordIntoView ( DataGrid Dgrid , int CurrentRecord )
 		{
 			double currentTop = 0;
 			double currentBottom= 0;
 			double currsel = 0;
 			double offset = 0;
-			if ( Dgrid . Name == "CustomerGrid" )
+			if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
 			{
-				currentTop = Flags . TopVisibleDetGridRow;
-				currentBottom = Flags . BottomVisibleDetGridRow;
+				currentTop = Flags . TopVisibleBankGridRow;
+				currentBottom = Flags . BottomVisibleBankGridRow;
 			}
-			else if ( Dgrid . Name == "BankGrid" )
+			else if ( Dgrid . Name == "BankGrid" || Dgrid . Name == "DataGrid2" )
 			{
-				currentTop = Flags . TopVisibleDetGridRow;
-				currentBottom = Flags . BottomVisibleDetGridRow;
+				currentTop = Flags . TopVisibleCustGridRow;
+				currentBottom = Flags . BottomVisibleCustGridRow;
 			}
-			else if ( Dgrid . Name == "DetailsGrid" )
+			else if ( Dgrid . Name == "DetailsGrid" || Dgrid . Name == "DetailsGrid" )
 			{
 				currentTop = Flags . TopVisibleDetGridRow;
 				currentBottom = Flags . BottomVisibleDetGridRow;
 			}     // Believe it or not, it takes all this to force a scrollinto view correctly
 
-			currsel = Dgrid . SelectedIndex;
+//			currsel = Dgrid . SelectedIndex;
 
 			if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null ) return;
 
 			//			if ( Dgrid . SelectedItem == null ) return;
 			//			Dgrid . SelectedIndex = Dgrid.SelectedIndex + (int)offset;
 			//update and scroll to bottom first
+			Dgrid . SelectedIndex = ( int ) CurrentRecord;
+			Dgrid . SelectedItem = ( int ) CurrentRecord;
 			Dgrid . UpdateLayout ( );
 			Dgrid . ScrollIntoView ( Dgrid . Items . Count - 1 );
 			Dgrid . UpdateLayout ( );
 			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
 			Dgrid . UpdateLayout ( );
-			Dgrid . SelectedIndex = ( int ) currsel;
-			if ( caller == 0 )
+			Dgrid . SelectedIndex = ( int ) CurrentRecord;
+//			if ( caller == 0 )
 				Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
 
 			//			Flags . TopVisibleDetGridRow = currentTop;

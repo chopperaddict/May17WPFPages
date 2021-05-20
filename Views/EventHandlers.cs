@@ -95,6 +95,13 @@ namespace WPFPages . Views
 			// NotifyOfDataLoaded
 			dg = EventControl . GetEventCount3 ( );
 			if ( dg != null ) count3 = dg . Length;
+
+			//EditIndexChanged
+			dg = EventControl . GetEventCount4 ( );
+			if ( dg != null ) count4 = dg . Length;
+			//ViewerIndexChanged
+			dg = EventControl . GetEventCount5 ( );
+			if ( dg != null ) count4 = dg . Length;
 			// DetCollection. BankDataLoaded
 			dg = EventControl . GetEventCount6 ( );
 			if ( dg != null ) count6 = dg . Length;
@@ -125,9 +132,17 @@ namespace WPFPages . Views
 			else
 				Console . WriteLine ( $"NotifyOfDataChange				= {count2}" );
 			if ( count3 < 0 )
+				Console . WriteLine ( $"EditIndexChanged					= " );
+			else
+				Console . WriteLine ( $"EditIndexChanged					= {count3}" );
+			if ( count5 < 0 )
+				Console . WriteLine ( $"ViewerIndexChanged				= " );
+			else
+				Console . WriteLine ( $"ViewerIndexChanged				= {count5}" );
+			if ( count4 < 0 )
 				Console . WriteLine ( $"NotifyOfDataLoaded				= " );
 			else
-				Console . WriteLine ( $"NotifyOfDataLoaded				= {count3}" );
+				Console . WriteLine ( $"NotifyOfDataLoaded				= {count4}" );
 			if ( count6 < 0 )
 				Console . WriteLine ( $"BankCollection. BankDataLoaded	= " );
 			else
@@ -190,6 +205,24 @@ namespace WPFPages . Views
 				}
 			}
 			dglist2 = EventControl . GetEventCount3 ( );
+			if ( dglist2 != null )
+			{
+				int cnt = 0;
+				if ( !first )
+				{
+					Console . WriteLine ( $"=====================================================================================" ); first = false;
+				}
+				first = true;
+				Console . WriteLine ( $"=====================================================================================" );
+				foreach ( var item in dglist2 )
+				{
+					if ( cnt > 0 ) Console . WriteLine ( );
+					Console . WriteLine ( $"Delegate : NOTIFYOFDATALOADED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					cnt++;
+				}
+			}
+			
+			dglist2 = EventControl . GetEventCount4 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;
@@ -286,26 +319,26 @@ namespace WPFPages . Views
 					cnt++;
 				}
 			}
-			dglist2 = EditDb . GetEventCount10 ( );
-			if ( dglist2 != null )
-			{
-				int cnt = 0;
-				if ( !first )
-				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
-				}
-				Console . WriteLine ( $"=====================================================================================" );
-				first = true;
-				foreach ( var item in dglist2 )
-				{
-					if ( cnt > 0 ) Console . WriteLine ( );
-					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : DbEdit.ALLVIEWERSUPDATE :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-					else
-						Console . WriteLine ( $"Delegate : DbEdit.ALLVIEWERSUPDATE :\n >>> \nMethod = {item . Method . ToString ( )}" );
-					cnt++;
-				}
-			}
+			//dglist2 = EditDb . GetEventCount10 ( );
+			//if ( dglist2 != null )
+			//{
+			//	int cnt = 0;
+			//	if ( !first )
+			//	{
+			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//	}
+			//	Console . WriteLine ( $"=====================================================================================" );
+			//	first = true;
+			//	foreach ( var item in dglist2 )
+			//	{
+			//		if ( cnt > 0 ) Console . WriteLine ( );
+			//		if ( item . Target != null )
+			//			Console . WriteLine ( $"Delegate : DbEdit.ALLVIEWERSUPDATE :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+			//		else
+			//			Console . WriteLine ( $"Delegate : DbEdit.ALLVIEWERSUPDATE :\n >>> \nMethod = {item . Method . ToString ( )}" );
+			//		cnt++;
+			//	}
+			//}
 			dglist2 = EventControl . GetEventCount11 ( );
 			if ( dglist2 != null )
 			{

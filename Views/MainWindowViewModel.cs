@@ -27,7 +27,6 @@ namespace WPFPages .Views
                 }
                 void OnWorkspacesChanged (object sender, NotifyCollectionChangedEventArgs e)
                 {
-#pragma MVVM TODO
                         //        if (e.NewItems != null && e.NewItems.Count != 0)
                         //                foreach (BankAccountViewModel workspace in e.NewItems)
                         //                        workspace.RequestClose += this.OnWorkspaceRequestClose;

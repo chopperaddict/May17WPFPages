@@ -34,7 +34,7 @@ namespace WPFPages . Views
 		#endregion CONSTRUCTOR
 
 		#region startup/load data / load collection (CustCollection)
-		public static CustCollection LoadCust ( CustCollection cc , int ViewerType = 1)
+		public async static Task<CustCollection >LoadCust ( CustCollection cc , int ViewerType = 1)
 		{
 			// Called to Load/reload the One & Only Bankcollection data source
 			if ( dtCust . Rows . Count > 0 )
@@ -47,11 +47,14 @@ namespace WPFPages . Views
 			if ( Custinternalcollection . Count > 0 )
 				Custinternalcollection . ClearItems ( );
 
-			CustCollection c = new CustCollection();
-			c . LoadCustDataSql ( );
+			// Abstract the mail data load call to a method that uses AWAITABLE  calles
+			await ProcessRequest ( );
 
-			if ( dtCust . Rows . Count > 0 )
-				Custinternalcollection = LoadCustomerTest ( );
+			//CustCollection c = new CustCollection();
+			//c . LoadCustDataSql ( );
+
+			//if ( dtCust . Rows . Count > 0 )
+			//	Custinternalcollection = LoadCustomerTest ( );
 			// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
 			Flags . CustCollection = Custinternalcollection;
 			SqlViewerCustcollection = Custinternalcollection;
@@ -66,6 +69,15 @@ namespace WPFPages . Views
 				// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
 				return Custinternalcollection;
 			}
+		}
+		private static async Task ProcessRequest ( )
+		{
+			// Load data fro SQL into dtBank Datatable
+			CustCollection c = new CustCollection ( );
+			await c . LoadCustDataSql ( ).ConfigureAwait(false);
+			
+			// this returns "Bankinternalcollection" as a pointer to the correct viewer
+			await LoadCustomerTest ( ) . ConfigureAwait ( false );
 		}
 
 		/// Handles the actual conneciton ot SQL to load the Details Db data required
@@ -166,7 +178,7 @@ namespace WPFPages . Views
 			Flags . CustCollection = Custinternalcollection;
 			return true;
 		}
-		private static CustCollection LoadCustomerTest ( bool Notify = true )
+		public async static Task< CustCollection >LoadCustomerTest ( bool Notify = true )
 
 		{
 			int count = 0;

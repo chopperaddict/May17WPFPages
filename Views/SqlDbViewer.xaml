@@ -564,8 +564,8 @@
 				FontWeight="DemiBold"
 				Background="{StaticResource HeaderBrushGray}"
 				Foreground="White"
-				MouseDown="Window_MouseDown"
 				Template="{StaticResource HorizontalGradientTemplateGray}"
+				MouseDown="Window_MouseDown"
 				Content="Multiple A/c's Only">
 			</Button>
 			<Border x:Name="splitter" Width="5" Height="35" Margin="5,0,5,0"
@@ -594,8 +594,8 @@
 				Click="ShowCust_Click"
 				Background="{StaticResource HeaderBrushYellow}"
 				Foreground="White"
-				MouseDown="Window_MouseDown"
 				Template="{StaticResource HorizontalGradientTemplateYellow}"
+				MouseDown="Window_MouseDown"
 				Content="Customer A/c's (0)" />
 
 			<!--Details Account Button-->
@@ -603,9 +603,9 @@
 				IsEnabled="true"
 				Focusable="True"
 				Click="ShowDetails_Click"
+				MouseDown="Window_MouseDown"
 				Background="{StaticResource HeaderBrushGreen}"
 				Foreground="White"
-				MouseDown="Window_MouseDown"
 				Template="{StaticResource HorizontalGradientTemplateGreen}"
 				Content="Details A/c's  (0)">
 			</Button>
@@ -647,7 +647,7 @@
 					GotFocus="BankGrid_GotFocus"
 					HorizontalAlignment="Stretch"
 					IsReadOnly="False"
-					IsSynchronizedWithCurrentItem="True"
+					IsSynchronizedWithCurrentItem="false"
 					MouseRightButtonUp="BankGrid_MouseRightButtonUp"
 					MouseRightButtonDown="BankGrid_MouseRightButtonDown"
 					PreviewMouseDown="BankGrid_PreviewMouseDown"
@@ -806,7 +806,7 @@
 				DataContext="Custcollection"
 				 GotFocus="CustomerGrid_GotFocus"
 				Grid.ColumnSpan="4"
-				IsSynchronizedWithCurrentItem="True"
+				IsSynchronizedWithCurrentItem="false"
 				RowEditEnding="ViewerGrid_RowEditEnding"
 				RowHeight="27"
 				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
@@ -825,7 +825,6 @@
 				<!--PreparingCellForEdit="CustomerGrid_PreparingCellForEdit"-->
 				<!--Initialized="CustomerGrid_Initialized_1"-->
 				<!--SourceUpdated="CustomerGrid_SourceUpdated"-->
-				<!--IsSynchronizedWithCurrentItem="True"-->
 
 				<!--This makes the selected row visible when window looses focus - works on any grid-->
 				<DataGrid.Resources>
@@ -921,7 +920,7 @@
 					ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
 					GotFocus="DetailsGrid_GotFocus"
 					Grid.ColumnSpan="4"
-					IsSynchronizedWithCurrentItem="True"
+					IsSynchronizedWithCurrentItem="false"
 					PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
 					RowEditEnding="ViewerGrid_RowEditEnding"
 					RowHeight="27"

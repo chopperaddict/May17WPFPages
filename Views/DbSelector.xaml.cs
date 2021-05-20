@@ -2,6 +2,7 @@
 using System . Collections . Generic;
 using System . ComponentModel;
 using System . Diagnostics;
+using System . Reflection;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
@@ -42,15 +43,7 @@ namespace WPFPages . Views
 		private static bool key1 = false;
 		private static bool StartUp = true;
 
-
-		//*********************DELEGATE STUFF **************************************************//
-		// I can now just use this : SendViewerCommand(x, "") to send messages to SqlDbViewer window
-		//		EVent trigger for public delegate void NotifyViewer ( int status, string info, SqlDbViewer NewSqlViewer );
-		//		public NotifyViewer SendViewerCommand = null;
-		//*********************DELEGATE STUFF **************************************************//
-
-		#region Receive  notifications into MyNotification() from SqlViewer - WORKS JUST FINE
-
+	
 		//*****************************************************//
 		//DELEGATE in use is : Notifyviewer
 
@@ -115,7 +108,6 @@ namespace WPFPages . Views
 		public DbSelector ( )
 		{
 			InitializeComponent ( );
-			//			MainWindow.dbs = this;
 			if ( ViewersList . Items . Count > 2 )
 			{// ignore the dummy blank entry line
 				ViewersList . SelectedIndex = 2;
@@ -123,16 +115,10 @@ namespace WPFPages . Views
 			}
 			sqlSelector . SelectedIndex = 2;
 			sqlSelector . Focus ( );
-			// Assign Handler to delegate SqlViewerNotify
-			//			SqlViewerNotify notifier = DbSelectorMessage;
-
-			//			EventHandlers . SendViewerCommand = SqlDbViewer . DbSelectorMessage;
 			this . MouseDown += delegate { DoDragMove ( ); };
-			//This DOES send a message to SqlDbViewer !!
-			//			EventHandlers . SendViewerCommand ( 103 , "<<< Completed DbSelector basic Constructor" , null );
 			Utils . GetWindowHandles ( );
 			OntopChkbox . IsChecked = false;
-			this . Topmost = false;
+			this . Topmost = true;
 		}
 
 		public static ListBox listbox;
@@ -613,8 +599,6 @@ namespace WPFPages . Views
 			//			MainWindow.gv.ViewerCount = 0;
 		}
 
-#pragma main viewerslist content updater NEEDED ???
-
 		/// <summary>
 		/// PRIMARY Fn TO ADD A VIEWER
 		/// Adds the details of the newly loaded viewer window to the DbSelectors ViewersList window
@@ -738,8 +722,6 @@ namespace WPFPages . Views
 		}
 
 		//*****************************************************//
-
-		#endregion Receive  notifications into MyNotification() from SqlViewer - WORKS JUST FINE
 
 		// Variable to hold string content for ListBox items in ViewerList of DbSelector.
 		private string _listBoxItemText;
@@ -1320,7 +1302,12 @@ namespace WPFPages . Views
 		{
 			if ( StartUp ) return;
 			// Open selected Db viewer
-			string s = ViewerTypes . SelectedItem . ToString ( );
+			var p = ViewerTypes . SelectedItem;// as PropertyInfo ;
+			string s = ViewerTypes.Text;
+			//var q = 	 GetValue ( p);
+			s = p . ToString ( );
+			//Color selectedColor = ( Color ) ( cmbColors . SelectedItem as PropertyInfo ) . GetValue ( null, null );
+			//this . Background = new SolidColorBrush ( selectedColor );
 			if ( s . Contains ( "Bank" ) )
 			{
 				BankDbView cdbv = new BankDbView ( );

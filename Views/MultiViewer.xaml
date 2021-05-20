@@ -7,9 +7,10 @@
         xmlns:local="clr-namespace:WPFPages.Views"
         mc:Ignorable="d"
 	Closing="Window_Closing"
+	
 	  Loaded="Window_Loaded"
-	MinHeight="400"
-	MinWidth="1200"  
+	MinHeight="600"
+	MinWidth="980"  
 	PreviewKeyDown="Window_PreviewKeyDown"
         Title="MultiViewer" Height="850" Width="1000"
 	WindowStartupLocation="CenterScreen"
@@ -218,12 +219,92 @@
 			>
 			<!--#region BUTTON BAR -->
 
+			<!--Style="{StaticResource RedToBlackButton}"-->
 			<Button  
-					x:Name="MultiBtn"
+	   x:Name="BankDbBtn_Copy"
+	   Height="40"
+	   Width="70"
+	   Margin="0"
+				Background="{StaticResource HeaderBrushBlue}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateBlue}" 
+	   Click="BankDb_Click"				
+					>
+				<StackPanel Orientation="Horizontal" 
+		   HorizontalAlignment="Center"
+		   VerticalAlignment="Center">
+					<!--<TextBlock FontFamily="Wingdings" 
+								Text="ü"
+						     Height="20"
+						     Width="20"
+									Style="{StaticResource WingDingStyle}" />-->
+					<TextBlock Text="Bank Db" 
+			   HorizontalAlignment="Center"
+			   VerticalAlignment="Center" 
+			   Style="{StaticResource WingDingStyle}"
+			   FontSize="12"/>
+				</StackPanel>
+			</Button>
+			<Button  
+				x:Name="CustDbBtn_Copy"
+				Height="40"
+				Width="70"
+				Margin="2"
+				Background="{StaticResource HeaderBrushYellow}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateYellow}"
+				Click="CustDb_Click"				
+					>
+				<StackPanel Orientation="Horizontal" 
+		   HorizontalAlignment="Center"
+		   VerticalAlignment="Center">
+					<!--<TextBlock FontFamily="Wingdings" 
+								Text="ü"
+						     Height="20"
+						     Width="20"
+									Style="{StaticResource WingDingStyle}" />-->
+					<TextBlock Text="Cust Db" 
+			   HorizontalAlignment="Center"
+			   VerticalAlignment="Center" 
+			   Style="{StaticResource WingDingStyle}"
+			   FontSize="12"/>
+				</StackPanel>
+			</Button>
+
+
+			<Button  
+					x:Name="DetDbBtn"
+					Height="40"
+					Width="70"
+					Margin="0,0"
+				Background="{StaticResource HeaderBrushGreen}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateGreen}"
+				Click="DetDb_Click"				
+					>
+				<StackPanel Orientation="Horizontal" 
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center">
+					<!--<TextBlock FontFamily="Wingdings" 
+								Text="ü"
+						     Height="20"
+						     Width="20"
+									Style="{StaticResource WingDingStyle}" />-->
+					<TextBlock Text="Details Db" 
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center" 
+									Style="{StaticResource WingDingStyle}"
+								FontSize="12"/>
+				</StackPanel>
+			</Button>
+			<Button  
+					x:Name="Multiaccounts"
 					Height="40"
 					Width="100"
-					Margin="10,0"
-					Style="{StaticResource RedToBlackButton}"				
+					Margin="10,0, 5,0"
+				Background="{StaticResource HeaderBrushGray}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateGray}"
 				Click="Details_Click"				
 					>
 				<StackPanel Orientation="Horizontal" 
@@ -234,30 +315,8 @@
 						     Height="20"
 						     Width="20"
 									Style="{StaticResource WingDingStyle}" />-->
-					<TextBlock Text="Multi Accounts" 
-								HorizontalAlignment="Center"
-								VerticalAlignment="Center" 
-									Style="{StaticResource WingDingStyle}"
-								FontSize="12"/>
-				</StackPanel>
-			</Button>
-			<Button  
-					x:Name="DbBtn"
-					Height="40"
-					Width="100"
-					Margin="10,0"
-					Style="{StaticResource RedToBlackButton}"				
-				Click="Db_Click"				
-					>
-				<StackPanel Orientation="Horizontal" 
-							HorizontalAlignment="Center"
-							VerticalAlignment="Center">
-					<!--<TextBlock FontFamily="Wingdings" 
-								Text="ü"
-						     Height="20"
-						     Width="20"
-									Style="{StaticResource WingDingStyle}" />-->
-					<TextBlock Text="Bank Db" 
+					<TextBlock x:Name="MultiAccountText"
+						Text="Multi Accounts" 
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center" 
 									Style="{StaticResource WingDingStyle}"
@@ -269,8 +328,10 @@
 					x:Name="FilterBtn"
 					Height="40"
 					Width="80"
-					Margin="10,0"
-					Style="{StaticResource RedToBlackButton}"				
+					Margin="0,0"
+				Background="{StaticResource HeaderBrushGray}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateGray}"
 					Click="Filter_Click"				
 					>
 				<StackPanel Orientation="Horizontal" 
@@ -291,8 +352,10 @@
 					x:Name="RefreshBtn"
 					Height="40"
 					Width="70"
-					Margin="10,0"
-					Style="{StaticResource RedToBlackButton}"				
+					Margin="5,0"
+				Background="{StaticResource HeaderBrushGray}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateGray}"
 				Click="Refresh_Click"				
 					>
 				<StackPanel Orientation="Horizontal" 
@@ -339,6 +402,7 @@
 		<DataGrid x:Name="BankGrid"
 				AlternatingRowBackground="{StaticResource Blue4}"
 				AutoGenerateColumns="False"
+				CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
 			      DataGridCell.Selected="BankGrid_Selected"
 				GotFocus="BankGrid_GotFocus"
@@ -470,6 +534,7 @@
 		<DataGrid x:Name="CustomerGrid"
 				AlternatingRowBackground="{StaticResource Yellow2}"
 				AutoGenerateColumns="False"
+				CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
 				GotFocus="CustomerGrid_GotFocus"
 				Grid.Row="4"
@@ -622,6 +687,7 @@
 		<DataGrid  x:Name="DetailsGrid"
 				AlternatingRowBackground="{StaticResource Green4}"
 				AutoGenerateColumns="False"
+				CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
 				GotFocus="DetailsGrid_GotFocus"
 				Grid.Row="5"

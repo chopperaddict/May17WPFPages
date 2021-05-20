@@ -232,7 +232,8 @@
 				<!--#region Text Fields-->
 
 				<TextBlock x:Name="textBlock" 
-					Foreground="White"
+					Foreground="Black"
+				FontWeight="DemiBold"
 					Grid.Row="1"
 					Grid.Column="3"
 					HorizontalAlignment="Center" 
@@ -260,7 +261,8 @@
 					    Canvas.Top="21"/>
 
 				<TextBlock x:Name="textBlock_Copy" 
-					    Foreground="White"
+					Foreground="Black"
+				FontWeight="DemiBold"
 					    HorizontalAlignment="Center" 
 					    Padding="5,5,5,5"
 					    Text="Bank A/c #" 
@@ -285,7 +287,8 @@
 					   Canvas.Top="48" RenderTransformOrigin="0.422,2.208"/>
 
 				<TextBlock x:Name="textBlock_Copy5" 
-				Foreground="White"
+					Foreground="Black"
+				FontWeight="DemiBold"
 				HorizontalAlignment="Center" 
 				Padding="5,5,5,5"	 					    
 				Text="A/c Type" 
@@ -313,7 +316,8 @@
 				TextChanged="TextChanged"/>
 
 				<TextBlock x:Name="textBlock_Copy1" 
-				    Foreground="White"
+					Foreground="Black"
+				FontWeight="DemiBold"
 				    HorizontalAlignment="Center" 
 				    Padding="5,5,5,5"
 					    
@@ -344,7 +348,8 @@
 
 
 				<TextBlock x:Name="textBlock_Copy3" 
-				Foreground="White"
+				Foreground="Black"
+				FontWeight="DemiBold"
 				HorizontalAlignment="Center" 
 				Padding="5,5,5,5"
 				Text="Date Opened" 
@@ -372,7 +377,7 @@
 				TextChanged="TextChanged"/>
 
 				<TextBlock x:Name="textBlock_Copy4" 
-				Foreground="White"
+					Foreground="Black"
 				HorizontalAlignment="Center" 
 				Padding="5,5,5,5"
 				Text="Close Date" 

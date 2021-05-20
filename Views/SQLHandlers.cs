@@ -640,7 +640,7 @@ namespace WPFPages . Views
 			}
 			return true;
 		}
-		public void UpdateAllDb ( string CurrentDb , DataGridRowEditEndingEventArgs e , int caller = -1)
+		public void UpdateAllDb ( string CurrentDb , DataGridRowEditEndingEventArgs e )
 		{
 			BankCollection bss = BankViewercollection;
 			CustCollection ccs = CustCollection .Custcollection;
@@ -880,11 +880,12 @@ namespace WPFPages . Views
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
-				if ( e == null && CurrentDb == "CUSTOMER" )
+				if ( e != null && CurrentDb == "CUSTOMER" )
+				{
 					//	cs = this . CustomerGrid . SelectedItem as CustomerViewModel;
 					//else if ( e == null && CurrentDb == "CUSTOMER" )
 					cs = e . Row . Item as CustomerViewModel;
-
+				}
 				try
 				{
 					//Sanity check - are values actualy valid ???

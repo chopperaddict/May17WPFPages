@@ -20,7 +20,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class DetailsDbView : Window
 	{
-		public static DetCollection DetViewercollection = DetCollection.Detcollection;
+		public static DetCollection DetViewerDbcollection = DetCollection.DetViewerDbcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
 
@@ -46,27 +46,43 @@ namespace WPFPages . Views
 		#endregion Mouse support
 
 		#region Startup/ Closedown
-		private void Window_Loaded ( object sender, RoutedEventArgs e )
+		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
 			Startup = true;
 			// Data source is handled in XAML !!!!
 			if ( this . DetGrid . Items . Count > 0 )
 				this . DetGrid . Items . Clear ( );
-			this . DetGrid . ItemsSource = DetViewercollection;
+			this . DetGrid . ItemsSource = DetViewerDbcollection;
 
-			if ( DetViewercollection . Count == 0 )
-				DetViewercollection = DetCollection . LoadDet( DetViewercollection );
-			this . DetGrid . ItemsSource = DetViewercollection;
+			if ( DetViewerDbcollection . Count == 0 )
+				DetViewerDbcollection = await DetCollection . LoadDet( DetViewerDbcollection );
+			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . MouseDown += delegate { DoDragMove ( ); };
 			DataFields . DataContext = this . DetGrid . SelectedItem;
 
-			EventControl . ViewerDataHasBeenChanged += ExternalDataUpdate;      // Callback in THIS FILE
-											    //Subscribe to Bank Data Changed event declared in EventControl
-			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
+			EventControl . DataUpdated += EventControl_DataUpdated;
+			//EventControl . ViewerDataHasBeenChanged += ExternalDataUpdate;      // Callback in THIS FILE
+			//								    //Subscribe to Bank Data Changed event declared in EventControl
+			//EventControl . DetDataLoaded += EventControl_DetDataLoaded;
 			SaveBttn . IsEnabled = false;
 			Startup = false;
 			Count . Text = this . DetGrid . Items . Count . ToString ( );
+			this . DetGrid . SelectedIndex = 0;
 
+		}
+
+		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
+		{
+			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
+			Console . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			int currsel = this . DetGrid . SelectedIndex;
+
+			this . DetGrid . ItemsSource = null;
+			this . DetGrid . Items . Clear ( );
+			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection );
+			this . DetGrid . ItemsSource = DetViewerDbcollection;
+			this . DetGrid . Refresh ( );
+			this . DetGrid . SelectedIndex = currsel;
 		}
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
@@ -75,7 +91,7 @@ namespace WPFPages . Views
 			Console . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
-			this . DetGrid . ItemsSource = DetViewercollection;
+			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
 		}
 		#endregion Startup/ Closedown
@@ -93,30 +109,44 @@ namespace WPFPages . Views
 			int currow = 0;
 			currow = this . DetGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
-			Flags . SqlBankCurrentIndex = currow;
+//			Flags . SqlDetCurrentIndex = currow;
 			DetailsViewModel ss = new DetailsViewModel ( );
 			ss = this . DetGrid . SelectedItem as DetailsViewModel;
 			// This is the NEW DATA from the current row
 			SQLHandlers sqlh = new SQLHandlers ( );
 			sqlh . UpdateDbRowAsync ( "DETAILS", ss, this . DetGrid . SelectedIndex );
 
-			this . DetGrid . SelectedIndex = Flags . SqlBankCurrentIndex;
-			this . DetGrid . ScrollIntoView ( Flags . SqlBankCurrentIndex );
+			this . DetGrid . SelectedIndex = currow;
+			this . DetGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "DETAILS" );
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerViewerDataChanged ( 2, this . DetGrid . SelectedIndex, "DETAILS" );
+			EventControl . TriggerDataUpdated ( DetViewerDbcollection,
+				new LoadedEventArgs
+				{
+					CallerDb = "DETAILS",
+					DataSource = DetViewerDbcollection,
+					RowCount = this . DetGrid . SelectedIndex
+				} );
+			EventControl . TriggerBankDataLoaded ( DetViewerDbcollection,
+				new LoadedEventArgs
+				{
+					CallerDb = "DETAILS",
+					DataSource = DetViewerDbcollection,
+					RowCount = this . DetGrid . SelectedIndex
+				} );
 
 		}
 
-		private void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
+		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for BankDataLoaded
 			this . DetGrid . ItemsSource = null;
-			this . DetGrid . ItemsSource = DetViewercollection;
+			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection );
+			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
 		}
 
@@ -135,8 +165,6 @@ namespace WPFPages . Views
 			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
 											    //UnSubscribe from Bank Data Changed event declared in EventControl
 			EventControl . BankDataLoaded -= EventControl_DetDataLoaded;
-			DetViewercollection = null;
-
 		}
 
 		private void DetGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -187,11 +215,12 @@ namespace WPFPages . Views
 			// Call Handler to update ALL Db's via SQL
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "DETAILS", bvm );
-			EventControl . TriggerBankDataLoaded ( DetViewercollection,
+
+			EventControl . TriggerBankDataLoaded ( DetViewerDbcollection,
 				new LoadedEventArgs
 				{
 					CallerDb = "DETAILS",
-					DataSource = DetViewercollection,
+					DataSource = DetViewerDbcollection,
 					RowCount = this . DetGrid . SelectedIndex
 				} );
 
@@ -262,7 +291,7 @@ namespace WPFPages . Views
 				this . Topmost = false;
 		}
 
-		private void SaveBtn ( object sender, RoutedEventArgs e )
+		private  void SaveBtn ( object sender, RoutedEventArgs e )
 		{
 			SaveButton ( sender, e );
 		}
@@ -277,10 +306,11 @@ namespace WPFPages . Views
 				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 				Flags . IsMultiMode = true;
 				DetCollection det = new DetCollection ( );
-				det=  DetCollection .LoadDet(det );
+				det= await DetCollection . LoadDet(det );
 				this . DetGrid . ItemsSource = null;
 				this . DetGrid . ItemsSource = det;
 				this . DetGrid . Refresh ( );
+
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
 				MultiAccounts . Template = tmp;
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
@@ -296,18 +326,21 @@ namespace WPFPages . Views
 					this . DetGrid . SelectedIndex = rec;
 				else
 					this . DetGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . DetGrid, 1 );
+				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 			}
 			else
 			{
 				Flags . IsMultiMode = false;
+				int currsel = this . DetGrid . SelectedIndex;
 				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
+
 				DetCollection det = new DetCollection ( );
-				det = DetCollection . LoadDet ( det );
+				det = await DetCollection . LoadDet ( det );
 				// Just reset our iremssource to man Db
 				this . DetGrid . ItemsSource = null;
-				this . DetGrid . ItemsSource = DetViewercollection;
+				this . DetGrid . ItemsSource = DetViewerDbcollection;
 				this . DetGrid . Refresh ( );
+
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGreen" );
 				MultiAccounts . Template = tmp;
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGreen" );
@@ -323,26 +356,44 @@ namespace WPFPages . Views
 					this . DetGrid . SelectedIndex = rec;
 				else
 					this . DetGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . DetGrid, 1 );
+				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 			}
-
-
-			//			BankAccountViewModel bank = new BankAccountViewModel();
-			//			var filtered = from bank inDetViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;
-			//		   GroupBy bank.CustNo having count(*) > 1
-			//where  
-			//having COUNT (*) > 1
-			//	select bank;
-			//	Where ( b.CustNo = "1055033") ;
-			/*
-						commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
-				+ $"(SELECT CUSTNO FROM BANKACCOUNT "
-				+ $" GROUP BY CUSTNO"
-				+ $" HAVING COUNT(*) > 1) ORDER BY ";
-
-			    */
-
-
 		}
+		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
+		{
+			// Databases have DEFINITELY been updated successfully after a change
+			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
+
+			//dca . SenderName = o . ToString ( );
+			//dca . DbName = dbName;
+
+			EventControl . TriggerDataUpdated ( DetViewerDbcollection,
+			new LoadedEventArgs
+			{
+				CallerDb = "DETAILS",
+				DataSource = DetViewerDbcollection,
+				RowCount = this . DetGrid . SelectedIndex
+			} );
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+
 	}
 }
+
+/*
+//			BankAccountViewModel bank = new BankAccountViewModel();
+//			var filtered = from bank inDetViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;
+//		   GroupBy bank.CustNo having count(*) > 1
+//where  
+//having COUNT (*) > 1
+//	select bank;
+//	Where ( b.CustNo = "1055033") ;
+			
+			commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
+	+ $"(SELECT CUSTNO FROM BANKACCOUNT "
+	+ $" GROUP BY CUSTNO"
+	+ $" HAVING COUNT(*) > 1) ORDER BY ";
+
+	*/
+
+
