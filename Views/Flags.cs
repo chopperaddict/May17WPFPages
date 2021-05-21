@@ -126,6 +126,11 @@ namespace WPFPages
 
 		public static  MultiViewer MultiViewer;
 
+		public static BankDbView BankDbEditor;
+		public static CustDbView CustDbEditor;
+		public static DetailsDbView DetDbEditor;
+
+
 		public static bool EditDbChangeHandled = false;
 
 		public static bool IsFiltered = false;
@@ -479,7 +484,7 @@ namespace WPFPages
 
 		public static void ShowAllFlags ( )
 		{
-			Console . WriteLine (
+			Debug . WriteLine (
 			$"\nbool EditDbDataChanged						: { Flags . EditDbDataChanged}" +
 			$"\nbool EditDbChangeHandled					: { Flags . EditDbChangeHandled}" +
 			$"\nbool EventHandlerDebug						: { Flags . EventHandlerDebug}" +
@@ -543,31 +548,31 @@ namespace WPFPages
 		public static void PrintSundryVariables (string comment ="")
 		{
 			if(comment.Length > 0)
-				Console . WriteLine ($"\n COMMENT : {comment}");
+				Debug . WriteLine ($"\n COMMENT : {comment}");
 				else
-				Console . WriteLine ( "" );
+				Debug . WriteLine ( "" );
 			if ( Flags.CurrentSqlViewer != null && Flags . SqlBankGrid != null )
-				Console . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlBankGrid . Name}" );
+				Debug . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlBankGrid . Name}" );
 			if ( Flags . CurrentSqlViewer != null && Flags . SqlCustGrid != null )
-				Console . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlCustGrid . Name}" );
+				Debug . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlCustGrid . Name}" );
 			if ( Flags . CurrentSqlViewer != null && Flags . SqlDetGrid != null )
-				Console . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlDetGrid . Name}" );
-			Console . WriteLine ( $" Flags . TopVisibleBankGridRow		= { Flags . TopVisibleBankGridRow }" );
-			Console . WriteLine ( $" Flags . BottomVisibleBankGridRow	= {Flags . BottomVisibleBankGridRow}" );
-			Console . WriteLine ( $" Flags . TopVisibleCustGridRow		= { Flags . TopVisibleCustGridRow }" );
-			Console . WriteLine ( $" Flags . BottomVisibleCustGridRow	= { Flags . BottomVisibleCustGridRow}" );
-			Console . WriteLine ( $" Flags . TopVisibleDetGridRow		= { Flags . TopVisibleDetGridRow}" );
-			Console . WriteLine ( $" Flags . BottomVisibleDetGridRow	= { Flags . BottomVisibleDetGridRow}" );
-			Console . WriteLine ( $" Flags . ViewPortHeight				= { Flags . ViewPortHeight } rows visible" );
+				Debug . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlDetGrid . Name}" );
+			Debug . WriteLine ( $" Flags . TopVisibleBankGridRow		= { Flags . TopVisibleBankGridRow }" );
+			Debug . WriteLine ( $" Flags . BottomVisibleBankGridRow	= {Flags . BottomVisibleBankGridRow}" );
+			Debug . WriteLine ( $" Flags . TopVisibleCustGridRow		= { Flags . TopVisibleCustGridRow }" );
+			Debug . WriteLine ( $" Flags . BottomVisibleCustGridRow	= { Flags . BottomVisibleCustGridRow}" );
+			Debug . WriteLine ( $" Flags . TopVisibleDetGridRow		= { Flags . TopVisibleDetGridRow}" );
+			Debug . WriteLine ( $" Flags . BottomVisibleDetGridRow	= { Flags . BottomVisibleDetGridRow}" );
+			Debug . WriteLine ( $" Flags . ViewPortHeight				= { Flags . ViewPortHeight } rows visible" );
 			if ( Flags . ActiveSqlViewer? . CurrentDb == "BANKACCOUNT" )
-				Console . WriteLine ( $" BANK record's offset (from top)	= { ( Flags . SqlBankCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
+				Debug . WriteLine ( $" BANK record's offset (from top)	= { ( Flags . SqlBankCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
 			else if ( Flags . ActiveSqlViewer?. CurrentDb == "CUSTOMER" )
-				Console . WriteLine ( $" CUST record's offset (from top)	= { ( Flags . SqlCustCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
+				Debug . WriteLine ( $" CUST record's offset (from top)	= { ( Flags . SqlCustCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
 			else if ( Flags . ActiveSqlViewer? . CurrentDb == "DETAILS" )
-				Console . WriteLine ( $" DETAILS record offset (from top)	= { ( Flags . SqlDetCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
-			Console . WriteLine ( $"\n Flags . SqlBankCurrentIndex		= { Flags . SqlBankCurrentIndex}" );
-			Console . WriteLine ( $" Flags . SqlCustCurrentIndex		= { Flags . SqlCustCurrentIndex}" );
-			Console . WriteLine ( $" Flags . SqlDetCurrentIndex			= { Flags . SqlDetCurrentIndex}" );
+				Debug . WriteLine ( $" DETAILS record offset (from top)	= { ( Flags . SqlDetCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
+			Debug . WriteLine ( $"\n Flags . SqlBankCurrentIndex		= { Flags . SqlBankCurrentIndex}" );
+			Debug . WriteLine ( $" Flags . SqlCustCurrentIndex		= { Flags . SqlCustCurrentIndex}" );
+			Debug . WriteLine ( $" Flags . SqlDetCurrentIndex			= { Flags . SqlDetCurrentIndex}" );
 
 			string buffer = "\n Multi Grid Info :-";
 			if ( Flags . SqlBankGrid != null )
@@ -578,28 +583,28 @@ namespace WPFPages
 				buffer  += $"\n Flags.SqlDetGrid					= { Flags . SqlDetGrid? . Items . Count} / {Flags . SqlDetGrid? . SelectedIndex}";			
 			if ( buffer . Length > 18 )
 			{
-				Console . WriteLine ( buffer );
-				Console . WriteLine ( "\n" );
+				Debug . WriteLine ( buffer );
+				Debug . WriteLine ( "\n" );
 			}
 
 			buffer = "Sql Viewer Info :-";
 			if ( Flags . CurrentBankViewer?.BankGrid != null )
 				buffer += $" \n Flags.CurrentBankViewer.BankGrid							= { Flags . CurrentBankViewer . BankGrid?.Items . Count} / {Flags . CurrentBankViewer . BankGrid?.SelectedIndex}";
-			//				Console . WriteLine ( $" Flags.CurrentBankViewer.BankGrid				= { Flags .CurrentBankViewer.BankGrid?.Items . Count} / {Flags . CurrentBankViewer . BankGrid? . SelectedIndex}" );
+			//				Debug . WriteLine ( $" Flags.CurrentBankViewer.BankGrid				= { Flags .CurrentBankViewer.BankGrid?.Items . Count} / {Flags . CurrentBankViewer . BankGrid? . SelectedIndex}" );
 			if ( Flags . CurrentCustomerViewer?.BankGrid != null )
 				buffer += $"\n Flags.CurrentCustomerViewer . CustomerGrid			= { Flags . CurrentCustomerViewer . CustomerGrid?.Items . Count} / {Flags . CurrentCustomerViewer . CustomerGrid?.SelectedIndex}";
-			//					Console . WriteLine ( $" Flags.CurrentCustomerViewer . CustomerGrid	= { Flags . CurrentCustomerViewer . CustomerGrid? . Items . Count} / {Flags . CurrentCustomerViewer . CustomerGrid? . SelectedIndex}" );
+			//					Debug . WriteLine ( $" Flags.CurrentCustomerViewer . CustomerGrid	= { Flags . CurrentCustomerViewer . CustomerGrid? . Items . Count} / {Flags . CurrentCustomerViewer . CustomerGrid? . SelectedIndex}" );
 			if ( Flags . CurrentDetailsViewer?.BankGrid != null )
 				buffer += $"\n Flags.CurrentDetailsViewer . DetailsGrid					= { Flags . CurrentDetailsViewer . DetailsGrid?.Items . Count} / {Flags . CurrentDetailsViewer . DetailsGrid?.SelectedIndex}";
-			//					Console . WriteLine ( $" Flags.CurrentDetailsViewer . DetailsGrid		= { Flags . CurrentDetailsViewer . DetailsGrid? . Items . Count} / {Flags . CurrentDetailsViewer . DetailsGrid? . SelectedIndex}" );
+			//					Debug . WriteLine ( $" Flags.CurrentDetailsViewer . DetailsGrid		= { Flags . CurrentDetailsViewer . DetailsGrid? . Items . Count} / {Flags . CurrentDetailsViewer . DetailsGrid? . SelectedIndex}" );
 			if ( buffer . Length > 18 )
 			{
-				Console . WriteLine ( buffer );
-				Console . WriteLine ( "\n" );
+				Debug . WriteLine ( buffer );
+				Debug . WriteLine ( "\n" );
 			}
-//			Console . WriteLine ( $" Flags . BankCollection			= { Flags . BankCollection.Count}" );
-//			Console . WriteLine ( $" Flags . CustCollection			= { Flags . CustCollection . Count}" );
-//			Console . WriteLine ( $" Flags . DetCollection			= { Flags . DetCollection . Count}" );
+//			Debug . WriteLine ( $" Flags . BankCollection			= { Flags . BankCollection.Count}" );
+//			Debug . WriteLine ( $" Flags . CustCollection			= { Flags . CustCollection . Count}" );
+//			Debug . WriteLine ( $" Flags . DetCollection			= { Flags . DetCollection . Count}" );
 		}
 	}
 }

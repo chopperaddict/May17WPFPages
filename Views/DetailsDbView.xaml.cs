@@ -1,5 +1,6 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . Diagnostics;
 using System . Linq;
 using System . Text;
 using System . Threading . Tasks;
@@ -23,7 +24,7 @@ namespace WPFPages . Views
 		public static DetCollection DetViewerDbcollection = DetCollection.DetViewerDbcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
-
+		public static bool Triggered = false;
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -57,7 +58,16 @@ namespace WPFPages . Views
 			if ( DetViewerDbcollection . Count == 0 )
 				DetViewerDbcollection = await DetCollection . LoadDet( DetViewerDbcollection );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
+
 			this . MouseDown += delegate { DoDragMove ( ); };
+			// An EditDb has changed the current index 
+			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
+			// A Multiviewer has changed the current index 
+			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
+
+
 			DataFields . DataContext = this . DetGrid . SelectedItem;
 
 			EventControl . DataUpdated += EventControl_DataUpdated;
@@ -67,14 +77,30 @@ namespace WPFPages . Views
 			SaveBttn . IsEnabled = false;
 			Startup = false;
 			Count . Text = this . DetGrid . Items . Count . ToString ( );
-			this . DetGrid . SelectedIndex = 0;
+			Utils . SetUpGridSelection ( this . DetGrid, 0 );
+			DetGrid . Refresh ( );
+			this . DetGrid . UpdateLayout( );
+			Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
+			if ( Flags . LinkviewerRecords )
+				LinkRecords . IsChecked = true;
 
+			Flags . DetDbEditor = this;
+
+		}
+
+		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			// Handle seelction change by other windows if linkage is ON
+			Triggered = true;
+			this . DetGrid . SelectedIndex = e . Row;
+			this . DetGrid . Refresh ( );
+			Triggered = false;
 		}
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Console . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			int currsel = this . DetGrid . SelectedIndex;
 
 			this . DetGrid . ItemsSource = null;
@@ -88,8 +114,8 @@ namespace WPFPages . Views
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Console . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
-			this . DetGrid . ItemsSource = null;
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			  DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
@@ -162,8 +188,9 @@ namespace WPFPages . Views
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
-//			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
-											    //UnSubscribe from Bank Data Changed event declared in EventControl
+			//			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
+			//UnSubscribe from Bank Data Changed event declared in EventControl
+			Flags . DetDbEditor = null;
 			EventControl . BankDataLoaded -= EventControl_DetDataLoaded;
 		}
 
@@ -183,10 +210,31 @@ namespace WPFPages . Views
 			}
 			if ( this . DetGrid . SelectedItem == null )
 				return;
-			this . DetGrid . ScrollIntoView ( this . DetGrid . SelectedItem );
+
+			// Find matching record ?? - Whew
+//			DetailsViewModel dvm = e. SelectedItem as DetailsViewModel;
+//			MultiViewer mv = new MultiViewer ( );
+//			int rec = mv. FindMatchingRecord ( dvm. CustNo, dvm. BankNo, this . DetGrid, "DETAILS" );
+//			this . DetGrid . SelectedItem = rec;
+			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+			Utils . SetUpGridSelection ( this . DetGrid,  this . DetGrid.SelectedIndex);
+
+			//this . DetGrid . ScrollIntoView ( rec);
 			Startup = true;
 			DataFields . DataContext = this . DetGrid . SelectedItem;
 			Startup = false;
+			if ( Flags . LinkviewerRecords && Triggered == false)
+			{
+				EventControl . TriggerEditDbIndexChanged ( this,
+					new IndexChangedArgs
+					{
+						dGrid = this . DetGrid,
+						Row = this . DetGrid . SelectedIndex,
+						SenderId = "DETAILS",
+						Sender = "DETDBVIEW"
+					} );
+			}
+			Triggered = false;
 		}
 
 		private async Task<bool> SaveButton ( object sender = null, RoutedEventArgs e = null )
@@ -376,6 +424,28 @@ namespace WPFPages . Views
 			} );
 			Mouse . OverrideCursor = Cursors . Arrow;
 		}
+		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
+		{
+			// force viewers to change records in line with each other
+			if ( LinkRecords . IsChecked == true )
+				Flags . LinkviewerRecords = true;
+			else
+				Flags . LinkviewerRecords = false;
+			if ( Flags . SqlBankViewer != null )
+				Flags . SqlBankViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlCustViewer != null )
+				Flags . SqlCustViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlDetViewer != null )
+				Flags . SqlDetViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlMultiViewer != null )
+				Flags . SqlMultiViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . CustDbEditor != null )
+				Flags . CustDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . BankDbEditor != null )
+				Flags . BankDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			LinkRecords . Refresh ( );
+		}
+
 
 	}
 }

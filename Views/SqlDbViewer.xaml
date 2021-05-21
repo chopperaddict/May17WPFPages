@@ -635,6 +635,129 @@
 			<!--#endregion Buttons-->
 		</WrapPanel>
 		<!--#endregion  buttonbar-->
+		<Grid Grid.Row="4"
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="1">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="727*" />
+				<ColumnDefinition Width="65*" />
+			</Grid.ColumnDefinitions>
+
+			<!--#region Customers data Grid-->
+			<DataGrid x:Name="CustomerGrid"
+				AlternatingRowBackground="{StaticResource Yellow3}"
+				AutoGenerateColumns="False"
+				BeginningEdit="CustomerGrid_BeginningEdit"
+				BorderBrush="{StaticResource Yellow3}"
+				BorderThickness="2"
+				CanUserAddRows="false"
+				CanUserSortColumns="False"
+				CellEditEnding="CustomerGrid_CellEditEnding"
+				ColumnHeaderHeight="25"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
+				CurrentCellChanged="CustomerGrid_CurrentCellChanged"
+				DataContext="Custcollection"
+				 GotFocus="CustomerGrid_GotFocus"
+				Grid.ColumnSpan="4"
+				IsSynchronizedWithCurrentItem="false"
+				RowEditEnding="ViewerGrid_RowEditEnding"
+				RowHeight="27"
+				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
+				SelectedCellsChanged="CustomerGrid_SelectedCellsChanged"
+				SelectionChanged="ItemsView_OnSelectionChanged"
+				SelectionMode="Single"
+				SelectionUnit="FullRow"
+				TargetUpdated="CustomerGrid_TargetUpdated"
+				TabIndex="2"
+				VerticalContentAlignment="Stretch"
+				VerticalGridLinesBrush="{StaticResource Orange0}"
+				VirtualizingPanel.ScrollUnit="Pixel"				    
+				Visibility="Collapsed"
+				PreviewMouseDown="CustomerGrid_PreviewMouseDown">
+				<!--MouseDown="CustomerGrid_MouseDown"-->
+				<!--VerticalContentAlignment="Center"-->
+				<!--PreparingCellForEdit="CustomerGrid_PreparingCellForEdit"-->
+				<!--Initialized="CustomerGrid_Initialized_1"-->
+				<!--SourceUpdated="CustomerGrid_SourceUpdated"-->
+
+				<!--This makes the selected row visible when window looses focus - works on any grid-->
+				<DataGrid.Resources>
+					<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
+				</DataGrid.Resources>
+
+				<DataGrid.Columns>
+					<!--Force column to be Read only-->
+					<DataGridTemplateColumn Header="Id" Width="40">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=Id}"
+ 									HorizontalAlignment="Center"
+									VerticalAlignment="Center" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTextColumn Header="Bank #" Width="70"
+									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+					<DataGridTextColumn Header="Customer #" Width="70"
+									Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Type" Width="30"
+									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+					<DataGridTextColumn Header="First Name" Width="80"
+									Binding="{Binding FName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Surname" Width="80"
+									Binding="{Binding LName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Address 1" Width="130"
+									Binding="{Binding Addr1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Address 2" Width="120"
+									Binding="{Binding Addr2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Town" Width="80"
+									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="County" Width="70"
+									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="PostCode" Width="80"
+									Binding="{Binding PCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Phone #" Width="80"
+									Binding="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Mobile" Width="80"
+									Binding="{Binding Mobile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Birthday" Width="80"
+									Binding="{Binding Dob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
+					<DataGridTextColumn Header="A/c Opened"
+									Binding ="{Binding Path=ODate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
+					<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
+					<DataGridTemplateColumn Header="A/c Closed" Width="80">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=CDate,
+									Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+									StringFormat='dd/MM/yyyy'}" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<!--<DataGridTemplateColumn Header="Close Date" Width="80">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=CDate,
+									StringFormat='dd/MM/yyyy'}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Top" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+						<DataGridTemplateColumn.CellEditingTemplate>
+							<DataTemplate>
+								<DatePicker SelectedDate="{Binding Path=CDate,
+									Mode=TwoWay,
+									UpdateSourceTrigger=PropertyChanged}" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellEditingTemplate>
+					</DataGridTemplateColumn>-->
+				</DataGrid.Columns>
+			</DataGrid>
+			<!--#endregion Customers data Grid-->
+		</Grid>
+
 
 		<Grid Grid.Row="4"
 			Grid.Column="1"
@@ -790,128 +913,7 @@
 			<!--#endregion BankAccount data Grid-->
 		</Grid>
 
-		<Grid Grid.Row="4"
-			Grid.Column="1"
-			Grid.ColumnSpan="3"
-			Grid.RowSpan="1">
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="727*" />
-				<ColumnDefinition Width="65*" />
-			</Grid.ColumnDefinitions>
-
-			<!--#region Customers data Grid-->
-			<DataGrid x:Name="CustomerGrid"
-				AlternatingRowBackground="{StaticResource Yellow3}"
-				AutoGenerateColumns="False"
-				BeginningEdit="CustomerGrid_BeginningEdit"
-				BorderBrush="{StaticResource Yellow3}"
-				BorderThickness="2"
-				CanUserAddRows="false"
-				CanUserSortColumns="False"
-				CellEditEnding="CustomerGrid_CellEditEnding"
-				ColumnHeaderHeight="25"
-				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
-				CurrentCellChanged="CustomerGrid_CurrentCellChanged"
-				DataContext="Custcollection"
-				 GotFocus="CustomerGrid_GotFocus"
-				Grid.ColumnSpan="4"
-				IsSynchronizedWithCurrentItem="false"
-				RowEditEnding="ViewerGrid_RowEditEnding"
-				RowHeight="27"
-				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
-				SelectedCellsChanged="CustomerGrid_SelectedCellsChanged"
-				SelectionChanged="ItemsView_OnSelectionChanged"
-				SelectionMode="Single"
-				SelectionUnit="FullRow"
-				TargetUpdated="CustomerGrid_TargetUpdated"
-				TabIndex="2"
-				VerticalContentAlignment="Stretch"
-				VerticalGridLinesBrush="{StaticResource Orange0}"
-				VirtualizingPanel.ScrollUnit="Pixel"				    
-				Visibility="Collapsed"
-				PreviewMouseDown="CustomerGrid_PreviewMouseDown">
-				<!--MouseDown="CustomerGrid_MouseDown"-->
-				<!--VerticalContentAlignment="Center"-->
-				<!--PreparingCellForEdit="CustomerGrid_PreparingCellForEdit"-->
-				<!--Initialized="CustomerGrid_Initialized_1"-->
-				<!--SourceUpdated="CustomerGrid_SourceUpdated"-->
-
-				<!--This makes the selected row visible when window looses focus - works on any grid-->
-				<DataGrid.Resources>
-					<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
-				</DataGrid.Resources>
-
-				<DataGrid.Columns>
-					<!--Force column to be Read only-->
-					<DataGridTemplateColumn Header="Id" Width="40">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Path=Id}"
- 									HorizontalAlignment="Center"
-									VerticalAlignment="Center" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
-					<DataGridTextColumn Header="Bank #" Width="70"
-									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
-					<DataGridTextColumn Header="Customer #" Width="70"
-									Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Type" Width="30"
-									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
-					<DataGridTextColumn Header="First Name" Width="80"
-									Binding="{Binding FName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Surname" Width="80"
-									Binding="{Binding LName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Address 1" Width="130"
-									Binding="{Binding Addr1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Address 2" Width="120"
-									Binding="{Binding Addr2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Town" Width="80"
-									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="County" Width="70"
-									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="PostCode" Width="80"
-									Binding="{Binding PCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Phone #" Width="80"
-									Binding="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Mobile" Width="80"
-									Binding="{Binding Mobile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Birthday" Width="80"
-									Binding="{Binding Dob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
-					<DataGridTextColumn Header="A/c Opened"
-									Binding ="{Binding Path=ODate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
-					<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
-					<DataGridTemplateColumn Header="A/c Closed" Width="80">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Path=CDate,
-									Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
-									StringFormat='dd/MM/yyyy'}" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
-					<!--<DataGridTemplateColumn Header="Close Date" Width="80">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Path=CDate,
-									StringFormat='dd/MM/yyyy'}"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Top" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-						<DataGridTemplateColumn.CellEditingTemplate>
-							<DataTemplate>
-								<DatePicker SelectedDate="{Binding Path=CDate,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellEditingTemplate>
-					</DataGridTemplateColumn>-->
-				</DataGrid.Columns>
-			</DataGrid>
-			<!--#endregion Customers data Grid-->
-		</Grid>
 
 		<Grid Grid.Row="4"
 			Grid.Column="1"
@@ -1052,15 +1054,15 @@
 				Background="Beige"
 				Foreground="Black"
 				Grid.Column="1"
+				Grid.Row="5"
 				Height="30"
 				HorizontalAlignment="Stretch"		   							
 				Margin="0,5,5,5"
 				Padding="6"
 				Style="{StaticResource gradientblue}"
+				Text="Status comments "
 				TextAlignment="Center"
-				VerticalAlignment="Center"			
-			
-				Grid.Row="5"
+				VerticalAlignment="Center"				
 				/>
 
 	</Grid>

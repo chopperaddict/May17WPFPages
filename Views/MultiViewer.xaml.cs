@@ -11,6 +11,10 @@ using WPFPages . ViewModels;
 using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
 using static System . Windows . Forms . VisualStyles . VisualStyleElement . Status;
 using System . Runtime . Remoting . Channels;
+using System . Diagnostics;
+using static WPFPages . SqlDbViewer;
+using DataGrid = System . Windows . Controls . DataGrid;
+using System . Windows . Controls . Primitives;
 
 namespace WPFPages . Views
 {
@@ -27,7 +31,7 @@ namespace WPFPages . Views
 		dynamic cindex = 0;
 		dynamic dindex = 0;
 		dynamic CurrentSelection = 0;
-
+		dynamic key1 = false;
 		#region DELEGATES / EVENTS Declarations
 
 		//		public static event EventHandler<LoadedEventArgs> DetDataLoaded;
@@ -38,7 +42,7 @@ namespace WPFPages . Views
 
 		public string CurrentDb = "";
 		static bool inprogress = false;
-
+		static bool Triggered = false;
 		#endregion DECLARATIONS
 
 
@@ -56,26 +60,47 @@ namespace WPFPages . Views
 			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
 			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
 
+			// An EditDb has changed the current index 
+			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
+			// A Multiviewer has changed the current index 
+			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
+
 			Flags . SqlBankGrid = this . BankGrid;
 			Flags . SqlCustGrid = this . CustomerGrid;
 			Flags . SqlDetGrid = this . DetailsGrid;
 			Flags . MultiViewer = this;
 			Flags . SqlMultiViewer = this;
 
-
-
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
-			//Select first record in all grids
-			this . BankGrid . SelectedIndex = 0;
-			this . CustomerGrid . SelectedIndex = 0;
-			this . DetailsGrid . SelectedIndex = 0;
+
+			//Select first record in all grids using an Action declared in SqlDbViewer
+			Utils.GridInitialSetup ( BankGrid ,0 );
+			Utils.GridInitialSetup ( CustomerGrid, 0 );
+			Utils.GridInitialSetup ( DetailsGrid, 0 );
+
+			Utils . SetUpGridSelection ( this . BankGrid, 0 );
+			Utils . SetUpGridSelection ( this . CustomerGrid, 0 );
+			Utils . SetUpGridSelection ( this . DetailsGrid, 0 );
+
+			if ( Flags . LinkviewerRecords )
+				LinkRecords . IsChecked = true;
+		}
+
+		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			Triggered = true;
+			// update rows when another window changes it if linkage is ON
+			this . BankGrid . SelectedIndex = e . Row;
+			Triggered = false;
 		}
 
 		private void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
 		{
-			if ( Flags . LinkviewerRecords )
+			if ( Flags . LinkviewerRecords && Triggered == false)
 			{
 				object RowTofind = null;
 				object gr = null;
@@ -276,9 +301,19 @@ namespace WPFPages . Views
 			this . CustomerGrid . Items . Clear ( );
 			this . DetailsGrid . Items . Clear ( );
 
-			await BankCollection . LoadBank ( MultiBankcollection, 3 );
-			await CustCollection . LoadCust ( MultiCustcollection );
-			await DetCollection . LoadDet ( MultiDetcollection );
+			MultiBankcollection = null;
+			MultiCustcollection = null;
+			MultiDetcollection = null;
+			MultiBankcollection = await BankCollection . LoadBank ( MultiBankcollection, 3 );
+			MultiDetcollection = await DetCollection . LoadDet ( MultiDetcollection );
+			if ( Flags . FilterCommand != "" )
+			{
+				string tmp = Flags . FilterCommand;
+				string shortstring = tmp . Substring ( 25 );
+				tmp = "Select * from Customer " + shortstring;
+				Flags . FilterCommand = tmp;
+			}
+			MultiCustcollection  = await CustCollection . LoadCust ( MultiCustcollection );
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
@@ -441,17 +476,17 @@ namespace WPFPages . Views
 				this . DetailsGrid . ItemsSource = MultiDetcollection;
 
 				DGrid . SelectedIndex = current;
-				Console . WriteLine ( $"End of ReloadGrid() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+				Debug . WriteLine ( $"End of ReloadGrid() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"ERROR: ReloadGrid() {ex . Message}, : {ex . Data}" );
+				Debug . WriteLine ( $"ERROR: ReloadGrid() {ex . Message}, : {ex . Data}" );
 			}
 		}
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
 		{
-			Console . WriteLine ( $"MultiViewer : Data changed event notification received successfully." );
+			Debug . WriteLine ( $"MultiViewer : Data changed event notification received successfully." );
 			int x = 0;
 		}
 
@@ -478,7 +513,7 @@ namespace WPFPages . Views
 			this . CustomerGrid . ScrollIntoView ( cindex );
 			this . DetailsGrid . ScrollIntoView ( dindex );
 			inprogress = false;
-			Mouse . OverrideCursor = Cursors . Arrow;
+			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 		}
 
 		private void Close_Click ( object sender, RoutedEventArgs e )
@@ -489,39 +524,408 @@ namespace WPFPages . Views
 
 		private void Window_PreviewKeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
 		{
-			if ( e . Key == Key . RightAlt )
+			DataGrid dg = null;
+			int CurrentRow = 0;
+			bool showdebug = false;
+
+			if ( showdebug ) Debug . WriteLine ( $"key1 = {key1},  Key = : {e . Key}" );
+
+			if ( e . Key == Key . LeftCtrl )
 			{
-				Flags . ListGridviewControlFlags ( );
+				key1 = true;
+				if ( showdebug ) Debug . WriteLine ( $"key1 = set to TRUE" );
+				return;
 			}
-			else if ( e . Key == Key . Escape )
+			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
 			{
-				Close ( );
+				// lists all delegates & Events
+				Debug . WriteLine ( "\nEvent subscriptions " );
+				EventHandlers . ShowSubscribersCount ( );
+				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . System )     // CTRL + F10
+			{
+				// Major  listof GV[] variables (Guids etc]
+				Debug . WriteLine ( "\nGridview GV[] Variables" );
+				Flags . ListGridviewControlFlags ( 1 );
+				key1 = false;
+				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F8 )  // CTRL + F8
+			{
+				// list various Flags in Console
+				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F11 )
+			{
+				Debug . WriteLine ( "\nAll Flag. variables" );
+				Flags . ShowAllFlags ( );
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . OemQuestion )
+			{
+				// list Flags in Console
+				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . RightAlt ) //|| e . Key == Key . LeftCtrl )
+			{       // list Flags in Console
+				Flags . ListGridviewControlFlags ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . Up )
+			{       // DataGrid keyboard navigation = UP
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this.BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex > 0 )
+				{
+					dg . SelectedIndex--;
+					dg . SelectedItem = dg . SelectedIndex;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				//if ( dg == BankGrid )
+				//	BankGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == CustomerGrid )
+				//	CustomerGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == DetailsGrid )
+				//	DetailsGrid_SelectedCellsChanged ( dg, null );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . Down )
+			{       // DataGrid keyboard navigation = DOWN
+				if ( CurrentDb == "BANKACCOUNT" )
+				{
+					dg = this.BankGrid;
+				}
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . CustomerGrid;
+				if ( dg . SelectedIndex < dg . Items . Count - 1 )
+				{
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, ++dg . SelectedIndex );
+				}
+				else if ( CurrentDb == "DETAILS" )
+					dg = this.DetailsGrid;
+
+				//if ( dg == BankGrid )
+				//	BankGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == CustomerGrid )
+				//	CustomerGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == DetailsGrid )
+				//	DetailsGrid_SelectedCellsChanged ( dg, null );
+				//if ( dg . SelectedItem != null )
+				//	Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . PageUp )
+			{       // DataGrid keyboard navigation = PAGE UP
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex >= 10 )
+				{
+					dg . SelectedIndex -= 10;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				else
+				{
+					dg . SelectedIndex = 0;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				//if ( dg == BankGrid )
+				//	BankGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == CustomerGrid )
+				//	CustomerGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == DetailsGrid )
+				//	DetailsGrid_SelectedCellsChanged ( dg, null );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . PageDown )
+			{       // DataGrid keyboard navigation = PAGE DOWN
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex < dg . Items . Count - 10 )
+				{
+					dg . SelectedIndex += 10;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				else
+				{
+					dg . SelectedIndex = dg . Items . Count - 1;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				//if ( dg == BankGrid )
+				//	BankGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == CustomerGrid )
+				//	CustomerGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == DetailsGrid )
+				//	DetailsGrid_SelectedCellsChanged ( dg, null );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
 			}
 			else if ( e . Key == Key . Home )
-			{
-				this . BankGrid . SelectedIndex = 0;
-				this . CustomerGrid . SelectedIndex = 0;
-				this . DetailsGrid . SelectedIndex = 0;
-				ExtensionMethods . Refresh ( this . BankGrid );
-				ExtensionMethods . Refresh ( this . CustomerGrid );
-				ExtensionMethods . Refresh ( this . DetailsGrid );
+			{       // DataGrid keyboard navigation = HOME
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				dg . SelectedIndex = 0;
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				//if ( dg == BankGrid )
+				//	BankGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == CustomerGrid )
+				//	CustomerGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == DetailsGrid )
+				//	DetailsGrid_SelectedCellsChanged ( dg, null );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
 			}
 			else if ( e . Key == Key . End )
-			{
-				this . BankGrid . SelectedIndex = this . BankGrid . Items . Count - 1;
-				this . CustomerGrid . SelectedIndex = this . CustomerGrid . Items . Count - 1;
-				this . DetailsGrid . SelectedIndex = this . DetailsGrid . Items . Count - 1;
-				this . BankGrid . SelectedItem = this . BankGrid . Items . Count - 1;
-				this . CustomerGrid . SelectedItem = this . CustomerGrid . Items . Count - 1;
-				this . DetailsGrid . SelectedItem = this . DetailsGrid . Items . Count - 1;
-				this . BankGrid . ScrollIntoView ( this . BankGrid . Items . Count - 1 );
-				this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . Items . Count - 1 );
-				this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . Items . Count - 1 );
-				ExtensionMethods . Refresh ( this . BankGrid );
-				ExtensionMethods . Refresh ( this . CustomerGrid );
-				ExtensionMethods . Refresh ( this . DetailsGrid );
+			{       // DataGrid keyboard navigation = END
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				dg . SelectedIndex = dg . Items . Count - 1;
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				//				ItemsView_OnSelectionChanged ( dg, null );
+				//if ( dg == BankGrid )
+				//	BankGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == CustomerGrid )
+				//	CustomerGrid_SelectedCellsChanged ( dg, null );
+				//else if ( dg == DetailsGrid )
+				//	DetailsGrid_SelectedCellsChanged ( dg, null );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
 			}
+			else if ( e . Key == Key . Delete )
+			{       // DataGrid keyboard navigation = DELETE
+				// This is a ONE SHOT PASS, In here The selected Record will be deleted from the Db's on disk
+				// After this  the Event callback should handle the update of this viewer + all/any other open viewers
+				int currentindex = 0;
+				string bank = "";
+				string cust = "";
+				var v = e . OriginalSource . GetType ( );
+				MultiViewer Thisviewer = this;
+
+				// Check to see if Del was pressed while Editing a field (in ANY of our grids)
+				// if we have pressed it with just a Row selected, it will return "DataGridCell"  in v.Name
+				// else it will have cell info in it
+				if ( v . Name != "DataGridCell" )
+				{
+					e . Handled = false;
+					return;         //NOT a Row that is selected, so let OS handle it normally
+				}
+
+				// Just ONE of these will call the delete process
+				if ( CurrentDb == "BANKACCOUNT" )
+				{
+					dg = Flags . SqlBankGrid;
+					CurrentRow = dg . SelectedIndex;
+					// Get and save the data in the row so we have access to it once it has gone from interface
+					BankAccountViewModel BankRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
+					bank = BankRecord . BankNo;
+					cust = BankRecord . CustNo;
+					dg . ItemsSource = null;
+					SqlViewerBankcollection . Clear ( );
+					//					dtBank?.Clear ( );
+
+					//Remove it from SQL Db as well
+					//					DeleteRecord ( "BANKACCOUNT", BankRecord . BankNo, BankRecord . CustNo, CurrentRow );
+
+					e . Handled = true;
+					key1 = false;
+
+					// Call the method to update any other Viewers that may be open
+					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					// Keep our focus in originating window for now
+					Thisviewer . Activate ( );
+					Thisviewer . Focus ( );
+					return;
+				}
+				if ( CurrentDb == "CUSTOMER" )
+				{
+					dg = Flags . SqlCustGrid;
+					CurrentRow = dg . SelectedIndex;
+					// Get and save the data in the row so we have access to it once it has gone from interface
+					CustomerViewModel CustRecord = this . CustomerGrid . SelectedItem as CustomerViewModel;
+					bank = CustRecord . BankNo;
+					cust = CustRecord . CustNo;
+					dg . ItemsSource = null;
+					SqlViewerCustcollection . Clear ( );
+					CustCollection . dtCust?.Clear ( );
+
+					//Remove it from SQL Db as well
+					//					DeleteRecord ( "CUSTOMER", CustRecord . BankNo, CustRecord . CustNo, CurrentRow );
+
+					e . Handled = true;
+					key1 = false;
+
+					// Call the method to update any other Viewers that may be open
+					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					// Keep our focus in originating window for now
+					Thisviewer . Activate ( );
+					Thisviewer . Focus ( );
+					return;
+				}
+				else if ( CurrentDb == "DETAILS" )
+				{
+					dg = Flags . SqlDetGrid;
+					// Get and save the data in the row so we have access to it once it has gone from interface
+					DetailsViewModel DetailsRecord = this . DetailsGrid . SelectedItem as DetailsViewModel;
+					bank = DetailsRecord . BankNo;
+					cust = DetailsRecord . CustNo;
+					CurrentRow = dg . SelectedIndex;
+					// Remove it form THIS DataGrid here
+					dg . ItemsSource = null;
+					SqlViewerDetcollection . Clear ( );
+					//					dtDetails?.Clear ( );
+
+					//Remove it from SQL Db as well
+					//					DeleteRecord ( "DETAILS", DetailsRecord . BankNo, DetailsRecord . CustNo, CurrentRow );
+					e . Handled = true;
+					key1 = false;
+
+					// Call the method to update any other Viewers that may be open
+					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					// Keep our focus in originating window for now
+					Thisviewer . Activate ( );
+					Thisviewer . Focus ( );
+					return;
+				}
+				//				else
+				//				key1 = false;
+				e . Handled = false;
+				//				return;
+#pragma TESTING DATA LOAD CALLBACK
+
+				{
+					// Tidy up our own grid after ourselves
+					if ( dg . Items . Count > 0 && CurrentRow >= 0 )
+						dg . SelectedIndex = CurrentRow;
+					else if ( dg . Items . Count == 1 )
+						dg . SelectedIndex = 0;
+
+					//dg.SelectedIndex = Flags.
+					dg . SelectedItem = dg . SelectedIndex;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+
+					// now tell any other open viewers they need to update
+					//ItemsView_OnSelectionChanged ( dg, null );
+					//if ( CurrentDb == "BANKACCOUNT" )
+					//{
+					//	SendDataChanged ( this, BankGrid, "BANKACCOUNT" );
+					//	DetailsGrid_SelectedCellsChanged ( dg, null );
+					//}
+					//else if ( CurrentDb == "CUSTOMER" )
+
+					//{
+					//	SendDataChanged ( this, CustomerGrid, "CUSTOMER" );
+					//	BankGrid_SelectedCellsChanged ( dg, null );
+					//}
+					//else if ( CurrentDb == "DETAILS" )
+
+					//{
+					//	SendDataChanged ( this, DetailsGrid, "DETAILS" );
+					//	BankGrid_SelectedCellsChanged ( dg, null );
+					//}
+				}
+			}
+			//else
+			//{
+			//	key1 = false;
+			//}
+			e . Handled = false;
 		}
+
+
+		//			if (e . Key == Key . RightAlt )
+		//			{
+		//				Flags . ListGridviewControlFlags( );
+		//			}
+		//			else if (e . Key == Key . Escape )
+		//			{
+		//				Close ( );
+		//}
+		//			else if ( e . Key == Key . Home )
+		//{
+		//	this . BankGrid . SelectedIndex = 0;
+		//	this . CustomerGrid . SelectedIndex = 0;
+		//	this . DetailsGrid . SelectedIndex = 0;
+		//	ExtensionMethods . Refresh ( this . BankGrid );
+		//	ExtensionMethods . Refresh ( this . CustomerGrid );
+		//	ExtensionMethods . Refresh ( this . DetailsGrid );
+		//}
+		//else if ( e . Key == Key . End )
+		//{
+		//	this . BankGrid . SelectedIndex = this . BankGrid . Items . Count - 1;
+		//	this . CustomerGrid . SelectedIndex = this . CustomerGrid . Items . Count - 1;
+		//	this . DetailsGrid . SelectedIndex = this . DetailsGrid . Items . Count - 1;
+		//	this . BankGrid . SelectedItem = this . BankGrid . Items . Count - 1;
+		//	this . CustomerGrid . SelectedItem = this . CustomerGrid . Items . Count - 1;
+		//	this . DetailsGrid . SelectedItem = this . DetailsGrid . Items . Count - 1;
+		//	this . BankGrid . ScrollIntoView ( this . BankGrid . Items . Count - 1 );
+		//	this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . Items . Count - 1 );
+		//	this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . Items . Count - 1 );
+		//	ExtensionMethods . Refresh ( this . BankGrid );
+		//	ExtensionMethods . Refresh ( this . CustomerGrid );
+		//	ExtensionMethods . Refresh ( this . DetailsGrid );
+		//}
+		//		}
 
 		#region DATAGRID  SELECTION CHANGE  HANDLING  (SelectedIndex matching across all 3 grids)
 		/// <summary>
@@ -549,7 +953,7 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedIndex = currsel;
 			Utils . ScrollRecordIntoView ( this . BankGrid, currsel );
 
-			if ( Flags . LinkviewerRecords )
+			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				// Send message to othrr viewers teling them of our index change
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
@@ -561,6 +965,7 @@ namespace WPFPages . Views
 					Row = this . BankGrid . SelectedIndex
 				} );
 			}
+			Triggered = false;
 			// Get Custno from ACTIVE gridso we can find it in other grids
 			BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
 			if ( bgr == null ) return;
@@ -599,7 +1004,7 @@ namespace WPFPages . Views
 			this . CustomerGrid . SelectedIndex = currsel;
 			Utils . ScrollRecordIntoView ( this . CustomerGrid, cindex );
 
-			if ( Flags . LinkviewerRecords )
+			if ( Flags . LinkviewerRecords && Triggered == false)
 			{
 				// Send message to othrr viewers teling them of our index change
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
@@ -611,6 +1016,7 @@ namespace WPFPages . Views
 					Row = this . CustomerGrid . SelectedIndex
 				} );
 			}
+			Triggered = false;
 			// Get Custno from ACTIVE grid so we can find it in other grids
 			CustomerViewModel cgr = CustomerGrid . SelectedItem as CustomerViewModel;
 			if ( cgr == null ) return;
@@ -649,7 +1055,7 @@ namespace WPFPages . Views
 			this . DetailsGrid . SelectedIndex = currsel;
 			Utils . ScrollRecordIntoView ( DetailsGrid, dindex );
 
-			if ( Flags . LinkviewerRecords )
+			if ( Flags . LinkviewerRecords && Triggered == false)
 			{
 				// Send message to othrr viewers teling them of our index change
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
@@ -661,6 +1067,7 @@ namespace WPFPages . Views
 						Row = this . DetailsGrid . SelectedIndex
 					} );
 			}
+			Triggered = false;
 			// Get Custno from ACTIVE gridso we can find it in other grids
 			DetailsViewModel dgr = DetailsGrid . SelectedItem as DetailsViewModel;
 			if ( dgr == null ) return;
@@ -804,17 +1211,17 @@ namespace WPFPages . Views
 			int rounded = Convert . ToInt32 ( d );
 			if ( dg == this . BankGrid )
 			{
-				//				Console . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . TopVisibleBankGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
+				//				Debug . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . TopVisibleBankGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
 				Flags . TopVisibleBankGridRow = ( double ) rounded;
 			}
 			else if ( dg == this . CustomerGrid )
 			{
-				//				Console . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . TopVisibleCustGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
+				//				Debug . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . TopVisibleCustGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
 				Flags . TopVisibleCustGridRow = ( double ) rounded;
 			}
 			else if ( dg == this . DetailsGrid )
 			{
-				//				Console . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . TopVisibleDetGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
+				//				Debug . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . TopVisibleDetGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
 				Flags . TopVisibleDetGridRow = ( double ) rounded;
 			}
 			//			Flags . ViewPortHeight = scroll . ViewportHeight;
@@ -832,17 +1239,17 @@ namespace WPFPages . Views
 			int rounded = Convert . ToInt32 ( d );
 			if ( dg == this . BankGrid )
 			{
-				//				Console . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . BottomVisibleBankGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
+				//				Debug . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . BottomVisibleBankGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
 				Flags . BottomVisibleBankGridRow = ( double ) rounded;
 			}
 			else if ( dg == this . CustomerGrid )
 			{
-				//				Console . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . BottomVisibleCustGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
+				//				Debug . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . BottomVisibleCustGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
 				Flags . BottomVisibleCustGridRow = ( double ) rounded;
 			}
 			else if ( dg == this . DetailsGrid )
 			{
-				//				Console . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . BottomVisibleDetGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
+				//				Debug . WriteLine ( $"\n######## Flags . TopVisibleDetGridRow == {scroll . VerticalOffset}\n######## TopVisible = { Flags . BottomVisibleDetGridRow}\n######## NEW Value = { scroll . VerticalOffset}" );
 				Flags . BottomVisibleDetGridRow = ( double ) rounded;
 			}
 		}
@@ -867,7 +1274,7 @@ namespace WPFPages . Views
 			try
 			{ DragMove ( ); }
 			catch ( Exception ex )
-			{ Console . WriteLine ( $"General Exception : {ex . Message}, {ex . Data}" ); return; }
+			{ Debug . WriteLine ( $"General Exception : {ex . Message}, {ex . Data}" ); return; }
 		}
 
 
@@ -887,19 +1294,28 @@ namespace WPFPages . Views
 		{
 			// Make sure this window has it's pointer "Registered" cos we can
 			//Show only Customers with multiple Bank Accounts
-			string s = MultiAccountText . Text as string;
+			string s = MultiAccountText . Text;
 			if ( s . Contains ( "<<-" ) || s . Contains ( "Show All" ) )
 			{
 				Flags . IsMultiMode = false;
 				MultiAccountText . Text = "Multi Accounts";
 				//// Set the gradient background
-				//SetButtonGradientBackground ( Multiaccounts );
+				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
+				Multiaccounts . Template = tmp;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGray" );
+				Multiaccounts . Background = br;
+				Multiaccounts . Content = "Multi A/c Only";
+				MultiAccountText . Text = "Multi A/c Only";
 			}
 			else
 			{
 				Flags . IsMultiMode = true;
-				//SetButtonGradientBackground ( Multiaccounts );
-				MultiAccountText . Text = "Show All A/C's";
+				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGreen" );
+				Multiaccounts. Template = tmp;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGreen" );
+				Multiaccounts . Background = br;
+				Multiaccounts . Content = "Show All A/c's";
+				MultiAccountText . Text = "Show All A/c's";
 			}
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
@@ -920,14 +1336,34 @@ namespace WPFPages . Views
 
 		private void Filter_Click ( object sender, RoutedEventArgs e )
 		{
-			Filtering f = new Filtering ( );
 			if ( CurrentDb == "" )
 			{
 				MessageBox . Show ( "Please select an entry in one of the data grids before trying to filter the data listed." );
 				return;
 			}
-			Flags . FilterCommand = f . DoFilters ( sender, CurrentDb, 1 );
-			ReLoadAllDataBases ( CurrentDb, -1 );
+			if(FilterBtn.Content== "Clear Filter" )
+			{
+				Flags . FilterCommand = "";
+				ReLoadAllDataBases ( CurrentDb, -1 );
+				FilterBtn . Content = "Filter";
+				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
+				FilterBtn . Template = tmp;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGray" );
+				FilterBtn . Background = br;
+			}
+			else
+			{
+				Filtering f = new Filtering ( );
+				Flags . FilterCommand = f . DoFilters ( this, "BANKACCOUNT", 1 );
+				ReLoadAllDataBases ( CurrentDb, -1 );
+				// Clear our filter string
+				Flags . FilterCommand = "";
+				FilterBtn . Content = "Clear Filter";
+				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGreen" );
+				FilterBtn . Template = tmp;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGreen" );
+				FilterBtn . Background = br;
+			}
 		}
 
 		private void BankGrid_Selected ( object sender, RoutedEventArgs e )
@@ -1040,6 +1476,12 @@ namespace WPFPages . Views
 				Flags . SqlDetViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			if ( Flags . SqlMultiViewer != null )
 				Flags . SqlMultiViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . BankDbEditor != null )
+				Flags . BankDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . CustDbEditor != null )
+				Flags . CustDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . DetDbEditor != null )
+				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			LinkRecords . Refresh ( );
 		}
 

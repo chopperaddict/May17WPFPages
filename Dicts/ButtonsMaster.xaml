@@ -386,9 +386,9 @@
 			</Trigger>
 			<Trigger Property="IsEnabled" Value="False">
 				<!--Handles disabled status-->
-				<Setter Property="Background" TargetName="border" Value="Gray"/>
+				<Setter Property="Background" TargetName="border" Value="DarkGray"/>
 				<Setter Property="BorderBrush" TargetName="border" Value="Red"/>
-				<Setter Property="Foreground" Value="White"/>
+				<Setter Property="Foreground" Value="DarkGray"/>
 			</Trigger>
 		</ControlTemplate.Triggers>
 	</ControlTemplate>	

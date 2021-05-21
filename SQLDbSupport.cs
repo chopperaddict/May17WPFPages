@@ -1,6 +1,7 @@
 ﻿using System;
 using System . Data;
 using System . Data . SqlClient;
+using System . Diagnostics;
 using WPFPages . Views;
 
 
@@ -68,7 +69,7 @@ namespace WPFPages
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"Failed to load Bank Details - {ex . Message}" );
+				Debug . WriteLine ( $"Failed to load Bank Details - {ex . Message}" );
 				return false;
 			}
 			return true;

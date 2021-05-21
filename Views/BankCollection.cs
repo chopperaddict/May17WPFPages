@@ -2,6 +2,7 @@
 using System . Collections . ObjectModel;
 using System . Data;
 using System . Data . SqlClient;
+using System . Diagnostics;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
@@ -44,7 +45,7 @@ namespace WPFPages . Views
 			else
 			{
 				Bankinternalcollection = new BankCollection ( );
-				Console . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
+				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 			}
 
 			Bankinternalcollection . ClearItems ( );
@@ -54,6 +55,7 @@ namespace WPFPages . Views
 			// We now have the pointer to the the Bank data in variable Bankinternalcollection
 			if ( Flags . IsMultiMode == false )
 			{
+				Debug . WriteLine ("Returning Bank Data via Debug output...." );
 				// Finally fill and return The global Dataset
 				BankCollection db  = new BankCollection (  );
 				SelectViewer ( ViewerType, Bankinternalcollection , out db);
@@ -204,6 +206,8 @@ namespace WPFPages . Views
 
 						commandline = Utils . GetDataSortOrder ( commandline );
 					}
+					else if ( Flags . FilterCommand != "" )
+					{ commandline = Flags . FilterCommand; }
 					else
 					{
 						// Create a valid Query Command string including any active sort ordering
@@ -220,7 +224,7 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return ;
+				Debug . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return ;
 				//				MessageBox . Show ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
 				return ;
 			}
@@ -251,7 +255,7 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
+				Debug . WriteLine ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
 				MessageBox . Show ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
 			}
 			finally
@@ -298,12 +302,12 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
+				Debug . WriteLine ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
 				MessageBox . Show ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
 			}
 			finally
 			{
-				Console . WriteLine ( $"BANK : Completed load into Bankcollection :  {temp . Count} records loaded successfully ...." );
+				Debug . WriteLine ( $"BANK : Completed load into Bankcollection :  {temp . Count} records loaded successfully ...." );
 			}
 			return temp;
 		}
@@ -325,7 +329,7 @@ namespace WPFPages . Views
 
 			//// This all woks just fine, and DOES switch back to UI thread that is MANDATORY before doing the Collection load processing
 			//// thanks to the use of TaskScheduler.FromCurrentSynchronizationContext() that oerforms the magic switch back to the UI thread
-			////			Console . WriteLine ( $"BANK : Entering Method to call Task.Run in BankCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+			////			Debug . WriteLine ( $"BANK : Entering Method to call Task.Run in BankCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 
 			//#region process code to load data
 
@@ -340,7 +344,7 @@ namespace WPFPages . Views
 			//(
 			//	async ( Bankinternalcollection ) =>
 			//	{
-			//		//					Console . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+			//		//					Debug . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 			//		LoadBankCollection ( Notify );
 			//	} , TaskScheduler . FromCurrentSynchronizationContext ( )
 			// );
@@ -353,7 +357,7 @@ namespace WPFPages . Views
 			//t1 . ContinueWith (
 			//( Bankinternalcollection ) =>
 			//	{
-			//		Console . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
+			//		Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
 			//	} , CancellationToken . None , TaskContinuationOptions . OnlyOnRanToCompletion , TaskScheduler . FromCurrentSynchronizationContext ( )
 			//);
 			////This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -362,11 +366,11 @@ namespace WPFPages . Views
 			//	( Bankinternalcollection ) =>
 			//	{
 			//		AggregateException ae =  t1 . Exception . Flatten ( );
-			//		Console . WriteLine ( $"Exception in BankCollection data processing \n" );
+			//		Debug . WriteLine ( $"Exception in BankCollection data processing \n" );
 			//		MessageBox . Show ( $"Exception in BankCollection data processing \n" );
 			//		foreach ( var item in ae . InnerExceptions )
 			//		{
-			//			Console . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
+			//			Debug . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
 			//		}
 			//	} , CancellationToken . None , TaskContinuationOptions . OnlyOnFaulted , TaskScheduler . FromCurrentSynchronizationContext ( )
 			//);
@@ -376,7 +380,7 @@ namespace WPFPages . Views
 			//t1 . ContinueWith (
 			//	( Bankinternalcollection) =>
 			//	{
-			//		Console . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
+			//		Debug . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
 			//	} , CancellationToken . None , TaskContinuationOptions . OnlyOnRanToCompletion , TaskScheduler . FromCurrentSynchronizationContext ( )
 			//);
 			////This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -385,18 +389,18 @@ namespace WPFPages . Views
 			//	( Bankinternalcollection ) =>
 			//	{
 			//		AggregateException ae =  t1 . Exception . Flatten ( );
-			//		Console . WriteLine ( $"Exception in BankCollection data processing \n" );
+			//		Debug . WriteLine ( $"Exception in BankCollection data processing \n" );
 			//		MessageBox . Show ( $"Exception in BankCollection data processing \n" );
 			//		foreach ( var item in ae . InnerExceptions )
 			//		{
-			//			Console . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
+			//			Debug . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
 			//		}
 			//	} , CancellationToken . None , TaskContinuationOptions . OnlyOnFaulted , TaskScheduler . FromCurrentSynchronizationContext ( )
 			//);
 
 			//#endregion Continuations
 
-			//Console . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankcollection . Count} ***\n\n" );
+			//Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankcollection . Count} ***\n\n" );
 
 			//#endregion Success//Error reporting/handling
 			//// Finally fill and return The global Dataset

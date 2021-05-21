@@ -87,6 +87,13 @@ namespace WPFPages
 				Close ();
 
 			}
+			else if ( e . Key == Key . Enter )
+			{
+				
+				FilterResult = true;
+				SetFilter_Click ( this, null );
+				Close ( );
+			}
 		}
 
 		private void MultiAccounts_Click(object sender, RoutedEventArgs e)

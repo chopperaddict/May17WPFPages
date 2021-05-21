@@ -7,6 +7,7 @@ using System . Linq;
 using WPFPages . ViewModels;
 using System . Windows . Media;
 using System . Windows . Input;
+using System . Diagnostics;
 
 namespace WPFPages . Views
 {
@@ -18,7 +19,7 @@ namespace WPFPages . Views
 		public static BankCollection BankViewercollection = BankCollection . EditDbBankcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
-
+		static bool Triggered = false;
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -54,6 +55,14 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = BankViewercollection;
 
 			this . MouseDown += delegate { DoDragMove ( ); };
+
+			// An EditDb has changed the current index 
+			EventControl . EditIndexChanged += EventControl_EditIndexChanged; 
+			// A Multiviewer has changed the current index 
+			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
+
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 
 			// Main update notification handler
@@ -65,12 +74,25 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = BankViewercollection;
 			Startup = false;
 			Count . Text = this . BankGrid . Items . Count . ToString ( );
-			this . BankGrid . SelectedIndex = 0;
+			Utils . SetUpGridSelection ( this.BankGrid, 0 );
+			if ( Flags . LinkviewerRecords )
+				LinkRecords . IsChecked = true;
+			Flags . BankDbEditor = this;
 		}
+
+		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			Triggered = true;
+			// Handle Selection change in another windowif linkage is ON
+			this . BankGrid . SelectedIndex = e . Row;
+			this . BankGrid . Refresh ( );
+			Triggered = false;
+		}
+
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			int currsel = this . BankGrid . SelectedIndex;
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
@@ -83,7 +105,7 @@ namespace WPFPages . Views
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Console . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			this . BankGrid . ItemsSource = BankViewercollection;
@@ -160,13 +182,14 @@ namespace WPFPages . Views
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
+			Flags . BankDbEditor = null;
 			// Main update notification handler
 			EventControl . DataUpdated -= EventControl_DataUpdated;
 		}
 
 		private void BankGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			if ( IsDirty )
+			if ( Flags.LinkviewerRecords == false && IsDirty )
 			{
 				MessageBoxResult result = MessageBox . Show
 					( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
@@ -183,6 +206,21 @@ namespace WPFPages . Views
 			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedItem );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
+			if ( Flags . LinkviewerRecords && Triggered  == false)
+			{
+				EventControl . TriggerEditDbIndexChanged ( this,
+				new IndexChangedArgs
+				{
+					dGrid = this .
+					BankGrid,
+					Row = this .
+					BankGrid . SelectedIndex,
+					SenderId = "BANKACCOUNT",
+					Sender = "BANKDBVIEW"
+				} );
+			}
+			Triggered = false;
+			IsDirty = false;
 			Startup = false;
 		}
 
@@ -402,6 +440,28 @@ namespace WPFPages . Views
 			} );
 			Mouse . OverrideCursor = Cursors . Arrow;
 		}
+		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
+		{
+			// force viewers to change records in line with each other
+			if ( LinkRecords . IsChecked == true )
+				Flags . LinkviewerRecords = true;
+			else
+				Flags . LinkviewerRecords = false;
+			if ( Flags . SqlBankViewer != null )
+				Flags . SqlBankViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlCustViewer != null )
+				Flags . SqlCustViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlDetViewer != null )
+				Flags . SqlDetViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlMultiViewer != null )
+				Flags . SqlMultiViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . CustDbEditor != null )
+				Flags . CustDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . DetDbEditor != null )
+				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			LinkRecords . Refresh ( );
+		}
+
 
 
 		//			BankAccountViewModel bank = new BankAccountViewModel();

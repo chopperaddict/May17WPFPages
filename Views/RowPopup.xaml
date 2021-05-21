@@ -4,11 +4,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Db Row Information" Height="597" Width="362"
+        Title="Db Row Information" 
+	  Height="597" 
+	  Width="362"
         MinHeight="370"
-        MinWidth="362" KeyDown="Window_KeyDown"
+        MinWidth="362" 
+	  KeyDown="Window_KeyDown"
         >
-
 
 	<Grid  x:Name="MainGrid">
 
@@ -146,7 +148,7 @@
 			<!--#endregion Bank StackPanel for Bank labels-->
 
 		</Border>
-<!--#endregion Left Column Bank  BORDER-->
+		<!--#endregion Left Column Bank  BORDER-->
 
 			<!--#region Left Column Cust BORDER with Customer Labels-->
 		<Border  x:Name ="LeftCustBorder"
@@ -386,7 +388,7 @@
 					</LinearGradientBrush>
 				</Border.Background>
 
-<!--#region Right Column Bank Data Fields (BankData)-->
+		<!--#region Right Column Bank Data Fields (BankData)-->
 				<StackPanel
 					    x:Name="BankData"
 						    Orientation="Vertical"
@@ -394,7 +396,6 @@
 						    Grid.Row="0"
 						    Grid.Column="0"
 						    Width ="180">
-
 
 					<TextBlock
 						    Text="{Binding Path=  Item.Id}"
@@ -427,24 +428,28 @@
 							    Margin="5,5,5,5"
 						    />
 					<TextBox
+						x:Name="actype1"
 							    Text="{Binding Path= Item.AcType }"
 							    Height="20"
 							    Width="20"
 							    FontSize="14"
 							    Foreground="Black"
 							    Background="Bisque"
+								LostFocus="actype_LostFocus"
 							    VerticalAlignment="Center"
 							    HorizontalAlignment="Left"
 							    Margin="5,5,5,5"
-							    Padding="5,0,5,0"
+							    Padding="5,0,5,0" 
 						    />
 					<TextBox
-							    Text="{Binding Path=  Item.Balance, UpdateSourceTrigger=LostFocus, StringFormat='£#,###,###.00'}"
+						x:Name="balance1"
+							    Text="{Binding Path=  Item.Balance, UpdateSourceTrigger=LostFocus}"
 							    Height="20"
 							    Width="100"
 							    FontSize="14"
 							    Foreground="Black"
 							    Background="Bisque"
+								LostFocus="balance_LostFocus"
 							    VerticalAlignment="Center"
 							    HorizontalAlignment="Left"
 							    Margin="5,5,5,5"
@@ -452,12 +457,14 @@
 							    Padding="5,0,5,0"
 						    />
 					<TextBox
+						x:Name="intrate1"
 						    Text="{Binding Path=  Item.IntRate, UpdateSourceTrigger=LostFocus }"
 						    Height="20"
 						    Width="40"
 						    FontSize="14"
 						    Foreground="Black"
 						    Background="Bisque"
+							LostFocus="intrate_LostFocus"
 						    VerticalAlignment="Center"
 						    HorizontalAlignment="Left"
 						    Margin="5,5,5,5"
@@ -476,12 +483,14 @@
 						    Padding="5,0,5,0"
 						/>
 					<TextBox
+						x:Name="cdate1"
 						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
 						    Height="20"
 						    Width="90"
 						    FontSize="14"
 						    Foreground="Black"
 						    Background="Bisque"
+							LostFocus="cdate_LostFocus"
 						    VerticalAlignment="Center"
 						    HorizontalAlignment="Left"
 						    Margin="5,5,5,5"
@@ -548,6 +557,7 @@
 							    Margin="5,5,5,5"
 						    />
 					<TextBox
+						x:Name="actype"
 						Text="{Binding Path= Item.AcType, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="20"
@@ -561,6 +571,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="fname"
 						Text="{Binding Path= Item.FName , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="150"
@@ -574,6 +585,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="lname"
 						Text="{Binding Path= Item.LName , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="150"
@@ -587,6 +599,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="addr1"
 						Text="{Binding Path= Item.Addr1, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="180"
@@ -600,6 +613,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="addr2"
 						Text="{Binding Path= Item.Addr2, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="180"
@@ -613,6 +627,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="town"
 						Text="{Binding Path= Item.Town , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="180"
@@ -626,6 +641,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="county"
 						Text="{Binding Path= Item.County , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="180"
@@ -639,6 +655,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="pcode"
 						Text="{Binding Path= Item.PCode, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="90"
@@ -652,6 +669,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="phone"
 						Text="{Binding Path= Item.Phone, UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="100"
@@ -665,6 +683,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="mobile"
 						Text="{Binding Path= Item.Mobile , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="120"
@@ -701,6 +720,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox
+						x:Name="cdate"
 						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
 						    Height="20"
 						    Width="100"
@@ -733,7 +753,7 @@
 			    Grid.Row="2"
 			    Grid.Column="1"
 			    Grid.ColumnSpan="2"
-			    Margin="0,5,5,3"
+			    Margin="0,0,5,3"
 >
 			<StackPanel
 		    Grid.Column="0"
@@ -743,20 +763,23 @@
 		    >
 
 				<Button  x:Name ="SaveBtn"
-					Background="DarkGreen"
+					Background="{StaticResource HeaderBrushGreen}"
 					Foreground="White"
+					Template="{StaticResource HorizontalGradientTemplateGreen}"
 					Click="Save_Click"
 					Grid.Column="2"
 					Grid.Row="3"
 					IsEnabled="False"
-					Width="120"
+					Width="100"
 					Height="30"
 					Margin="5"
-					Content =" Save Changes"
-					Visibility="Hidden"/>
+					   VerticalAlignment="Center"
+					Content =" Save / Exit"
+					Visibility="Visible"/>
 				<Button 
-					Background="Crimson"
+					Background="{StaticResource HeaderBrushRed}"
 					Foreground="White"
+					Template="{StaticResource HorizontalGradientTemplateRed}"
 					Click="ButtonBase_OnClick"
 					Grid.Column="2"
 					Grid.Row="3"

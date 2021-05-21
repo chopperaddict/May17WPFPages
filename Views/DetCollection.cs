@@ -107,27 +107,27 @@ namespace WPFPages . Views
 
 //			// This all woks just fine, and DOES switch back to UI thread that is MANDATORY before doing the Collection load processing
 //			// thanks to the use of TaskScheduler.FromCurrentSynchronizationContext() that performs the magic switch back to the UI thread
-//			//			Console . WriteLine ( $"DETAILS : Entering Method to call Task.Run in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//			//			Debug . WriteLine ( $"DETAILS : Entering Method to call Task.Run in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 
 //			#region process code to load data
 
 //			Task t1 = Task . Run(
 //					async ( ) =>
 //						{
-////							Console . WriteLine ( $"Before starting initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+////							Debug . WriteLine ( $"Before starting initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 //							await LoadDetailsDataSql(b);
-////							Console . WriteLine ( $"After initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+////							Debug . WriteLine ( $"After initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 //						}
 //				);
 //			t1 . ContinueWith
 //			(
 //				async ( Detinternalcollection ) =>
 //				{
-//					Console . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//					Debug . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 //					await LoadDetCollection ( row , b );
 //				} , TaskScheduler . FromCurrentSynchronizationContext ( )
 //			 );
-//			//			Console . WriteLine ( $"After second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//			//			Debug . WriteLine ( $"After second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 
 //			#endregion process code to load data
 
@@ -138,7 +138,7 @@ namespace WPFPages . Views
 //			t1 . ContinueWith (
 //				( Detinternalcollection ) =>
 //				{
-//					Console . WriteLine ( $"DETAILS : Task.Run() Completed : Status was [ {Detinternalcollection . Status} ]." );
+//					Debug . WriteLine ( $"DETAILS : Task.Run() Completed : Status was [ {Detinternalcollection . Status} ]." );
 //				} , CancellationToken . None , TaskContinuationOptions . OnlyOnRanToCompletion , TaskScheduler . FromCurrentSynchronizationContext ( )
 //			);
 //			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -147,15 +147,15 @@ namespace WPFPages . Views
 //				( Detinternalcollection ) =>
 //				{
 //					AggregateException ae =  t1 . Exception . Flatten ( );
-//					Console . WriteLine ( $"Exception in DetCollection data processing \n" );
+//					Debug . WriteLine ( $"Exception in DetCollection data processing \n" );
 //					foreach ( var item in ae . InnerExceptions )
 //					{
-//						Console . WriteLine ( $"DetCollection : Exception : {item . Message}, : {item . Data}" );
+//						Debug . WriteLine ( $"DetCollection : Exception : {item . Message}, : {item . Data}" );
 //					}
 //				} , CancellationToken . None , TaskContinuationOptions . NotOnRanToCompletion , TaskScheduler . FromCurrentSynchronizationContext ( )
 //			);
 
-//			//			Console . WriteLine ($"DETAILS : END OF PROCESSING & Error checking functionality\nDETAILS : *** Detcollection total = {Detcollection.Count} ***\n\n");
+//			//			Debug . WriteLine ($"DETAILS : END OF PROCESSING & Error checking functionality\nDETAILS : *** Detcollection total = {Detcollection.Count} ***\n\n");
 //			#endregion Success//Error reporting/handling
 
 //			Flags . DetCollection = Detinternalcollection;
@@ -202,12 +202,12 @@ namespace WPFPages . Views
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 					sda . Fill ( dtDetails );
 					st . Stop ( );
-					Console . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
+					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 				}
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+				Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
 				MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
 				return false;
 			}
@@ -235,7 +235,7 @@ namespace WPFPages . Views
 					} );
 					count = i;
 				}
-				Console . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"DetCollection\" [{count}] ...." );
+				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"DetCollection\" [{count}] ...." );
 				if ( Notify )
 				{
 //					OnDetDataLoaded ( Detcollection , row );
@@ -252,7 +252,7 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+				Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
 				MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
 				return null;
 			}
@@ -278,13 +278,13 @@ namespace WPFPages . Views
 					} );
 					count = i;
 				}
-				Console . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"DetCollection\" [{count}] ...." );
+				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"DetCollection\" [{count}] ...." );
 				Flags . DetCollection = Detinternalcollection;
 				return Detinternalcollection;
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+				Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
 				MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
 				return null;
 			}
@@ -355,20 +355,20 @@ namespace WPFPages . Views
 }
 /*
  * 
- 				Console . WriteLine ( $"\nCalling dat aload system in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+ 				Debug . WriteLine ( $"\nCalling dat aload system in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				Task t1 = Task . Run( 
 					async ( ) =>
 						{
-//							Console . WriteLine ( $"Before starting initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//							Debug . WriteLine ( $"Before starting initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 							await LoadDetailsDataSql();
-//							Console . WriteLine ( $"After initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//							Debug . WriteLine ( $"After initial Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 						}
 				) . ContinueWith (
 					{
-//					Console . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//					Debug . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 					async ( Detcollection ) => await LoadDetCollection ( ),
 						TaskScheduler . FromCurrentSynchronizationContext ( )
-//					Console . WriteLine ( $"After second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//					Debug . WriteLine ( $"After second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				}
 				);
 * */

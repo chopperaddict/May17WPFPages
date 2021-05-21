@@ -1,4 +1,5 @@
 ﻿using System;
+using System . Diagnostics;
 using System . Windows;
 using System . Windows . Controls;
 using System . Windows . Data;
@@ -16,18 +17,21 @@ namespace WPFPages . Views
 	public partial class RowInfoPopup : Window
 	{
 		private string CurrentDb = "";
-		private bool IsDirty = false;
+		public bool IsDirty = false;
 		private DataGrid ParentGrid = null;
-
+		public DataGridRow dgr = null;
 		//BankCollection bc = new BankCollection ( );
 		//public BankCollection Bankcollection;// = bc.Bankcollection;
 		//public CustCollection Custcollection = CustCollection . Custcollection;
 		//public DetCollection Detcollection = DetCollection.Detcollection;
+		BankAccountViewModel bvm = new BankAccountViewModel ( );
+		CustomerViewModel cvm = new CustomerViewModel ( );
+		DetailsViewModel dvm = new DetailsViewModel ( );
 
-		public RowInfoPopup ( string callerType , DataGrid parentGrid,  DataGridRow RowData)
+		public RowInfoPopup ( string callerType, DataGrid parentGrid, DataGridRow RowData )
 		{
 			ParentGrid = parentGrid;
-			DataGridRow dgr = RowData;
+			dgr = RowData;
 			try
 			{
 				//store the tyoe of Db we are working with
@@ -37,6 +41,7 @@ namespace WPFPages . Views
 				InitializeComponent ( );
 				if ( callerType == "BANKACCOUNT" )
 				{
+					bvm = parentGrid . SelectedItem as BankAccountViewModel;
 					BankLabels . Visibility = Visibility . Visible;
 					BankData . Visibility = Visibility . Visible;
 					CustLabels . Visibility = Visibility . Hidden;
@@ -45,11 +50,12 @@ namespace WPFPages . Views
 					LeftBankBorder . Visibility = Visibility . Visible;
 					//					BankAccountViewModel bvm = new BankAccountViewModel();
 					//					DataContext = bvm.BankAccountObs;
-					this . Height = 350;
+					this . Height = 400;
 				}
 
 				if ( callerType == "CUSTOMER" )
 				{
+					cvm = parentGrid . SelectedItem as CustomerViewModel;
 					CustData . Visibility = Visibility . Visible;
 					CustLabels . Visibility = Visibility . Visible;
 					BankLabels . Visibility = Visibility . Hidden;
@@ -63,6 +69,7 @@ namespace WPFPages . Views
 
 				if ( callerType == "DETAILS" )
 				{
+					dvm = parentGrid . SelectedItem as DetailsViewModel;
 					BankLabels . Visibility = Visibility . Visible;
 					BankData . Visibility = Visibility . Visible;
 					CustData . Visibility = Visibility . Hidden;
@@ -71,13 +78,13 @@ namespace WPFPages . Views
 					LeftBankBorder . Visibility = Visibility . Visible;
 					//					DetailsViewModel dvm = new DetailsViewModel ( );
 					//					DataContext = Detcollection;
-					this . Height = 350;
+					this . Height = 400;
 				}
 				this . MouseDown += delegate { DoDragMove ( ); };
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"General Exception : {ex . Message}, {ex . Data}" );
+				Debug . WriteLine ( $"General Exception : {ex . Message}, {ex . Data}" );
 			}
 
 			if ( IsDirty )
@@ -98,13 +105,47 @@ namespace WPFPages . Views
 		}
 
 		private void ButtonBase_OnClick ( object sender, RoutedEventArgs e )
-		{
-			this . Close ( );
-		}
+		{ this . Close ( ); }
 
 		private void Save_Click ( object sender, RoutedEventArgs e )
 		{
-
+			SQLHandlers sqlh = new SQLHandlers ( );
+			if ( CurrentDb != "CUSTOMER" )
+			{
+				if ( CurrentDb == "BANKACCOUNT" )
+				{
+					bvm . AcType = Convert . ToInt32 ( actype1 . Text );
+					bvm . IntRate = Convert . ToDecimal( intrate1 . Text );
+					bvm . Balance = Convert . ToDecimal ( balance1 . Text );
+					bvm . CDate = Convert . ToDateTime ( cdate1 . Text );
+					sqlh . UpdateDbRow ( CurrentDb, bvm );
+				}
+				else
+				{
+					dvm . AcType = Convert . ToInt32 ( actype1 . Text );
+					dvm . IntRate = Convert . ToDecimal( intrate1 . Text );
+					dvm . Balance = Convert . ToDecimal (balance1.Text );
+					dvm . CDate = Convert . ToDateTime ( cdate1 . Text );
+					sqlh . UpdateDbRow ( CurrentDb, dvm );
+				}
+			}
+			else
+			{
+				cvm . AcType = Convert . ToInt32 ( actype1 . Text );
+				cvm . Addr1 = addr1 . Text;
+				cvm . Addr2 = addr2 . Text;
+				cvm . FName = fname . Text;
+				cvm . LName = lname . Text;
+				cvm . Town = town . Text;
+				cvm . County = county . Text;
+				cvm . PCode = pcode . Text;
+				cvm . Phone = phone . Text;
+				cvm . Mobile = mobile . Text;
+				cvm . CDate = Convert . ToDateTime ( cdate . Text );
+				sqlh . UpdateDbRow ( CurrentDb, cvm );
+			}
+			SaveBtn . Visibility = Visibility . Hidden;
+			Close ( );
 		}
 
 		private void Window_KeyDown ( object sender, KeyEventArgs e )
@@ -115,14 +156,24 @@ namespace WPFPages . Views
 			}
 		}
 
+		#region Bank/Details field dirty flag setters
+
+		private void actype_LostFocus ( object sender, RoutedEventArgs e )
+		{ UpdateCollection ( ); }
+		private void intrate_LostFocus ( object sender, RoutedEventArgs e )
+		{ UpdateCollection ( ); }
+		private void balance_LostFocus ( object sender, RoutedEventArgs e )
+		{ UpdateCollection ( ); }
+		private void cdate_LostFocus ( object sender, RoutedEventArgs e )
+		{ UpdateCollection ( ); }
+
+		#endregion Bank/Details field dirty flag setters
+
+		#region Customer field dirty flag setters
 		private void ODateLostFocus ( object sender, RoutedEventArgs e )
-		{
-			UpdateCollection();
-		}
-
-
+		{ UpdateCollection ( ); }
 		private void AcTypeLostFocus ( object sender, RoutedEventArgs e )
-		{UpdateCollection();}
+		{ UpdateCollection ( ); }
 
 		private void CDateLostFocus ( object sender, RoutedEventArgs e )
 		{ UpdateCollection ( ); }
@@ -153,25 +204,15 @@ namespace WPFPages . Views
 
 		private void FNameLostFocus ( object sender, RoutedEventArgs e )
 		{ UpdateCollection ( ); }
+
+		#endregion Customer field dirty flag setters
+
 		private void UpdateCollection ( )
 		{
+			IsDirty = true;
+			SaveBtn . IsEnabled = true;
+			SaveBtn . Visibility = Visibility . Visible;
 			return;
-			//if ( CurrentDb == "BANKACCOUNT" )
-			//{
-
-			//}
-			//if ( CurrentDb == "CUSTOMER" )
-			//{
-			//	int selected;
-			//	selected = ParentGrid.SelectedIndex;
-			//	ParentGrid.ItemsSource = null;
-			//	ParentGrid.ItemsSource = CustCollection.Custcollection;
-			//	ParentGrid.SelectedIndex = selected;
-			//	ParentGrid . Refresh();
-			//}
-			//if ( CurrentDb == "DETAILS" )
-			//{
-			//}
 		}
 	}
 }

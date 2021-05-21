@@ -217,6 +217,13 @@ namespace WPFPages . Views
 				dglist2 = ViewerIndexChanged?.GetInvocationList ( );
 			return dglist2;
 		}
+		public static Delegate [ ] GetEventCount11 ( )
+		{
+			Delegate [ ] dglist2 = null;
+			if ( DataUpdated != null )
+				dglist2 = DataUpdated?.GetInvocationList ( );
+			return dglist2;
+		}
 
 		#endregion DEBUG utilities
 

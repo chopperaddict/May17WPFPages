@@ -287,13 +287,22 @@
 						     Width="20"
 									Style="{StaticResource WingDingStyle}" />-->
 					<TextBlock x:Name="MultiAccountText"
-						Text="Multi Accounts" 
+						Text="Multi A/c Only" 
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center" 
 									Style="{StaticResource WingDingStyle}"
 								FontSize="12"/>
 				</StackPanel>
 			</Button>
+
+			<Button  
+				Height="40"
+				Width="8"
+				Margin="3,0,7,0"
+				Background="{StaticResource HeaderBrushRed}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateRed}"
+				/>
 
 			<Button  
 					x:Name="FilterBtn"

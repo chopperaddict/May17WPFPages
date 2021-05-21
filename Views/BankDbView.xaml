@@ -76,7 +76,7 @@
 				Grid.Row="1"
 				Grid.Column="1"
 				Grid.ColumnSpan="4" 
-			    CanUserAddRows="False"
+				CanUserAddRows="False"
 				Grid.RowSpan="1" 
 				HorizontalAlignment="Stretch" 
 				IsSynchronizedWithCurrentItem="False"
@@ -400,6 +400,16 @@
 				TextChanged="TextChanged"
 				Canvas.Left="429" 
 				Canvas.Top="59"/>
+
+				<CheckBox x:Name="LinkRecords" 
+					Canvas.Left="371" 
+					Canvas.Top="100"				    
+					Click="LinkRecords_Click"
+					Content="Link to External Viewers " 
+					Foreground="Red"
+					Height="25"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Center"				   />
 				<!--#endregion Text Fields-->
 			</Canvas>
 

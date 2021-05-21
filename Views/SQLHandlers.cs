@@ -1,5 +1,6 @@
 ﻿using System;
 using System . Data . SqlClient;
+using System . Diagnostics;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
@@ -80,7 +81,7 @@ namespace WPFPages . Views
 						//Check for invalid A/C Type
 						if ( x < 1 || x > 4 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(92) Invalid A/c type of {ss . AcType} in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(92) Invalid A/c type of {ss . AcType} in grid Data" );
 							MessageBox . Show ( $"Invalid A/C Type ({ss . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -89,7 +90,7 @@ namespace WPFPages . Views
 						//Check for invalid Interest rate
 						if ( Y > 100 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(101) Invalid Interest Rate of {ss . IntRate} > 100% in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(101) Invalid Interest Rate of {ss . IntRate} > 100% in grid Data" );
 							MessageBox . Show ( $"Invalid Interest rate ({ss . IntRate}) > 100 entered in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -103,7 +104,7 @@ namespace WPFPages . Views
 						//Check for invalid A/C Type
 						if ( x < 1 || x > 4 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(117) Invalid A/c type of {sa . AcType} in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(117) Invalid A/c type of {sa . AcType} in grid Data" );
 							MessageBox . Show ( $"Invalid A/C Type ({sa . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -112,7 +113,7 @@ namespace WPFPages . Views
 						//Check for invalid Interest rate
 						if ( Y > 100 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(126) Invalid Interest Rate of {sa . IntRate} > 100% in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(126) Invalid Interest Rate of {sa . IntRate} > 100% in grid Data" );
 							MessageBox . Show ( $"Invalid Interest rate ({sa . IntRate}) > 100 entered in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -123,7 +124,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL UpdateDbRow(137) Invalid grid Data - {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL UpdateDbRow(137) Invalid grid Data - {ex . Message} Data = {ex . Data}" );
 					MessageBox . Show ( "Invalid data entered in the Grid !!!! - See Output for details.\r\nNEITHER Db has been updated !!" );
 					return false;
 				}
@@ -148,7 +149,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Bank Account Data..." );
+							Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( ss . Id ) );
@@ -160,7 +161,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
+							Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( ss . Id ) );
@@ -170,7 +171,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Customers Data..." );
+							Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 						}
 						else if ( CurrentDb == "DETAILS" )
 						{
@@ -184,7 +185,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Bank Account Data..." );
+							Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -196,7 +197,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
+							Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -206,19 +207,19 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Customers Data..." );
+							Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 						}
 					}
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Error UpdateDbRow(180) - BankAccount/Sec" +
+					Debug . WriteLine ( $"SQL Error UpdateDbRow(180) - BankAccount/Sec" +
 						$"accounts not updated {ex . Message} Data = {ex . Data}" );
 				}
 				finally
 				{
 					con . Close ( );
-					Console . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
+					Debug . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
 					// We have now updated the Db's via SQL !!!
 					// This call should tell any other open viewers to refresh their views
 					//					BankCollection.Bankcollection = null;
@@ -265,7 +266,7 @@ namespace WPFPages . Views
 					//Check for invalid A/C Type
 					if ( x < 1 || x > 4 )
 					{
-						Console . WriteLine ( $"SQL UpdateDbRow(204) Invalid A/c type of {cs . AcType} in grid Data" );
+						Debug . WriteLine ( $"SQL UpdateDbRow(204) Invalid A/c type of {cs . AcType} in grid Data" );
 						MessageBox . Show ( $"Invalid A/C Type ({cs . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 						return false;
 					}
@@ -275,7 +276,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Invalid grid Data UpdateDbRow(214)- {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Invalid grid Data UpdateDbRow(214)- {ex . Message} Data = {ex . Data}" );
 					MessageBox . Show ( "Invalid data entered in the Grid !!!! - See Output for details" );
 					return false;
 				}
@@ -311,7 +312,7 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update successful for Customers Data..." );
+						Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 
 						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 						cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( cs . Id ) );
@@ -321,7 +322,7 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update successful for Bank Account Data..." );
+						Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
 						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 						cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( cs . Id ) );
@@ -331,19 +332,19 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
+						Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 					}
 				}
 				catch ( Exception ex )
 				{
 					con . Close ( );
-					Console . WriteLine ( $"SQL Error UpdateDbRow(255)- {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Error UpdateDbRow(255)- {ex . Message} Data = {ex . Data}" );
 				}
 				finally
 				{
 					//Lets force the grids to update when we return from here ??
 					con . Close ( );
-					Console . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
+					Debug . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
 				}
 				return true;
 
@@ -393,7 +394,7 @@ namespace WPFPages . Views
 						//Check for invalid A/C Type
 						if ( x < 1 || x > 4 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(92) Invalid A/c type of {ss . AcType} in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(92) Invalid A/c type of {ss . AcType} in grid Data" );
 							MessageBox . Show ( $"Invalid A/C Type ({ss . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -402,7 +403,7 @@ namespace WPFPages . Views
 						//Check for invalid Interest rate
 						if ( Y > 100 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(101) Invalid Interest Rate of {ss . IntRate} > 100% in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(101) Invalid Interest Rate of {ss . IntRate} > 100% in grid Data" );
 							MessageBox . Show ( $"Invalid Interest rate ({ss . IntRate}) > 100 entered in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -416,7 +417,7 @@ namespace WPFPages . Views
 						//Check for invalid A/C Type
 						if ( x < 1 || x > 4 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(117) Invalid A/c type of {sa . AcType} in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(117) Invalid A/c type of {sa . AcType} in grid Data" );
 							MessageBox . Show ( $"Invalid A/C Type ({sa . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}
@@ -425,7 +426,7 @@ namespace WPFPages . Views
 						//Check for invalid Interest rate
 						if ( Y > 100 )
 						{
-							Console . WriteLine ( $"SQL UpdateDbRow(126) Invalid Interest Rate of {sa . IntRate} > 100% in grid Data" );
+							Debug . WriteLine ( $"SQL UpdateDbRow(126) Invalid Interest Rate of {sa . IntRate} > 100% in grid Data" );
 							MessageBox . Show ( $"Invalid Interest rate ({sa . IntRate}) > 100 entered in the Grid !!!!\r\nPlease correct this entry!" );
 							return false;
 						}													
@@ -437,7 +438,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL UpdateDbRow(137) Invalid grid Data - {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL UpdateDbRow(137) Invalid grid Data - {ex . Message} Data = {ex . Data}" );
 					MessageBox . Show ( "Invalid data entered in the Grid !!!! - See Output for details.\r\nNEITHER Db has been updated !!" );
 					return false;
 				}
@@ -462,7 +463,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Bank Account Data..." );
+							Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( ss . Id ) );
@@ -474,7 +475,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
+							Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( ss . Id ) );
@@ -484,7 +485,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Customers Data..." );
+							Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 						}
 						else if ( CurrentDb == "DETAILS" )
 						{
@@ -498,7 +499,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Bank Account Data..." );
+							Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -510,7 +511,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
+							Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -520,19 +521,19 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update successful for Customer Accounts Data..." );
+							Debug . WriteLine ( "SQL Update successful for Customer Accounts Data..." );
 						}
 					}
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Error UpdateDbRow(180) - BankAccount/Sec" +
+					Debug . WriteLine ( $"SQL Error UpdateDbRow(180) - BankAccount/Sec" +
 						$"accounts not updated {ex . Message} Data = {ex . Data}" );
 				}
 				finally
 				{
 					con . Close ( );
-					Console . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
+					Debug . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
 				}
 
 				#endregion BANK/DETAILS UPDATE PROCESSING
@@ -554,7 +555,7 @@ namespace WPFPages . Views
 					//Check for invalid A/C Type
 					if ( x < 1 || x > 4 )
 					{
-						Console . WriteLine ( $"SQL UpdateDbRow(204) Invalid A/c type of {cs . AcType} in grid Data" );
+						Debug . WriteLine ( $"SQL UpdateDbRow(204) Invalid A/c type of {cs . AcType} in grid Data" );
 						MessageBox . Show ( $"Invalid A/C Type ({cs . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 						return false;
 					}
@@ -564,7 +565,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Invalid grid Data UpdateDbRow(214)- {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Invalid grid Data UpdateDbRow(214)- {ex . Message} Data = {ex . Data}" );
 					MessageBox . Show ( "Invalid data entered in the Grid !!!! - See Output for details" );
 					return false;
 				}
@@ -600,7 +601,7 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update successful for Customers Data..." );
+						Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 
 						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 						cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( cs . Id ) );
@@ -610,7 +611,7 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update successful for Bank Account Data..." );
+						Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
 						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 						cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( cs . Id ) );
@@ -620,19 +621,19 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
+						Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 					}
 				}
 				catch ( Exception ex )
 				{
 					con . Close ( );
-					Console . WriteLine ( $"SQL Error UpdateDbRow(255)- {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Error UpdateDbRow(255)- {ex . Message} Data = {ex . Data}" );
 				}
 				finally
 				{
 					//Lets force the grids to update when we return from here ??
 					con . Close ( );
-					Console . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
+					Debug . WriteLine ( $"SQL - Updated Row in ALL Db's after change(s) made in  {CurrentDb}" );
 				}
 				return true;
 
@@ -668,7 +669,7 @@ namespace WPFPages . Views
 						//Check for invalid A/C Type
 						if ( x < 1 || x > 4 )
 						{
-							Console . WriteLine ( $"SQL Invalid A/c type of {ss . AcType} in grid Data" );
+							Debug . WriteLine ( $"SQL Invalid A/c type of {ss . AcType} in grid Data" );
 							Mouse . OverrideCursor = Cursors . Arrow;
 							MessageBox . Show ( $"Invalid A/C Type ({ss . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 							return;
@@ -678,7 +679,7 @@ namespace WPFPages . Views
 						//Check for invalid Interest rate
 						if ( Y > 100 )
 						{
-							Console . WriteLine ( $"SQL Invalid Interest Rate of {ss . IntRate} > 100% in grid Data" );
+							Debug . WriteLine ( $"SQL Invalid Interest Rate of {ss . IntRate} > 100% in grid Data" );
 							Mouse . OverrideCursor = Cursors . Arrow;
 							MessageBox . Show ( $"Invalid Interest rate ({ss . IntRate}) > 100 entered in the Grid !!!!\r\nPlease correct this entry!" );
 							return;
@@ -703,7 +704,7 @@ namespace WPFPages . Views
 						//Check for invalid A/C Type
 						if ( x < 1 || x > 4 )
 						{
-							Console . WriteLine ( $"SQL Invalid A/c type of {sa . AcType} in grid Data" );
+							Debug . WriteLine ( $"SQL Invalid A/c type of {sa . AcType} in grid Data" );
 							Mouse . OverrideCursor = Cursors . Arrow;
 							MessageBox . Show ( $"Invalid A/C Type ({sa . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 							return;
@@ -713,7 +714,7 @@ namespace WPFPages . Views
 						//Check for invalid Interest rate
 						if ( Y > 100 )
 						{
-							Console . WriteLine ( $"SQL Invalid Interest Rate of {sa . IntRate} > 100% in grid Data" );
+							Debug . WriteLine ( $"SQL Invalid Interest Rate of {sa . IntRate} > 100% in grid Data" );
 							Mouse . OverrideCursor = Cursors . Arrow;
 							MessageBox . Show ( $"Invalid Interest rate ({sa . IntRate}) > 100 entered in the Grid !!!!\r\nPlease correct this entry!" );
 							return;
@@ -734,7 +735,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Invalid grid Data - {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Invalid grid Data - {ex . Message} Data = {ex . Data}" );
 					Mouse . OverrideCursor = Cursors . Arrow;
 					MessageBox . Show ( "Invalid data entered in the Grid !!!! - See Output for details" );
 					return;
@@ -763,7 +764,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of BankAccounts successful..." );
+							Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -775,7 +776,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of SecAccounts successful..." );
+							Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -785,7 +786,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of Customers successful..." );
+							Debug . WriteLine ( "SQL Update of Customers successful..." );
 						}
 						else if ( CurrentDb == "DETAILS" )
 						{
@@ -799,7 +800,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of BankAccounts successful..." );
+							Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -811,7 +812,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of SecAccounts successful..." );
+							Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -821,7 +822,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of customers successful..." );
+							Debug . WriteLine ( "SQL Update of customers successful..." );
 						}
 						if ( CurrentDb == "SECACCOUNTS" )
 						{
@@ -835,7 +836,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( ss . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( ss . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of BankAccounts successful..." );
+							Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
 							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -847,7 +848,7 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of SecAccounts successful..." );
+							Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
 							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 							cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( sa . Id ) );
@@ -857,15 +858,15 @@ namespace WPFPages . Views
 							cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( sa . ODate ) );
 							cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( sa . CDate ) );
 							cmd . ExecuteNonQuery ( );
-							Console . WriteLine ( "SQL Update of Customers successful..." );
+							Debug . WriteLine ( "SQL Update of Customers successful..." );
 						}
 						//						StatusBar . Text = "ALL THREE Databases updated successfully....";
-						Console . WriteLine ( "ALL THREE Databases updated successfully...." );
+						Debug . WriteLine ( "ALL THREE Databases updated successfully...." );
 					}
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Error - {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Error - {ex . Message} Data = {ex . Data}" );
 
 #if SHOWSQLERRORMESSAGEBOX
 									Mouse . OverrideCursor = Cursors . Arrow;
@@ -897,7 +898,7 @@ namespace WPFPages . Views
 					//Check for invalid A/C Type
 					if ( x < 1 || x > 4 )
 					{
-						Console . WriteLine ( $"SQL Invalid A/c type of {cs . AcType} in grid Data" );
+						Debug . WriteLine ( $"SQL Invalid A/c type of {cs . AcType} in grid Data" );
 						Mouse . OverrideCursor = Cursors . Arrow;
 						MessageBox . Show ( $"Invalid A/C Type ({cs . AcType}) in the Grid !!!!\r\nPlease correct this entry!" );
 						return;
@@ -908,7 +909,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Invalid grid Data - {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Invalid grid Data - {ex . Message} Data = {ex . Data}" );
 					MessageBox . Show ( "Invalid data entered in the Grid !!!! - See Output for details" );
 					Mouse . OverrideCursor = Cursors . Arrow;
 					return;
@@ -945,7 +946,7 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update of Customers successful..." );
+						Debug . WriteLine ( "SQL Update of Customers successful..." );
 
 						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype,  ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 						cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( cs . Id ) );
@@ -955,7 +956,7 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update of BankAccounts successful..." );
+						Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
 						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo" , con );
 						cmd . Parameters . AddWithValue ( "@id" , Convert . ToInt32 ( cs . Id ) );
@@ -965,14 +966,14 @@ namespace WPFPages . Views
 						cmd . Parameters . AddWithValue ( "@odate" , Convert . ToDateTime ( cs . ODate ) );
 						cmd . Parameters . AddWithValue ( "@cdate" , Convert . ToDateTime ( cs . CDate ) );
 						cmd . ExecuteNonQuery ( );
-						Console . WriteLine ( "SQL Update of SecAccounts successful..." );
+						Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 					}
 					//				StatusBar . Text = "ALL THREE Databases updated successfully....";
-					Console . WriteLine ( "ALL THREE Databases updated successfully...." );
+					Debug . WriteLine ( "ALL THREE Databases updated successfully...." );
 				}
 				catch ( Exception ex )
 				{
-					Console . WriteLine ( $"SQL Error - {ex . Message} Data = {ex . Data}" );
+					Debug . WriteLine ( $"SQL Error - {ex . Message} Data = {ex . Data}" );
 #if SHOWSQLERRORMESSAGEBOX
 									Mouse . OverrideCursor = Cursors . Arrow;
 									MessageBox . Show ( "SQL error occurred - See Output for details" );

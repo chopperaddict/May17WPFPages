@@ -117,12 +117,12 @@ namespace WPFPages . Views
 					SqlCommand cmd = new SqlCommand ( commandline, con );
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 					sda . Fill ( dtCust );
-					Console . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
+					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
 				}
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"Failed to load Customer Details - {ex . Message}" );
+				Debug . WriteLine ( $"Failed to load Customer Details - {ex . Message}" );
 				MessageBox . Show ( $"Failed to load Customer Details - {ex . Message}" );
 				return false;
 			}
@@ -162,7 +162,7 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
+				Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
 				MessageBox . Show ( $"CUSTOMERS : ERROR :\n		Error was  : [{ex . Message}] ...." );
 			}
 			if ( Notify )
@@ -210,7 +210,7 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{
-				Console . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
+				Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
 				MessageBox . Show ( $"CUSTOMERS : ERROR :\n		Error was  : [{ex . Message}] ...." );
 			}
 			Flags . CustCollection = Custinternalcollection;
@@ -279,7 +279,7 @@ namespace WPFPages . Views
 
 			//	// This all woks just fine, and DOES switch back to UI thread that is MANDATORY before doing the Collection load processing
 			//	// thanks to the use of TaskScheduler.FromCurrentSynchronizationContext() that oerforms the magic switch back to the UI thread
-			//	//			Console . WriteLine ( $"CUSTOMERS : Entering Method to call Task.Run in CustCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+			//	//			Debug . WriteLine ( $"CUSTOMERS : Entering Method to call Task.Run in CustCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 
 			//	#region process code to load data
 
@@ -306,7 +306,7 @@ namespace WPFPages . Views
 			//	t1 . ContinueWith (
 			//		( Custinternalcollection ) =>
 			//		{
-			//			Console . WriteLine ( $"CUSTOMERS : Task.Run() Completed : Status was [ {Custinternalcollection . Status} ]." );
+			//			Debug . WriteLine ( $"CUSTOMERS : Task.Run() Completed : Status was [ {Custinternalcollection . Status} ]." );
 			//		} , CancellationToken . None , TaskContinuationOptions . OnlyOnRanToCompletion , TaskScheduler . FromCurrentSynchronizationContext ( )
 			//	);
 			//	//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -315,15 +315,15 @@ namespace WPFPages . Views
 			//		( Custinternalcollection ) =>
 			//		{
 			//			AggregateException ae =  t1 . Exception . Flatten ( );
-			//			Console . WriteLine ( $"Exception in Custinternalcollection  data processing \n" );
+			//			Debug . WriteLine ( $"Exception in Custinternalcollection  data processing \n" );
 			//			MessageBox . Show ( $"Exception in CustCollection  data processing \n" );
 			//			foreach ( var item in ae . InnerExceptions )
 			//			{
-			//				Console . WriteLine ( $"CustCollection : Exception : {item . Message}, : {item . Data}" );
+			//				Debug . WriteLine ( $"CustCollection : Exception : {item . Message}, : {item . Data}" );
 			//			}
 			//		} , CancellationToken . None , TaskContinuationOptions . OnlyOnFaulted , TaskScheduler . FromCurrentSynchronizationContext ( )
 			//	);
-			//	Console . WriteLine ( $"CUSTOMER : END OF PROCESSING & Error checking functionality\nCUSTOMER : *** Detcollection total = {Custinternalcollection . Count} ***\n\n" );
+			//	Debug . WriteLine ( $"CUSTOMER : END OF PROCESSING & Error checking functionality\nCUSTOMER : *** Detcollection total = {Custinternalcollection . Count} ***\n\n" );
 
 			//	#endregion Success//Error reporting/handling
 			//	Flags . CustCollection = Custinternalcollection;

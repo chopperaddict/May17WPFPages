@@ -28,55 +28,28 @@ namespace WPFPages . Views
 			Button Filters = new Button();
 			// Make sure this window has it's pointer "Registered" cos we can
 			// Click the button before the window has had focus set
-			if ( Flags . CurrentSqlViewer != null )
+			if ( Flags . MultiViewer != null && ( MultiViewer ) obj == Flags . MultiViewer )
 			{
-				Flags . CurrentSqlViewer = obj as SqlDbViewer;
-				Filters = Flags . CurrentSqlViewer? . Filters;
+//				Flags . CurrentSqlViewer = obj as MultiViewer;
+				Filters = Flags . MultiViewer?.FilterBtn;
 				Filters . Content = "Filtering";
 			}
 			else
 			{
-				if ( mode == 0 )
-					Filters . Content = "Reset";
+				if ( Flags . CurrentSqlViewer != null )
+				{
+					Flags . CurrentSqlViewer = obj as SqlDbViewer;
+					Filters = Flags . CurrentSqlViewer?.Filters;
+					Filters . Content = "Filtering";
+				}
 				else
-					Filters . Content = "";
+				{
+					if ( mode == 0 )
+						Filters . Content = "Reset";
+					else
+						Filters . Content = "";
+				}
 			}
-			// Call up the Filtering Window to select
-			// the filtering conditions required
-			//			Window_GotFocus ( sender , null );
-
-			//if ( CurrentDb == "" )
-			//{
-			//	MessageBox . Show ( "You need to have loaded one of the data tables\r\nbefore you can access the filtering system" );
-			//	return;
-			//}
-			//if ( Filters . Content == "Reset" )
-			//{
-			//	Filters . Content = "Filter";
-			//	// clear any previous filter command line data
-			//	Flags . FilterCommand = "";
-			//	if ( Flags . CurrentSqlViewer != null )
-			//	{
-			//		if ( CurrentDb == "BANKACCOUNT" )
-			//			Flags . CurrentSqlViewer . ShowBank_Click ( null , null );
-			//		else if ( CurrentDb == "CUSTOMER" )
-			//			Flags . CurrentSqlViewer . ShowCust_Click ( null , null );
-			//		else if ( CurrentDb == "DETAILS" )
-			//			Flags . CurrentSqlViewer . ShowDetails_Click ( null , null );
-			//		ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
-			//		Filters . Template = tmp;
-			//		Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGray" );
-			//		Filters . Background = br;
-			//		Filters . Content = "Filtering";
-			//		//Tidy up general flags
-			//		Flags . IsFiltered = false;
-			//		Flags . FilterCommand = "";
-			//		Flags . CurrentSqlViewer . ParseButtonText ( true );
-			//	}
-			//	Mouse . OverrideCursor = Cursors . Arrow;
-
-			//	return;
-			//}
 			SQLFilter sf = new SQLFilter ( null );
 			//// filter any table
 			if ( CurrentDb == "BANKACCOUNT" )

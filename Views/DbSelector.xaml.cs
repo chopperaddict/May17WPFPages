@@ -6,6 +6,7 @@ using System . Windows . Controls;
 using System . Windows . Input;
 
 using WPFPages . ViewModels;
+using static WPFPages . SqlDbViewer;
 
 namespace WPFPages . Views
 {
@@ -55,45 +56,45 @@ namespace WPFPages . Views
 			switch ( status )
 			{
 				case 102:       // Starting a method
-					Console . WriteLine ( $"DBSELECTOR NOTIFICATION : {status}  [{info}]" );
+					Debug . WriteLine ( $"DBSELECTOR NOTIFICATION : {status}  [{info}]" );
 					break;
 
 				case 103:       // Ending a process
-					Console . WriteLine ( $"DBSELECTOR NOTIFICATION: {status}  [{info}]" );
+					Debug . WriteLine ( $"DBSELECTOR NOTIFICATION: {status}  [{info}]" );
 					break;
 
 				case 111:       // Info reports
-					Console . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}] - [{info}]" );
+					Debug . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}] - [{info}]" );
 					break;
 
 				default:
-					//					Console . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}], [{info}]" );
+					//					Debug . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}], [{info}]" );
 					break;
 			}
 
 			//if ( status == 25 )
 			//{
 			//	// VERY IMPORTANT MSG - Send 100 Command to Tell Viewer to load data
-			//	Console . WriteLine ( $"\r\nDBSELECTOR COMMAND : [{status}] -  Calling InitialLoad() to load data in SqlDbv\r\n" );
+			//	Debug . WriteLine ( $"\r\nDBSELECTOR COMMAND : [{status}] -  Calling InitialLoad() to load data in SqlDbv\r\n" );
 			//	EventHandlers . SendViewerCommand ( 100 , $"{info}" , null );
 			//}
 			if ( status == 99 )
 			{
-				Console . WriteLine ( $"\r\nDBSELECTOR NOTIFICATION : Received [{status}]  - Window is closing down\r\n" );
+				Debug . WriteLine ( $"\r\nDBSELECTOR NOTIFICATION : Received [{status}]  - Window is closing down\r\n" );
 			}
 			else if ( status == 100 )
 			{
-				Console . WriteLine ( $"\r\nDBSELECTOR NOTIFICATION : Received TEST SIGNAL {status} from SqlDbViewer\r\n" );
+				Debug . WriteLine ( $"\r\nDBSELECTOR NOTIFICATION : Received TEST SIGNAL {status} from SqlDbViewer\r\n" );
 			}
 			else if ( status == 101 )
 			{
 #pragma This is the one that works well
 				// info contains the text to be added to the Viewers ListBox
-				Console . WriteLine ( $"\r\nDBSELECTOR - Received request [{status}] to Add Viewer to Current Viewers List.\r\n" );
+				Debug . WriteLine ( $"\r\nDBSELECTOR - Received request [{status}] to Add Viewer to Current Viewers List.\r\n" );
 				Flags . SqlViewerIsLoading = true;
 				DbSelector . AddViewerToList ( info, NewSqlViewer, -1 );
 				Flags . SqlViewerIsLoading = false;
-				Console . WriteLine ( $"\r\nDBSELECTOR - Viewer ADDED to List of Current Viewers \r\n" );
+				Debug . WriteLine ( $"\r\nDBSELECTOR - Viewer ADDED to List of Current Viewers \r\n" );
 			}
 		}
 
@@ -182,7 +183,8 @@ namespace WPFPages . Views
 					callertype = 2;
 					CallingType = "DETAILS";
 					// LOADS THE WINDOW HERE - it RETURNS IMMEDIATELY even though the data is not yet fully loaded
-					Flags . CurrentSqlViewer = new SqlDbViewer ( "DETAILS", Detcollection );
+					SqlDbViewer sqldbv = new SqlDbViewer ( "DETAILS", Detcollection );
+					Flags . CurrentSqlViewer = sqldbv;
 					Flags . CurrentSqlViewer . BringIntoView ( );
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 					//Window is visible & Data is loaded by here .....
@@ -825,13 +827,19 @@ namespace WPFPages . Views
 		//*******************************MAIN KEY HANDLER FOR LIST BOXES*************************************//
 		private void IsEnterKey ( object sender, KeyEventArgs e )
 		{
-			//			Console . WriteLine ( $"Key1 = {key1}, Key : {e . Key . ToString ( )}" );
+			//			Debug . WriteLine ( $"Key1 = {key1}, Key : {e . Key . ToString ( )}" );
 			//PreviewKeyDown - in either list
 			if ( e . Key == Key . LeftCtrl )
 			{
 				key1 = true;
 			}
-
+			if ( key1 && e . Key == Key . F8 )     // CTRL + F8
+			{
+				EventHandlers.ShowSubscribersCount ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
 			if ( key1 && e . Key == Key . F9 )     // CTRL + F9
 			{
 				// lists all delegates & Events
@@ -855,7 +863,7 @@ namespace WPFPages . Views
 				e . Handled = true;
 				key1 = false;
 				return;
-				//				Console . WriteLine ("Left Ctrl hit");
+				//				Debug . WriteLine ("Left Ctrl hit");
 			}
 			else if ( e . Key == Key . Enter )
 			{
@@ -960,15 +968,23 @@ namespace WPFPages . Views
 			if ( e . Key == Key . LeftCtrl )
 			{
 				key1 = true;
+				return;
 			}
-			//			Console . WriteLine ( $"Key1 = {key1}, Key = {e . Key}" );
-
-			if ( key1 && e . Key == Key . F9 )     // CTRL + F9
+			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
 			{
 				// lists all delegates & Events
+				Debug . WriteLine ( "\nEvent subscriptions " );
 				EventHandlers . ShowSubscribersCount ( );
 				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . System )     // CTRL + F10
+			{
+				// Major  listof GV[] variables (Guids etc]
+				Debug . WriteLine ( "\nGridview GV[] Variables" );
+				Flags . ListGridviewControlFlags ( 1 );
 				key1 = false;
+				e . Handled = true;
 				return;
 			}
 			else if ( key1 && e . Key == Key . F8 )  // CTRL + F8
@@ -979,38 +995,65 @@ namespace WPFPages . Views
 				key1 = false;
 				return;
 			}
-			else if ( key1 && e . Key == Key . System )     // CTRL + F10
+			else if ( key1 && e . Key == Key . F11 )
 			{
-				// Major  listof GV[] variables (Guids etc]
-				Flags . ListGridviewControlFlags ( 1 );
-				key1 = false;
-				e . Handled = true;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F11 )  // CTRL + F11
-			{
-				// list various Flags in Console
-				Flags . PrintSundryVariables ( );
-				e . Handled = true;
+				Debug . WriteLine ( "\nAll Flag. variables" );
+				Flags . ShowAllFlags ( );
 				key1 = false;
 				return;
-				//				Console . WriteLine ("Left Ctrl hit");
 			}
-			else if ( key1 && e . Key == Key . F12 )
+			//else if ( e . Key == Key . Escape )
+			//{
+			//	int currow = 0;
+			//	//clear flags in ViewModel
+			//	if ( CurrentDb == "BANKACCOUNT" )
+			//	{
+			//		Flags . ActiveSqlViewer = null;
+			//		currow = this . BankGrid . SelectedIndex;
+			//	}
+			//	else if ( CurrentDb == "CUSTOMER" )
+			//	{
+			//		Flags . ActiveSqlViewer = null;
+			//		currow = this . CustomerGrid . SelectedIndex;
+			//	}
+			//	else if ( CurrentDb == "DETAILS" )
+			//	{
+			//		Flags . ActiveSqlViewer = null;
+			//		currow = this . DetailsGrid . SelectedIndex;
+			//	}
+			//	//SendDbSelectorCommand ( 99, "Window is closing", Flags . CurrentSqlViewer );
+			//	// Clears Flags and the relevant Gv[] entry
+			//	RemoveFromViewerList ( 99 );
+
+			//	//				BankAccountViewModel . EditdbWndBank = null;
+			//	UpdateDbSelectorBtns ( Flags . CurrentSqlViewer );
+			//	Flags . CurrentSqlViewer = null;
+			//	Close ( );
+			//	e . Handled = true;
+			//	key1 = false;
+			//	return;
+			//}
+			else if ( e . Key == Key . OemQuestion )
 			{
-				if ( key1 )
-				{
-					Flags . ShowAllFlags ( );
-					key1 = false;
-				}
+				// list Flags in Console
+				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
+				e . Handled = true;
+				key1 = false;
 				return;
 			}
-			else if ( e . Key == Key . RightAlt )
-			{
+			else if ( e . Key == Key . RightAlt ) //|| e . Key == Key . LeftCtrl )
+			{       // list Flags in Console
 				Flags . ListGridviewControlFlags ( );
+				e . Handled = true;
 				key1 = false;
 				return;
 			}
+			//else if ( e . Key == Key . RightAlt )
+			//{
+			//	Flags . ListGridviewControlFlags ( );
+			//	key1 = false;
+			//	return;
+			//}
 			//else
 			//{
 			//	key1 = false;
@@ -1262,7 +1305,7 @@ namespace WPFPages . Views
 		public static void UpdateControlFlags ( SqlDbViewer caller, string callertype, string PrettyString )
 		{
 			int x = 0;
-			Console . WriteLine ($"In UpdateControlFlags setting up gv[] structure variables...");
+			Debug . WriteLine ($"In UpdateControlFlags setting up gv[] structure variables...");
 			// We are starting up a new viewer, so need to create the flags structure
 			// Get the first empty set of structures  and fill them out ofr this NEW Viewer Window
 			for ( x = 0 ; x < 3 ; x++ )
@@ -1296,7 +1339,7 @@ namespace WPFPages . Views
 
 					if ( callertype == "BANKACCOUNT" )
 					{
-						MainWindow . gv . Datagrid [ x ] = Flags . SqlBankGrid;
+						MainWindow . gv . Datagrid [ x ] = caller . BankGrid;
 						MainWindow . gv . Bankviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
 						MainWindow . gv . SqlBankViewer = caller;
 						Flags . SqlBankViewer = caller;
@@ -1304,7 +1347,7 @@ namespace WPFPages . Views
 					}
 					else if ( callertype == "CUSTOMER" )
 					{
-						MainWindow . gv . Datagrid [ x ] = Flags . SqlCustGrid;
+						MainWindow . gv . Datagrid [ x ] = caller . CustomerGrid;
 						MainWindow . gv . Custviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
 						MainWindow . gv . SqlCustViewer = caller;
 						Flags . SqlCustViewer = caller;
@@ -1312,7 +1355,7 @@ namespace WPFPages . Views
 					}
 					else if ( callertype == "DETAILS" )
 					{
-						MainWindow . gv . Datagrid [ x ] = Flags . SqlDetGrid;
+						MainWindow . gv . Datagrid [ x ] =caller. DetailsGrid;
 						MainWindow . gv . Detviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
 						MainWindow . gv . SqlDetViewer = caller;
 						Flags . SqlDetViewer = caller;

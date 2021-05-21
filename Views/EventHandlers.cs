@@ -18,25 +18,25 @@ namespace WPFPages . Views
 
 		public static void sChimeFivePm ( )
 		{
-			Console . WriteLine ( $"" );
+			Debug . WriteLine ( $"" );
 			Chime ( );
 		}
 
 		public static void sChimeSixAm ( )
 		{
-			Console . WriteLine ( $"" );
+			Debug . WriteLine ( $"" );
 			Chime ( );
 		}
 
 		public void ChimeFivePm ( )
 		{
-			Console . WriteLine ( $"" );
+			Debug . WriteLine ( $"" );
 			Chime ( );
 		}
 
 		public void ChimeSixAm ( )
 		{
-			Console . WriteLine ( $"" );
+			Debug . WriteLine ( $"" );
 			Chime ( );
 		}
 	}
@@ -66,7 +66,7 @@ namespace WPFPages . Views
 			//			int count2 = 0;
 			//if ( Flags . EventHandlerDebug )
 			//{
-			Console . WriteLine ( $"EventHandler.EventHandlers(51) : In Constructor - CallerName = {CallerName}." );
+			Debug . WriteLine ( $"EventHandler.EventHandlers(51) : In Constructor - CallerName = {CallerName}." );
 		}
 
 		// Not used if DEBUG is UnDefined
@@ -124,40 +124,40 @@ namespace WPFPages . Views
 			if ( dg != null ) count10 = dg . Length;
 
 			//			Output . Clear ( );
-			Console . WriteLine ( $"\n *** Currently Subscribed Events  ***" );
+			Debug . WriteLine ( $"\n *** Currently Subscribed Events  ***" );
 
 			//if ( count3 < 0 )
-			//	Console . WriteLine ( $"ViewerDataHasBeenChanged		= 0" );
+			//	Debug . WriteLine ( $"ViewerDataHasBeenChanged		= 0" );
 			//else
-			//	Console . WriteLine ( $"ViewerDataHasBeenChanged		= {count3}" );
+			//	Debug . WriteLine ( $"ViewerDataHasBeenChanged		= {count3}" );
 			if ( count4 < 0 )
-				Console . WriteLine ( $"EditIndexChanged				= 0" );
+				Debug . WriteLine ( $"EditIndexChanged				= 0" );
 			else
-				Console . WriteLine ( $"EditIndexChanged				= {count4}" );
+				Debug . WriteLine ( $"EditIndexChanged				= {count4}" );
 			if ( count5 < 0 )
-				Console . WriteLine ( $"ViewerIndexChanged				= 0" );
+				Debug . WriteLine ( $"ViewerIndexChanged				= 0" );
 			else
-				Console . WriteLine ( $"ViewerIndexChanged				= {count5}" );
+				Debug . WriteLine ( $"ViewerIndexChanged				= {count5}" );
 			if ( count10 < 0 )
-				Console . WriteLine ( $"MultiViewerIndexChanged			= 0" );
+				Debug . WriteLine ( $"MultiViewerIndexChanged			= 0" );
 			else
-				Console . WriteLine ( $"MultiViewerIndexChanged			= {count10}" );
+				Debug . WriteLine ( $"MultiViewerIndexChanged			= {count10}" );
 			if ( count6 < 0 )
-				Console . WriteLine ( $"BankCollection. BankDataLoaded	= 0" );
+				Debug . WriteLine ( $"BankCollection. BankDataLoaded	= 0" );
 			else
-				Console . WriteLine ( $"BankCollection. BankDataLoaded	= {count6}" );
+				Debug . WriteLine ( $"BankCollection. BankDataLoaded	= {count6}" );
 			if ( count7 < 0 )
-				Console . WriteLine ( $"CustCollection. CustDataLoaded	= 0" );
+				Debug . WriteLine ( $"CustCollection. CustDataLoaded	= 0" );
 			else
-				Console . WriteLine ( $"CustCollection. CustDataLoaded	= {count7}" );
+				Debug . WriteLine ( $"CustCollection. CustDataLoaded	= {count7}" );
 			if ( count8 < 0 )
-				Console . WriteLine ( $"DetCollection. DetDataLoaded	= 0" );
+				Debug . WriteLine ( $"DetCollection. DetDataLoaded	= 0" );
 			else
-				Console . WriteLine ( $"DetCollection. DetDataLoaded	= {count8}" );
+				Debug . WriteLine ( $"DetCollection. DetDataLoaded	= {count8}" );
 			if ( count9 < 0 )
-				Console . WriteLine ( $"RecordDeleted					= 0" );
+				Debug . WriteLine ( $"RecordDeleted					= 0" );
 			else
-				Console . WriteLine ( $"RecordDeleted					= {count9}" );
+				Debug . WriteLine ( $"RecordDeleted					= {count9}" );
 
 			bool first = true;
 			//Delegate [ ] dglist2 = EventControl . GetEventCount ( );
@@ -166,15 +166,15 @@ namespace WPFPages . Views
 			//	int cnt = 0;
 			//	if ( !first )
 			//	{
-			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//		Debug . WriteLine ( $"=====================================================================================" ); first = false;
 			//	}
-			//	Console . WriteLine ( $"=====================================================================================" );
+			//	Debug . WriteLine ( $"=====================================================================================" );
 			//	first = true;
 			//	foreach ( var item in dglist2 )
 			//	{
-			//		if ( cnt > 0 ) Console . WriteLine ( );
+			//		if ( cnt > 0 ) Debug . WriteLine ("");
 			//		//item . CurrentDb;
-			//		Console . WriteLine ( $"Delegate : VIEWERDATAHASBEENCHANGED :\n >>> {item . Target}\nMethod = {item . Method . Name . ToString ( )}" );
+			//		Debug . WriteLine ( $"Event : VIEWERDATAHASBEENCHANGED :\n >>> {item . Target}\nMethod = {item . Method . Name . ToString ( )}" );
 			//		cnt++;
 			//	}
 			//}
@@ -184,14 +184,14 @@ namespace WPFPages . Views
 			//	int cnt = 0;
 			//	if ( !first )
 			//	{
-			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//		Debug . WriteLine ( $"=====================================================================================" ); first = false;
 			//	}
 			//	first = true;
-			//	Console . WriteLine ( $"=====================================================================================" );
+			//	Debug . WriteLine ( $"=====================================================================================" );
 			//	foreach ( var item in dglist2 )
 			//	{
-			//		if ( cnt > 0 ) Console . WriteLine ( );
-			//		Console . WriteLine ( $"Delegate : NOTIFYOFDATACHANGE : \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+			//		if ( cnt > 0 ) Debug . WriteLine ("");
+			//		Debug . WriteLine ( $"Event : NOTIFYOFDATACHANGE : \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 			//		cnt++;
 			//	}
 			//}
@@ -201,14 +201,14 @@ namespace WPFPages . Views
 			//	int cnt = 0;
 			//	if ( !first )
 			//	{
-			//		Console . WriteLine ( $"=====================================================================================" ); first = false;
+			//		Debug . WriteLine ( $"=====================================================================================" ); first = false;
 			//	}
 			//	first = true;
-			//	Console . WriteLine ( $"=====================================================================================" );
+			//	Debug . WriteLine ( $"=====================================================================================" );
 			//	foreach ( var item in dglist2 )
 			//	{
-			//		if ( cnt > 0 ) Console . WriteLine ( );
-			//		Console . WriteLine ( $"Delegate : VIEWERDATAHASBEENCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+			//		if ( cnt > 0 ) Debug . WriteLine ("");
+			//		Debug . WriteLine ( $"Event : VIEWERDATAHASBEENCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 			//		cnt++;
 			//	}
 			//}
@@ -219,14 +219,14 @@ namespace WPFPages . Views
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
 				first = true;
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
-					Console . WriteLine ( $"Delegate : EDITINDEXCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					if ( cnt > 0 ) Debug . WriteLine ("");
+					Debug . WriteLine ( $"Event : EDITINDEXCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
@@ -236,17 +236,17 @@ namespace WPFPages . Views
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				first = true;
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
+					if ( cnt > 0 ) Debug . WriteLine ("");
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : VIEWERINDEXCHANGED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : VIEWERINDEXCHANGED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : VIEWERINDEXCHANGED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : VIEWERINDEXCHANGED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
@@ -256,17 +256,17 @@ namespace WPFPages . Views
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				first = true;
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
+					if ( cnt > 0 ) Debug . WriteLine ("");
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : MULTIVIEWERINDEXCHANGED :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : MULTIVIEWERINDEXCHANGED :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : MULTIVIEWERINDEXCHANGED :\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : MULTIVIEWERINDEXCHANGED :\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
@@ -276,17 +276,17 @@ namespace WPFPages . Views
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				first = true;
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
+					if ( cnt > 0 ) Debug . WriteLine ("");
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : BankCollection. BANKDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : BANKDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : BankCollection. BANKDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : BANKDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
@@ -296,17 +296,17 @@ namespace WPFPages . Views
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				first = true;
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
+					if ( cnt > 0 ) Debug . WriteLine ("");
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : CustCollection. CUSTDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : CUSTDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : CustCollection. CUSTDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : CUSTDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
@@ -316,42 +316,42 @@ namespace WPFPages . Views
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				first = true;
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
+					if ( cnt > 0 ) Debug . WriteLine ("");
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : DetCollection. DETDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : DETDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : DetCollection. DETDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : DETDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
-			dglist2 = EditDb . GetEventCount9 ( );
+			dglist2 = EventControl.GetEventCount9 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;
 				if ( !first )
 				{
-					Console . WriteLine ( $"=====================================================================================" ); first = false;
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
 				}
-				Console . WriteLine ( $"=====================================================================================" );
+				Debug . WriteLine ( $"=====================================================================================" );
 				first = true;
 				foreach ( var item in dglist2 )
 				{
-					if ( cnt > 0 ) Console . WriteLine ( );
+					if ( cnt > 0 ) Debug . WriteLine ("");
 					if ( item . Target != null )
-						Console . WriteLine ( $"Delegate : SQLHandlers.RECORDDELETED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : RECORDDELETED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
-						Console . WriteLine ( $"Delegate : SQLHandlers.RECORDDELETED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+						Debug . WriteLine ( $"Event : RECORDDELETED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}
 
-			Console . WriteLine ( $"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+			Debug . WriteLine ( $"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
 		}
 	}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . Diagnostics;
 using System . Linq;
 using System . Text;
 using System . Threading . Tasks;
@@ -7,6 +8,7 @@ using System . Windows;
 using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Documents;
+using System . Windows . Forms;
 using System . Windows . Input;
 using System . Windows . Media;
 using System . Windows . Media . Imaging;
@@ -23,7 +25,7 @@ namespace WPFPages . Views
 		public static CustCollection CustViewerDbcollection = CustCollection . CustViewerDbcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
-
+		static bool Triggered = false;
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -58,23 +60,43 @@ namespace WPFPages . Views
 				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . MouseDown += delegate { DoDragMove ( ); };
-			this . CustGrid . SelectedIndex = 0;
+			Utils . SetUpGridSelection ( this.CustGrid, 0 );
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 
 			// Main update notification handler
-			EventControl . DataUpdated += EventControl_DataUpdated;		
+			EventControl . DataUpdated += EventControl_DataUpdated;
+
+			// An EditDb has changed the current index 
+			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
+			// A Multiviewer has changed the current index 
+			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
+
 			SaveBttn . IsEnabled = false;
 			Startup = false;
 			Count . Text = this . CustGrid . Items . Count . ToString ( );
-			this . CustGrid . SelectedIndex = 0;
+			//this . CustGrid . SelectedIndex = 0;
+			Flags . CustDbEditor = this;
+			if ( Flags . LinkviewerRecords )
+				LinkRecords . IsChecked = true;
 
+
+		}
+
+		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			Triggered = true;
+			// Handle selecton change if linkage is ON
+			this . CustGrid . SelectedIndex = e . Row;
+			this . CustGrid . Refresh (  );
+			Triggered = false;
 		}
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Console . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
-
+			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
 			int currsel = this . CustGrid . SelectedIndex;
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
@@ -87,15 +109,13 @@ namespace WPFPages . Views
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Console . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
+			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . Refresh ( );
 		}
 		#endregion Startup/ Closedown
-
-
 
 		private void Where ( bool v )
 		{
@@ -162,16 +182,17 @@ namespace WPFPages . Views
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
+			Flags . CustDbEditor = null;
 			EventControl . DataUpdated -= EventControl_DataUpdated;
 		
 		}
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			if ( IsDirty )
+			if (Flags.LinkviewerRecords  == false && IsDirty )
 			{
-				MessageBoxResult result = MessageBox . Show
-					( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
+				MessageBoxResult result = System . Windows . MessageBox . Show
+					( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
 				if ( result == MessageBoxResult . Yes )
 				{
 					SaveButton ( );
@@ -180,12 +201,26 @@ namespace WPFPages . Views
 				SaveBttn . IsEnabled = false;
 				IsDirty = false;
 			}
-			//if ( this . CustGrid . SelectedItem == null )
-			//	return;
-			//this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
+			IsDirty = false;
+			if ( this . CustGrid . SelectedItem == null )
+				return;
+			this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
 			//Startup = true;
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 			Startup = false;
+			if ( Flags . LinkviewerRecords && Triggered == false )
+			{
+				EventControl . TriggerEditDbIndexChanged ( this,
+				new IndexChangedArgs
+				{
+					dGrid = this . CustGrid,
+					Row = this . CustGrid . SelectedIndex,
+					SenderId = "CUSTOMER",
+					Sender = "CUSTDBVIEW"
+				} );
+			}
+			IsDirty = false;
+			Triggered = false;
 		}
 
 		private async Task<bool> SaveButton ( object sender = null, RoutedEventArgs e = null )
@@ -199,21 +234,21 @@ namespace WPFPages . Views
 			IsDirty = false;
 			int CurrentSelection = this . CustGrid . SelectedIndex;
 			this . CustGrid . SelectedItem = this . CustGrid . SelectedIndex;
-			BankAccountViewModel bvm = new BankAccountViewModel ( );
-			bvm = this . CustGrid . SelectedItem as BankAccountViewModel;
+			CustomerViewModel cvm = new CustomerViewModel ( );
+			cvm = this . CustGrid . SelectedItem as CustomerViewModel;
 
 			SaveFieldData ( );
 
 			// update the current rows data content to send  to Update process
-			bvm . BankNo = Bankno . Text;
-			bvm . CustNo = Custno . Text;
-			bvm . AcType = Convert . ToInt32 ( acType . Text );
-			bvm . Balance = Convert . ToDecimal ( balance . Text );
-			bvm . ODate = Convert . ToDateTime ( odate . Text );
-			bvm . CDate = Convert . ToDateTime ( cdate . Text );
+			cvm . BankNo = Bankno . Text;
+			cvm . CustNo = Custno . Text;
+			cvm . AcType = Convert . ToInt32 ( acType . Text );
+//	cvm . Balance = Convert . ToDecimal ( balance . Text );
+			cvm . ODate = Convert . ToDateTime ( odate . Text );
+			cvm . CDate = Convert . ToDateTime ( cdate . Text );
 			// Call Handler to update ALL Db's via SQL
 			SQLHandlers sqlh = new SQLHandlers ( );
-			await sqlh . UpdateDbRow ( "CUSTOMER", bvm );
+			await sqlh . UpdateDbRow ( "CUSTOMER", cvm );
 			
 			EventControl . TriggerDataUpdated ( CustViewerDbcollection,
 				new LoadedEventArgs
@@ -257,7 +292,7 @@ namespace WPFPages . Views
 			_bankno = Bankno . Text;
 			_custno = Custno . Text;
 			_actype = acType . Text;
-			_balance = balance . Text;
+//			_balance = balance . Text;
 			_odate = odate . Text;
 			_cdate = cdate . Text;
 		}
@@ -355,7 +390,7 @@ namespace WPFPages . Views
 				Utils . ScrollRecordIntoView ( this . CustGrid, this . CustGrid . SelectedIndex );
 			}
 		}
-		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
+		public void SendDataChanged ( SqlDbViewer o, System . Windows . Controls . DataGrid Grid, string dbName )
 		{
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
@@ -370,8 +405,30 @@ namespace WPFPages . Views
 				DataSource = CustViewerDbcollection,
 				RowCount = this . CustGrid . SelectedIndex
 			} );
-			Mouse . OverrideCursor = Cursors . Arrow;
+			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 		}
+		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
+		{
+			// force viewers to change records in line with each other
+			if ( LinkRecords . IsChecked == true )
+				Flags . LinkviewerRecords = true;
+			else
+				Flags . LinkviewerRecords = false;
+			if ( Flags . SqlBankViewer != null )
+				Flags . SqlBankViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlCustViewer != null )
+				Flags . SqlCustViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlDetViewer != null )
+				Flags . SqlDetViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . SqlMultiViewer != null )
+				Flags . SqlMultiViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . BankDbEditor != null )
+				Flags . BankDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			if ( Flags . DetDbEditor != null )
+				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
+			LinkRecords . Refresh ( );
+		}
+
 	}
 }
 

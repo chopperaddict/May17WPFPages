@@ -79,15 +79,15 @@ namespace WPFPages
 			// Load the Bank account Observable collection (Bankcollection)
 			//			BankCollection.LoadBank ( BankCollection .Bankcollection );
 			//BankCollection . LoadBank ( );
-			//Console . WriteLine ($"bc.Count = {BankCollection . Bankcollection . Count}");
+			//Debug . WriteLine ($"bc.Count = {BankCollection . Bankcollection . Count}");
 			////----------------------------------------------------------------------------------------//
 			//// Load the Customer account Observable collection (Custcollection)
 			//CustCollection . LoadCust ( CustCollection . Custcollection );
-			//Console . WriteLine ( $"bc.Count = {CustCollection . Custcollection . Count}" );
+			//Debug . WriteLine ( $"bc.Count = {CustCollection . Custcollection . Count}" );
 			////----------------------------------------------------------------------------------------//
 			//// Load the Details  account Observable collection (Detcollection)
 			//DetCollection .Detcollection = DetCollection . LoadDet ( DetCollection . Detcollection );
-			//Console . WriteLine ( $"bc.Count = {DetCollection . Detcollection . Count}" );
+			//Debug . WriteLine ( $"bc.Count = {DetCollection . Detcollection . Count}" );
 			//----------------------------------------------------------------------------------------//
 		}
 

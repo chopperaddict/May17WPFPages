@@ -335,37 +335,6 @@
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"/>
 
-				<TextBlock x:Name="textBlock_Copy1" 
-				    Foreground="White"
-				    HorizontalAlignment="Center" 
-				    Padding="5,5,5,5"
-					    
-				    Text="A/c Balance" 
-				    VerticalAlignment="Center" 
-				    Height="25" 
-				    Width="70" 
-				    Canvas.Left="236" 
-				    Canvas.Top="25" RenderTransformOrigin="0.457,-0.36"/>
-
-				<TextBox x:Name="balance" 
-				FontSize="16"
-					   FontWeight="DemiBold"
-				Foreground="Red"
-				HorizontalAlignment="Center" 
-				HorizontalContentAlignment="Center"
-				Padding="5,3,0,0"
-				Text="{Binding Path=Balance, FallbackValue=Balance, UpdateSourceTrigger=LostFocus}" 
-			     TextAlignment="Center"
-				VerticalAlignment="Center" 
-				Height="32" 
-				Width="104" 
-				TabIndex="3"
-				SelectionChanged="SelectionChanged" 
-				TextChanged="TextChanged"
-				Canvas.Left="216" 
-				Canvas.Top="56"/>
-
-
 				<TextBlock x:Name="textBlock_Copy3" 
 				Foreground="White"
 				HorizontalAlignment="Center" 
@@ -421,6 +390,15 @@
 				TextChanged="TextChanged"
 				Canvas.Left="429" 
 				Canvas.Top="59"/>
+				<CheckBox x:Name="LinkRecords" 
+				    Canvas.Left="371" 
+				    Canvas.Top="102"				    
+				    Click="LinkRecords_Click"
+				    Content="Link to External Viewers " 
+				    Foreground="Red"
+				    Height="25"
+				    HorizontalAlignment="Right"
+				    VerticalAlignment="Center"				   />
 				<!--#endregion Text Fields-->
 			</Canvas>
 

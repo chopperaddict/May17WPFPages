@@ -1,9 +1,12 @@
-﻿#undef SHOWWINDOWDATA
+﻿#define SHOWWINDOWDATA
 using System;
+using System . Runtime . InteropServices . WindowsRuntime;
 using System . Windows;
 using System . Windows . Controls;
 using System . Windows . Input;
 using System . Windows . Media;
+using WPFPages . ViewModels;
+using WPFPages . Views;
 
 namespace WPFPages
 {
@@ -14,6 +17,95 @@ namespace WPFPages
 	/// </summary>
 	public class Utils
 	{
+		public static Action<DataGrid, int> GridInitialSetup = Utils . SetUpGridSelection;
+//		public static Func<bool, BankAccountViewModel, CustomerViewModel, DetailsViewModel> IsMatched = CheckRecordMatch; 
+		public static Func<object, object, bool> IsRecordMatched = Utils . CompareDbRecords;
+
+		/// <summary>
+		/// A Func that takes ANY 2 (of 3 [Bank,Customer,Details] Db type records and returns true if the CustNo and Bankno match
+		/// </summary>
+		/// <param name="obj1"></param>
+		/// <param name="obj2"></param>
+		/// <returns></returns>
+		public static bool CompareDbRecords (object obj1, object obj2 )
+		{
+			bool result = false;
+			BankAccountViewModel bvm = new BankAccountViewModel ( );
+			CustomerViewModel cvm = new CustomerViewModel ( );
+			DetailsViewModel dvm = new DetailsViewModel();
+			//bvm = null;
+			//cvm = null;
+			//dvm = null;
+			if ( obj1 == null || obj2 == null )
+				return result;
+			if ( obj1.GetType() == bvm . GetType ( ) )
+				bvm = obj1 as BankAccountViewModel;
+			if ( obj1 . GetType ( ) == cvm . GetType ( ) )
+				cvm = obj1 as CustomerViewModel;
+			if ( obj1 . GetType ( ) == dvm . GetType ( ) )
+				dvm = obj1 as DetailsViewModel;
+
+			if ( obj2 . GetType ( ) == bvm . GetType ( ) )
+				bvm = obj2 as BankAccountViewModel;
+			if ( obj2 . GetType ( ) == cvm . GetType ( ) )
+				cvm = obj2 as CustomerViewModel;
+			if ( obj2 . GetType ( ) == dvm . GetType ( ) )
+				dvm = obj2 as DetailsViewModel;
+
+			if ( bvm != null && cvm != null )
+			{
+				if ( bvm . CustNo == cvm . CustNo )
+					result = true;
+			}
+			else if ( bvm != null && dvm != null )
+			{
+				if ( bvm . CustNo == dvm . CustNo )
+					result = true;
+			}
+			else if ( cvm != null && dvm != null )
+			{
+				if ( cvm . CustNo == dvm . CustNo )
+					result = true;
+			}
+			result = false;
+			return result;
+		}
+
+		public static bool CheckRecordMatch (
+			BankAccountViewModel bvm,
+			CustomerViewModel cvm, 
+			DetailsViewModel dvm)
+		{
+			bool result = false;
+			if ( bvm != null && cvm != null )
+			{
+				if ( bvm . CustNo == cvm . CustNo )
+					result = true;
+			}
+			else if ( bvm != null && dvm != null )
+			{
+				if ( bvm . CustNo == dvm . CustNo )
+					result = true;
+			}
+			else if ( cvm != null && dvm != null )
+			{
+				if ( cvm . CustNo == dvm . CustNo )
+					result  = true;
+			}
+			return result;
+		}
+
+		public static void SetUpGridSelection ( DataGrid grid , int row = -1)
+		{
+			if ( row == -1 ) row = grid . SelectedIndex;
+			// This triggers the selection changed event
+			grid . SelectedIndex = row;
+			grid . SelectedItem = row;
+			grid . Refresh ( );
+			grid . UpdateLayout ( );
+			Utils . ScrollRecordIntoView ( grid, row);
+		}
+
 		/// <summary>
 		/// Metohd that almost GUARANTESS ot force a record into view in any DataGrid
 		/// </summary>
@@ -61,8 +153,6 @@ namespace WPFPages
 				currentTop = Flags . TopVisibleDetGridRow;
 				currentBottom = Flags . BottomVisibleDetGridRow;
 			}     // Believe it or not, it takes all this to force a scrollinto view correctly
-
-//			currsel = Dgrid . SelectedIndex;
 
 			if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null ) return;
 
