@@ -221,6 +221,7 @@ namespace WPFPages . Views
 			Startup = false;
 			if ( Flags . LinkviewerRecords && Triggered == false)
 			{
+				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 					new IndexChangedArgs
 					{

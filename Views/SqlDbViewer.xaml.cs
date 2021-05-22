@@ -744,11 +744,11 @@ namespace WPFPages
 			// All working well when update is in another SqlDbViewer
 			// Monday, 17 May 2021
 			int currsel = 0;
-			//			Debug . WriteLine ( $" 5-1 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Entering to handle trigger SendDataChanged from EditDb" );
+			//			Debug . WriteLine ( $" 7-1 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Entering to handle trigger SendDataChanged from EditDb" );
 
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
-				//				Debug . WriteLine ( $" 5-2 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Bank Data" );
+				//				Debug . WriteLine ( $" 7-2 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Bank Data" );
 				// We sent the message !!
 				if ( e . DataSource == SqlViewerBankcollection ) return;
 				RefreshInProgress = true;
@@ -758,7 +758,7 @@ namespace WPFPages
 				//Data has been changed in EditDb, so reload it
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
-				//				Debug . WriteLine ( $" 5-3 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Bank Data" );
+				//				Debug . WriteLine ( $" 7-3 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Bank Data" );
 				Mouse . OverrideCursor = Cursors . Wait;
 				SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1 );
 				//We cant use Collection syntax - it crashes it every time
@@ -778,11 +778,11 @@ namespace WPFPages
 				Mouse . OverrideCursor = Cursors . Arrow;
 				Debug . WriteLine ( $"The record for Bank A/c {GetPrettyRowDetails ( this . BankGrid )} has been updated externally !" );
 				StatusBar . Text = $"The record for Bank A/c {GetPrettyRowDetails ( this . BankGrid )} has been updated externally !";
-				//				Debug . WriteLine ( $" 5-4-END *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Bank Data Reload completed" );
+				//				Debug . WriteLine ( $" 7-4-END *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Bank Data Reload completed" );
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
-				//				Debug . WriteLine ( $" 5-2 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Customer Data" );
+				//				Debug . WriteLine ( $" 7-2 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Customer Data" );
 				// We sent the message !!
 				if ( e . DataSource == SqlViewerCustcollection ) return;
 				RefreshInProgress = true;
@@ -792,7 +792,7 @@ namespace WPFPages
 				//Data has been changed in EditDb, so reload it
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
-				//				Debug . WriteLine ( $" 5-3 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Customer Data" );
+				//				Debug . WriteLine ( $" 7-3 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Customer Data" );
 				Mouse . OverrideCursor = Cursors . Wait;
 				SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection );
 				//We cant use Collection syntax - it crashes it every time
@@ -813,11 +813,11 @@ namespace WPFPages
 				Mouse . OverrideCursor = Cursors . Arrow;
 				Debug . WriteLine ( $"The record for Bank A/c {GetPrettyRowDetails ( this . CustomerGrid )} has been updated externally !" );
 				StatusBar . Text = $"The record for Bank A/c {GetPrettyRowDetails ( this . CustomerGrid )} has been updated externally !";
-				//				Debug . WriteLine ( $" 5-4-END *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Customer Data Reload completed" );
+				//				Debug . WriteLine ( $" 7-4-END *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Customer Data Reload completed" );
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
-				//				Debug . WriteLine ( $" 5-2 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Details Data" );
+				//				Debug . WriteLine ( $" 7-2 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Details Data" );
 				// We sent the message !!
 				if ( e . DataSource == SqlViewerDetcollection ) return;
 				RefreshInProgress = true;
@@ -827,7 +827,7 @@ namespace WPFPages
 				//Data has been changed in EditDb, so reload it
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . Items . Clear ( );
-				//				Debug . WriteLine ( $" 5-3 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Details Data" );
+				//				Debug . WriteLine ( $" 7-3 *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- reloading Details Data" );
 				Mouse . OverrideCursor = Cursors . Wait;
 				SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection );
 				//We cant use Collection syntax - it crashes it every time
@@ -849,12 +849,14 @@ namespace WPFPages
 				Debug . WriteLine ( $"The record for Bank A/c {GetPrettyRowDetails ( this . DetailsGrid )} has been updated externally !" );
 				StatusBar . Text = $"The record for Customer # {GetPrettyRowDetails ( this . DetailsGrid )} has been updated externally !";
 				StatusBar . Refresh ( );
-				//				Debug . WriteLine ( $" 5-4-END *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Details Data Reload completed" );
+				//				Debug . WriteLine ( $" 7-4-END *** TRACE *** SQLDBVIEWER: EventControl_EditDbDataUpdated- Details Data Reload completed" );
 			}
 		}
 		private string GetPrettyRowDetails ( DataGrid dg )
 		{
 			string output = "";
+			if ( dg . SelectedIndex == -1 )
+				dg . SelectedIndex = 0;
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				var tmp = dg . SelectedItem as BankAccountViewModel;
@@ -2931,7 +2933,7 @@ namespace WPFPages
 					// This is the NEW DATA from the current row
 					sqlh . UpdateDbRowAsync ( CurrentDb, ss, this . BankGrid . SelectedIndex );
 
-					Debug . WriteLine ( $" 5-1 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending BANKACCOUNT TriggerViewerDataUpdated" );
+					Debug . WriteLine ( $" 7-1 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending BANKACCOUNT TriggerViewerDataUpdated" );
 
 					SendDataChanged ( this, this . BankGrid, "BANKACCOUNT" );
 
@@ -2957,7 +2959,7 @@ namespace WPFPages
 					// This is the NEW DATA from the current row
 					sqlh . UpdateDbRowAsync ( CurrentDb, cs, this . CustomerGrid . SelectedIndex );
 
-					Debug . WriteLine ( $" 5-2 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending CUSTOMER TriggerViewerDataUpdated" );
+					Debug . WriteLine ( $" 7-2 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending CUSTOMER TriggerViewerDataUpdated" );
 
 					SendDataChanged ( this, this . CustomerGrid, "CUSTOMER" );
 					//EventControl . TriggerViewerDataUpdated ( SqlViewerCustcollection,
@@ -2985,7 +2987,7 @@ namespace WPFPages
 					// Update Db itself via SQL
 					sqlh . UpdateDbRowAsync ( CurrentDb, sa, currow );
 
-					Debug . WriteLine ( $" 5-3 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending DETAILS TriggerViewerDataUpdated" );
+					Debug . WriteLine ( $" 7-3 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending DETAILS TriggerViewerDataUpdated" );
 
 					SendDataChanged ( this, this . DetailsGrid, "DETAILS" );
 					//EventControl . TriggerViewerDataUpdated ( SqlViewerDetcollection,
@@ -4050,10 +4052,8 @@ namespace WPFPages
 									Row = this . BankGrid . SelectedIndex
 								} );
 						}
-						Triggered = false;
-
 					}
-					//we now have FULL PrettyDetails
+					Triggered = false;
 				}
 				else if ( CurrentDb == "CUSTOMER" )
 				{
@@ -4077,9 +4077,10 @@ namespace WPFPages
 						//Utils . ScrollRecordIntoView ( CustomerGrid );
 						//this . Activate ( );
 						Flags . SqlViewerIndexIsChanging = false;
-						if ( Flags . LinkviewerRecords )
-						{
-							Debug . WriteLine ( $" 2-2 *** TRACE *** SQLDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER- Sending TriggerViewerIndexChanged Event trigger" );
+//						if ( Flags . LinkviewerRecords )
+						if ( Flags . LinkviewerRecords && Triggered == false )
+							{
+								Debug . WriteLine ( $" 2-2 *** TRACE *** SQLDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER- Sending TriggerViewerIndexChanged Event trigger" );
 							EventControl . TriggerViewerIndexChanged ( this,
 								new IndexChangedArgs
 								{
@@ -4089,6 +4090,7 @@ namespace WPFPages
 								} );
 						}
 					}
+					Triggered = false;
 				}
 				else if ( CurrentDb == "DETAILS" )
 				{
@@ -4125,8 +4127,8 @@ namespace WPFPages
 									Row = this . DetailsGrid . SelectedIndex
 								} );
 						}
-						Triggered = false;
 					}
+					Triggered = false;
 				}
 			}
 			UpdateAuxilliaries ( "" );

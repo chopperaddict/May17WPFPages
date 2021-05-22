@@ -87,7 +87,7 @@ namespace WPFPages . Views
 			DataUpdated?.Invoke ( obj, e );
 		}
 
-
+		// INDEX CHANGE EVENTS
 		public static void TriggerEditDbIndexChanged ( object obj, IndexChangedArgs e )
 		{
 			EditIndexChanged?.Invoke ( obj, e );
@@ -100,6 +100,7 @@ namespace WPFPages . Views
 		{
 			MultiViewerIndexChanged?.Invoke ( obj, e );
 		}
+		// DATA CHANGE EVENTS
 		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
 			ViewerDataUpdated?.Invoke ( obj, e );

@@ -8,6 +8,7 @@ using WPFPages . ViewModels;
 using System . Windows . Media;
 using System . Windows . Input;
 using System . Diagnostics;
+using System . Xml . Linq;
 
 namespace WPFPages . Views
 {
@@ -68,19 +69,29 @@ namespace WPFPages . Views
 			// Main update notification handler
 			EventControl . DataUpdated += EventControl_DataUpdated;
 
-			SaveBttn . IsEnabled = false;
-			if ( BankViewercollection . Count == 0 )
-				BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, false );
-			this . BankGrid . ItemsSource = BankViewercollection;
-			Startup = false;
-			Count . Text = this . BankGrid . Items . Count . ToString ( );
-			Utils . SetUpGridSelection ( this.BankGrid, 0 );
+			// Save linkage setting as we need to disable it while we are loading
+			bool tmp = Flags . LinkviewerRecords;
+			Flags . LinkviewerRecords = false;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
 			Flags . BankDbEditor = this;
+
+			SaveBttn . IsEnabled = false;
+			if ( BankViewercollection . Count == 0 )
+				BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, false );
+			this . BankGrid . ItemsSource = BankViewercollection;
+			Startup = false;
+			Count . Text = this . BankGrid . Items . Count . ToString ( );
+			this . BankGrid . SelectedIndex = 0;
+			this . BankGrid . SelectedItem = 0;
+			Utils . SetUpGridSelection ( this.BankGrid, 0 );
+			this . Focus ( );
+			this . BankGrid . Focus ( );
+			// Reset linkage setting
+			Flags . LinkviewerRecords = tmp;
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -138,31 +149,17 @@ namespace WPFPages . Views
 				Flags . CurrentEditDbViewer . UpdateGrid ( "BANKACCOUNT" );
 
 			// ***********  DEFINITE WIN  **********
-			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerBankDataLoaded ( BankViewercollection,
-				new LoadedEventArgs
-				{
-					CallerDb = "BANKACCOUNT",
-					DataSource = BankViewercollection,
-					RowCount = this . BankGrid . SelectedIndex
-				} );
-
-			//EventControl . TriggerCustDataLoaded ( BankViewercollection,
+			// This DOES trigger a notification to SQLDBVIEWER AND OTHERS for sure !!!   14/5/21
+			Debug . WriteLine ( $" 4-2 *** TRACE *** BANKDBVIEW : ViewerGrid_RowEndingEdit BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
+			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
+			
+			//EventControl . TriggerBankDataLoaded ( BankViewercollection,
 			//	new LoadedEventArgs
 			//	{
 			//		CallerDb = "BANKACCOUNT",
 			//		DataSource = BankViewercollection,
 			//		RowCount = this . BankGrid . SelectedIndex
 			//	} );
-
-			//EventControl . TriggerDetDataLoaded ( BankViewercollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerDb = "BANKACCOUNT",
-			//		DataSource = BankViewercollection,
-			//		RowCount = this . BankGrid . SelectedIndex
-			//	} );
-
 		}
 
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
@@ -233,6 +230,7 @@ namespace WPFPages . Views
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 			if ( Flags . LinkviewerRecords && Triggered  == false)
 			{
+				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 				new IndexChangedArgs
 				{
@@ -282,22 +280,10 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = BankViewercollection;
 			this . BankGrid . Refresh ( );
 
+			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
+			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT");
 
-			EventControl . TriggerBankDataLoaded ( BankViewercollection,
-				new LoadedEventArgs
-				{
-					CallerDb = "BANKACCOUNT",
-					DataSource = BankViewercollection,
-					RowCount = this . BankGrid . SelectedIndex
-				} );
-			//EventControl . TriggerCustDataLoaded ( BankViewercollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerDb = "BANKACCOUNT",
-			//		DataSource = BankViewercollection,
-			//		RowCount = this . BankGrid . SelectedIndex
-			//	} );
-			//EventControl . TriggerDetDataLoaded ( BankViewercollection,
+			//EventControl . TriggerBankDataLoaded ( BankViewercollection,
 			//	new LoadedEventArgs
 			//	{
 			//		CallerDb = "BANKACCOUNT",
@@ -443,12 +429,11 @@ namespace WPFPages . Views
 		}
 		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
 		{
+			// Called internally to broadcast data change event notification
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-			//dca . SenderName = o . ToString ( );
-			//dca . DbName = dbName;
-
+//			Debug . WriteLine ( $" 4-4 *** TRACE *** BANKDBVIEW : SendDataChanged BANKDBVIEW - Sending TriggerBankDataLoaded Event trigger" );
 			EventControl . TriggerBankDataLoaded ( BankViewercollection,
 			new LoadedEventArgs
 			{
@@ -456,20 +441,6 @@ namespace WPFPages . Views
 				DataSource = BankViewercollection,
 				RowCount = this . BankGrid . SelectedIndex
 			} );
-			//EventControl . TriggerCustDataLoaded ( BankViewercollection,
-			//new LoadedEventArgs
-			//{
-			//	CallerDb = "DETAILS",
-			//	DataSource = BankViewercollection,
-			//	RowCount = this . BankGrid . SelectedIndex
-			//} );
-			//EventControl . TriggerDetDataLoaded ( BankViewercollection,
-			//new LoadedEventArgs
-			//{
-			//	CallerDb = "DETAILS",
-			//	DataSource = BankViewercollection,
-			//	RowCount = this . BankGrid . SelectedIndex
-			//} );
 			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )

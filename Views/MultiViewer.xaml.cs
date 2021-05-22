@@ -635,12 +635,6 @@ namespace WPFPages . Views
 					if ( dg . SelectedItem != null )
 						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				}
-				//if ( dg == BankGrid )
-				//	BankGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == CustomerGrid )
-				//	CustomerGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == DetailsGrid )
-				//	DetailsGrid_SelectedCellsChanged ( dg, null );
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				e . Handled = true;
@@ -665,14 +659,6 @@ namespace WPFPages . Views
 				else if ( CurrentDb == "DETAILS" )
 					dg = this . DetailsGrid;
 
-				//if ( dg == BankGrid )
-				//	BankGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == CustomerGrid )
-				//	CustomerGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == DetailsGrid )
-				//	DetailsGrid_SelectedCellsChanged ( dg, null );
-				//if ( dg . SelectedItem != null )
-				//	Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				e . Handled = true;
 				key1 = false;
 				return;
@@ -697,12 +683,6 @@ namespace WPFPages . Views
 					if ( dg . SelectedItem != null )
 						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				}
-				//if ( dg == BankGrid )
-				//	BankGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == CustomerGrid )
-				//	CustomerGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == DetailsGrid )
-				//	DetailsGrid_SelectedCellsChanged ( dg, null );
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				e . Handled = true;
@@ -729,12 +709,6 @@ namespace WPFPages . Views
 					if ( dg . SelectedItem != null )
 						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				}
-				//if ( dg == BankGrid )
-				//	BankGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == CustomerGrid )
-				//	CustomerGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == DetailsGrid )
-				//	DetailsGrid_SelectedCellsChanged ( dg, null );
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				e . Handled = true;
@@ -752,12 +726,6 @@ namespace WPFPages . Views
 				dg . SelectedIndex = 0;
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				//if ( dg == BankGrid )
-				//	BankGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == CustomerGrid )
-				//	CustomerGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == DetailsGrid )
-				//	DetailsGrid_SelectedCellsChanged ( dg, null );
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				e . Handled = true;
@@ -775,13 +743,6 @@ namespace WPFPages . Views
 				dg . SelectedIndex = dg . Items . Count - 1;
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				//				ItemsView_OnSelectionChanged ( dg, null );
-				//if ( dg == BankGrid )
-				//	BankGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == CustomerGrid )
-				//	CustomerGrid_SelectedCellsChanged ( dg, null );
-				//else if ( dg == DetailsGrid )
-				//	DetailsGrid_SelectedCellsChanged ( dg, null );
 				if ( dg . SelectedItem != null )
 					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				e . Handled = true;
@@ -817,12 +778,6 @@ namespace WPFPages . Views
 					bank = BankRecord . BankNo;
 					cust = BankRecord . CustNo;
 					dg . ItemsSource = null;
-					//					SqlViewerBankcollection . Clear ( );
-					//					dtBank?.Clear ( );
-
-					//Remove it from SQL Db as well
-					//					DeleteRecord ( "BANKACCOUNT", BankRecord . BankNo, BankRecord . CustNo, CurrentRow );
-
 					e . Handled = true;
 					key1 = false;
 
@@ -842,15 +797,9 @@ namespace WPFPages . Views
 					bank = CustRecord . BankNo;
 					cust = CustRecord . CustNo;
 					dg . ItemsSource = null;
-					//					SqlViewerCustcollection . Clear ( );
 					CustCollection . dtCust?.Clear ( );
-
-					//Remove it from SQL Db as well
-					//					DeleteRecord ( "CUSTOMER", CustRecord . BankNo, CustRecord . CustNo, CurrentRow );
-
 					e . Handled = true;
 					key1 = false;
-
 					// Call the method to update any other Viewers that may be open
 					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
 					// Keep our focus in originating window for now
@@ -868,11 +817,6 @@ namespace WPFPages . Views
 					CurrentRow = dg . SelectedIndex;
 					// Remove it form THIS DataGrid here
 					dg . ItemsSource = null;
-					//					SqlViewerDetcollection . Clear ( );
-					//					dtDetails?.Clear ( );
-
-					//Remove it from SQL Db as well
-					//					DeleteRecord ( "DETAILS", DetailsRecord . BankNo, DetailsRecord . CustNo, CurrentRow );
 					e . Handled = true;
 					key1 = false;
 
@@ -883,10 +827,7 @@ namespace WPFPages . Views
 					Thisviewer . Focus ( );
 					return;
 				}
-				//				else
-				//				key1 = false;
 				e . Handled = false;
-				//				return;
 #pragma TESTING DATA LOAD CALLBACK
 
 				{
@@ -901,68 +842,10 @@ namespace WPFPages . Views
 					if ( dg . SelectedItem != null )
 						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 
-					// now tell any other open viewers they need to update
-					//ItemsView_OnSelectionChanged ( dg, null );
-					//if ( CurrentDb == "BANKACCOUNT" )
-					//{
-					//	SendDataChanged ( this, BankGrid, "BANKACCOUNT" );
-					//	DetailsGrid_SelectedCellsChanged ( dg, null );
-					//}
-					//else if ( CurrentDb == "CUSTOMER" )
-
-					//{
-					//	SendDataChanged ( this, CustomerGrid, "CUSTOMER" );
-					//	BankGrid_SelectedCellsChanged ( dg, null );
-					//}
-					//else if ( CurrentDb == "DETAILS" )
-
-					//{
-					//	SendDataChanged ( this, DetailsGrid, "DETAILS" );
-					//	BankGrid_SelectedCellsChanged ( dg, null );
-					//}
 				}
 			}
-			//else
-			//{
-			//	key1 = false;
-			//}
 			e . Handled = false;
 		}
-
-
-		//			if (e . Key == Key . RightAlt )
-		//			{
-		//				Flags . ListGridviewControlFlags( );
-		//			}
-		//			else if (e . Key == Key . Escape )
-		//			{
-		//				Close ( );
-		//}
-		//			else if ( e . Key == Key . Home )
-		//{
-		//	this . BankGrid . SelectedIndex = 0;
-		//	this . CustomerGrid . SelectedIndex = 0;
-		//	this . DetailsGrid . SelectedIndex = 0;
-		//	ExtensionMethods . Refresh ( this . BankGrid );
-		//	ExtensionMethods . Refresh ( this . CustomerGrid );
-		//	ExtensionMethods . Refresh ( this . DetailsGrid );
-		//}
-		//else if ( e . Key == Key . End )
-		//{
-		//	this . BankGrid . SelectedIndex = this . BankGrid . Items . Count - 1;
-		//	this . CustomerGrid . SelectedIndex = this . CustomerGrid . Items . Count - 1;
-		//	this . DetailsGrid . SelectedIndex = this . DetailsGrid . Items . Count - 1;
-		//	this . BankGrid . SelectedItem = this . BankGrid . Items . Count - 1;
-		//	this . CustomerGrid . SelectedItem = this . CustomerGrid . Items . Count - 1;
-		//	this . DetailsGrid . SelectedItem = this . DetailsGrid . Items . Count - 1;
-		//	this . BankGrid . ScrollIntoView ( this . BankGrid . Items . Count - 1 );
-		//	this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . Items . Count - 1 );
-		//	this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . Items . Count - 1 );
-		//	ExtensionMethods . Refresh ( this . BankGrid );
-		//	ExtensionMethods . Refresh ( this . CustomerGrid );
-		//	ExtensionMethods . Refresh ( this . DetailsGrid );
-		//}
-		//		}
 
 		#region DATAGRID  SELECTION CHANGE  HANDLING  (SelectedIndex matching across all 3 grids)
 		/// <summary>
@@ -991,6 +874,7 @@ namespace WPFPages . Views
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				// Send message to othrr viewers teling them of our index change
+				Debug . WriteLine ( $" 7-1 *** TRACE *** MULTIVIEWER: Grid_SelectionChanged  BANKACCOUNT- Sending TriggerMultiViewerIndexChanged Event trigger" );
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
 				new IndexChangedArgs
 				{
@@ -1042,6 +926,7 @@ namespace WPFPages . Views
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				// Send message to othrr viewers teling them of our index change
+				Debug . WriteLine ( $" 7-2 *** TRACE *** MULTIVIEWER: CustGrid_SelectionChanged  CUSTOMER - Sending TriggerMultiViewerIndexChanged Event trigger" );
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
 				new IndexChangedArgs
 				{
@@ -1093,6 +978,7 @@ namespace WPFPages . Views
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				// Send message to othrr viewers teling them of our index change
+				Debug . WriteLine ( $" 7-3 *** TRACE *** MULTIVIEWER: DetGrid_SelectionChanged  DETAILS - Sending TriggerMultiViewerIndexChanged Event trigger" );
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
 					new IndexChangedArgs
 					{
