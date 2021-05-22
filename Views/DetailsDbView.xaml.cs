@@ -21,9 +21,9 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class DetailsDbView : Window
 	{
-		public static DetCollection DetViewerDbcollection = DetCollection.DetViewerDbcollection;
+		public  DetCollection DetViewerDbcollection = DetCollection.DetViewerDbcollection;
 		private bool IsDirty = false;
-		static bool Startup = true;
+		private bool Startup = true;
 		public static bool Triggered = false;
 		private string _bankno = "";
 		private string _custno = "";
@@ -66,14 +66,9 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index 
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-
-
+			EventControl . DataUpdated += EventControl_DataUpdated;
 			DataFields . DataContext = this . DetGrid . SelectedItem;
 
-			EventControl . DataUpdated += EventControl_DataUpdated;
-			//EventControl . ViewerDataHasBeenChanged += ExternalDataUpdate;      // Callback in THIS FILE
-			//								    //Subscribe to Bank Data Changed event declared in EventControl
-			//EventControl . DetDataLoaded += EventControl_DetDataLoaded;
 			SaveBttn . IsEnabled = false;
 			Startup = false;
 			Count . Text = this . DetGrid . Items . Count . ToString ( );
@@ -81,11 +76,14 @@ namespace WPFPages . Views
 			DetGrid . Refresh ( );
 			this . DetGrid . UpdateLayout( );
 			Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
+
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
 
+			// Set window to TOPMOST
+			OntopChkbox . IsChecked = true;
+			this . Topmost = true;
 			Flags . DetDbEditor = this;
-
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -150,21 +148,13 @@ namespace WPFPages . Views
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerDataUpdated ( DetViewerDbcollection,
+			EventControl . TriggerDetDataLoaded ( DetViewerDbcollection,
 				new LoadedEventArgs
 				{
 					CallerDb = "DETAILS",
 					DataSource = DetViewerDbcollection,
 					RowCount = this . DetGrid . SelectedIndex
 				} );
-			EventControl . TriggerBankDataLoaded ( DetViewerDbcollection,
-				new LoadedEventArgs
-				{
-					CallerDb = "DETAILS",
-					DataSource = DetViewerDbcollection,
-					RowCount = this . DetGrid . SelectedIndex
-				} );
-
 		}
 
 		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
@@ -191,7 +181,13 @@ namespace WPFPages . Views
 			//			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
 			//UnSubscribe from Bank Data Changed event declared in EventControl
 			Flags . DetDbEditor = null;
-			EventControl . BankDataLoaded -= EventControl_DetDataLoaded;
+			EventControl . EditIndexChanged -= EventControl_EditIndexChanged;
+			// A Multiviewer has changed the current index 
+			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
+												 // Main update notification handler
+			EventControl . DataUpdated -= EventControl_DataUpdated;
 		}
 
 		private void DetGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -214,7 +210,7 @@ namespace WPFPages . Views
 			// Find matching record ?? - Whew
 //			DetailsViewModel dvm = e. SelectedItem as DetailsViewModel;
 //			MultiViewer mv = new MultiViewer ( );
-//			int rec = mv. FindMatchingRecord ( dvm. CustNo, dvm. BankNo, this . DetGrid, "DETAILS" );
+//			int rec = Utils. FindMatchingRecord  ( dvm. CustNo, dvm. BankNo, this . DetGrid, "DETAILS" );
 //			this . DetGrid . SelectedItem = rec;
 			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 			Utils . SetUpGridSelection ( this . DetGrid,  this . DetGrid.SelectedIndex);
@@ -264,7 +260,7 @@ namespace WPFPages . Views
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "DETAILS", bvm );
 
-			EventControl . TriggerBankDataLoaded ( DetViewerDbcollection,
+			EventControl . TriggerDetDataLoaded ( DetViewerDbcollection,
 				new LoadedEventArgs
 				{
 					CallerDb = "DETAILS",
@@ -368,7 +364,7 @@ namespace WPFPages . Views
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
-				int rec = mv . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
+				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
 				this . DetGrid . SelectedIndex = currsel;
 				if ( rec >= 0 )
 					this . DetGrid . SelectedIndex = rec;
@@ -397,7 +393,7 @@ namespace WPFPages . Views
 				Count . Text = this . DetGrid . Items . Count . ToString ( );
 
 				MultiViewer mv = new MultiViewer ( );
-				int rec = mv . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
+				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
 				this . DetGrid . SelectedIndex = 0;
 
 				if ( rec >= 0 )
@@ -415,7 +411,7 @@ namespace WPFPages . Views
 			//dca . SenderName = o . ToString ( );
 			//dca . DbName = dbName;
 
-			EventControl . TriggerDataUpdated ( DetViewerDbcollection,
+			EventControl . TriggerDetDataLoaded( DetViewerDbcollection,
 			new LoadedEventArgs
 			{
 				CallerDb = "DETAILS",

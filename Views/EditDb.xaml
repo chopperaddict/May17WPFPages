@@ -26,6 +26,22 @@
 		<data:CustCollection x:Key="CustData" />
 		<data:DetCollection x:Key="DetData" />
 
+		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
+			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushBlue}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property= "Background" Value="{StaticResource HeaderBorderBrushBlue}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 		<Style x:Key="GreenBtn" TargetType="Button">
 			<!--<Setter Property="Background" Value="Red" />-->
 			<Style.Triggers>
@@ -351,7 +367,10 @@
 
 		<!--Right hand side only-->
 		<DataGrid x:Name="DataGrid1"
+				
+				AlternatingRowBackground="{StaticResource Blue4}"
 				CanUserAddRows="False"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
 				Grid.Row="1"
 				Grid.Column="4"
 				Grid.RowSpan="1"
@@ -367,6 +386,7 @@
 				RowEditEnding="DataGrid1_RowEditEnding"
 				Visibility="Visible"
 				>
+			
 			<!--VirtualizingPanel.ScrollUnit="Pixel"-->
 			<!--CellEditEnding="DataGrid1_CellEditEnding"-->
 			<!--ItemsSource="{Binding Source={StaticResource BankData}}"-->
@@ -388,6 +408,11 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
+				<DataGridTextColumn x:Name="Custno" Header="Customer #" Binding="{Binding CustNo,
+									Mode=TwoWay,
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
+
 				<DataGridTextColumn Header="Bank #" Width="80"
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo,
@@ -395,26 +420,21 @@
 									UpdateSourceTrigger=LostFocus}">
 				</DataGridTextColumn>
 
-				<DataGridTextColumn x:Name="Custno" Header="Customer #" Binding="{Binding CustNo,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}">
-				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Type" Width="40"
-									x:Name="AcType"
+				<DataGridTextColumn Header="Type" Width="35"
+									x:Name="AcType"							
 									SortMemberPath="AcType"
 									Binding="{Binding AcType,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus}" />
 
-				<DataGridTextColumn Header="Balance" Width="90"
+				<DataGridTextColumn Header="Balance" Width="80"
 									SortMemberPath="Balance"
 									Binding="{Binding Balance,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus,
 									StringFormat='£ ##,###,###.00'}" />
 
-				<DataGridTemplateColumn Header="IntRate" Width="50">
+				<DataGridTemplateColumn Header="Interest %" Width="50">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding IntRate, StringFormat='#.##',
@@ -430,15 +450,7 @@
 						</DataTemplate>
 					</DataGridTemplateColumn.CellEditingTemplate>
 				</DataGridTemplateColumn>
-
-				<DataGridTextColumn Header="Interest" Width="60"
-									SortMemberPath="IntRate"
-									Binding="{Binding IntRate,
-									Mode=TwoWay,
-									UpdateSourceTrigger=LostFocus,
-									StringFormat='0.00'}" />
-				<!--CellStyle="{StaticResource CenterText}"-->
-
+				
 				<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
 				<DataGridTemplateColumn Header="Open Date" Width="80" SortMemberPath="ODate">
 					<DataGridTemplateColumn.CellTemplate>
@@ -899,9 +911,11 @@
 
 		<!--#region CUSTOMER GRID-->
 		<DataGrid x:Name="DataGrid2"
+				AlternatingRowBackground="{StaticResource Yellow3}"
 				AutoGenerateColumns="False"
 				CanUserAddRows="False"
-				Grid.Row="1"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
+					Grid.Row="1"
 				Grid.Column="4"
 				HorizontalAlignment="Stretch"
 				IsReadOnly="False"
@@ -935,16 +949,15 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
+				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
+									Mode=TwoWay,
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
 				<DataGridTextColumn Header="Bank #" Width="80"
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus}">
-				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}">
 				</DataGridTextColumn>
 				<DataGridTextColumn Header="A/c Type#" Binding="{Binding AcType,
 									Mode=TwoWay,
@@ -1052,8 +1065,10 @@
 
 		<!--Details Grid stuff-->
 		<DataGrid x:Name="DetailsGrid"
+			AlternatingRowBackground="{StaticResource Green4}"
 			AutoGenerateColumns="False"
 			CanUserAddRows="False"
+			ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
 			Grid.Row="1"
 			Grid.Column="4"
 			Grid.RowSpan="1"
@@ -1091,17 +1106,17 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
+				<DataGridTextColumn Header="Customer #"
+							  Binding="{Binding CustNo,
+							Mode=TwoWay,
+							UpdateSourceTrigger=PropertyChanged}" />
+
 				<DataGridTextColumn Header="Bank #" Width="80"
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus}">
 				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Customer #"
-							  Binding="{Binding CustNo,
-							Mode=TwoWay,
-							UpdateSourceTrigger=PropertyChanged}" />
 
 				<DataGridTextColumn Header="Type" Width="40"
 									SortMemberPath="AcType"

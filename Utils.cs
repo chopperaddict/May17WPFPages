@@ -95,6 +95,12 @@ namespace WPFPages
 			return result;
 		}
 
+		/// <summary>
+		/// MASTER UPDATE METHOD
+		/// This handles repositioning of a selected item in any grid perfectly
+		/// </summary>
+		/// <param name="grid"></param>
+		/// <param name="row"></param>
 		public static void SetUpGridSelection ( DataGrid grid , int row = -1)
 		{
 			if ( row == -1 ) row = grid . SelectedIndex;
@@ -108,6 +114,7 @@ namespace WPFPages
 
 		/// <summary>
 		/// Metohd that almost GUARANTESS ot force a record into view in any DataGrid
+		/// /// This is called by method above - MASTER Updater Method
 		/// </summary>
 		/// <param name="dGrid"></param>
 		/// <param name="row"></param>
@@ -121,6 +128,52 @@ namespace WPFPages
 			dGrid . UpdateLayout ( );
 			Utils . ScrollRecordIntoView ( dGrid, row );
 		}
+		public static int FindMatchingRecord ( string Custno, string Bankno, DataGrid Grid, string CurrentDb )
+		{
+			int index = 0;
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				foreach ( var item in Grid . Items )
+				{
+					BankAccountViewModel cvm = item as BankAccountViewModel;
+					if ( cvm == null ) break;
+					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
+					{
+						break;
+					}
+					index++;
+				}
+			}
+			else if ( CurrentDb == "CUSTOMER" )
+			{
+				foreach ( var item in Grid . Items )
+				{
+					CustomerViewModel cvm = item as CustomerViewModel;
+					if ( cvm == null ) break;
+					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
+					{
+						break;
+					}
+					index++;
+				}
+			}
+			else if ( CurrentDb == "DETAILS" )
+			{
+				foreach ( var item in Grid . Items )
+				{
+					DetailsViewModel cvm = item as DetailsViewModel;
+					if ( cvm == null ) break;
+					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
+					{
+						break;
+					}
+					index++;
+				}
+			}
+			return index;
+		}
+
+
 		public static bool DataGridHasFocus ( DependencyObject instance )
 		{
 			//how to fibnd out whether a datagrid has focus or not to handle key previewers

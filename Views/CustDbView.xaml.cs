@@ -24,8 +24,8 @@ namespace WPFPages . Views
 	{
 		public static CustCollection CustViewerDbcollection = CustCollection . CustViewerDbcollection;
 		private bool IsDirty = false;
-		static bool Startup = true;
-		static bool Triggered = false;
+		private bool Startup = true;
+		private bool Triggered = false;
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -78,10 +78,11 @@ namespace WPFPages . Views
 			Count . Text = this . CustGrid . Items . Count . ToString ( );
 			//this . CustGrid . SelectedIndex = 0;
 			Flags . CustDbEditor = this;
+			// Set window to TOPMOST
+			OntopChkbox . IsChecked = true;
+			this . Topmost = true;
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
-
-
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -143,20 +144,20 @@ namespace WPFPages . Views
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerBankDataLoaded ( CustViewerDbcollection,
+			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
 				new LoadedEventArgs
 				{
 					CallerDb = "CUSTOMER",
 					DataSource = CustViewerDbcollection,
 					RowCount = this . CustGrid . SelectedIndex
 				} );
-			EventControl . TriggerDetDataLoaded ( CustViewerDbcollection,
-				new LoadedEventArgs
-				{
-					CallerDb = "CUSTOMER",
-					DataSource = CustViewerDbcollection,
-					RowCount = this . CustGrid . SelectedIndex
-				} );
+			//EventControl . TriggerDetDataLoaded ( CustViewerDbcollection,
+			//	new LoadedEventArgs
+			//	{
+			//		CallerDb = "CUSTOMER",
+			//		DataSource = CustViewerDbcollection,
+			//		RowCount = this . CustGrid . SelectedIndex
+			//	} );
 
 
 		}
@@ -183,8 +184,14 @@ namespace WPFPages . Views
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
 			Flags . CustDbEditor = null;
+			EventControl . EditIndexChanged -= EventControl_EditIndexChanged;
+			// A Multiviewer has changed the current index 
+			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
+												 // Main update notification handler
 			EventControl . DataUpdated -= EventControl_DataUpdated;
-		
+
 		}
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -250,7 +257,7 @@ namespace WPFPages . Views
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "CUSTOMER", cvm );
 			
-			EventControl . TriggerDataUpdated ( CustViewerDbcollection,
+			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
 				new LoadedEventArgs
 				{
 					CallerDb = "CUSTOMER",
@@ -300,14 +307,15 @@ namespace WPFPages . Views
 		{
 			if ( SaveBttn == null )
 				return;
+			SaveBttn . IsEnabled = false;;
 			if ( _bankno != Bankno . Text )
 				SaveBttn . IsEnabled = true;
 			if ( _custno != Custno . Text )
 				SaveBttn . IsEnabled = true;
 			if ( _actype != acType . Text )
 				SaveBttn . IsEnabled = true;
-			if ( _balance != balance . Text )
-				SaveBttn . IsEnabled = true;
+			//if ( _balance != balance . Text )
+			//	SaveBttn . IsEnabled = true;
 			if ( _odate != odate . Text )
 				SaveBttn . IsEnabled = true;
 			if ( _cdate != cdate . Text )
@@ -354,7 +362,7 @@ namespace WPFPages . Views
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
-				int rec = mv.FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
+				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
 				this . CustGrid . SelectedIndex = currsel;
 				if ( rec >= 0 )
 					this . CustGrid . SelectedIndex = rec;
@@ -381,7 +389,7 @@ namespace WPFPages . Views
 				Count . Text = this . CustGrid . Items . Count . ToString ( );
 
 				MultiViewer mv = new MultiViewer ( );
-				int rec = mv . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
+				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
 				this . CustGrid . SelectedIndex = 0;
 				if ( rec >= 0 )
 					this . CustGrid . SelectedIndex = rec;
@@ -398,10 +406,10 @@ namespace WPFPages . Views
 			//dca . SenderName = o . ToString ( );
 			//dca . DbName = dbName;
 
-			EventControl . TriggerDataUpdated ( CustViewerDbcollection,
+			EventControl . TriggerCustDataLoaded( CustViewerDbcollection,
 			new LoadedEventArgs
 			{
-				CallerDb = "DETAILS",
+				CallerDb = "CUSTOMER",
 				DataSource = CustViewerDbcollection,
 				RowCount = this . CustGrid . SelectedIndex
 			} );

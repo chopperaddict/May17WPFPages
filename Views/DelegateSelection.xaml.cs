@@ -47,7 +47,8 @@ namespace WPFPages . Views
 			else if ( checkBox9 . IsChecked == true )
 				result = 9;
 			// Store resuolt in local variable in Viewer itself
-			SqlDbViewer.DelegateSelection = result;
+			SqlDbViewer sqlv = new SqlDbViewer ( );
+			sqlv.DelegateSelection = result;
 			this . DialogResult = true;
 			Close ( );
 		}

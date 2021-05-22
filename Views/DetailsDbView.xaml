@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFPages.Views"
         mc:Ignorable="d"
-        Title="DetailsDbView" Height="450" Width="800"
+        Title="Details A/C Editor" Height="450" Width="800"
 		Closing="Window_Closing"
 		Loaded="Window_Loaded">
-	
+
 	<Window.Resources>
 
 		<!--This is how to "point" at data to automatically conect 
@@ -59,8 +59,8 @@
 			<!--create an elegant left to right light-> Dark gradient as a background-->
 			<LinearGradientBrush  StartPoint="1,1" EndPoint="0.0,0">
 				<GradientStop Color="#00FF00" Offset="0.914"/>
-				<GradientStop Color="#DDFFDD" Offset="0.553"/>
-				<GradientStop Color="#FF00FF00" Offset="0"/>
+				<!--<GradientStop Color="#DDFFDD" Offset="0.553"/>-->
+				<GradientStop Color="#00000000" Offset="0"/>
 			</LinearGradientBrush>
 		</Grid.Background>
 
@@ -92,13 +92,13 @@
 				SelectedItem="{Binding SelectedItem}"-->
 			<!--DataGridCell.Selected="BankGrid_Selected"-->
 			<!--ItemsSource="{Binding Source={StaticResource BankData}}"-->
-			
+
 			<DataGrid.Background>
 				<!--create an elegant left to right light-> Dark gradient as a background-->
 				<LinearGradientBrush EndPoint="0.0,0" StartPoint="1.3,1">
 					<GradientStop Color="#DDFFDD" Offset="0.453"/>
 					<GradientStop Color="#FF00FF00" Offset="1"/>
-				</LinearGradientBrush>				
+				</LinearGradientBrush>
 			</DataGrid.Background>
 
 			<DataGrid.Resources>
@@ -129,6 +129,11 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn >
 
+				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+									Mode=TwoWay, 
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
+
 				<DataGridTextColumn Header="Bank #" Width="80" 
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo, 
@@ -136,12 +141,6 @@
 									UpdateSourceTrigger=LostFocus}"
 									>
 				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
-									Mode=TwoWay, 
-									UpdateSourceTrigger=PropertyChanged}">
-				</DataGridTextColumn>
-
 
 				<DataGridTextColumn Header="Type" Width="40" 
 								    SortMemberPath="AcType"
@@ -233,7 +232,7 @@
 
 				<TextBlock x:Name="textBlock" 
 					Foreground="Black"
-				FontWeight="DemiBold"
+				FontWeight="Bold"
 					Grid.Row="1"
 					Grid.Column="3"
 					HorizontalAlignment="Center" 
@@ -243,8 +242,8 @@
 					VerticalAlignment="Center" 
 					Height="25" 
 					Width="70" 
-					Canvas.Left="24" 
-					Canvas.Top="23"/>
+					Canvas.Left="2" 
+					Canvas.Top="31"/>
 
 				<TextBox x:Name="Custno" 
 					   FontSize="12"
@@ -257,20 +256,20 @@
 					    Height="24" 
 					   TabIndex="0"
 					    Width="90" 
-					    Canvas.Left="108" 
-					    Canvas.Top="21"/>
+					    Canvas.Left="86" 
+					    Canvas.Top="29"/>
 
 				<TextBlock x:Name="textBlock_Copy" 
 					Foreground="Black"
-				FontWeight="DemiBold"
+				FontWeight="Bold"
 					    HorizontalAlignment="Center" 
 					    Padding="5,5,5,5"
 					    Text="Bank A/c #" 
 					    VerticalAlignment="Center" 
 					    Height="25" 
 					    Width="70" 
-					     Canvas.Left="20" 
-					     Canvas.Top="48"/>
+					     Canvas.Left="-2" 
+					     Canvas.Top="56"/>
 
 				<TextBox x:Name="Bankno" 
 					   FontSize="12"
@@ -283,20 +282,20 @@
 					    Height="24" 
 					    Width="90" 
 					   TabIndex="1"
-					   Canvas.Left="108" 
-					   Canvas.Top="48" RenderTransformOrigin="0.422,2.208"/>
+					   Canvas.Left="86" 
+					   Canvas.Top="56" RenderTransformOrigin="0.422,2.208"/>
 
 				<TextBlock x:Name="textBlock_Copy5" 
 					Foreground="Black"
-				FontWeight="DemiBold"
+				FontWeight="Bold"
 				HorizontalAlignment="Center" 
 				Padding="5,5,5,5"	 					    
 				Text="A/c Type" 
 				VerticalAlignment="Center" 
 				Height="25" 
 				Width="70" 
-				Canvas.Left="24" 
-				Canvas.Top="76"/>
+				Canvas.Left="2" 
+				Canvas.Top="84"/>
 
 				<TextBox x:Name="acType" 
 				FontSize="12"
@@ -310,22 +309,22 @@
 				Height="24" 
 				Width="90" 
 				TabIndex="2"
-				Canvas.Left="108" 
-				Canvas.Top="76" 
+				Canvas.Left="86" 
+				Canvas.Top="84" 
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"/>
 
 				<TextBlock x:Name="textBlock_Copy1" 
 					Foreground="Black"
-				FontWeight="DemiBold"
+				FontWeight="Bold"
 				    HorizontalAlignment="Center" 
 				    Padding="5,5,5,5"
 					    
 				    Text="A/c Balance" 
 				    VerticalAlignment="Center" 
 				    Height="25" 
-				    Width="70" 
-				    Canvas.Left="236" 
+				    Width="84" 
+				    Canvas.Left="194" 
 				    Canvas.Top="25" RenderTransformOrigin="0.457,-0.36"/>
 
 				<TextBox x:Name="balance" 
@@ -343,8 +342,8 @@
 				TabIndex="3"
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"
-				Canvas.Left="216" 
-				Canvas.Top="56"/>
+				Canvas.Left="184" 
+				Canvas.Top="55"/>
 
 
 				<TextBlock x:Name="textBlock_Copy3" 
@@ -356,8 +355,8 @@
 				VerticalAlignment="Center" 
 			     TextAlignment="Center"
 				Height="24" 
-				Width="70" 
-				Canvas.Left="336" 
+				Width="88" 
+				Canvas.Left="313" 
 				Canvas.Top="30"/>
 
 				<TextBox x:Name="odate" 
@@ -371,12 +370,13 @@
 				Height="24" 
 				Width="90" 
 				TabIndex="4"
-				Canvas.Left="429" 
+				Canvas.Left="406" 
 				Canvas.Top="33"
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"/>
 
 				<TextBlock x:Name="textBlock_Copy4" 
+					     FontWeight="Bold"
 					Foreground="Black"
 				HorizontalAlignment="Center" 
 				Padding="5,5,5,5"
@@ -384,7 +384,7 @@
 				VerticalAlignment="Center" 
 				Height="25" 
 				Width="70" 
-				Canvas.Left="339" 
+				Canvas.Left="316" 
 				Canvas.Top="56"/>
 
 				<TextBox x:Name="cdate" 
@@ -401,12 +401,12 @@
 				Width="90" 
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"
-				Canvas.Left="429" 
+				Canvas.Left="406" 
 				Canvas.Top="59"/>
 
 				<CheckBox x:Name="LinkRecords" 
-					    Canvas.Left="371" 
-					    Canvas.Top="105"				    
+					    Canvas.Left="546" 
+					    Canvas.Top="37"				    
 					    Click="LinkRecords_Click"
 					    Content="Link to External Viewers " 
 					    Foreground="Red"
@@ -426,7 +426,7 @@
 				Grid.Column="3"
 				Grid.Row="2"
 				HorizontalAlignment="Center"
-				IsEnabled="true"
+				IsEnabled="False"
 				TabIndex="6"
 				VerticalAlignment="Top"
 				Margin="10,61,0,0"
@@ -455,11 +455,11 @@
 				FontWeight="Medium"
 				Grid.Row="2" 
 				Grid.ColumnSpan="1" 
-				Grid.Column="3" 
+				Grid.Column="2" 
 				Height="25"
 				HorizontalAlignment="Left"
 				IsChecked="true"
-				Margin="10,36,0,74"
+				Margin="10,10,0,100"
 				VerticalAlignment="Center"
 				Width="100"  
 			     />
@@ -476,7 +476,7 @@
 				Text=" Counter"
 				TextAlignment="Center"
 				TextTrimming="WordEllipsis"
-				Margin="25,0,15,111" 
+				Margin="30,7,10,104" 
 				VerticalAlignment="Center" 
 				Width="70" 
 			     />

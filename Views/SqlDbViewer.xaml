@@ -698,10 +698,10 @@
 							</DataTemplate>
 						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>
-					<DataGridTextColumn Header="Bank #" Width="70"
-									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="Customer #" Width="70"
 									Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Bank #" Width="70"
+									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="Type" Width="30"
 									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="First Name" Width="80"
@@ -828,15 +828,15 @@
 						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>
 
+					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
+									Mode=TwoWay,
+									UpdateSourceTrigger=PropertyChanged}">
+					</DataGridTextColumn>
+
 					<DataGridTextColumn Header="Bank #" Width="80"
 									Binding ="{Binding BankNo,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus}">
-					</DataGridTextColumn>
-
-					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}">
 					</DataGridTextColumn>
 
 					<DataGridTextColumn Header="Type" Width="40"
@@ -965,10 +965,10 @@
 							</DataTemplate>
 						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>
-					<DataGridTextColumn Header="Bank #" Width="80"
-									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="Customer #" Width="80"
 									Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Bank #" Width="80"
+									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="Type" Width="40"
 									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="Balance" Width="90"

@@ -129,8 +129,8 @@
 					     Grid.Column="0"
 					     Grid.Row="0"
 					     HorizontalAlignment="Left"
-					     Margin="5,5,0,0"
-					     Height="20"
+					     Margin="22,4,0,0"
+					     Height="20" Grid.ColumnSpan="2"
 					     />
 			<TextBlock Text="{Binding CustNo, FallbackValue=Cust #}"
    					     Grid.Column="1"
@@ -138,20 +138,20 @@
 					     Foreground="Red"
 					     Height="18"
 					     HorizontalAlignment="Left"
-					     Margin="0,0,0,0"
+					     Margin="35,4,0,2"
 					     TextAlignment="Center"
 					     VerticalAlignment="Center"
 					     Width="70"
-					     Background="Beige"
+					     Background="Beige" RenderTransformOrigin="0.924,0.407" Grid.ColumnSpan="2"
 					/>
 
 			<TextBlock Text="Bank A/C #  "
 					     Foreground="White"
 					     Grid.Column="2"
 					     Grid.Row="0"					    
-					     Margin="0,0,0,0"
+					     Margin="36,4,75,2"
 					     Height="18"
-					     TextAlignment="Left"
+					     TextAlignment="Left" Grid.ColumnSpan="2"
 				     />
 			<TextBox Text="{Binding BankNo, FallbackValue=Bank A/c }"
    					     Grid.Column="3"
@@ -159,7 +159,7 @@
 					     Height="18"
 					     HorizontalAlignment="Left"		
 					    TextAlignment="Center"
-					     Margin="0,0,0,0"
+					     Margin="30,4,0,2"
 					     Width="70"
 					     VerticalAlignment="Center"
 					     Background="Beige"
@@ -175,6 +175,23 @@
 				    HorizontalAlignment="Right" 
 					     Margin="-20,12,0,-1"
 				    VerticalAlignment="Center"				    />
+
+			<CheckBox x:Name="OntopChkbox"
+				   Click="OntopChkbox_Click"
+				   Content="Keep on Top"
+				   Foreground="White"
+				   FontWeight="Normal"
+				Grid.Column="0"    
+				   Grid.Row="1" 
+				   Grid.ColumnSpan="2" 
+				   Height="25"
+				   HorizontalAlignment="Left"
+				   IsChecked="true"
+				   Margin="21,11,0,0"
+				   VerticalAlignment="Center"
+				   Width="129" 
+				    RenderTransformOrigin="-1.37,-5.06" 
+			     />
 			<!--#endregion Data Fields-->
 
 		</Grid>
@@ -430,6 +447,11 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn >
 
+				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+									Mode=TwoWay, 
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
+
 				<DataGridTextColumn Header="Bank #" Width="80" 
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo, 
@@ -437,12 +459,6 @@
 									UpdateSourceTrigger=LostFocus}"
 									>
 				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
-									Mode=TwoWay, 
-									UpdateSourceTrigger=PropertyChanged}">
-				</DataGridTextColumn>
-
 
 				<DataGridTextColumn Header="Type" Width="40" 
 								    SortMemberPath="AcType"

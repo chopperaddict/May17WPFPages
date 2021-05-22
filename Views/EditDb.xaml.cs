@@ -23,9 +23,9 @@ namespace WPFPages . Views
 
 		public static event DbUpdated NotifyOfDataChange;
 
-		public static BankCollection EditDbBankcollection = BankCollection . EditDbBankcollection;
-		public static CustCollection EditDbCustcollection = CustCollection . EditDbCustcollection;
-		public static DetCollection EditDbDetcollection = DetCollection . EditDbDetcollection;
+		public  BankCollection EditDbBankcollection = BankCollection . EditDbBankcollection;
+		public  CustCollection EditDbCustcollection = CustCollection . EditDbCustcollection;
+		public  DetCollection EditDbDetcollection = DetCollection . EditDbDetcollection;
 
 		public BankAccountViewModel bvm = MainWindow . bvm;
 		public CustomerViewModel cvm = MainWindow . cvm;
@@ -37,7 +37,7 @@ namespace WPFPages . Views
 		//public DetCollection Detcollection = DetCollection.Detcollection;
 
 		public DataChangeArgs dca = new DataChangeArgs ( );
-		internal static SqlDbViewer ThisParent = null;
+		internal  SqlDbViewer ThisParent = null;
 
 		//flag to let us know we sent the notification
 		//		private bool EditHasNotifiedOfChange = false;
@@ -59,18 +59,18 @@ namespace WPFPages . Views
 
 		//		private EditEventArgs EditArgs = null;
 		public Task mainTask = null;
-		public static bool SqlUpdating = false;
-		public static bool EditStart = false;
-		public static bool Startup = true;
-		public static bool IsDirty = false;
+		public  bool SqlUpdating = false;
+		public  bool EditStart = false;
+		public  bool Startup = true;
+		public  bool IsDirty = false;
 
 		// Flags to let me handle jupdates to/From SqlViewer
 		private int ViewerChangeType = 0;
-		private static int EditdbchangeInProgress = -1;
+		private  int EditdbchangeInProgress = -1;
 
 		private int EditChangeType = 0;
 		private bool key1 = false;
-		public static EditDb ThisWindow;
+		public  static EditDb ThisWindow;
 		private DataGrid dGrid = null;
 		#endregion CLASS DECLARATIONS
 
@@ -1176,6 +1176,7 @@ namespace WPFPages . Views
 
 			if ( dbName == "BANKACCOUNT" )
 			{
+				Debug . WriteLine ( $" 3-1 *** TRACE *** EDITDB : SENDDATACHANGED  Sending BANKACCOUNT TriggerEditDbDataUpdate Event trigger" );
 				EventControl . TriggerEditDbDataUpdated ( EditDbBankcollection,
 					new LoadedEventArgs
 					{
@@ -1186,6 +1187,7 @@ namespace WPFPages . Views
 			}
 			else if ( dbName == "CUSTOMER" )
 			{
+				Debug . WriteLine ( $" 3-2 *** TRACE *** EDITDB : SENDDATACHANGED  Sending CUSTOMER TriggerEditDbDataUpdate Event trigger" );
 				EventControl . TriggerEditDbDataUpdated ( EditDbCustcollection,
 					new LoadedEventArgs
 					{
@@ -1196,6 +1198,7 @@ namespace WPFPages . Views
 			}
 			else if ( dbName == "DETAILS" )
 			{
+				Debug . WriteLine ( $" 3-3 *** TRACE *** EDITDB : SENDDATACHANGED  Sending DETAILS TriggerEditDbDataUpdate Event trigger" );
 				Flags . EditDbDataChange = true;
 				EventControl . TriggerEditDbDataUpdated ( EditDbDetcollection,
 					new LoadedEventArgs
@@ -1252,7 +1255,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
-				//				Debug . WriteLine ( $" 1-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sending TriggerEditDbIndexChanged" );
+				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 						new IndexChangedArgs
 						{
@@ -1311,6 +1314,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
+				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DataGrid2_SelectionChanged - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 				new IndexChangedArgs
 				{
@@ -1363,6 +1367,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
+				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DetailsGrid_SelectionChanged - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 				       new IndexChangedArgs
 				       {

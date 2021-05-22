@@ -6,25 +6,25 @@
         xmlns:local="clr-namespace:WPFPages.Views"
         mc:Ignorable="d"
 	  Loaded="Window_Loaded"
-        Title="CustDbView" Height="450" Width="800">
+        Title="Customer Account Editor" Height="450" Width="800">
 	<Window.Resources>
-		
-	<Style x:Key="HeaderStyleYellow" TargetType="DataGridColumnHeader">
+
+		<Style x:Key="HeaderStyleYellow" TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="{StaticResource HeaderBrushYellow}" />
-		<Setter Property="Foreground" Value="White" />
+			<Setter Property="Foreground" Value="White" />
 			<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />
-		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="SnapsToDevicePixels" Value="True" />
-		<Setter Property="HorizontalContentAlignment" Value="Center" />
-		<Setter Property="MinWidth" Value="0" />
-		<Setter Property="MinHeight" Value="30" />
-		<Setter Property="Cursor" Value="Hand" />
-		<Style.Triggers>
-			<Trigger Property="IsMouseOver" Value="True">
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
 					<Setter Property= "Background" Value="{StaticResource HeaderBorderBrushYellow}" />
-			</Trigger>
-		</Style.Triggers>
-	</Style>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 	</Window.Resources>
 	<Grid>
 
@@ -55,7 +55,7 @@
 		<!--#endregion grid setup-->
 
 		<DataGrid x:Name="CustGrid"
-				AlternatingRowBackground="{StaticResource Yellow4}"
+				AlternatingRowBackground="{StaticResource Yellow2}"
 				AutoGenerateColumns="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
 				Grid.Row="1"
@@ -74,20 +74,12 @@
 				IsTabStop="False"
 			    VerticalContentAlignment="Center"
 				VerticalAlignment="Stretch"
-				VerticalGridLinesBrush="{StaticResource Yellow2}"	   
+				VerticalGridLinesBrush="{StaticResource Gray0}"	   
 			    >
 			<!--SelectedIndex="{Binding SelectedIndex}"
 				SelectedItem="{Binding SelectedItem}"-->
 			<!--DataGridCell.Selected="BankGrid_Selected"-->
 			<!--ItemsSource="{Binding Source={StaticResource BankData}}"-->
-			<DataGrid.Background>
-				<!--create an elegant left to right light-> Dark gradient as a background-->
-				<LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-				<GradientStop Color="#FF595013" Offset="0.514"/>
-				<GradientStop Color="#FF7d7015" Offset="0.753"/>
-				<GradientStop Color="#F5d816" Offset="1"/>
-			</LinearGradientBrush>
-			</DataGrid.Background>
 
 			<DataGrid.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#F5d816"/>
@@ -102,7 +94,8 @@
 				</Style>
 			</DataGrid.Resources>
 
-|			<!--#region Fields-->
+			|
+			<!--#region Fields-->
 			<DataGrid.Columns>
 				<DataGridTemplateColumn Header="Id" Width="40"
 									    SortMemberPath="Id">
@@ -116,16 +109,15 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
+				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
+									Mode=TwoWay,
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
 				<DataGridTextColumn Header="Bank #" Width="80"
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus}">
-				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}">
 				</DataGridTextColumn>
 				<DataGridTextColumn Header="A/c Type#" Binding="{Binding AcType,
 									Mode=TwoWay,
@@ -228,7 +220,7 @@
 				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 			<!--#endregion Fields-->
-	
+
 
 		</DataGrid>
 
@@ -343,7 +335,7 @@
 				VerticalAlignment="Center" 
 			     TextAlignment="Center"
 				Height="24" 
-				Width="70" 
+				Width="88" 
 				Canvas.Left="336" 
 				Canvas.Top="30"/>
 
@@ -388,11 +380,13 @@
 				Width="90" 
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"
-				Canvas.Left="429" 
-				Canvas.Top="59"/>
+				    Canvas.Left="429" 
+				    Canvas.Top="62"	/>
+
+
 				<CheckBox x:Name="LinkRecords" 
-				    Canvas.Left="371" 
-				    Canvas.Top="102"				    
+				    Canvas.Left="546" 
+					    Canvas.Top="37"				    
 				    Click="LinkRecords_Click"
 				    Content="Link to External Viewers " 
 				    Foreground="Red"
@@ -412,7 +406,7 @@
 				Grid.Column="3"
 				Grid.Row="2"
 				HorizontalAlignment="Center"
-				IsEnabled="true"
+				IsEnabled="False"
 				TabIndex="6"
 				VerticalAlignment="Top"
 				Margin="10,61,0,0"
@@ -441,11 +435,11 @@
 				FontWeight="Medium"
 				Grid.Row="2" 
 				Grid.ColumnSpan="1" 
-				Grid.Column="3" 
+				Grid.Column="2" 
 				Height="25"
 				HorizontalAlignment="Left"
 				IsChecked="true"
-				Margin="10,36,0,74"
+				Margin="10,10,0,100"
 				VerticalAlignment="Center"
 				Width="100"  
 			     />

@@ -24,7 +24,7 @@ namespace WPFPages . Views
 		public  static DetCollection  Detinternalcollection=new DetCollection  ();
 
 		public  static DataTable dtDetails = new DataTable();
-		public static Stopwatch  st;
+		public  Stopwatch  st;
 
 		#region CONSTRUCTOR
 

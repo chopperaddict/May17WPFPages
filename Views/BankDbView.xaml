@@ -9,7 +9,7 @@
 		x:Class="WPFPages.Views.BankDbView"
 		Closing="Window_Closing"
 		mc:Ignorable="d"
-		Title="BankDbView" 
+		Title="Bank A/c Editor" 
 		Height="450" 
 		Width="800" 
 		Loaded="Window_Loaded">
@@ -79,7 +79,7 @@
 				CanUserAddRows="False"
 				Grid.RowSpan="1" 
 				HorizontalAlignment="Stretch" 
-				IsSynchronizedWithCurrentItem="False"
+				IsSynchronizedWithCurrentItem="true"
 				Margin="0,0,10,8"
 				Padding="-10"
 				RowEditEnding="ViewerGrid_RowEditEnding"
@@ -244,8 +244,8 @@
 					VerticalAlignment="Center" 
 					Height="25" 
 					Width="70" 
-					Canvas.Left="24" 
-					Canvas.Top="23"/>
+					Canvas.Left="2" 
+					Canvas.Top="25"/>
 
 				<TextBox x:Name="Custno" 
 					   FontSize="12"
@@ -258,8 +258,8 @@
 					    Height="24" 
 					   TabIndex="0"
 					    Width="90" 
-					    Canvas.Left="108" 
-					    Canvas.Top="21"/>
+					    Canvas.Left="86" 
+					    Canvas.Top="23"/>
 
 				<TextBlock x:Name="textBlock_Copy" 
 					    Foreground="White"
@@ -269,8 +269,8 @@
 					    VerticalAlignment="Center" 
 					    Height="25" 
 					    Width="70" 
-					     Canvas.Left="20" 
-					     Canvas.Top="48"/>
+					     Canvas.Left="-2" 
+					     Canvas.Top="50"/>
 
 				<TextBox x:Name="Bankno" 
 					   FontSize="12"
@@ -283,8 +283,8 @@
 					    Height="24" 
 					    Width="90" 
 					   TabIndex="1"
-					   Canvas.Left="108" 
-					   Canvas.Top="48" RenderTransformOrigin="0.422,2.208"/>
+					   Canvas.Left="86" 
+					   Canvas.Top="50" RenderTransformOrigin="0.422,2.208"/>
 
 				<TextBlock x:Name="textBlock_Copy5" 
 				Foreground="White"
@@ -294,8 +294,8 @@
 				VerticalAlignment="Center" 
 				Height="25" 
 				Width="70" 
-				Canvas.Left="24" 
-				Canvas.Top="76"/>
+				Canvas.Left="2" 
+				Canvas.Top="78"/>
 
 				<TextBox x:Name="acType" 
 				FontSize="12"
@@ -309,8 +309,8 @@
 				Height="24" 
 				Width="90" 
 				TabIndex="2"
-				Canvas.Left="108" 
-				Canvas.Top="76" 
+				Canvas.Left="86" 
+				Canvas.Top="78" 
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"/>
 
@@ -323,8 +323,8 @@
 				    VerticalAlignment="Center" 
 				    Height="25" 
 				    Width="70" 
-				    Canvas.Left="236" 
-				    Canvas.Top="25" RenderTransformOrigin="0.457,-0.36"/>
+				    Canvas.Left="214" 
+				    Canvas.Top="27" RenderTransformOrigin="0.457,-0.36"/>
 
 				<TextBox x:Name="balance" 
 				FontSize="16"
@@ -341,8 +341,8 @@
 				TabIndex="3"
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"
-				Canvas.Left="216" 
-				Canvas.Top="56"/>
+				Canvas.Left="194" 
+				Canvas.Top="58"/>
 
 
 				<TextBlock x:Name="textBlock_Copy3" 
@@ -353,9 +353,9 @@
 				VerticalAlignment="Center" 
 			     TextAlignment="Center"
 				Height="24" 
-				Width="70" 
-				Canvas.Left="336" 
-				Canvas.Top="30"/>
+				Width="88" 
+				Canvas.Left="313" 
+				Canvas.Top="33"/>
 
 				<TextBox x:Name="odate" 
 				FontSize="12"
@@ -368,8 +368,8 @@
 				Height="24" 
 				Width="90" 
 				TabIndex="4"
-				Canvas.Left="429" 
-				Canvas.Top="33"
+				Canvas.Left="406" 
+				Canvas.Top="36"
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"/>
 
@@ -381,8 +381,8 @@
 				VerticalAlignment="Center" 
 				Height="25" 
 				Width="70" 
-				Canvas.Left="339" 
-				Canvas.Top="56"/>
+				Canvas.Left="316" 
+				Canvas.Top="59"/>
 
 				<TextBox x:Name="cdate" 
 				   FontSize="12"
@@ -398,12 +398,12 @@
 				Width="90" 
 				SelectionChanged="SelectionChanged" 
 				TextChanged="TextChanged"
-				Canvas.Left="429" 
-				Canvas.Top="59"/>
+				Canvas.Left="406" 
+				Canvas.Top="62"/>
 
 				<CheckBox x:Name="LinkRecords" 
-					Canvas.Left="371" 
-					Canvas.Top="100"				    
+				    Canvas.Left="546" 
+					    Canvas.Top="37"				    
 					Click="LinkRecords_Click"
 					Content="Link to External Viewers " 
 					Foreground="Red"
@@ -423,7 +423,7 @@
 				Grid.Column="3"
 				Grid.Row="2"
 				HorizontalAlignment="Center"
-				IsEnabled="true"
+				IsEnabled="False"
 				TabIndex="6"
 				VerticalAlignment="Top"
 				Margin="10,61,0,0"
@@ -452,11 +452,11 @@
 				FontWeight="Medium"
 				Grid.Row="2" 
 				Grid.ColumnSpan="1" 
-				Grid.Column="3" 
+				Grid.Column="2" 
 				Height="25"
 				HorizontalAlignment="Left"
 				IsChecked="true"
-				Margin="10,36,0,74"
+				Margin="10,12,0,98"
 				VerticalAlignment="Center"
 				Width="100"  
 			     />
