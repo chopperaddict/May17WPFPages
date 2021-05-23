@@ -1176,7 +1176,7 @@ namespace WPFPages . Views
 
 			if ( dbName == "BANKACCOUNT" )
 			{
-				Debug . WriteLine ( $" 3-1 *** TRACE *** EDITDB : SENDDATACHANGED  Sending BANKACCOUNT TriggerEditDbDataUpdate Event trigger" );
+//				Debug . WriteLine ( $" 3-1 *** TRACE *** EDITDB : SENDDATACHANGED  Sending BANKACCOUNT TriggerEditDbDataUpdate Event trigger" );
 				EventControl . TriggerEditDbDataUpdated ( EditDbBankcollection,
 					new LoadedEventArgs
 					{
@@ -1187,7 +1187,7 @@ namespace WPFPages . Views
 			}
 			else if ( dbName == "CUSTOMER" )
 			{
-				Debug . WriteLine ( $" 3-2 *** TRACE *** EDITDB : SENDDATACHANGED  Sending CUSTOMER TriggerEditDbDataUpdate Event trigger" );
+//				Debug . WriteLine ( $" 3-2 *** TRACE *** EDITDB : SENDDATACHANGED  Sending CUSTOMER TriggerEditDbDataUpdate Event trigger" );
 				EventControl . TriggerEditDbDataUpdated ( EditDbCustcollection,
 					new LoadedEventArgs
 					{
@@ -1198,7 +1198,7 @@ namespace WPFPages . Views
 			}
 			else if ( dbName == "DETAILS" )
 			{
-				Debug . WriteLine ( $" 3-3 *** TRACE *** EDITDB : SENDDATACHANGED  Sending DETAILS TriggerEditDbDataUpdate Event trigger" );
+//				Debug . WriteLine ( $" 3-3 *** TRACE *** EDITDB : SENDDATACHANGED  Sending DETAILS TriggerEditDbDataUpdate Event trigger" );
 				Flags . EditDbDataChange = true;
 				EventControl . TriggerEditDbDataUpdated ( EditDbDetcollection,
 					new LoadedEventArgs
@@ -1255,7 +1255,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
-				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged BANKACCOUNT - Sending TriggerEditDbIndexChanged" );
+//				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DataGrid1_SelectionChanged BANKACCOUNT - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 						new IndexChangedArgs
 						{
@@ -1314,7 +1314,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
-				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DataGrid2_SelectionChanged CUSTOMER - Sending TriggerEditDbIndexChanged" );
+//				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DataGrid2_SelectionChanged CUSTOMER - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 				new IndexChangedArgs
 				{
@@ -1367,7 +1367,7 @@ namespace WPFPages . Views
 			// do NOT triger this if Viewer has triggered the index change
 			if ( Flags . SqlViewerIndexIsChanging == false )
 			{
-				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DetailsGrid_SelectionChanged DETAILS - Sending TriggerEditDbIndexChanged" );
+//				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DetailsGrid_SelectionChanged DETAILS - Sending TriggerEditDbIndexChanged" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 				       new IndexChangedArgs
 				       {

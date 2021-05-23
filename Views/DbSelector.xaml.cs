@@ -71,13 +71,6 @@ namespace WPFPages . Views
 					//					Debug . WriteLine ( $"DBSELECTOR NOTIFICATION : [{status}], [{info}]" );
 					break;
 			}
-
-			//if ( status == 25 )
-			//{
-			//	// VERY IMPORTANT MSG - Send 100 Command to Tell Viewer to load data
-			//	Debug . WriteLine ( $"\r\nDBSELECTOR COMMAND : [{status}] -  Calling InitialLoad() to load data in SqlDbv\r\n" );
-			//	EventHandlers . SendViewerCommand ( 100 , $"{info}" , null );
-			//}
 			if ( status == 99 )
 			{
 				Debug . WriteLine ( $"\r\nDBSELECTOR NOTIFICATION : Received [{status}]  - Window is closing down\r\n" );
@@ -88,7 +81,6 @@ namespace WPFPages . Views
 			}
 			else if ( status == 101 )
 			{
-#pragma This is the one that works well
 				// info contains the text to be added to the Viewers ListBox
 				Debug . WriteLine ( $"\r\nDBSELECTOR - Received request [{status}] to Add Viewer to Current Viewers List.\r\n" );
 				Flags . SqlViewerIsLoading = true;
@@ -150,7 +142,7 @@ namespace WPFPages . Views
 			}
 		}
 
-	
+
 		private async void HandleSelection ( ListBox listbox, string Command )
 		{
 			// Called when Opening/ Closing/deleting a Db Viewer window
@@ -188,13 +180,13 @@ namespace WPFPages . Views
 					Flags . CurrentSqlViewer . BringIntoView ( );
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 					//Window is visible & Data is loaded by here .....
-//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == null)// || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-//					{
-						Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
-						MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
-						// This is fine, new windows do NOT have their Guid when they arrive here
-						this . Tag = Flags . CurrentSqlViewer . Tag;
-//					}
+					//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == null)// || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
+					//					{
+					Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
+					MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
+					// This is fine, new windows do NOT have their Guid when they arrive here
+					this . Tag = Flags . CurrentSqlViewer . Tag;
+					//					}
 					callertype = 2;
 					CallingType = "DETAILS";
 					Flags . CurrentSqlViewer . Show ( );
@@ -212,13 +204,13 @@ namespace WPFPages . Views
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
-//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-//					{
-						Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
-						MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
+					//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
+					//					{
+					Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
+					MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 
-						// This is fine, new windows do NOT have their Guid when they arrive here
-						this . Tag = Flags . CurrentSqlViewer . Tag;
+					// This is fine, new windows do NOT have their Guid when they arrive here
+					this . Tag = Flags . CurrentSqlViewer . Tag;
 					//					}
 					Flags . CurrentSqlViewer . Show ( );
 					callertype = 0;
@@ -238,14 +230,14 @@ namespace WPFPages . Views
 					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
-//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-//					{
-						Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
-						MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
+					//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
+					//					{
+					Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
+					MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 
-						// This is fine, new windows do NOT have their Guid when they arrive here
-						this . Tag = Flags . CurrentSqlViewer . Tag;
-//					}
+					// This is fine, new windows do NOT have their Guid when they arrive here
+					this . Tag = Flags . CurrentSqlViewer . Tag;
+					//					}
 					callertype = 1;
 					CallingType = "CUSTOMER";
 					Flags . CurrentSqlViewer . Show ( );
@@ -835,7 +827,7 @@ namespace WPFPages . Views
 			}
 			if ( key1 && e . Key == Key . F8 )     // CTRL + F8
 			{
-				EventHandlers.ShowSubscribersCount ( );
+				EventHandlers . ShowSubscribersCount ( );
 				e . Handled = true;
 				key1 = false;
 				return;
@@ -1263,49 +1255,74 @@ namespace WPFPages . Views
 				this . Topmost = false;
 		}
 
-		private void Bankedit_Click ( object sender, RoutedEventArgs e )
-		{
-			BankDbView cdbv = new BankDbView ( );
-			cdbv . Show ( );
-		}
 
 		private void Closeapp_Click ( object sender, RoutedEventArgs e )
 		{
 			Application . Current . Shutdown ( );
 		}
 
-		private void ComboBox_SelectionChanged ( object sender, SelectionChangedEventArgs e )
-		{
-			if ( StartUp ) return;
-			// Open selected Db viewer
-			var p = ViewerTypes . SelectedItem;// as PropertyInfo ;
-			string s = ViewerTypes . Text;
-			//var q = 	 GetValue ( p);
-			s = p . ToString ( );
-			//Color selectedColor = ( Color ) ( cmbColors . SelectedItem as PropertyInfo ) . GetValue ( null, null );
-			//this . Background = new SolidColorBrush ( selectedColor );
-			if ( s . Contains ( "Bank" ) )
-			{
-				BankDbView cdbv = new BankDbView ( );
-				cdbv . Show ( );
-			}
-			else if ( s . Contains ( "Customer" ) )
-			{
-				CustDbView cdbv = new CustDbView ( );
-				cdbv . Show ( );
-			}
-			else if ( s . Contains ( "Details" ) )
-			{
-				DetailsDbView cdbv = new DetailsDbView ( );
-				cdbv . Show ( );
-			}
-		}
+		//private void ComboBox_SelectionChanged ( object sender, SelectionChangedEventArgs e )
+		//{
+		//	if ( StartUp ) return;
+		//	// Open selected Db viewer
+		//	var p = ViewerTypes . SelectedItem;// as PropertyInfo ;
+		//	string s = ViewerTypes . Text;
+		//	//var q = 	 GetValue ( p);
+		//	s = p . ToString ( );
+		//	//Color selectedColor = ( Color ) ( cmbColors . SelectedItem as PropertyInfo ) . GetValue ( null, null );
+		//	//this . Background = new SolidColorBrush ( selectedColor );
+		//	if ( s . Contains ( "Bank" ) )
+		//	{
+		//		Window handle = null;
+		//		if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+		//		{
+		//			handle . Focus ( );
+		//			handle . BringIntoView ( );
+		//			return;
+		//		}
+		//		else
+		//		{
+		//			BankDbView cdbv = new BankDbView ( );
+		//			cdbv . Show ( );
+		//		}
+		//	}
+		//	else if ( s . Contains ( "Customer" ) )
+		//	{
+		//		Window handle = null;
+		//		if ( Utils . FindWindowFromTitle ( "customer account editor", ref handle ) )
+		//		{
+		//			handle . Focus ( );
+		//			handle . BringIntoView ( );
+		//			return;
+		//		}
+		//		else
+		//		{
+		//			CustDbView cdbv = new CustDbView ( );
+		//			cdbv . Show ( );
+		//		}
+		//	}
+		//	else if ( s . Contains ( "Details" ) )
+		//	{
+		//		Window handle = null;
+		//		if ( Utils . FindWindowFromTitle ( "details a/c editor", ref handle ) )
+		//		{
+		//			handle . Focus ( );
+		//			handle . BringIntoView ( );
+		//			return;
+		//		}
+		//		else
+		//		{
+		//			DetailsDbView cdbv = new DetailsDbView ( );
+		//			cdbv . Show ( );
+		//		}
+		//	}
+		//}
 
 		//********************************************************************************************//
 		public static void UpdateControlFlags ( SqlDbViewer caller, string callertype, string PrettyString )
 		{
 			int x = 0;
-			Debug . WriteLine ($"In UpdateControlFlags setting up gv[] structure variables...");
+			Debug . WriteLine ( $"In UpdateControlFlags setting up gv[] structure variables..." );
 			// We are starting up a new viewer, so need to create the flags structure
 			// Get the first empty set of structures  and fill them out ofr this NEW Viewer Window
 			for ( x = 0 ; x < 3 ; x++ )
@@ -1355,7 +1372,7 @@ namespace WPFPages . Views
 					}
 					else if ( callertype == "DETAILS" )
 					{
-						MainWindow . gv . Datagrid [ x ] =caller. DetailsGrid;
+						MainWindow . gv . Datagrid [ x ] = caller . DetailsGrid;
 						MainWindow . gv . Detviewer = MainWindow . gv . ListBoxId [ x ] = ( Guid ) caller . Tag;
 						MainWindow . gv . SqlDetViewer = caller;
 						Flags . SqlDetViewer = caller;
@@ -1369,5 +1386,51 @@ namespace WPFPages . Views
 			}
 		}
 
+		private void Bankedit_Click ( object sender, RoutedEventArgs e )
+		{
+			Window handle = null;
+			if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+			{
+				handle . Focus ( );
+				handle . BringIntoView ( );
+				return;
+			}
+			else
+			{
+				BankDbView cdbv = new BankDbView ( );
+				cdbv . Show ( );
+			}
+		}
+		private void Cust_Click ( object sender, RoutedEventArgs e )
+		{
+			Window handle = null;
+			if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+			{
+				handle . Focus ( );
+				handle . BringIntoView ( );
+				return;
+			}
+			else
+			{
+				CustDbView cdbv = new CustDbView ( );
+				cdbv . Show ( );
+			}
+		}
+
+		private void Det_Click ( object sender, RoutedEventArgs e )
+		{
+			Window handle = null;
+			if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+			{
+				handle . Focus ( );
+				handle . BringIntoView ( );
+				return;
+			}
+			else
+			{
+				DetailsDbView cdbv = new DetailsDbView ( );
+				cdbv . Show ( );
+			}
+		}
 	}
 }

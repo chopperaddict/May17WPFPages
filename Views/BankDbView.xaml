@@ -43,10 +43,15 @@
 	</Window.Resources>
 	<Grid>
 
+		<!--<Menu>
+			<MenuItem
+				Header="Linq Query System">				
+			</MenuItem>
+		</Menu>-->
 		<!--#region grid setup-->
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height="10"/>
+			<RowDefinition Height="30"/>
 			<RowDefinition Height="5*" />
 			<RowDefinition Height="135" />
 			<RowDefinition Height="10"/>
@@ -66,6 +71,70 @@
 				<GradientStop Color="#35F6FB" Offset="0.3" />
 			</LinearGradientBrush>
 		</Grid.Background>
+
+		<Menu  			
+			Background="Transparent"
+			Grid.Column="1"
+			Grid.Row="0"
+			Height="30" 
+			HorizontalAlignment="Left"
+			Margin="5"
+			Width="auto">
+	
+			<MenuItem  Header="_Linq Queries" 
+					Width="80" 
+				    Foreground="{StaticResource White1}">
+				<MenuItem Header="A/c Type 1 Only"
+					    Background="#35F6FB" 
+					    Click="Linq1_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>
+				<MenuItem Header="A/c Type 2 Only"
+					Background="#35F6FB" 
+					Click="Linq2_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 3 Only"
+					Background="#35F6FB" 
+					Click="Linq3_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 4 Only"
+					Background="#35F6FB" 
+					Click="Linq4_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="Multi A/C Holders"
+					Background="#35F6FB" 
+					Click="Linq5_Click"
+					IsCheckable="False"
+					Foreground="Black"/>
+				<Separator />
+			</MenuItem>
+
+			<MenuItem  Header="Filtering" 
+				    Click="Filter_Click"
+					Width="60" 
+				    Foreground="{StaticResource White1}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+
+			<MenuItem  Header="Options" 
+				    Click="Options_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+			</MenuItem>
+			<MenuItem  Header="Exit..." 
+				    Click="Exit_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+			</MenuItem>
+		</Menu>
+
 
 		<!--#endregion grid setup-->
 

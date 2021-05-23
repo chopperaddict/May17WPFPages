@@ -217,7 +217,7 @@ namespace WPFPages . Views
 			Startup = false;
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
-				Debug . WriteLine ( $" 7-1 *** TRACE *** CUSTDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Sending TriggerEditDbIndexChanged Event trigger" );
+//				Debug . WriteLine ( $" 7-1 *** TRACE *** CUSTDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Sending TriggerEditDbIndexChanged Event trigger" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 				new IndexChangedArgs
 				{
@@ -437,7 +437,104 @@ namespace WPFPages . Views
 				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			LinkRecords . Refresh ( );
 		}
+		#region Menu items
 
+		private void Linq1_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var bankaccounts = from items in CustViewerDbcollection
+					   where ( items . AcType == 1 )
+					   orderby items . CustNo
+					   select items;
+			this . CustGrid . ItemsSource = bankaccounts;
+		}
+		private void Linq2_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var bankaccounts = from items in CustViewerDbcollection
+					   where ( items . AcType == 2 )
+					   orderby items . CustNo
+					   select items;
+			this . CustGrid . ItemsSource = bankaccounts;
+		}
+		private void Linq3_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var bankaccounts = from items in CustViewerDbcollection
+					   where ( items . AcType == 3 )
+					   orderby items . CustNo
+					   select items;
+			this . CustGrid . ItemsSource = bankaccounts;
+		}
+		private void Linq4_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var bankaccounts = from items in CustViewerDbcollection
+					   where ( items . AcType == 4 )
+					   orderby items . CustNo
+					   select items;
+			this . CustGrid . ItemsSource = bankaccounts;
+		}
+		private void Linq5_Click ( object sender, RoutedEventArgs e )
+		{
+			//select All the items first;			
+			var bankaccounts = from items in CustViewerDbcollection orderby items . CustNo, items . AcType select items;
+			//Next Group BankAccountViewModel collection on Custno
+			var grouped = bankaccounts . GroupBy (
+				b => b . CustNo );
+
+			//Now filter content down to only those a/c's with multiple Bank A/c's
+			var sel = from g in grouped
+				  where g . Count ( ) > 1
+				  select g;
+
+			// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full Bankaccounts data
+			// giving us ONLY the full records for any recordss that have > 1 Bank accounts
+			List<CustomerViewModel> output = new List<CustomerViewModel> ( );
+			foreach ( var item1 in sel )
+			{
+				foreach ( var item2 in bankaccounts )
+				{
+					if ( item2 . CustNo . ToString ( ) == item1 . Key )
+					{
+						output . Add ( item2 );
+					}
+				}
+			}
+			this . CustGrid . ItemsSource = output;
+		}
+		private void Linq6_Click ( object sender, RoutedEventArgs e )
+		{
+			var accounts = from items in CustViewerDbcollection orderby items . CustNo, items . AcType select items;
+			this . CustGrid . ItemsSource = accounts;
+		}
+
+		private void Filter_Click ( object sender, RoutedEventArgs e )
+		{
+			// Show Filter system
+			System . Windows . MessageBox . Show ( "Filter dialog will appear here !!" );
+		}
+
+		#endregion Menu items
+
+		private void Exit_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
+		}
+
+		private void Options_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+		private void Minimize_click ( object sender, RoutedEventArgs e )
+		{
+			this . WindowState = WindowState . Normal;
+		}
+
+		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
+		{
+
+		}
 	}
 }
 

@@ -14,7 +14,7 @@
 	PreviewKeyDown="Window_PreviewKeyDown"
         Title="MultiViewer" Height="850" Width="1000"
 	WindowStartupLocation="CenterScreen"
-	WindowStyle="ThreeDBorderWindow">
+	WindowStyle="None">
 
 	<Window.Resources>
 
@@ -74,13 +74,14 @@
 		<!--#region MAIN GRID SETUP-->
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height=" 10"/>
-			<RowDefinition Height="15"/>
-			<RowDefinition Height=" 45"/>
+			<RowDefinition Height="28"/>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="35"/>
 			<RowDefinition Height=" *"/>
 			<RowDefinition Height=" *"/>
 			<RowDefinition Height=" *"/>
-			<RowDefinition Height=" 15"/>
+			<RowDefinition Height=" 35"/>
+			<RowDefinition Height=" 5"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="10"/>
@@ -97,6 +98,91 @@
 		</Grid.Background>
 
 		<!--#endregion SETUP-->
+		
+		<!--#region Menu Bar-->
+		<Menu  			
+			Background="Transparent"
+			Grid.Column="1"
+			Grid.Row="0"
+			Height="30" 
+			HorizontalAlignment="Left"
+			Width="auto">
+			<!--<Menu.Background>
+				-->
+			<!--create an elegant left to right light-> Dark gradient as a background-->
+			<!--
+				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
+					<GradientStop Color="#333333" Offset="1" />
+					<GradientStop Color="#35F6FB" Offset="0" />
+				</LinearGradientBrush>
+			</Menu.Background>-->
+
+			<MenuItem  Header="_Linq Queries" 
+					Margin="5"
+				     Width="80" 
+				    Foreground="{StaticResource White0}">
+				<MenuItem Header="A/c Type 1 Only"
+					    Background="#35F6FB" 
+					    Click="Linq1_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>
+				<MenuItem Header="A/c Type 2 Only"
+					Background="#35F6FB" 
+					Click="Linq2_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 3 Only"
+					Background="#35F6FB" 
+					Click="Linq3_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 4 Only"
+					Background="#35F6FB" 
+					Click="Linq4_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="Multi A/C Holders"
+					Background="#35F6FB" 
+					Click="Linq5_Click"
+					IsCheckable="False"
+					Foreground="Black"/>
+				<Separator />
+				<MenuItem Header="Show All Records"
+					Background="#35F6FB" 
+					Click="Linq6_Click"
+					IsCheckable="False"
+					Foreground="Black"/>
+			</MenuItem>
+
+			<MenuItem  Header="Filtering" 
+				    Click="Filter_Click"
+					Width="60" 
+				    Foreground="{StaticResource White1}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+			<MenuItem  Header="Options" 
+				    Click="Options_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+			</MenuItem>
+
+			<MenuItem  Header="Exit..." 
+				    Click="Exit_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+
+		</Menu>
+		<!--#endregion Menu Bar-->
 
 		<!--#region Top bar-->
 
@@ -120,6 +206,8 @@
 				<ColumnDefinition Width="75"/>
 				<ColumnDefinition Width="100"/>
 				<ColumnDefinition Width="100"/>
+				<ColumnDefinition Width="7"/>
+				<ColumnDefinition Width="16"/>
 			</Grid.ColumnDefinitions>
 			<!--#endregion DataFields Grid setup-->
 
@@ -127,18 +215,18 @@
 			<TextBlock Text="Customer #  "	
 					     Foreground="White"
 					     Grid.Column="0"
-					     Grid.Row="0"
+					     Grid.Row="1"
 					     HorizontalAlignment="Left"
-					     Margin="22,4,0,0"
+					     Margin="22,0,0,16"
 					     Height="20" Grid.ColumnSpan="2"
 					     />
 			<TextBlock Text="{Binding CustNo, FallbackValue=Cust #}"
    					     Grid.Column="1"
-					     Grid.Row="0"
+					     Grid.Row="1"
 					     Foreground="Red"
 					     Height="18"
 					     HorizontalAlignment="Left"
-					     Margin="35,4,0,2"
+					     Margin="35,0,0,18"
 					     TextAlignment="Center"
 					     VerticalAlignment="Center"
 					     Width="70"
@@ -148,18 +236,18 @@
 			<TextBlock Text="Bank A/C #  "
 					     Foreground="White"
 					     Grid.Column="2"
-					     Grid.Row="0"					    
-					     Margin="36,4,75,2"
+					     Grid.Row="1"					    
+					     Margin="36,0,75,18"
 					     Height="18"
 					     TextAlignment="Left" Grid.ColumnSpan="2"
 				     />
 			<TextBox Text="{Binding BankNo, FallbackValue=Bank A/c }"
    					     Grid.Column="3"
-					     Grid.Row="0"
+					     Grid.Row="1"
 					     Height="18"
 					     HorizontalAlignment="Left"		
 					    TextAlignment="Center"
-					     Margin="30,4,0,2"
+					     Margin="30,0,0,18"
 					     Width="70"
 					     VerticalAlignment="Center"
 					     Background="Beige"
@@ -167,31 +255,50 @@
 			<CheckBox x:Name="LinkRecords" 
 				    Click="LinkRecords_Click"
 				    Content="Link to External Viewers " 
-				    Foreground="White"
-				Grid.Column="2"    
-				    Grid.ColumnSpan="2"
-				    Grid.Row="1"
+				   FontWeight="SemiBold"
+				    Foreground="Red"
+				Grid.Column="6"
 				    Height="25"
 				    HorizontalAlignment="Right" 
-					     Margin="-20,12,0,-1"
+					     Margin="-71,-19,-390,20"
 				    VerticalAlignment="Center"				    />
 
 			<CheckBox x:Name="OntopChkbox"
 				   Click="OntopChkbox_Click"
 				   Content="Keep on Top"
-				   Foreground="White"
-				   FontWeight="Normal"
-				Grid.Column="0"    
-				   Grid.Row="1" 
-				   Grid.ColumnSpan="2" 
+				   Foreground="Red"
+				   FontWeight="SemiBold"
+				Grid.Column="6" 
 				   Height="25"
 				   HorizontalAlignment="Left"
 				   IsChecked="true"
-				   Margin="21,11,0,0"
+				   Margin="413,-19,-596,20"
 				   VerticalAlignment="Center"
 				   Width="129" 
 				    RenderTransformOrigin="-1.37,-5.06" 
 			     />
+			<TextBlock Text="****   Database      Editors   ****"
+				Background="Transparent"
+ 			     FontSize="12"
+			     Foreground="white"				
+				Grid.Column="4"
+			      Grid.ColumnSpan="3"
+				Grid.Row="0"					    
+				Margin="67,-38,-200,5"
+				Height="18"
+				TextAlignment="Left">
+		<!--<TextBlock.Foreground>
+			--><!--create an elegant left to right light-> Dark gradient as a background--><!--
+			<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
+				<GradientStop Color="#888888" Offset="0" />
+				<GradientStop Color="#cccccc" Offset=".5" />
+				<GradientStop Color="White" Offset=".9" />
+			</LinearGradientBrush>
+		</TextBlock.Foreground>-->
+
+			</TextBlock>
+
+
 			<!--#endregion Data Fields-->
 
 		</Grid>
@@ -208,63 +315,68 @@
 			<!--#region BUTTON BAR -->
 
 			<!--Style="{StaticResource RedToBlackButton}"-->
+
 			<Button  
-	   x:Name="BankDbBtn_Copy"
-	   Height="40"
-	   Width="70"
-	   Margin="0"
+				Height="40"
+				Width="8"
+				Margin="3,0,-12,0"
+				Background="{StaticResource HeaderBrushRed}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateRed}"
+				/>
+			<Button  
+				x:Name="BankDbBtn_Copy"
+				Height="40"
+				Width="70"
+				Margin="18,0,0,0"
 				Background="{StaticResource HeaderBrushBlue}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateBlue}" 
-	   Click="BankDb_Click"				
-					>
+				Click="BankDb_Click"				
+				>
 				<StackPanel Orientation="Horizontal" 
-		   HorizontalAlignment="Center"
-		   VerticalAlignment="Center">
+				   HorizontalAlignment="Center"
+				   VerticalAlignment="Center">
 					<!--<TextBlock FontFamily="Wingdings" 
 								Text="ü"
 						     Height="20"
 						     Width="20"
 									Style="{StaticResource WingDingStyle}" />-->
 					<TextBlock Text="Bank Db" 
-			   HorizontalAlignment="Center"
-			   VerticalAlignment="Center" 
-			   Style="{StaticResource WingDingStyle}"
-			   FontSize="12"/>
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center" 
+					Style="{StaticResource WingDingStyle}"
+					FontSize="12"/>
 				</StackPanel>
 			</Button>
+
 			<Button  
 				x:Name="CustDbBtn_Copy"
 				Height="40"
 				Width="70"
-				Margin="2"
+				Margin="9,0,7,0"
 				Background="{StaticResource HeaderBrushYellow}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateYellow}"
 				Click="CustDb_Click"				
 					>
 				<StackPanel Orientation="Horizontal" 
-		   HorizontalAlignment="Center"
-		   VerticalAlignment="Center">
-					<!--<TextBlock FontFamily="Wingdings" 
-								Text="ü"
-						     Height="20"
-						     Width="20"
-									Style="{StaticResource WingDingStyle}" />-->
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center">
+
 					<TextBlock Text="Cust Db" 
-			   HorizontalAlignment="Center"
-			   VerticalAlignment="Center" 
-			   Style="{StaticResource WingDingStyle}"
-			   FontSize="12"/>
+						   HorizontalAlignment="Center"
+						   VerticalAlignment="Center" 
+						   Style="{StaticResource WingDingStyle}"
+							     />
 				</StackPanel>
 			</Button>
-
 
 			<Button  
 					x:Name="DetDbBtn"
 					Height="40"
 					Width="70"
-					Margin="0,0"
+				Margin="3,0,7,0"
 				Background="{StaticResource HeaderBrushGreen}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateGreen}"
@@ -285,6 +397,16 @@
 								FontSize="12"/>
 				</StackPanel>
 			</Button>
+
+			<Button  
+				Height="40"
+				Width="8"
+				Margin="1,0,-4,0"
+				Background="{StaticResource HeaderBrushRed}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateRed}"
+				/>
+
 			<Button  
 					x:Name="Multiaccounts"
 					Height="40"
@@ -312,14 +434,6 @@
 				</StackPanel>
 			</Button>
 
-			<Button  
-				Height="40"
-				Width="8"
-				Margin="3,0,7,0"
-				Background="{StaticResource HeaderBrushRed}"
-				Foreground="White"
-				Template="{StaticResource HorizontalGradientTemplateRed}"
-				/>
 
 			<Button  
 					x:Name="FilterBtn"
@@ -369,11 +483,21 @@
 								FontSize="12"/>
 				</StackPanel>
 			</Button>
+
+			<Button  
+				Height="40"
+				Width="8"
+				Margin="3,0,7,0"
+				Background="{StaticResource HeaderBrushRed}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateRed}"
+				/>
+
 			<Button  
 					x:Name="CloseBtn"
 					Height="40"
 					Width="90"
-					Margin="10,0"
+					Margin="0,0"
 					Style="{StaticResource RedToBlackButton}"				
 				Click="Close_Click"				
 					>
@@ -816,6 +940,33 @@
 		</DataGrid>
 
 		<!--#endregion Details  DataGrid-->
-
+		<TextBlock
+			x:Name="StatusBar"
+			Background="Beige"
+			Foreground="Red"
+			FontWeight="SemiBold"
+			Grid.Row="6"
+			Grid.Column="1"
+			Grid.ColumnSpan="2"
+			HorizontalAlignment="Stretch"
+			Padding="4"
+			TextAlignment="Center"
+			Margin="5"
+			Text = "All available Records are shown above in all three grids"
+			/>
+		<Button
+			  Background="{StaticResource HeaderBrushGray}"
+			  Click="Minimize_click"
+			  Content="-v-"
+			  Foreground="White"
+			  Grid.Column="1"
+			  Height="20"
+			  HorizontalAlignment="Right"
+			  MouseDown="Window_MouseDown"
+			  Opacity="50"
+			  Template="{StaticResource HorizontalGradientTemplateGray}"
+			  VerticalContentAlignment="Top"
+			  Visibility="Visible"
+			  Width="20" Margin="0,0,3,0"/>
 	</Grid>
 </Window>

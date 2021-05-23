@@ -31,7 +31,7 @@
 		<!--#region grid setup-->
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height="10"/>
+			<RowDefinition Height="30"/>
 			<RowDefinition Height="5*" />
 			<RowDefinition Height="135" />
 			<RowDefinition Height="10"/>
@@ -41,6 +41,7 @@
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="110"/>
 			<ColumnDefinition Width="110"/>
+			<ColumnDefinition Width="30"/>
 			<ColumnDefinition Width="10"/>
 		</Grid.ColumnDefinitions>
 
@@ -53,6 +54,78 @@
 		</Grid.Background>
 
 		<!--#endregion grid setup-->
+
+		<Menu  			
+			Background="Transparent"
+			Grid.Column="1"
+			Grid.Row="0"
+			Height="30" 
+			HorizontalAlignment="Left"
+			Margin="5"
+			Width="auto">
+
+			<MenuItem  Header="_Linq Queries" 
+					Width="80" 
+				    Foreground="{StaticResource White1}">
+				<MenuItem Header="A/c Type 1 Only"
+					    Background="#35F6FB" 
+					    Click="Linq1_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>
+				<MenuItem Header="A/c Type 2 Only"
+					Background="#35F6FB" 
+					Click="Linq2_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 3 Only"
+					Background="#35F6FB" 
+					Click="Linq3_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 4 Only"
+					Background="#35F6FB" 
+					Click="Linq4_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="Multi A/C Holders"
+					Background="#35F6FB" 
+					Click="Linq5_Click"
+					IsCheckable="False"
+					Foreground="Black"/>
+				<Separator />
+			</MenuItem>
+
+			<MenuItem  Header="Filtering" 
+				    Click="Filter_Click"
+					Width="60" 
+				    Foreground="{StaticResource White1}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+
+			<MenuItem  Header="Options" 
+				    Click="Options_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+			</MenuItem>
+
+			<MenuItem  Header="Exit..." 
+				    Click="Exit_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+			
+		</Menu>
+
+
 
 		<DataGrid x:Name="CustGrid"
 				AlternatingRowBackground="{StaticResource Yellow2}"
@@ -398,18 +471,37 @@
 
 		</Grid>
 
+		<TextBlock x:Name="Count" 
+				Background="DarkGray"	    
+				Foreground="Red"
+			     FontWeight="DemiBold"
+			     FontSize="14"
+				Grid.Column="3" 
+			     Grid.ColumnSpan="3"
+				HorizontalAlignment="Center" 
+			     Padding="5,3,5,5"
+				Height="24" 
+				Grid.Row="2"
+				Text=" Counter"
+				TextAlignment="Center"
+				TextTrimming="WordEllipsis"
+				Margin="50,0,15,111" 
+				VerticalAlignment="Center" 
+				Width="70" 
+			     />
 		<Button x:Name="SaveBttn"
 				Background="{StaticResource HeaderBrushYellow}"
 				Click="SaveBtn"
 				Content="Save Changes"
 				Foreground="White"
 				Grid.Column="3"
+			     Grid.ColumnSpan="3"
 				Grid.Row="2"
 				HorizontalAlignment="Center"
 				IsEnabled="False"
 				TabIndex="6"
 				VerticalAlignment="Top"
-				Margin="10,61,0,0"
+				Margin="30,61,15,0"
 				Height="30"
 				Template="{StaticResource HorizontalGradientTemplateYellow}" 
 				Width="100"
@@ -420,6 +512,7 @@
 				Content="Close"
 				Foreground="White"
 				Grid.Column="3"
+			     Grid.ColumnSpan="3"
 				Grid.Row="2"
 				Height="30"
 				HorizontalAlignment="Center"
@@ -427,7 +520,7 @@
 				Template="{StaticResource HorizontalGradientTemplateYellow}" 
 				TabIndex="7"
 				VerticalAlignment="Top"
-				Width="100" Margin="10,99,0,0" />
+				Width="100" Margin="30,99,15,0" />
 		<CheckBox x:Name="OntopChkbox"
 				Click="OntopChkbox_Click"
 				Content="Keep on Top"
@@ -443,38 +536,36 @@
 				VerticalAlignment="Center"
 				Width="100"  
 			     />
-		<TextBlock x:Name="Count" 
-				Background="DarkGray"	    
-				Foreground="Red"
-			     FontWeight="DemiBold"
-			     FontSize="14"
-				Grid.Column="3" 
-				HorizontalAlignment="Center" 
-				Padding="5,3,5,5"
-				Height="24" 
-				Grid.Row="2"
-				Text=" Counter"
-				TextAlignment="Center"
-				TextTrimming="WordEllipsis"
-				Margin="25,0,15,111" 
-				VerticalAlignment="Center" 
-				Width="70" 
-			     />
 		<Button x:Name="MultiAccounts"
 					Background="{StaticResource HeaderBrushYellow}"
 					Click="MultiAccts_Click"
 					Content="Multi Accounts"
 					Foreground="White"
 					Grid.Row="2"
-					Grid.Column="2"
+					Grid.Column="3"
+				Grid.ColumnSpan="4"
 					HorizontalAlignment="Center"
 					IsEnabled="true"
 					TabIndex="6"
 					VerticalAlignment="Top"
 					Height="30"
 					Template="{StaticResource HorizontalGradientTemplateYellow}" 
-					Width="100" Margin="5,99,5,0" 
+					Width="100" Margin="5,99,5,90" 
 					/>
+		<Button
+				Background="{StaticResource HeaderBrushGray}"
+				  Click="Minimize_click"
+				  Content="-v-"
+				  Foreground="White"
+				  Grid.Column="4"
+				  Height="20"
+				  HorizontalAlignment="Right"
+				  MouseDown="Window_MouseDown"
+				  Opacity="50"
+				  Template="{StaticResource HorizontalGradientTemplateGray}"
+				  VerticalContentAlignment="Top"
+				  Visibility="Visible"
+				  Width="20" Margin="0,0,0,0"/>
 	</Grid>
 
 </Window>

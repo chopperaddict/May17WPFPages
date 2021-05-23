@@ -326,7 +326,7 @@
 				Orientation="Horizontal"
 				HorizontalAlignment="Right"
 				>
-				<ComboBox x:Name="ViewerTypes"					
+				<!--<ComboBox x:Name="ViewerTypes"					
 						Background="Yellow"
 						Width="200" IsReadOnly="True" 
 						VerticalAlignment="Center" 
@@ -335,9 +335,9 @@
 						IsEditable="False"
 					    IsSelected =" True"
 						IsDropDownOpen="False"						    
-						SelectionChanged="ComboBox_SelectionChanged">
+						SelectionChanged="ComboBox_SelectionChanged">-->
 
-					<ComboBoxItem>
+					<!--<ComboBoxItem>
 						<TextBlock
 							Text="Bank Database Viewer"							
 							/>
@@ -352,7 +352,65 @@
 							Text="Details Database Viewer"
 							/>
 					</ComboBoxItem>
-				</ComboBox>
+				</ComboBox>-->
+				<Button x:Name="BankViewer"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="Bankedit_Click"
+				Content="Bank"
+				FontSize="14"
+				Foreground="White"
+				Height="30"  
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="3" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="80"
+				/>
+
+				<Button x:Name="CustViewer"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="Cust_Click"
+				Content="Customer"
+				FontSize="14"
+				Foreground="White"
+				Height="30"  
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="3" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="80"
+				/>
+
+				<Button x:Name="DetViewer"
+				Background="{StaticResource HeaderBrushBlue}"
+				Click="Det_Click"
+				Content="Details"
+				FontSize="14"
+				Foreground="White"
+				Height="30"  
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="3" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="80"
+				/>
+				<Button x:Name="Spacer"
+				Background="{StaticResource HeaderBrushBlue}"
+				Content=""
+				FontSize="14"
+				Foreground="White"
+				Height="30"  
+				HorizontalAlignment="Right"
+				IsTabStop="True"
+				Margin="2,0,5,0"
+				TabIndex="3" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				Width="10"
+				/>
+
 				<Button x:Name="CloseApp"
 					   Background="{StaticResource HeaderBrushBlue}"
 					   Content="Close Program"
@@ -367,21 +425,7 @@
 					   TabIndex="1"
 					   Width="108"
 								  />
-				<Button x:Name="CancelBtn"
-				Background="{StaticResource HeaderBrushBlue}"
-				Content="Close"
-				Click="Cancel_Click"
-				FontSize="14"
-				Foreground="White"
-				Height="30"  
-				HorizontalAlignment="Right"
-				IsTabStop="True"
-				Margin="2,0,5,0"
-				Template="{StaticResource HorizontalGradientTemplateBlue}"
-				TabIndex="1"
-				Width="68"
-				  />
-
+	
 				<Button x:Name="MultiViewer"
 				Background="{StaticResource HeaderBrushBlue}"
 				Click="MultiViewer_Click"
@@ -396,7 +440,7 @@
 				Template="{StaticResource HorizontalGradientTemplateBlue}"
 				Width="120" />
 
-			<Button x:Name="SelectBtn"
+				<Button x:Name="SelectBtn"
 				Background="{StaticResource HeaderBrushBlue}"
 				Click="sqlselectorbtn_Select"
 				Content="Open Db Viewer"
@@ -410,7 +454,8 @@
 				Template="{StaticResource HorizontalGradientTemplateBlue}"
 				Width="120"
 				/>
-				
+
+
 				</StackPanel>
 		</Grid>
 

@@ -383,9 +383,10 @@
 		Visibility="Visible">
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height="15" />
-			<RowDefinition Height="35" />
-			<RowDefinition Height="35" />
+			<RowDefinition Height="5" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="25" />
+			<RowDefinition Height="55" />
 			<RowDefinition Height="65" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="65" />
@@ -406,16 +407,115 @@
 			</LinearGradientBrush>
 		</Grid.Background>
 
+		<Canvas
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			Grid.Row="1"
+			>
+			<Canvas.Background>
+				<!--create an elegant left to right light-> Dark gradient as a background-->
+				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
+					<GradientStop Color="#333333" Offset="0" />
+					<GradientStop Color="LightGray" Offset="0.97" />
+				</LinearGradientBrush>
+			</Canvas.Background>
+
+
+		</Canvas>
+		<Menu  			
+			Background="Transparent"
+			Grid.Column="1"
+			Grid.ColumnSpan="2"
+			Grid.Row="1"
+			Height="30" 
+			Margin="0,3"
+			HorizontalAlignment="Left"
+			HorizontalContentAlignment="Left"
+			Width="auto">
+			<!--<Menu.Background>
+				--><!--create an elegant left to right light-> Dark gradient as a background--><!--
+				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
+					<GradientStop Color="#333333" Offset="1" />
+					<GradientStop Color="#35F6FB" Offset="0" />
+				</LinearGradientBrush>
+			</Menu.Background>-->
+
+			<MenuItem  Header="_Linq Queries" 
+				     Margin="2"
+				     FontWeight="Bold"
+					Width="80" 
+				    Foreground="{StaticResource Black1}">
+				<MenuItem Header="A/c Type 1 Only"
+					    Background="#35F6FB" 
+					    Click="Linq1_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>
+				<MenuItem Header="A/c Type 2 Only"
+					Background="#35F6FB" 
+					Click="Linq2_Click"
+					Foreground="Black"
+					    IsCheckable="false"/>
+				<MenuItem Header="A/c Type 3 Only"
+					Background="#35F6FB" 
+					Click="Linq3_Click"
+					Foreground="Black"
+					    IsCheckable="false"/>
+				<MenuItem Header="A/c Type 4 Only"
+					Background="#35F6FB" 
+					Click="Linq4_Click"
+					Foreground="Black"
+				    IsCheckable="false"/>
+				<MenuItem Header="Multi A/C Holders"
+					Background="#35F6FB" 
+					Click="Linq5_Click"
+					    IsCheckable="false"
+				Foreground="Black"/>
+				<Separator />
+			</MenuItem>
+
+			<MenuItem  Header="Filtering" 
+				    Click="Filter_Click"
+				     FontWeight="DemiBold"
+					Width="60" 
+				     Margin="2"
+				    Foreground="{StaticResource Black1}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+			<MenuItem  Header="Options" 
+				    Click="Options_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+			</MenuItem>
+
+			<MenuItem  Header="Exit..." 
+				    Click="Exit_Click"
+				     FontWeight="SemiBold"
+				     Margin="2"
+					Width="70" 
+				    Foreground="{StaticResource White1}">
+				<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB" 
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+			</MenuItem>
+
+		</Menu>
+
 		<!--#region Checkboxes-->
 		<WrapPanel
 				Grid.Column="1"
-				Grid.Row="2"
+				Grid.Row="1"
 				Grid.RowSpan="1"
 				Grid.ColumnSpan="4"
 				HorizontalAlignment="Right"
 				Margin="10,10,0,-5"
 				Orientation="Horizontal">
-			<CheckBox
+			<!--<CheckBox
 				x:Name="Id_option"
 				Content="A/c Id#"
 				FontWeight="Normal"
@@ -479,13 +579,14 @@
 				IsChecked="True"
 				Width="100"
 				Height="35"
-				Click="Default_option_Click" />
+				Click="Default_option_Click" />-->
 			<CheckBox
 				x:Name="LinkRecords"
 				Content="Link Viewers"
 				FontWeight="Bold"
-				Foreground="{StaticResource White0}"
+				Foreground="{StaticResource White3}"
 				IsChecked="False"
+				Margin="5,-3,39,0"
 				Width="100"
 				Height="35"
 				Click="LinkRecords_Click " />
@@ -495,7 +596,7 @@
 		<!--#region  buttonbar-->
 
 		<TextBlock x:Name="ViewerBanner"
-				Grid.Row="1"
+				Grid.Row="2"
 				Grid.Column="1"
 				Grid.RowSpan="1" Grid.ColumnSpan="3"
 				Foreground="Red"
@@ -635,10 +736,41 @@
 			<!--#endregion Buttons-->
 		</WrapPanel>
 		<!--#endregion  buttonbar-->
+
+		<Grid
+			Grid.Column="1"
+			Grid.Row="5"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="1"
+			>
+			<WrapPanel
+				x:Name="WaitMessage"
+				Background="ForestGreen"					
+				Height="200"
+				Orientation="Vertical"
+				Width="600"
+				Visibility="Visible" Margin="0,0,0,0" >
+
+				<TextBlock
+					FontSize="26"
+					Foreground="White"
+					Height="87"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					VerticalAlignment="Top"
+					Margin="80,52,62,0"
+					Text="Please wait, Connected to SQL Server to Load Database data...."
+					TextWrapping="Wrap"
+					Width="450"/>
+			</WrapPanel>
+
+
+		</Grid>
+
 		<Grid Grid.Row="4"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
-			Grid.RowSpan="1">
+			Grid.RowSpan="2">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="727*" />
@@ -762,7 +894,7 @@
 		<Grid Grid.Row="4"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
-			Grid.RowSpan="1">
+			Grid.RowSpan="2">
 
 			<!--b:DataGridBehaviour.FullRowSelect="true"-->
 			<!--#region BankAccount data Grid-->
@@ -918,7 +1050,7 @@
 		<Grid Grid.Row="4"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
-			Grid.RowSpan="1">
+			Grid.RowSpan="2">
 
 			<!--#region DetailsViewModel data Grid-->
 			<DataGrid x:Name="DetailsGrid"
@@ -1001,7 +1133,7 @@
 			<!--#endregion DetailsViewModel data Grid-->
 		</Grid>
 		<Grid
-			Grid.Row="5" 
+			Grid.Row="6" 
 			Grid.Column="0"
 			Grid.ColumnSpan="4" 
 			HorizontalAlignment="Right" 
@@ -1020,7 +1152,7 @@
 				FontSize="14"
 				FontWeight="DemiBold"
 				Foreground="Red"
-				Grid.Row="0"
+				Grid.Row="1"
 				Grid.Column="1"
 				Height="40"
 				HorizontalAlignment="Right"	  			
@@ -1037,7 +1169,7 @@
 					Foreground="White"
 					Click="Refresh_Click"
 					Content="Refresh"
-					Grid.Row="0"
+					Grid.Row="1"
 					Grid.Column="2"
 					IsEnabled="True"
 					Height="40"
@@ -1054,7 +1186,7 @@
 				Background="Beige"
 				Foreground="Black"
 				Grid.Column="1"
-				Grid.Row="5"
+				Grid.Row="6"
 				Height="30"
 				HorizontalAlignment="Stretch"		   							
 				Margin="0,5,5,5"

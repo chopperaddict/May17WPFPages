@@ -221,7 +221,7 @@ namespace WPFPages . Views
 			Startup = false;
 			if ( Flags . LinkviewerRecords && Triggered == false)
 			{
-				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
+//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
 				EventControl . TriggerEditDbIndexChanged ( this,
 					new IndexChangedArgs
 					{
@@ -443,7 +443,94 @@ namespace WPFPages . Views
 			LinkRecords . Refresh ( );
 		}
 
+		#region Menu items
 
+		private void Linq1_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var accounts= from items in DetViewerDbcollection
+					   where ( items . AcType == 1 )
+					   orderby items . CustNo
+					   select items;
+			this . DetGrid . ItemsSource = accounts;
+		}
+		private void Linq2_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var accounts= from items in DetViewerDbcollection
+					   where ( items . AcType == 2 )
+					   orderby items . CustNo
+					   select items;
+			this . DetGrid . ItemsSource = accounts;
+		}
+		private void Linq3_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var accounts= from items in DetViewerDbcollection
+					   where ( items . AcType == 3 )
+					   orderby items . CustNo
+					   select items;
+			this . DetGrid . ItemsSource = accounts;
+		}
+		private void Linq4_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			var accounts= from items in DetViewerDbcollection
+					   where ( items . AcType == 4 )
+					   orderby items . CustNo
+					   select items;
+			this . DetGrid . ItemsSource = accounts;
+		}
+		private void Linq5_Click ( object sender, RoutedEventArgs e )
+		{
+			//select All the items first;			
+			var accounts= from items in DetViewerDbcollection orderby items . CustNo, items . AcType select items;
+			//Next Group BankAccountViewModel collection on Custno
+			var grouped = accounts. GroupBy (
+				b => b . CustNo );
+
+			//Now filter content down to only those a/c's with multiple Bank A/c's
+			var sel = from g in grouped
+				  where g . Count ( ) > 1
+				  select g;
+
+			// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full accountsdata
+			// giving us ONLY the full records for any recordss that have > 1 Bank accounts
+			List<DetailsViewModel> output = new List<DetailsViewModel> ( );
+			foreach ( var item1 in sel )
+			{
+				foreach ( var item2 in accounts)
+				{
+					if ( item2 . CustNo . ToString ( ) == item1 . Key )
+					{
+						output . Add ( item2 );
+					}
+				}
+			}
+			this . DetGrid . ItemsSource = output;
+		}
+		private void Linq6_Click ( object sender, RoutedEventArgs e )
+		{
+			var accounts = from items in DetViewerDbcollection orderby items . CustNo, items . AcType select items;
+			this . DetGrid . ItemsSource = accounts;
+		}
+
+		private void Filter_Click ( object sender, RoutedEventArgs e )
+		{
+			// Show Filter system
+			MessageBox . Show ( "Filter dialog will appear here !!" );
+		}
+		#endregion Menu items
+
+		private void Exit_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
+		}
+
+		private void Options_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
 	}
 }
 

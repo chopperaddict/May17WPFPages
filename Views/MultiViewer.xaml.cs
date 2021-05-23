@@ -15,6 +15,7 @@ using System . Diagnostics;
 using static WPFPages . SqlDbViewer;
 using DataGrid = System . Windows . Controls . DataGrid;
 using System . Windows . Controls . Primitives;
+using System . Collections . Generic;
 
 namespace WPFPages . Views
 {
@@ -54,6 +55,7 @@ namespace WPFPages . Views
 		}
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			Mouse . OverrideCursor = Cursors . Wait;
 			LoadAllData ( );
 			this . MouseDown += delegate { DoDragMove ( ); };
 			this . BankGrid . MouseDown += delegate { DoDragMove ( ); };
@@ -68,6 +70,8 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
 
 			// Event triggers when a Specific Db viewer (BankDbViewer etc) updates the data
+			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
+			EventControl . EditDbDataUpdated += EventControl_DataUpdated;
 			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
 			EventControl . CustDataLoaded += EventControl_BankDataLoaded;
 			EventControl . DetDataLoaded += EventControl_BankDataLoaded;
@@ -97,14 +101,15 @@ namespace WPFPages . Views
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
+			Mouse . OverrideCursor = Cursors . Arrow;
 
 		}
 
 		private void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Data has been changed externally, so update all Data Grids
-			ReLoadAllDataBases ( CurrentDb, this.BankGrid.SelectedIndex);
-			
+			ReLoadAllDataBases ( CurrentDb, this . BankGrid . SelectedIndex );
+
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 			Utils . SetUpGridSelection ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
 			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
@@ -132,16 +137,16 @@ namespace WPFPages . Views
 					RowTofind = e . dGrid . SelectedItem as BankAccountViewModel;
 					bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
 					if ( bgr == null ) return;
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 					this . BankGrid . SelectedIndex = rec;
 					bindex = rec;
 					Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
 					this . CustomerGrid . SelectedIndex = rec;
 					cindex = rec;
 					BankData . DataContext = this . CustomerGrid . SelectedItem;
 					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
 					this . DetailsGrid . SelectedIndex = rec;
 					dindex = rec;
 				}
@@ -151,16 +156,16 @@ namespace WPFPages . Views
 					RowTofind = e . dGrid . SelectedItem as CustomerViewModel;
 					bgr = this . CustomerGrid . SelectedItem as CustomerViewModel;
 					if ( bgr == null ) return;
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 					this . BankGrid . SelectedIndex = rec;
 					bindex = rec;
 					Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
 					this . CustomerGrid . SelectedIndex = rec;
 					cindex = rec;
 					BankData . DataContext = this . CustomerGrid . SelectedItem;
 					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
 					this . DetailsGrid . SelectedIndex = rec;
 					dindex = rec;
 				}
@@ -170,16 +175,16 @@ namespace WPFPages . Views
 					RowTofind = e . dGrid . SelectedItem as DetailsViewModel;
 					bgr = this . DetailsGrid . SelectedItem as DetailsViewModel;
 					if ( bgr == null ) return;
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 					this . BankGrid . SelectedIndex = rec;
 					bindex = rec;
 					Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
 					this . CustomerGrid . SelectedIndex = rec;
 					cindex = rec;
 					BankData . DataContext = this . CustomerGrid . SelectedItem;
 					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-					rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+					rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
 					this . DetailsGrid . SelectedIndex = rec;
 					dindex = rec;
 				}
@@ -235,6 +240,7 @@ namespace WPFPages . Views
 		private async Task LoadAllData ( )
 		{
 			// load the data
+			Mouse . OverrideCursor = Cursors . Wait;
 			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
 				BankCollection . LoadBank ( MultiBankcollection, 3, false );
 			BankGrid . ItemsSource = MultiBankcollection;
@@ -247,6 +253,7 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
+//			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 
 		#endregion STARTUP/CLOSE
@@ -281,6 +288,7 @@ namespace WPFPages . Views
 		public void UpdateOnDataChange ( string CurrentDb, DataGridRowEditEndingEventArgs e )
 		{
 			// Call Handler to update ALL Db's via SQL
+			Mouse . OverrideCursor = Cursors . Wait;
 			SQLHandlers sqlh = new SQLHandlers ( );
 			sqlh . UpdateAllDb ( CurrentDb, e );
 			bindex = this . BankGrid . SelectedIndex;
@@ -290,10 +298,14 @@ namespace WPFPages . Views
 			// Refresh our grids
 			RefreshAllGrids ( CurrentDb, e . Row . GetIndex ( ) );
 			inprogress = false;
+			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 		public async void RefreshAllGrids ( string CurrentDb, int row )
 		{
+			Mouse . OverrideCursor = Cursors . Wait;
 			await ReLoadAllDataBases ( CurrentDb, row );
+			StatusBar . Text = "All available Records are shown above in all three grids";
+			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 
 		private async Task ReLoadAllDataBases ( string CurrentD, int row )
@@ -314,15 +326,15 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedItem = bbindex;
 			this . CustomerGrid . SelectedItem = ccindex;
 			this . DetailsGrid . SelectedItem = ddindex;
-			
+
 			bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
 			cvm = this . CustomerGrid . SelectedItem as CustomerViewModel;
 			dvm = this . DetailsGrid . SelectedItem as DetailsViewModel;
-	
+
 			// Sanity check
 			if ( bvm == null || cvm == null || dvm == null )
 				return;
-			
+
 			this . BankGrid . ItemsSource = null;
 			this . CustomerGrid . ItemsSource = null;
 			this . DetailsGrid . ItemsSource = null;
@@ -333,13 +345,13 @@ namespace WPFPages . Views
 			MultiBankcollection = null;
 			MultiCustcollection = null;
 			MultiDetcollection = null;
-			
+
 			/// Reoad the data into our Items Source collections
 			MultiBankcollection = await BankCollection . LoadBank ( MultiBankcollection, 3 );
 			this . BankGrid . ItemsSource = MultiBankcollection;
 			this . BankGrid . SelectedIndex = bbindex;
 			this . BankGrid . SelectedItem = bbindex;
-			bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . BankGrid, "BANKACCOUNT");
+			bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . BankGrid, "BANKACCOUNT" );
 
 			MultiCustcollection = await CustCollection . LoadCust ( MultiCustcollection );
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
@@ -351,7 +363,7 @@ namespace WPFPages . Views
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
 			this . DetailsGrid . SelectedIndex = ddindex;
 			this . DetailsGrid . SelectedItem = ddindex;
-			ddindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . DetailsGrid, "DETAILS");
+			ddindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . DetailsGrid, "DETAILS" );
 
 			if ( Flags . FilterCommand != "" )
 			{
@@ -429,7 +441,7 @@ namespace WPFPages . Views
 
 		#endregion EVENT DATA UPDATING
 
-		private void ViewerGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
+		private async void ViewerGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
 		{
 			// Save current positions so we can reposition later
 			inprogress = true;
@@ -450,6 +462,11 @@ namespace WPFPages . Views
 						DataSource = MultiBankcollection,
 						RowCount = this . BankGrid . SelectedIndex
 					} );
+				MultiBankcollection = null;
+				this . BankGrid . ItemsSource = null;
+				MultiBankcollection = await BankCollection.LoadBank( MultiBankcollection );
+				this . BankGrid .ItemsSource = MultiBankcollection;
+				this.BankGrid . Refresh ( );
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
@@ -471,11 +488,12 @@ namespace WPFPages . Views
 						RowCount = this . DetailsGrid . SelectedIndex
 					} );
 			}
-			// Notify any other interested parties of data update
-			//			SendDataChanged ( CurrentDb );
 			inprogress = false;
 		}
 
+		/// <summary>
+		/// Just resets  the SelectedITEM and scroills it into view
+		/// </summary>
 		public void ResetIndexes ( )
 		{
 			inprogress = true;
@@ -873,8 +891,8 @@ namespace WPFPages . Views
 
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
-				// Send message to othrr viewers teling them of our index change
-				Debug . WriteLine ( $" 7-1 *** TRACE *** MULTIVIEWER: Grid_SelectionChanged  BANKACCOUNT- Sending TriggerMultiViewerIndexChanged Event trigger" );
+				// Send message to other viewers teling them of our index change
+//				Debug . WriteLine ( $" 7-1 *** TRACE *** MULTIVIEWER: Grid_SelectionChanged  BANKACCOUNT- Sending TriggerMultiViewerIndexChanged Event trigger" );
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
 				new IndexChangedArgs
 				{
@@ -887,18 +905,18 @@ namespace WPFPages . Views
 			// Get Custno from ACTIVE gridso we can find it in other grids
 			BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
 			if ( bgr == null ) return;
-			rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+			rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 			this . BankGrid . SelectedIndex = rec;
 			bindex = rec;
 			Utils . ScrollRecordIntoView ( this . BankGrid, rec );
 
-			rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+			rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustomerGrid, "CUSTOMER" );
 			this . CustomerGrid . SelectedIndex = rec;
 			cindex = rec;
 			BankData . DataContext = this . CustomerGrid . SelectedItem;
 			Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
 
-			rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
+			rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetailsGrid, "DETAILS" );
 			this . DetailsGrid . SelectedIndex = rec;
 			dindex = rec;
 			Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
@@ -926,7 +944,7 @@ namespace WPFPages . Views
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				// Send message to othrr viewers teling them of our index change
-				Debug . WriteLine ( $" 7-2 *** TRACE *** MULTIVIEWER: CustGrid_SelectionChanged  CUSTOMER - Sending TriggerMultiViewerIndexChanged Event trigger" );
+//				Debug . WriteLine ( $" 7-2 *** TRACE *** MULTIVIEWER: CustGrid_SelectionChanged  CUSTOMER - Sending TriggerMultiViewerIndexChanged Event trigger" );
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
 				new IndexChangedArgs
 				{
@@ -940,18 +958,18 @@ namespace WPFPages . Views
 			// Get Custno from ACTIVE grid so we can find it in other grids
 			CustomerViewModel cgr = CustomerGrid . SelectedItem as CustomerViewModel;
 			if ( cgr == null ) return;
-			rec = Utils. FindMatchingRecord ( cgr . CustNo, cgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+			rec = Utils . FindMatchingRecord ( cgr . CustNo, cgr . BankNo, this . CustomerGrid, "CUSTOMER" );
 			this . CustomerGrid . SelectedIndex = rec;
 			cindex = rec;
 			Utils . ScrollRecordIntoView ( this . CustomerGrid, cindex );
 
-			rec = Utils. FindMatchingRecord ( cgr . CustNo, cgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+			rec = Utils . FindMatchingRecord ( cgr . CustNo, cgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 			this . BankGrid . SelectedIndex = rec;
 			bindex = rec;
 			Utils . ScrollRecordIntoView ( this . BankGrid, bindex );
 			// Now use SAME CUSTNO to findmatch in Bank  DbGrid
 
-			rec = Utils. FindMatchingRecord ( cgr . CustNo, cgr . BankNo, this . DetailsGrid, "DETAILS" );
+			rec = Utils . FindMatchingRecord ( cgr . CustNo, cgr . BankNo, this . DetailsGrid, "DETAILS" );
 			this . DetailsGrid . SelectedIndex = rec;
 			dindex = rec;
 			Utils . ScrollRecordIntoView ( this . DetailsGrid, dindex );
@@ -978,7 +996,7 @@ namespace WPFPages . Views
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				// Send message to othrr viewers teling them of our index change
-				Debug . WriteLine ( $" 7-3 *** TRACE *** MULTIVIEWER: DetGrid_SelectionChanged  DETAILS - Sending TriggerMultiViewerIndexChanged Event trigger" );
+//				Debug . WriteLine ( $" 7-3 *** TRACE *** MULTIVIEWER: DetGrid_SelectionChanged  DETAILS - Sending TriggerMultiViewerIndexChanged Event trigger" );
 				EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
 					new IndexChangedArgs
 					{
@@ -992,18 +1010,18 @@ namespace WPFPages . Views
 			// Get Custno from ACTIVE gridso we can find it in other grids
 			DetailsViewModel dgr = DetailsGrid . SelectedItem as DetailsViewModel;
 			if ( dgr == null ) return;
-			rec = Utils. FindMatchingRecord ( dgr . CustNo, dgr . BankNo, this . DetailsGrid, "DETAILS" );
+			rec = Utils . FindMatchingRecord ( dgr . CustNo, dgr . BankNo, this . DetailsGrid, "DETAILS" );
 			this . DetailsGrid . SelectedIndex = rec;
 			dindex = rec;
 			Utils . ScrollRecordIntoView ( DetailsGrid, dindex );
 
-			rec = Utils. FindMatchingRecord ( dgr . CustNo, dgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+			rec = Utils . FindMatchingRecord ( dgr . CustNo, dgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 			this . BankGrid . SelectedIndex = rec;
 			bindex = rec;
 			Utils . ScrollRecordIntoView ( this . BankGrid, bindex );
 
 			// Now use SAME CUSTNO to findmatch in Customer DbGrid
-			rec = Utils. FindMatchingRecord ( dgr . CustNo, dgr . BankNo, this . CustomerGrid, "CUSTOMER" );
+			rec = Utils . FindMatchingRecord ( dgr . CustNo, dgr . BankNo, this . CustomerGrid, "CUSTOMER" );
 			this . CustomerGrid . SelectedIndex = rec;
 			cindex = rec;
 			Utils . ScrollRecordIntoView ( this . CustomerGrid, cindex );
@@ -1257,18 +1275,48 @@ namespace WPFPages . Views
 
 		private void BankDb_Click ( object sender, RoutedEventArgs e )
 		{
-			BankDbView cdbv = new BankDbView ( );
-			cdbv . Show ( );
+			Window handle = null;
+			if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+			{
+				handle . Focus ( );
+				handle . BringIntoView ( );
+				return;
+			}
+			else
+			{
+				BankDbView cdbv = new BankDbView ( );
+				cdbv . Show ( );
+			}
 		}
 		private void CustDb_Click ( object sender, RoutedEventArgs e )
 		{
-			CustDbView cdbv = new CustDbView ( );
-			cdbv . Show ( );
+			Window handle = null;
+			if ( Utils . FindWindowFromTitle ( "customer account editor", ref handle ) )
+			{
+				handle . Focus ( );
+				handle . BringIntoView ( );
+				return;
+			}
+			else
+			{
+				CustDbView cdbv = new CustDbView ( );
+				cdbv . Show ( );
+			}
 		}
 		private void DetDb_Click ( object sender, RoutedEventArgs e )
 		{
-			DetailsDbView cdbv = new DetailsDbView ( );
-			cdbv . Show ( );
+			Window handle = null;
+			if ( Utils . FindWindowFromTitle ( "details a/c editor", ref handle ) )
+			{
+				handle . Focus ( );
+				handle . BringIntoView ( );
+				return;
+			}
+			else
+			{
+				DetailsDbView cdbv = new DetailsDbView ( );
+				cdbv . Show ( );
+			}
 		}
 
 		/// <summary>
@@ -1363,7 +1411,7 @@ namespace WPFPages . Views
 
 		private void OntopChkbox_Click ( object sender, RoutedEventArgs e )
 		{
-			if(this.Topmost)
+			if ( this . Topmost )
 			{
 				OntopChkbox . IsChecked = false;
 				this . Topmost = false;
@@ -1373,6 +1421,194 @@ namespace WPFPages . Views
 				OntopChkbox . IsChecked = true;
 				this . Topmost = true;
 			}
+		}
+
+	#region LINQ queries
+		private void Linq1_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			Mouse . OverrideCursor = Cursors . Wait;
+			var accounts = from items in MultiBankcollection
+				       where ( items . AcType == 1 )
+				       orderby items . CustNo
+				       select items;
+			this . BankGrid . ItemsSource = accounts;
+			var accounts1 = from items in MultiCustcollection
+					where ( items . AcType == 1 )
+					orderby items . CustNo
+					select items;
+			this . CustomerGrid . ItemsSource = accounts1;
+			var accounts2 = from items in MultiDetcollection
+					where ( items . AcType == 1 )
+					orderby items . CustNo
+					select items;
+			this . DetailsGrid . ItemsSource = accounts2;
+			StatusBar . Text = "Only Records matching Account Type = 1 are shown above";
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void Linq2_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			Mouse . OverrideCursor = Cursors . Wait;
+			var accounts = from items in MultiBankcollection
+				       where ( items . AcType == 2 )
+				       orderby items . CustNo
+				       select items;
+			this . BankGrid . ItemsSource = accounts;
+			var accounts1 = from items in MultiCustcollection
+					where ( items . AcType == 2 )
+					orderby items . CustNo
+					select items;
+			this . CustomerGrid . ItemsSource = accounts1;
+			var accounts2 = from items in MultiDetcollection
+					where ( items . AcType == 2 )
+					orderby items . CustNo
+					select items;
+			this . DetailsGrid . ItemsSource = accounts2;
+			StatusBar . Text = "Only Records matching Account Type = 2 are shown above";
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void Linq3_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			Mouse . OverrideCursor = Cursors . Wait;
+			var accounts = from items in MultiBankcollection
+				       where ( items . AcType == 3 )
+				       orderby items . CustNo
+				       select items;
+			this . BankGrid . ItemsSource = accounts;
+			var accounts1 = from items in MultiCustcollection
+					where ( items . AcType == 3 )
+					orderby items . CustNo
+					select items;
+			this . CustomerGrid . ItemsSource = accounts1;
+			var accounts2 = from items in MultiDetcollection
+					where ( items . AcType == 3 )
+					orderby items . CustNo
+					select items;
+			this . DetailsGrid . ItemsSource = accounts2;
+			StatusBar . Text = "Only Records matching Account Type = 3 are shown above";
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void Linq4_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+			Mouse . OverrideCursor = Cursors . Wait;
+			var accounts = from items in MultiBankcollection
+				       where ( items . AcType == 4 )
+				       orderby items . CustNo
+				       select items;
+			this . BankGrid . ItemsSource = accounts;
+			var accounts1 = from items in MultiCustcollection
+					where ( items . AcType == 4 )
+					orderby items . CustNo
+					select items;
+			this . CustomerGrid . ItemsSource = accounts1;
+			var accounts2 = from items in MultiDetcollection
+					where ( items . AcType == 4 )
+					orderby items . CustNo
+					select items;
+			this . DetailsGrid . ItemsSource = accounts2;
+			StatusBar . Text = "Only Records matching Account Type = 4 are shown above";
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void Linq5_Click ( object sender, RoutedEventArgs e )
+		{
+			int q = 1;
+			//select All the items first;			
+			Mouse . OverrideCursor = Cursors . Wait;
+			if ( q == 1 )
+			{
+				var accounts = from items in MultiBankcollection orderby items . CustNo, items . AcType select items;
+				//Next Group BankAccountViewModel collection on Custno
+				var grouped = accounts . GroupBy ( b => b . CustNo );
+				//Now filter content down to only those a/c's with multiple Bank A/c's
+				var sel = from g in grouped where g . Count ( ) > 1 select g;
+				// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full accounts data
+				// giving us ONLY the full records for any recordss that have > 1 Bank accounts
+				List<BankAccountViewModel> output = new List<BankAccountViewModel> ( );
+				foreach ( var item1 in sel )
+				{	foreach ( var item2 in accounts )
+					{if ( item2 . CustNo . ToString ( ) == item1 . Key )
+						{ output . Add ( item2 ); }
+					}
+				}
+				this . BankGrid . ItemsSource = output;
+			}
+			if ( q == 1 )
+			{
+				var accounts = from items in MultiCustcollection orderby items . CustNo, items . AcType select items;
+				//Next Group  collection on Custno
+				var grouped = accounts . GroupBy ( b => b . CustNo );
+				//Now filter content down to only those a/c's with multiple Bank A/c's
+				var sel = from g in grouped where g . Count ( ) > 1 select g;
+				// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full accounts data
+				// giving us ONLY the full records for any recordss that have > 1 Bank accounts
+				List<CustomerViewModel> output = new List<CustomerViewModel> ( );
+				foreach ( var item1 in sel )
+				{	foreach ( var item2 in accounts )
+					{if ( item2 . CustNo . ToString ( ) == item1 . Key )
+						{ output . Add ( item2 ); }
+					}
+				}
+				this . CustomerGrid . ItemsSource = output;
+			}
+			if ( q == 1 )
+			{
+				var accounts = from items in MultiDetcollection orderby items . CustNo, items . AcType select items;
+				//Next Group  collection on Custno
+				var grouped = accounts . GroupBy ( b => b . CustNo );
+				//Now filter content down to only those a/c's with multiple Bank A/c's
+				var sel = from g in grouped where g . Count ( ) > 1 select g;
+				// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full accounts data
+				// giving us ONLY the full records for any recordss that have > 1 Bank accounts
+				List<DetailsViewModel> output = new List<DetailsViewModel> ( );
+
+//				System . Diagnostics . PresentationTraceSources . SetTraceLevel ( DetailsGrid . ItemContainerGenerator, System . Diagnostics . PresentationTraceLevel . High );
+
+				foreach ( var item1 in sel )
+				{	foreach ( var item2 in accounts )
+					{	if ( item2 . CustNo . ToString ( ) == item1 . Key )
+						{	output . Add ( item2 ); }
+					}
+				}
+				this . DetailsGrid . ItemsSource = output;
+			}
+			StatusBar . Text = "Only Records of Customers with multiple Bank Accounts are shown above";
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void Linq6_Click ( object sender, RoutedEventArgs e )
+		{
+			Mouse . OverrideCursor = Cursors . Wait;
+			var accounts = from items in MultiBankcollection orderby items . CustNo, items . AcType select items;
+			var accounts1 = from items in MultiCustcollection orderby items . CustNo, items . AcType select items;
+			var accounts2 = from items in MultiDetcollection orderby items . CustNo, items . AcType select items;
+			this . BankGrid . ItemsSource = accounts;
+			this . CustomerGrid . ItemsSource = accounts1;
+			this . DetailsGrid . ItemsSource = accounts2;
+			StatusBar . Text = "All available Records are shown above in all three grids";
+			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		#endregion LINQ queries
+
+		private void Exit_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
+		}
+
+		private void Options_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void Minimize_click ( object sender, RoutedEventArgs e )
+		{
+			this . WindowState = WindowState . Normal;				
+		}
+
+		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
+		{
+
 		}
 	}
 }

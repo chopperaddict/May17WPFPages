@@ -279,17 +279,32 @@ namespace WPFPages
 		public static void GetWindowHandles ( )
 		{
 #if SHOWWINDOWDATA
-			Console.WriteLine ($"Current Windows\r\n"+"===============");
-			foreach (Window window in System.Windows.Application.Current.Windows)
+			Console . WriteLine ( $"Current Windows\r\n" + "===============" );
+			foreach ( Window window in System . Windows . Application . Current . Windows )
 			{
-				if (window.Title != "" && window.Content != "")
+				if ( window . Title != "" && window . Content != "" )
 				{
-					Console.WriteLine ($"Title:  {window.Title },\r\nContent - {window.Content}");
-					Console.WriteLine ($"Name = [{window.Name}]\r\n");
+					Console . WriteLine ( $"Title:  {window . Title },\r\nContent - {window . Content}" );
+					Console . WriteLine ( $"Name = [{window . Name}]\r\n" );
 				}
 			}
 #endif
 		}
+		public static bool  FindWindowFromTitle(string searchterm , ref Window handle)
+		{
+			bool result = false;
+			foreach ( Window window in System . Windows . Application . Current . Windows )
+			{
+				if ( window . Title .ToUpper().Contains (searchterm.ToUpper()))
+				{
+					handle = window;
+					result= true;
+					break;
+				}
+			}
+			return result;
+		}
+
 		//************************************************************************************//
 		public static Style GetDictionaryStyle ( string tempname )
 		{
