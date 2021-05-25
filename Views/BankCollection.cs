@@ -37,59 +37,70 @@ namespace WPFPages . Views
 		public async static Task<BankCollection> LoadBank ( BankCollection cc, int ViewerType = 1, bool NotifyAll = false )
 		//public async static Task<BankCollection> LoadBank ( int ViewerType, bool NotifyAll = false , BankCollection bankdata = null)
 		{
-			// Called to Load/reload the One & Only Bankcollection data source
-			if ( dtBank . Rows . Count > 0 )
-				dtBank . Clear ( );
-
-			if ( cc != null )
-				Bankinternalcollection = cc;
-			else
+			try
 			{
-				Bankinternalcollection = new BankCollection ( );
-				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
-			}
-			Debug . WriteLine ( $"\n ***** Loading Bank Data from disk *****\n" );
+				// Called to Load/reload the One & Only Bankcollection data source
+				if ( dtBank . Rows . Count > 0 )
+					dtBank . Clear ( );
 
-			if ( USEFULLTASK )
-			{
-				Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
-				BankCollection db = new BankCollection ( );
-				await db.LoadBankTaskInSortOrderasync ( );
-				return Bankinternalcollection;
-			}
-			else
-			{
-				Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
-				Bankinternalcollection . ClearItems ( );
-				// Abstract the mail data load call to a method that uses AWAITABLE  calles
-				ProcessRequest ( ) . ConfigureAwait ( false );
-
-				// We now have the pointer to the the Bank data in variable Bankinternalcollection
-				if ( Flags . IsMultiMode == false )
+				if ( cc != null )
+					Bankinternalcollection = cc;
+				else
 				{
-					Debug . WriteLine ( "Returning Bank Data via Debug output...." );
-					// Finally fill and return The global Dataset
+					Bankinternalcollection = new BankCollection ( );
+					Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
+				}
+//				Debug . WriteLine ( $"\n ***** Loading Bank Data from disk *****\n" );
+
+				if ( USEFULLTASK )
+				{
+					//Bankinternalcollection = null;
+//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
 					BankCollection db = new BankCollection ( );
-					SelectViewer ( ViewerType, Bankinternalcollection, out db );
-					if ( ViewerType == 1 )
-						return SqlViewerBankcollection;
-					if ( ViewerType == 2 )
-						return EditDbBankcollection;
-					if ( ViewerType == 3 )
-					{
-						cc = MultiBankcollection;
-						return MultiBankcollection;
-					}
-					if ( ViewerType == 4 )
-						return BankViewerDbcollection;
-					else
-						return ( BankCollection ) db;
+					await db . LoadBankTaskInSortOrderasync ( );
+					if ( cc != null )
+						cc = Bankinternalcollection;
+					return Bankinternalcollection;
 				}
 				else
 				{
-					// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
-					return Bankinternalcollection;
+//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
+					Bankinternalcollection . ClearItems ( );
+					// Abstract the mail data load call to a method that uses AWAITABLE  calles
+					ProcessRequest ( ) . ConfigureAwait ( false );
+
+					// We now have the pointer to the the Bank data in variable Bankinternalcollection
+					if ( Flags . IsMultiMode == false )
+					{
+//						Debug . WriteLine ( "Returning Bank Data via Debug output...." );
+						// Finally fill and return The global Dataset
+						BankCollection db = new BankCollection ( );
+						SelectViewer ( ViewerType, Bankinternalcollection, out db );
+						if ( ViewerType == 1 )
+							return SqlViewerBankcollection;
+						if ( ViewerType == 2 )
+							return EditDbBankcollection;
+						if ( ViewerType == 3 )
+						{
+							cc = MultiBankcollection;
+							return MultiBankcollection;
+						}
+						if ( ViewerType == 4 )
+							return BankViewerDbcollection;
+						else
+							return ( BankCollection ) db;
+					}
+					else
+					{
+						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+						return Bankinternalcollection;
+					}
 				}
+			}
+			catch(Exception ex )
+			{
+				Console . WriteLine ($"Bank Load Exception : {ex.Message}, {ex.Data}");
+				return null;
 			}
 		}
 		private static async Task ProcessRequest ( )
@@ -265,7 +276,7 @@ namespace WPFPages . Views
 					} );
 					count = i;
 				}
-				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
+//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
 			}
 			catch ( Exception ex )
 			{
@@ -371,7 +382,7 @@ namespace WPFPages . Views
 			t1 . ContinueWith (
 			( Bankinternalcollection ) =>
 				{
-					Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
+//					Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -394,7 +405,8 @@ namespace WPFPages . Views
 			t1 . ContinueWith (
 				( Bankinternalcollection ) =>
 				{
-					Debug . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
+					//					Debug . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
+					Console. WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status} ]." );
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -414,7 +426,7 @@ namespace WPFPages . Views
 
 			#endregion Continuations
 
-			Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankinternalcollection . Count} ***\n\n" );
+//			Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankinternalcollection . Count} ***\n\n" );
 
 			#endregion Success//Error reporting/handling
 			// Finally fill and return The global Dataset

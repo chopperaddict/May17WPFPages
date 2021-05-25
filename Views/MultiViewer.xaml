@@ -254,13 +254,24 @@
 					/>
 			<CheckBox x:Name="LinkRecords" 
 				    Click="LinkRecords_Click"
-				    Content="Link to External Viewers " 
+				    Content="Link-External Viewers " 
 				   FontWeight="SemiBold"
 				    Foreground="Red"
 				Grid.Column="6"
 				    Height="25"
 				    HorizontalAlignment="Right" 
 					     Margin="-71,-19,-390,20"
+				    VerticalAlignment="Center"				    />
+
+			<CheckBox x:Name="LinkGrids" 
+				    Click="LinkGrid_Click"
+				    Content="Link Grids" 
+				   FontWeight="SemiBold"
+				    Foreground="Red"
+				Grid.Column="6"
+				    Height="25"
+				    HorizontalAlignment="Right" 
+					     Margin="-71,-17,-240,20"
 				    VerticalAlignment="Center"				    />
 
 			<CheckBox x:Name="OntopChkbox"
@@ -284,7 +295,7 @@
 				Grid.Column="4"
 			      Grid.ColumnSpan="3"
 				Grid.Row="0"					    
-				Margin="67,-38,-200,5"
+				Margin="67,-18,-138,24"
 				Height="18"
 				TextAlignment="Left">
 		<!--<TextBlock.Foreground>
@@ -700,6 +711,11 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn >
 
+					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+									Mode=TwoWay, 
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
+
 				<DataGridTextColumn Header="Bank #" Width="80" 
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo, 
@@ -708,10 +724,11 @@
 									>
 				</DataGridTextColumn>
 
-				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+				<DataGridTextColumn Header="Type" Width="40" 
+								    SortMemberPath="AcType"
+									Binding="{Binding AcType, 
 									Mode=TwoWay, 
-									UpdateSourceTrigger=PropertyChanged}">
-				</DataGridTextColumn>
+									UpdateSourceTrigger=LostFocus}"/>
 
 				<DataGridTextColumn Header="Forename" Binding="{Binding FName, 
 									Mode=TwoWay, 
@@ -749,12 +766,6 @@
 									UpdateSourceTrigger=PropertyChanged}">
 				</DataGridTextColumn>
 
-
-				<DataGridTextColumn Header="Type" Width="40" 
-								    SortMemberPath="AcType"
-									Binding="{Binding AcType, 
-									Mode=TwoWay, 
-									UpdateSourceTrigger=LostFocus}"/>
 
 
 				<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
@@ -860,17 +871,16 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn >
 
+					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+									Mode=TwoWay, 
+									UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
 				<DataGridTextColumn Header="Bank #" Width="80" 
 								    SortMemberPath="BankNo"
 									Binding ="{Binding BankNo, 
 									Mode=TwoWay, 
 									UpdateSourceTrigger=LostFocus}"
 									>
-				</DataGridTextColumn>
-
-				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
-									Mode=TwoWay, 
-									UpdateSourceTrigger=PropertyChanged}">
 				</DataGridTextColumn>
 
 

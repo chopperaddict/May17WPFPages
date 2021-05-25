@@ -36,50 +36,59 @@ namespace WPFPages . Views
 		#region startup/load data / load collection (CustCollection)
 		public async static Task<CustCollection> LoadCust ( CustCollection cc, int ViewerType = 1 )
 		{
-			// Called to Load/reload the One & Only Bankcollection data source
-			if ( dtCust . Rows . Count > 0 )
-				dtCust . Clear ( );
-			if ( cc != null )
-				Custinternalcollection = cc;
-			else
-				Custinternalcollection = new CustCollection ( );
-
-			if ( Custinternalcollection . Count > 0 )
-				Custinternalcollection . ClearItems ( );
-			Debug . WriteLine ( $"\n ***** Loading Customer Data from disk *****\n" );
-
-			if ( USEFULLTASK )
+			try
 			{
-				Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
-				CustCollection c = new CustCollection ( );
-				await c.LoadCustomerTaskInSortOrderAsync ( );
-				return Custinternalcollection;
-			}
-			else
-			{
-				Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
-				// Abstract the mail data load call to a method that uses AWAITABLE  calles
-				await ProcessRequest ( );
+				// Called to Load/reload the One & Only Bankcollection data source
+				if ( dtCust . Rows . Count > 0 )
+					dtCust . Clear ( );
+				if ( cc != null )
+					Custinternalcollection = cc;
+				else
+					Custinternalcollection = new CustCollection ( );
 
-				//CustCollection c = new CustCollection();
-				//c . LoadCustDataSql ( );
+				if ( Custinternalcollection . Count > 0 )
+					Custinternalcollection . ClearItems ( );
+//				Debug . WriteLine ( $"\n ***** Loading Customer Data from disk *****\n" );
 
-				//if ( dtCust . Rows . Count > 0 )
-				//	Custinternalcollection = LoadCustomerTest ( );
-				// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
-				Flags . CustCollection = Custinternalcollection;
-				SqlViewerCustcollection = Custinternalcollection;
-				if ( Flags . IsMultiMode == false )
+				if ( USEFULLTASK )
 				{
-					// Finally fill and return The global Dataset
-					SelectViewer ( ViewerType, Custinternalcollection );
+//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
+					CustCollection c = new CustCollection ( );
+					await c . LoadCustomerTaskInSortOrderAsync ( );
+					cc = Custinternalcollection;
 					return Custinternalcollection;
 				}
 				else
 				{
-					// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
-					return Custinternalcollection;
+//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
+					// Abstract the mail data load call to a method that uses AWAITABLE  calles
+					await ProcessRequest ( );
+
+					//CustCollection c = new CustCollection();
+					//c . LoadCustDataSql ( );
+
+					//if ( dtCust . Rows . Count > 0 )
+					//	Custinternalcollection = LoadCustomerTest ( );
+					// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
+					Flags . CustCollection = Custinternalcollection;
+					SqlViewerCustcollection = Custinternalcollection;
+					if ( Flags . IsMultiMode == false )
+					{
+						// Finally fill and return The global Dataset
+						SelectViewer ( ViewerType, Custinternalcollection );
+						return Custinternalcollection;
+					}
+					else
+					{
+						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+						return Custinternalcollection;
+					}
 				}
+			}
+			catch ( Exception ex )
+			{
+				Console . WriteLine ( $"Customer Load Exception : {ex . Message}, {ex . Data}" );
+				return null;
 			}
 		}
 		private static async Task ProcessRequest ( )
@@ -129,7 +138,7 @@ namespace WPFPages . Views
 					SqlCommand cmd = new SqlCommand ( commandline, con );
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 					sda . Fill ( dtCust );
-					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
+//					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
 				}
 			}
 			catch ( Exception ex )
@@ -171,7 +180,7 @@ namespace WPFPages . Views
 					} );
 					count = i;
 				}
-				Debug . WriteLine ( $"CUSTOMER : Sql data loaded into Customer ObservableCollection \"Custinternalcollection\" [{count}] ...." );
+//				Debug . WriteLine ( $"CUSTOMER : Sql data loaded into Customer ObservableCollection \"Custinternalcollection\" [{count}] ...." );
 			}
 			catch ( Exception ex )
 			{
@@ -334,7 +343,7 @@ namespace WPFPages . Views
 					}
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnFaulted, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
-			Debug . WriteLine ( $"CUSTOMER : END OF PROCESSING & Error checking functionality\nCUSTOMER : *** Detcollection total = {Custinternalcollection . Count} ***\n\n" );
+//			Debug . WriteLine ( $"CUSTOMER : END OF PROCESSING & Error checking functionality\nCUSTOMER : *** Detcollection total = {Custinternalcollection . Count} ***\n\n" );
 
 			#endregion Success//Error reporting/handling
 			Flags . CustCollection = Custinternalcollection;

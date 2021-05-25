@@ -11,8 +11,11 @@ namespace WPFPages . Views
 
 	public class IndexChangedArgs : EventArgs
 	{
+		public SqlDbViewer Senderviewer {get; set;} 
 		public string SenderId { get; set; }
 		public string Sender { get; set; }
+		public string Custno { get; set; }
+		public string Bankno { get; set; }
 		public int Row { get; set; }
 		public DataGrid dGrid {get; set;}
 	}
@@ -23,6 +26,8 @@ namespace WPFPages . Views
 	}
 	public class LoadedEventArgs :EventArgs
 	{
+		public string Custno { get; set; }
+		public string Bankno { get; set; }
 		public int CurrSelection { get; set; }
 		public string CallerDb { get; set; }
 		public object DataSource { get; set; }

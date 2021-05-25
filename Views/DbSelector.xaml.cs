@@ -832,10 +832,26 @@ namespace WPFPages . Views
 				key1 = false;
 				return;
 			}
-			if ( key1 && e . Key == Key . F9 )     // CTRL + F9
+			else if ( key1 && e . Key == Key . F9 )     // CTRL + F9
 			{
 				// lists all delegates & Events
 				EventHandlers . ShowSubscribersCount ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
+			{
+				// list various Flags in Console
+				Flags . PrintDbInfo ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
+			{
+				// list various Flags in Console
+				Flags . UseBeeps = !Flags . UseBeeps;
 				e . Handled = true;
 				key1 = false;
 				return;

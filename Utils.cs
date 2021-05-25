@@ -1,8 +1,11 @@
 ﻿#define SHOWWINDOWDATA
 using System;
 using System . Runtime . InteropServices . WindowsRuntime;
+using System . Threading;
+using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
+using System . Windows . Forms . VisualStyles;
 using System . Windows . Input;
 using System . Windows . Media;
 using WPFPages . ViewModels;
@@ -18,8 +21,158 @@ namespace WPFPages
 	public class Utils
 	{
 		public static Action<DataGrid, int> GridInitialSetup = Utils . SetUpGridSelection;
-//		public static Func<bool, BankAccountViewModel, CustomerViewModel, DetailsViewModel> IsMatched = CheckRecordMatch; 
+		//		public static Func<bool, BankAccountViewModel, CustomerViewModel, DetailsViewModel> IsMatched = CheckRecordMatch; 
 		public static Func<object, object, bool> IsRecordMatched = Utils . CompareDbRecords;
+		// Declare the first few notes of the song, "Mary Had A Little Lamb".
+		// Define the frequencies of notes in an octave, as well as
+		// silence (rest).
+		protected enum Tone
+		{
+			REST = 0,
+			GbelowC = 196,
+			A = 220,
+			Asharp = 233,
+			B = 247,
+			C = 262,
+			Csharp = 277,
+			D = 294,
+			Dsharp = 311,
+			E = 330,
+			F = 349,
+			Fsharp = 370,
+			G = 392,
+			Gsharp = 415,
+		}
+
+		// Define the duration of a note in units of milliseconds.
+		protected enum Duration
+		{
+			WHOLE = 1600,
+			HALF = WHOLE / 2,
+			QUARTER = HALF / 2,
+			EIGHTH = QUARTER / 2,
+			SIXTEENTH = EIGHTH / 2,
+		}
+
+		protected struct Note
+		{
+			Tone toneVal;
+			Duration durVal;
+
+			// Define a constructor to create a specific note.
+			public Note ( Tone frequency, Duration time )
+			{
+				toneVal = frequency;
+				durVal = time;
+			}
+
+			// Define properties to return the note's tone and duration.
+			public Tone NoteTone { get { return toneVal; } }
+			public Duration NoteDuration { get { return durVal; } }
+		}
+		public static void PlayMary ( )
+		{
+			Note [ ] Mary =
+			{
+					new Note(Tone.B, Duration.QUARTER),
+					new Note(Tone.A, Duration.QUARTER),
+					new Note(Tone.GbelowC, Duration.QUARTER),
+					new Note(Tone.A, Duration.QUARTER),
+					new Note(Tone.B, Duration.QUARTER),
+					new Note(Tone.B, Duration.QUARTER),
+					new Note(Tone.B, Duration.HALF),
+					new Note(Tone.A, Duration.QUARTER),
+					new Note(Tone.A, Duration.QUARTER),
+					new Note(Tone.A, Duration.HALF),
+					new Note(Tone.B, Duration.QUARTER),
+					new Note(Tone.D, Duration.QUARTER),
+					new Note(Tone.D, Duration.HALF)
+			};
+			// Play the song
+			Play ( Mary );
+		}
+		// Play the notes in a song.
+		protected static void Play ( Note [ ] tune )
+		{
+			foreach ( Note n in tune )
+			{
+				if ( n . NoteTone == Tone . REST )
+					Thread . Sleep ( ( int ) n . NoteDuration );
+				else
+					Console . Beep ( ( int ) n . NoteTone, ( int ) n . NoteDuration );
+			}
+		}
+		// Define a note as a frequency (tone) and the amount of
+		//// time (duration) the note plays.
+		//public static Task DoBeep ( int freq = 180, int count = 300, bool swap = false )
+		//{
+		//	int tone = freq;
+		//	int duration = count;
+		//	int x = 0;
+		//	Task t = new Task ( ( ) => x = 1 );
+		//	if ( Flags . UseBeeps )
+		//	{
+		//		if ( swap )
+		//		{
+		//			tone = ( tone / 4 ) * 3;
+		//			duration = ( count * 5 ) / 2;
+		//			t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) )
+		//				. ContinueWith ( Action => Console . Beep ( tone, duration ) );
+		//			Thread . Sleep ( 500 );
+		//		}
+		//		else
+		//		{
+		//			tone = ( tone / 4 ) * 3;
+		//			duration = ( count * 5 ) / 2;
+		//			t = Task . Factory . StartNew ( ( ) => Console . Beep ( tone, duration ) )
+		//				. ContinueWith ( Action => Console . Beep ( freq, count ) );
+		//			Thread . Sleep ( 500 );
+		//		}
+		//	}
+		//	else
+		//	{
+		//		Task task = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
+		//		t = task ,TaskScheduler . FromCurrentSynchronizationContext ( );
+		//			}
+
+		//	TaskScheduler . FromCurrentSynchronizationContext ( ));
+		//	return t;
+		//}
+		//public static Task DoSingleBeep ( int freq = 280, int count = 300, int repeat = 1 )
+		//{
+		//	int x = 0;
+		//	Task t = new Task ( ( ) => x = 1 );
+		//	if ( Flags . UseBeeps )
+		//	{
+		//		for ( int i = 0 ; i < repeat ; i++ )
+		//		{
+		//			t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
+		//			Thread . Sleep ( 300 );
+		//		}
+
+		//		Thread . Sleep ( 500 );
+		//	}
+		//	else
+		//		t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
+		//	return t;
+		//}
+		//public static Task DoErrorBeep ( int freq = 280, int count = 100, int repeat = 3 )
+		//{
+		//	int x = 0;
+		//	Task t = new Task ( ( ) => x = 1 );
+		//	if ( Flags . UseBeeps )
+		//	{
+		//		for ( int i = 0 ; i < repeat ; i++ )
+		//		{
+		//			t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
+		//		}
+
+		//		Thread . Sleep ( 500 );
+		//	}
+		//	else
+		//		t = Task . Factory . StartNew ( ( ) => Console . WriteLine() );
+		//	return t;
+		//}
 
 		/// <summary>
 		/// A Func that takes ANY 2 (of 3 [Bank,Customer,Details] Db type records and returns true if the CustNo and Bankno match
@@ -27,18 +180,18 @@ namespace WPFPages
 		/// <param name="obj1"></param>
 		/// <param name="obj2"></param>
 		/// <returns></returns>
-		public static bool CompareDbRecords (object obj1, object obj2 )
+		public static bool CompareDbRecords ( object obj1, object obj2 )
 		{
 			bool result = false;
 			BankAccountViewModel bvm = new BankAccountViewModel ( );
 			CustomerViewModel cvm = new CustomerViewModel ( );
-			DetailsViewModel dvm = new DetailsViewModel();
+			DetailsViewModel dvm = new DetailsViewModel ( );
 			//bvm = null;
 			//cvm = null;
 			//dvm = null;
 			if ( obj1 == null || obj2 == null )
 				return result;
-			if ( obj1.GetType() == bvm . GetType ( ) )
+			if ( obj1 . GetType ( ) == bvm . GetType ( ) )
 				bvm = obj1 as BankAccountViewModel;
 			if ( obj1 . GetType ( ) == cvm . GetType ( ) )
 				cvm = obj1 as CustomerViewModel;
@@ -73,8 +226,8 @@ namespace WPFPages
 
 		public static bool CheckRecordMatch (
 			BankAccountViewModel bvm,
-			CustomerViewModel cvm, 
-			DetailsViewModel dvm)
+			CustomerViewModel cvm,
+			DetailsViewModel dvm )
 		{
 			bool result = false;
 			if ( bvm != null && cvm != null )
@@ -90,7 +243,7 @@ namespace WPFPages
 			else if ( cvm != null && dvm != null )
 			{
 				if ( cvm . CustNo == dvm . CustNo )
-					result  = true;
+					result = true;
 			}
 			return result;
 		}
@@ -101,15 +254,15 @@ namespace WPFPages
 		/// </summary>
 		/// <param name="grid"></param>
 		/// <param name="row"></param>
-		public static void SetUpGridSelection ( DataGrid grid , int row = -1)
+		public static void SetUpGridSelection ( DataGrid grid, int row = -1 )
 		{
-			if ( row == -1 ) row = grid . SelectedIndex;
+			if ( row == -1 ) row = 0;
 			// This triggers the selection changed event
 			grid . SelectedIndex = row;
 			grid . SelectedItem = row;
 			grid . Refresh ( );
 			grid . UpdateLayout ( );
-			Utils . ScrollRecordIntoView ( grid, row);
+			Utils . ScrollRecordIntoView ( grid, row );
 		}
 
 		/// <summary>
@@ -118,10 +271,10 @@ namespace WPFPages
 		/// </summary>
 		/// <param name="dGrid"></param>
 		/// <param name="row"></param>
-		public static void ScrollRecordInGrid(DataGrid dGrid,  int row)
+		public static void ScrollRecordInGrid ( DataGrid dGrid, int row )
 		{
 			if ( dGrid . CurrentItem == null ) return;
-				dGrid . UpdateLayout ( );
+			dGrid . UpdateLayout ( );
 			dGrid . ScrollIntoView ( dGrid . Items . Count - 1 );
 			dGrid . UpdateLayout ( );
 			dGrid . ScrollIntoView ( row );
@@ -177,18 +330,18 @@ namespace WPFPages
 		public static bool DataGridHasFocus ( DependencyObject instance )
 		{
 			//how to fibnd out whether a datagrid has focus or not to handle key previewers
-			IInputElement focusedControl = FocusManager.GetFocusedElement(instance);
-			if( focusedControl  == null)	return true;
-				string compare = focusedControl.ToString();
+			IInputElement focusedControl = FocusManager . GetFocusedElement ( instance );
+			if ( focusedControl == null ) return true;
+			string compare = focusedControl . ToString ( );
 			if ( compare . ToUpper ( ) . Contains ( "DATAGRID" ) )
 				return true;
 			else
 				return false;
 		}
-		public static void ScrollRecordIntoView ( DataGrid Dgrid , int CurrentRecord )
+		public static void ScrollRecordIntoView ( DataGrid Dgrid, int CurrentRecord )
 		{
 			double currentTop = 0;
-			double currentBottom= 0;
+			double currentBottom = 0;
 			double currsel = 0;
 			double offset = 0;
 			if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
@@ -220,8 +373,8 @@ namespace WPFPages
 			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
 			Dgrid . UpdateLayout ( );
 			Dgrid . SelectedIndex = ( int ) CurrentRecord;
-//			if ( caller == 0 )
-				Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
+			//			if ( caller == 0 )
+			Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
 
 			//			Flags . TopVisibleDetGridRow = currentTop;
 			//			Flags . BottomVisibleDetGridRow = currentBottom;
@@ -290,15 +443,15 @@ namespace WPFPages
 			}
 #endif
 		}
-		public static bool  FindWindowFromTitle(string searchterm , ref Window handle)
+		public static bool FindWindowFromTitle ( string searchterm, ref Window handle )
 		{
 			bool result = false;
 			foreach ( Window window in System . Windows . Application . Current . Windows )
 			{
-				if ( window . Title .ToUpper().Contains (searchterm.ToUpper()))
+				if ( window . Title . ToUpper ( ) . Contains ( searchterm . ToUpper ( ) ) )
 				{
 					handle = window;
-					result= true;
+					result = true;
 					break;
 				}
 			}

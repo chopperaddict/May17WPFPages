@@ -38,21 +38,30 @@ namespace WPFPages . Views
 
 		public async static Task<DetCollection> LoadDet ( DetCollection dc, int ViewerType = 1 )
 		{
-			// Called to Load/reload the One & Only Bankcollection data source
-			if ( dtDetails . Rows . Count > 0 )
-				dtDetails . Clear ( );
+			try
+			{
+				// Called to Load/reload the One & Only Bankcollection data source
+				if ( dtDetails . Rows . Count > 0 )
+					dtDetails . Clear ( );
 
-			if ( dc != null )
-				Detinternalcollection = dc;
-			else
-				Detinternalcollection = new DetCollection ( );
+				if ( dc != null )
+					Detinternalcollection = dc;
+				else
+					Detinternalcollection = new DetCollection ( );
 
-			if ( Detinternalcollection . Count > 0 )
-				Detinternalcollection . ClearItems ( );
-			Debug . WriteLine ( $"\n ***** Loading Details Data from disk *****\n" );
+				if ( Detinternalcollection . Count > 0 )
+					Detinternalcollection . ClearItems ( );
+//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk *****\n" );
 
-			Detinternalcollection = await ProcessRequest ( ViewerType );
-			return Detinternalcollection;
+				Detinternalcollection = await ProcessRequest ( ViewerType );
+				dc = Detinternalcollection;
+				return Detinternalcollection;
+			}
+			catch ( Exception ex )
+			{
+				Console . WriteLine ( $"Details  Load Exception : {ex . Message}, {ex . Data}" );
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -65,14 +74,14 @@ namespace WPFPages . Views
 			if ( USEFULLTASK )
 			{
 				//This branch uses the full TASK and await system to loadBank Data
-				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using FULL Task Control system)*****\n" );
+//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using FULL Task Control system)*****\n" );
 				DetCollection d = new DetCollection ( );
 				await d . LoadDetailsTaskInSortOrderAsync ( );
 				return Detinternalcollection;
 			}
 			else
 			{
-				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using Abbreviated AWAIT Control system)*****\n" );
+//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using Abbreviated AWAIT Control system)*****\n" );
 				DetCollection d = new DetCollection ( );
 				await d . LoadDetailsDataSql ( ) . ConfigureAwait ( false );
 				if ( dtDetails . Rows . Count > 0 )
@@ -126,7 +135,7 @@ namespace WPFPages . Views
 			(
 				async ( Detinternalcollection ) =>
 				{
-					Debug . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//					Debug . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 					await LoadDetCollection ( row, b );
 				}, TaskScheduler . FromCurrentSynchronizationContext ( )
 			 );
@@ -205,7 +214,7 @@ namespace WPFPages . Views
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 					sda . Fill ( dtDetails );
 					st . Stop ( );
-					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
+//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 				}
 			}
 			catch ( Exception ex )
@@ -238,7 +247,7 @@ namespace WPFPages . Views
 					} );
 					count = i;
 				}
-				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"Detinternalcollection\" [{count}] ...." );
+//				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"Detinternalcollection\" [{count}] ...." );
 				if ( Notify )
 				{
 					//					OnDetDataLoaded ( Detcollection , row );

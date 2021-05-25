@@ -10,7 +10,7 @@ using System . Collections . Generic;
 using System . Diagnostics;
 using System . Threading;
 using System . Windows . Controls;
-
+using WPFPages . ViewModels;
 using WPFPages . Views;
 
 namespace WPFPages
@@ -18,10 +18,10 @@ namespace WPFPages
 
 	public static class Flags
 	{
-	
+
 		public static DataGrid SqlBankGrid;// = null;
 		public static SqlDbViewer SqlBankViewer;// = null;
-		public static  DataGrid CurrentEditDbViewerBankGrid;// = null;
+		public static DataGrid CurrentEditDbViewerBankGrid;// = null;
 
 		// Pointers to our data colections
 		public static DetCollection DetCollection = null;
@@ -31,7 +31,7 @@ namespace WPFPages
 		private struct AllFlags
 		{
 
-			DataGrid  SqlBankGrid;
+			DataGrid SqlBankGrid;
 			//			SqlDbViewer SqlBankViewer;
 			DataGrid CurrentEditDbViewerBankGrid;
 			DataGrid SqlCustGrid;
@@ -49,11 +49,11 @@ namespace WPFPages
 			//			bool isEditDbCaller;
 			//			bool SqlDataChanged;
 			//			bool EditDbDataChanged;
-//			EditDb BankEditDb;
-//			EditDb CustEditDb;
-//			EditDb DetEditDb;
+			//			EditDb BankEditDb;
+			//			EditDb CustEditDb;
+			//			EditDb DetEditDb;
 			//			DbSelector DbSelectorOpen;
-//			EditDb CurrentEditDbViewer;
+			//			EditDb CurrentEditDbViewer;
 			//			SqlDbViewer CurrentSqlViewer;
 			//			SqlDbViewer SqlUpdateOriginatorViewer;
 			//			bool EditDbChangeHandled;
@@ -63,7 +63,7 @@ namespace WPFPages
 			bool IsMultiMode;
 			//			SqlDbViewer ActiveSqlViewer;
 			bool SqlViewerIsLoading;
-			bool  SqlViewerIndexIsChanging;
+			bool SqlViewerIndexIsChanging;
 			//			DataGrid ActiveSqlGrid;
 			int SqlBankCurrentIndex;
 			int SqlCustCurrentIndex;
@@ -72,17 +72,17 @@ namespace WPFPages
 
 		public static DataGrid SqlCustGrid;// = null;
 		public static SqlDbViewer SqlCustViewer;// = null;
-		public static  DataGrid CurrentEditDbViewerCustomerGrid;//= null;
+		public static DataGrid CurrentEditDbViewerCustomerGrid;//= null;
 
 		public static DataGrid SqlDetGrid = null;
 		public static SqlDbViewer SqlDetViewer = null;
-		public static  DataGrid CurrentEditDbViewerDetailsGrid = null;
+		public static DataGrid CurrentEditDbViewerDetailsGrid = null;
 
 		public static MultiViewer SqlMultiViewer = null;
-		
-		public static List< DataGrid > CurrentEditDbViewerBankGridList;
-		public static List< DataGrid > CurrentEditDbViewerCustomerGridList;
-		public static List< DataGrid > CurrentEditDbViewerDetailsGridList;
+
+		public static List<DataGrid> CurrentEditDbViewerBankGridList;
+		public static List<DataGrid> CurrentEditDbViewerCustomerGridList;
+		public static List<DataGrid> CurrentEditDbViewerDetailsGridList;
 
 		// Current active Grid pointer and Name - Used as a pointer to the currently active DataGrid
 		public static DataGrid ActiveSqlGrid = null;
@@ -104,7 +104,7 @@ namespace WPFPages
 		public static bool SqlDataChanged = false;
 		public static bool EditDbDataChanged = false;
 		// system wide flags to avoid selection change processing when we are loading/Reloading FULL DATA in SqlDbViewer
-		public static bool  DataLoadIngInProgress = false;
+		public static bool DataLoadIngInProgress = false;
 		public static bool UpdateInProgress = false;
 
 		public static EditDb BankEditDb;//= null;
@@ -117,14 +117,14 @@ namespace WPFPages
 		public static DbSelector DbSelectorOpen;// = null;
 		public static EditDb CurrentEditDbViewer;// = new EditDb ( );
 		public static SqlDbViewer CurrentSqlViewer;// = new SqlDbViewer();
-		//		public static SqlDbViewer SqlUpdateOriginatorViewer = null;
+							   //		public static SqlDbViewer SqlUpdateOriginatorViewer = null;
 
 		// pointers  to any open Viewers
 		public static SqlDbViewer CurrentBankViewer;
 		public static SqlDbViewer CurrentCustomerViewer;
-		public static SqlDbViewer  CurrentDetailsViewer;
+		public static SqlDbViewer CurrentDetailsViewer;
 
-		public static  MultiViewer MultiViewer;
+		public static MultiViewer MultiViewer;
 
 		public static BankDbView BankDbEditor;
 		public static CustDbView CustDbEditor;
@@ -153,10 +153,12 @@ namespace WPFPages
 		///  mutliple additions to DbSelector's viewer  listbox
 		/// </summary>
 		public static bool SqlViewerIsLoading = false;
-		public static bool SqlViewerIndexIsChanging= false;
+		public static bool SqlViewerIndexIsChanging = false;
 		public static bool EditDbIndexIsChanging = false;
 		public static bool EditDbDataChange = false;
 		public static bool ViewerDataChange = false;
+		public static bool UseBeeps = false;
+
 		/*
 		 *	Sorting Checkbox enumeration
 		 *	Default_option . IsChecked = true;		// 0
@@ -198,7 +200,7 @@ namespace WPFPages
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <param name="CurrentDb"></param>
-		public static void SetGridviewControlFlags ( SqlDbViewer instance , DataGrid Grid )
+		public static void SetGridviewControlFlags ( SqlDbViewer instance, DataGrid Grid )
 		{
 			//Setup global flags -
 			Flags . CurrentSqlViewer = instance;
@@ -230,13 +232,13 @@ namespace WPFPages
 			else
 			{
 				// we need to clear the  details in Gridviewer flag system
-				ClearGridviewControlStructure ( instance , Grid );
+				ClearGridviewControlStructure ( instance, Grid );
 			}
 #if SHOWFLAGS
 			ListGridviewControlFlags();
 #endif
 		}
-		public static void ClearGridviewControlStructure ( SqlDbViewer instance , DataGrid Grid )
+		public static void ClearGridviewControlStructure ( SqlDbViewer instance, DataGrid Grid )
 		{
 			//No more viewers open, so clear entire gv[] control structure
 			if ( instance == null || Flags . DbSelectorOpen . ViewersList . Items . Count == 1 )
@@ -262,7 +264,7 @@ namespace WPFPages
 			}
 		}
 		//Remove a SINGLE Viewer Windows data from Flags & gv[]
-		public static bool DeleteViewerAndFlags ( int index = -1 , string currentDb = "" )
+		public static bool DeleteViewerAndFlags ( int index = -1, string currentDb = "" )
 		{
 			int x = index;
 			SqlDbViewer sqlv;                        // x = GridView[] index if received
@@ -275,7 +277,7 @@ namespace WPFPages
 			{ // Delete all
 				for ( int z = 0 ; z < MainWindow . gv . MaxViewers ; z++ )
 				{
-					DbSelector . UpdateControlFlags ( null , null , MainWindow . gv . PrettyDetails );
+					DbSelector . UpdateControlFlags ( null, null, MainWindow . gv . PrettyDetails );
 					MainWindow . gv . CurrentDb [ z ] = "";
 					MainWindow . gv . ListBoxId [ z ] = Guid . Empty;
 					MainWindow . gv . Datagrid [ z ] = null;
@@ -297,7 +299,7 @@ namespace WPFPages
 				Flags . SqlBankViewer = null;
 				Flags . SqlCustViewer = null;
 				Flags . SqlDetViewer = null;
-//				Flags . CurrentSqlViewer = null;
+				//				Flags . CurrentSqlViewer = null;
 
 				// ALL entries in our GridView structure are now cleared  ** totally **
 				return true;
@@ -318,13 +320,13 @@ namespace WPFPages
 					GridViewerArrayIndex = x;
 					// we have got the index in "x"  of the viewer in the Mainindow.gv[] array
 					// so  get the Tag of that selected Entry vin the ViewersList
-					for ( int i = 0 ; i < DbSelectorOpen . ViewersList .Items.Count ; i++ )
+					for ( int i = 0 ; i < DbSelectorOpen . ViewersList . Items . Count ; i++ )
 					{
 						lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
-						if ( MainWindow . gv . ListBoxId [ i ] == ( Guid ) Flags . CurrentSqlViewer?.Tag)
+						if ( MainWindow . gv . ListBoxId [ i ] == ( Guid ) Flags . CurrentSqlViewer?.Tag )
 						{
 							//lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
-							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( i + 1);
+							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( i + 1 );
 							Flags . DbSelectorOpen . ViewersList . Refresh ( );
 							GridViewerArrayIndex = i;
 							break;
@@ -478,7 +480,7 @@ namespace WPFPages
 			$"BANK     SqlBankViewer:- [ {SqlBankViewer?.Tag} ]\n" +
 			$"CUST     SqlCustViewer:- [ {SqlCustViewer?.Tag} ]\n" +
 			$"DETS     SqlDetViewer:-  [ {SqlDetViewer?.Tag} ]\n" +
-			$"\nFLAGS : CurrentSqlViewer :-  [ {Flags.CurrentSqlViewer?.Tag} ]\n" +
+			$"\nFLAGS : CurrentSqlViewer :-  [ {Flags . CurrentSqlViewer?.Tag} ]\n" +
 			"=================================================================\n"
 			);
 		}
@@ -534,7 +536,7 @@ namespace WPFPages
 			$"Bank : BankViewerDbcollection				: { BankCollection . BankViewerDbcollection . Count}\n" +
 
 			$"\nCustcollection								: { CustCollection . Custcollection . Count}\n" +
-			$"CustViewerDbcollection						: { CustCollection.CustViewerDbcollection . Count}\n" +
+			$"CustViewerDbcollection						: { CustCollection . CustViewerDbcollection . Count}\n" +
 			$"SqlViewerCustcollection	  					: { CustCollection . SqlViewerCustcollection . Count}\n" +
 			$"EditDbCustcollection 						: { CustCollection . EditDbCustcollection . Count}\n" +
 			$"MultiCustcollection							: { CustCollection . MultiCustcollection . Count}\n" +
@@ -543,16 +545,42 @@ namespace WPFPages
 			$"DetViewerDbcollection						: { DetCollection . DetViewerDbcollection . Count}\n" +
 			$"SqlViewerDetcollection	  					: { DetCollection . SqlViewerDetcollection . Count}\n" +
 			$"EditDbDetcollection 						: { DetCollection . EditDbDetcollection . Count}\n" +
-			$"MultiDetcollection							: { DetCollection . MultiDetcollection . Count}\n\n" 
+			$"MultiDetcollection							: { DetCollection . MultiDetcollection . Count}\n\n"
 			);
 		}
-		public static void PrintSundryVariables (string comment ="")
+		public static void PrintDbInfo ( )
 		{
-			if(comment.Length > 0)
-				Debug . WriteLine ($"\n COMMENT : {comment}");
-				else
+			BankAccountViewModel bvm = SqlBankGrid?.SelectedItem as BankAccountViewModel;
+			CustomerViewModel cvm = SqlBankGrid?.SelectedItem as CustomerViewModel;
+			DetailsViewModel dvm = SqlBankGrid?.SelectedItem as DetailsViewModel;
+			Console . WriteLine ($"\nDatabase information");
+			bvm = SqlBankGrid?.SelectedItem as BankAccountViewModel;
+			Console . WriteLine ( $"SqlBankGrid		: {SqlBankGrid?.Items . Count} : {SqlBankGrid?.SelectedIndex}" );
+			Console . WriteLine ( $"				: CustNo = {bvm?.CustNo}, BankNo = {bvm?.BankNo}" );
+			cvm = SqlCustGrid?.SelectedItem as CustomerViewModel;
+			Console . WriteLine ( $"SqlCustGrid		: {SqlCustGrid?.Items . Count} : {SqlCustGrid?.SelectedIndex}" );
+			Console . WriteLine ($"				: CustNo = {cvm? . CustNo}, BankNo = {cvm? . BankNo}" );
+			dvm = SqlDetGrid?.SelectedItem as DetailsViewModel;
+			Console . WriteLine ( $"SqlDetGrid		: {SqlDetGrid?.Items . Count} : {SqlDetGrid?.SelectedIndex}" );
+			Console . WriteLine ($"				: CustNo = {dvm ?. CustNo}, BankNo = {dvm? . BankNo}" ); 
+			bvm = SqlMultiViewer?.BankGrid?.SelectedItem as BankAccountViewModel;
+			Console . WriteLine ( $"Multi.BankGrid	: {SqlMultiViewer?.BankGrid . Items . Count} : {SqlMultiViewer?.BankGrid?.SelectedIndex}" );
+			Console . WriteLine ($"				: CustNo = {bvm ?. CustNo}, BankNo = {bvm? . BankNo}" ); 
+			cvm = SqlMultiViewer?.CustomerGrid?.SelectedItem as CustomerViewModel;
+			Console . WriteLine ( $"Multi. CustGrid	: {SqlMultiViewer?.CustomerGrid . Items . Count} : {SqlMultiViewer?.CustomerGrid?.SelectedIndex}" );
+			Console . WriteLine ($"				: CustNo = {cvm ?. CustNo}, BankNo = {cvm? . BankNo}" ); 
+			dvm = SqlMultiViewer?.DetailsGrid?.SelectedItem as DetailsViewModel;
+			Console . WriteLine ( $"Multi. DetGrid		: {SqlMultiViewer?.DetailsGrid . Items . Count} : {SqlMultiViewer?.DetailsGrid . SelectedIndex}" );
+			Console . WriteLine ($"				: CustNo = {dvm? . CustNo}, BankNo = {dvm? . BankNo}" );
+		}
+
+		public static void PrintSundryVariables ( string comment = "" )
+		{
+			if ( comment . Length > 0 )
+				Debug . WriteLine ( $"\n COMMENT : {comment}" );
+			else
 				Debug . WriteLine ( "" );
-			if ( Flags.CurrentSqlViewer != null && Flags . SqlBankGrid != null )
+			if ( Flags . CurrentSqlViewer != null && Flags . SqlBankGrid != null )
 				Debug . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlBankGrid . Name}" );
 			if ( Flags . CurrentSqlViewer != null && Flags . SqlCustGrid != null )
 				Debug . WriteLine ( $" Current Viewer : ItemsSource :		{ Flags . SqlCustGrid . Name}" );
@@ -565,11 +593,11 @@ namespace WPFPages
 			Debug . WriteLine ( $" Flags . TopVisibleDetGridRow		= { Flags . TopVisibleDetGridRow}" );
 			Debug . WriteLine ( $" Flags . BottomVisibleDetGridRow	= { Flags . BottomVisibleDetGridRow}" );
 			Debug . WriteLine ( $" Flags . ViewPortHeight				= { Flags . ViewPortHeight } rows visible" );
-			if ( Flags . ActiveSqlViewer? . CurrentDb == "BANKACCOUNT" )
+			if ( Flags . ActiveSqlViewer?.CurrentDb == "BANKACCOUNT" )
 				Debug . WriteLine ( $" BANK record's offset (from top)	= { ( Flags . SqlBankCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
-			else if ( Flags . ActiveSqlViewer?. CurrentDb == "CUSTOMER" )
+			else if ( Flags . ActiveSqlViewer?.CurrentDb == "CUSTOMER" )
 				Debug . WriteLine ( $" CUST record's offset (from top)	= { ( Flags . SqlCustCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
-			else if ( Flags . ActiveSqlViewer? . CurrentDb == "DETAILS" )
+			else if ( Flags . ActiveSqlViewer?.CurrentDb == "DETAILS" )
 				Debug . WriteLine ( $" DETAILS record offset (from top)	= { ( Flags . SqlDetCurrentIndex - Flags . TopVisibleDetGridRow ) + 1}" );
 			Debug . WriteLine ( $"\n Flags . SqlBankCurrentIndex		= { Flags . SqlBankCurrentIndex}" );
 			Debug . WriteLine ( $" Flags . SqlCustCurrentIndex		= { Flags . SqlCustCurrentIndex}" );
@@ -581,7 +609,7 @@ namespace WPFPages
 			if ( Flags . SqlCustGrid != null )
 				buffer += $"\n Flags.SqlCustGrid					= { Flags . SqlCustGrid?.Items . Count} / {Flags . SqlCustGrid?.SelectedIndex}";
 			if ( Flags . SqlDetGrid != null )
-				buffer  += $"\n Flags.SqlDetGrid					= { Flags . SqlDetGrid? . Items . Count} / {Flags . SqlDetGrid? . SelectedIndex}";			
+				buffer += $"\n Flags.SqlDetGrid					= { Flags . SqlDetGrid?.Items . Count} / {Flags . SqlDetGrid?.SelectedIndex}";
 			if ( buffer . Length > 18 )
 			{
 				Debug . WriteLine ( buffer );
@@ -603,9 +631,9 @@ namespace WPFPages
 				Debug . WriteLine ( buffer );
 				Debug . WriteLine ( "\n" );
 			}
-//			Debug . WriteLine ( $" Flags . BankCollection			= { Flags . BankCollection.Count}" );
-//			Debug . WriteLine ( $" Flags . CustCollection			= { Flags . CustCollection . Count}" );
-//			Debug . WriteLine ( $" Flags . DetCollection			= { Flags . DetCollection . Count}" );
+			//			Debug . WriteLine ( $" Flags . BankCollection			= { Flags . BankCollection.Count}" );
+			//			Debug . WriteLine ( $" Flags . CustCollection			= { Flags . CustCollection . Count}" );
+			//			Debug . WriteLine ( $" Flags . DetCollection			= { Flags . DetCollection . Count}" );
 		}
 	}
 }

@@ -651,13 +651,14 @@ namespace WPFPages . Views
 
 			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
 								//			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
-			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
 
 			// Main update notification handler
 			EventControl . ViewerDataUpdated += EventControl_ViewerDataUpdated;
 			// changes made inMultiviewer
 			EventControl . MultiViewerDataUpdated += EventControl_ViewerDataUpdated;
 
+			// EditDb has changed index
+			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
 			// SqlViewer has changed index
 			EventControl . ViewerIndexChanged += EventControl_ViewerIndexChanged;
 			EventControl . MultiViewerIndexChanged += EventControl_ViewerIndexChanged;
