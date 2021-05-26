@@ -26,6 +26,7 @@ namespace WPFPages . Views
 		public static DataTable dtDetails = new DataTable ( );
 		public Stopwatch st;
 		public static bool USEFULLTASK = true;
+		public  static bool Notify = false;
 
 		#region CONSTRUCTOR
 
@@ -36,8 +37,9 @@ namespace WPFPages . Views
 
 		#endregion CONSTRUCTOR
 
-		public async static Task<DetCollection> LoadDet ( DetCollection dc, int ViewerType = 1 )
+		public async static Task<DetCollection> LoadDet ( DetCollection dc, int ViewerType = 1, bool NotifyAll = false )
 		{
+			Notify = NotifyAll;
 			try
 			{
 				// Called to Load/reload the One & Only Bankcollection data source
@@ -109,8 +111,10 @@ namespace WPFPages . Views
 		CancellationTokenSource cts = new CancellationTokenSource ( );
 
 		//**************************************************************************************************************************************************************//
-		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false, int row = 0 )
+		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false, int row = 0 , bool NotifyAll = false)
 		{
+			NotifyAll = NotifyAll;
+
 			if ( dtDetails . Rows . Count > 0 )
 				dtDetails . Clear ( );
 
@@ -227,7 +231,7 @@ namespace WPFPages . Views
 		}
 
 		//**************************************************************************************************************************************************************//
-		public static async Task<DetCollection> LoadDetCollection ( int row, bool Notify = true )
+		public static async Task<DetCollection> LoadDetCollection ( int row, bool DoNotify = true )
 		{
 			int count = 0;
 			try

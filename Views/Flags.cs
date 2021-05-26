@@ -157,7 +157,7 @@ namespace WPFPages
 		public static bool EditDbIndexIsChanging = false;
 		public static bool EditDbDataChange = false;
 		public static bool ViewerDataChange = false;
-		public static bool UseBeeps = false;
+		public static bool UseBeeps = true;
 
 		/*
 		 *	Sorting Checkbox enumeration
@@ -319,14 +319,14 @@ namespace WPFPages
 					}
 					GridViewerArrayIndex = x;
 					// we have got the index in "x"  of the viewer in the Mainindow.gv[] array
-					// so  get the Tag of that selected Entry vin the ViewersList
+					// so  get the Tag of that selected Entry in the ViewersList
 					for ( int i = 0 ; i < DbSelectorOpen . ViewersList . Items . Count ; i++ )
 					{
 						lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
 						if ( MainWindow . gv . ListBoxId [ i ] == ( Guid ) Flags . CurrentSqlViewer?.Tag )
 						{
 							//lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
-							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( i + 1 );
+							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( GridViewerArrayIndex );
 							Flags . DbSelectorOpen . ViewersList . Refresh ( );
 							GridViewerArrayIndex = i;
 							break;
@@ -631,9 +631,32 @@ namespace WPFPages
 				Debug . WriteLine ( buffer );
 				Debug . WriteLine ( "\n" );
 			}
-			//			Debug . WriteLine ( $" Flags . BankCollection			= { Flags . BankCollection.Count}" );
-			//			Debug . WriteLine ( $" Flags . CustCollection			= { Flags . CustCollection . Count}" );
-			//			Debug . WriteLine ( $" Flags . DetCollection			= { Flags . DetCollection . Count}" );
+			if ( MultiViewer != null )
+			{
+				Debug . WriteLine ( $" MultiViewer Scroll settings" );
+				Debug . WriteLine ( $" ScrollData.Banktop		= { ( int ) MultiViewer?.ScrollData . Banktop}" );
+				Debug . WriteLine ( $" ScrollData.Bankbottom	= { ( int ) MultiViewer?.ScrollData . Bankbottom}" );
+				Debug . WriteLine ( $" ScrollData.Bankvisible	= { ( int ) MultiViewer?.ScrollData . BankVisible}" );
+				Debug . WriteLine ( $" ScrollData.Custtop		= { ( int ) MultiViewer?.ScrollData . Custtop}" );
+				Debug . WriteLine ( $" ScrollData.Custbottom	= { ( int ) MultiViewer?.ScrollData . Custbottom}" );
+				Debug . WriteLine ( $" ScrollData.Custvisible	= { ( int ) MultiViewer?.ScrollData . CustVisible}" );
+				Debug . WriteLine ( $" ScrollData.Dettop		= { ( int ) MultiViewer?.ScrollData . Dettop}" );
+				Debug . WriteLine ( $" ScrollData.Detbottom	= { ( int ) MultiViewer?.ScrollData . Detbottom}" );
+				Debug . WriteLine ( $" ScrollData.Detvisible	= { ( int ) MultiViewer?.ScrollData . DetVisible}\n" );
+			}
+			if ( CurrentSqlViewer != null )
+			{
+				Debug . WriteLine ( $" SqlViewer Scroll settings" );
+				Debug . WriteLine ( $" SqlViewer.Banktop		= { ( int ) SqlDbViewer . ScrollData . Banktop}" );
+				Debug . WriteLine ( $" SqlViewer.Bankbottom	= { ( int ) SqlDbViewer.ScrollData . Bankbottom}" );
+				Debug . WriteLine ( $" SqlViewer.Bankvisible	= { ( int ) SqlDbViewer.ScrollData . BankVisible}" );
+				Debug . WriteLine ( $" SqlViewer.Custtop		= { ( int ) SqlDbViewer.ScrollData . Custtop}" );
+				Debug . WriteLine ( $" SqlViewer.Custbottom	= { ( int ) SqlDbViewer.ScrollData . Custbottom}" );
+				Debug . WriteLine ( $" SqlViewer.Custvisible	= { ( int ) SqlDbViewer.ScrollData . CustVisible}" );
+				Debug . WriteLine ( $" SqlViewer.Dettop		= { ( int ) SqlDbViewer.ScrollData . Dettop}" );
+				Debug . WriteLine ( $" SqlViewer.Detbottom	= { ( int ) SqlDbViewer.ScrollData . Detbottom}" );
+				Debug . WriteLine ( $" SqlViewer.Detvisible	= { ( int ) SqlDbViewer.ScrollData . DetVisible}\n" );
+			}
 		}
 	}
 }

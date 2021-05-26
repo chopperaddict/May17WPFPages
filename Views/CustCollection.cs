@@ -25,6 +25,8 @@ namespace WPFPages . Views
 		public static CustCollection Custinternalcollection = new CustCollection ( );
 		public static BankCollection temp = new BankCollection ( );
 		public static bool USEFULLTASK = true;
+		public static bool Notify = false;
+
 		#region CONSTRUCTOR
 
 		public CustCollection ( ) : base ( )
@@ -34,8 +36,9 @@ namespace WPFPages . Views
 		#endregion CONSTRUCTOR
 
 		#region startup/load data / load collection (CustCollection)
-		public async static Task<CustCollection> LoadCust ( CustCollection cc, int ViewerType = 1 )
+		public async static Task<CustCollection> LoadCust ( CustCollection cc, int ViewerType = 1, bool NotifyAll = false )
 		{
+			Notify = NotifyAll;
 			try
 			{
 				// Called to Load/reload the One & Only Bankcollection data source
@@ -151,7 +154,7 @@ namespace WPFPages . Views
 		}
 
 		//**************************************************************************************************************************************************************//
-		private static async Task<bool> LoadCustomerCollection ( bool Notify = false )
+		private static async Task<bool> LoadCustomerCollection ( bool DoNotify = false )
 
 		{
 			int count = 0;
@@ -180,24 +183,24 @@ namespace WPFPages . Views
 					} );
 					count = i;
 				}
-//				Debug . WriteLine ( $"CUSTOMER : Sql data loaded into Customer ObservableCollection \"Custinternalcollection\" [{count}] ...." );
+				if ( Notify && count > 0 )
+				{
+					EventControl . TriggerCustDataLoaded ( null,
+						new LoadedEventArgs
+						{
+							CallerDb = "CUSTOMER",
+							DataSource = Custinternalcollection,
+							RowCount = Custinternalcollection . Count
+						} );
+				}
+				Flags . CustCollection = Custinternalcollection;
+				//				Debug . WriteLine ( $"CUSTOMER : Sql data loaded into Customer ObservableCollection \"Custinternalcollection\" [{count}] ...." );
 			}
 			catch ( Exception ex )
 			{
 				Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
-				MessageBox . Show ( $"CUSTOMERS : ERROR :\n		Error was  : [{ex . Message}] ...." );
+				//MessageBox . Show ( $"CUSTOMERS : ERROR :\n		Error was  : [{ex . Message}] ...." );
 			}
-			if ( Notify )
-			{
-				EventControl . TriggerCustDataLoaded ( null,
-					new LoadedEventArgs
-					{
-						CallerDb = "CUSTOMER",
-						DataSource = Custinternalcollection,
-						RowCount = Custinternalcollection . Count
-					} );
-			}
-			Flags . CustCollection = Custinternalcollection;
 			return true;
 		}
 		public async static Task<CustCollection> LoadCustomerTest ( bool Notify = true )

@@ -28,6 +28,8 @@ namespace WPFPages . Views
 
 		public static DataTable dtBank = new DataTable ( "BankDataTable" );
 		public static bool USEFULLTASK = true;
+		public static bool Notify = false;
+
 
 		#region CONSTRUCTOR
 
@@ -37,6 +39,7 @@ namespace WPFPages . Views
 		public async static Task<BankCollection> LoadBank ( BankCollection cc, int ViewerType = 1, bool NotifyAll = false )
 		//public async static Task<BankCollection> LoadBank ( int ViewerType, bool NotifyAll = false , BankCollection bankdata = null)
 		{
+			Notify = NotifyAll;
 			try
 			{
 				// Called to Load/reload the One & Only Bankcollection data source
@@ -255,7 +258,7 @@ namespace WPFPages . Views
 			return ;
 		}
 
-		public static async Task<BankCollection> LoadBankCollection ( bool Notify = false )
+		public static async Task<BankCollection> LoadBankCollection ( bool DoNotify = false )
 		{
 			int count = 0;
 			try
@@ -291,7 +294,7 @@ namespace WPFPages . Views
 					EventControl . TriggerBankDataLoaded ( null,
 						new LoadedEventArgs
 						{
-							CallerDb = "BankAccount",
+							CallerDb = "BANKACCOUNT",
 							DataSource = Bankinternalcollection,
 							RowCount = Bankinternalcollection . Count
 						} );

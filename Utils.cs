@@ -138,41 +138,42 @@ namespace WPFPages
 		//	TaskScheduler . FromCurrentSynchronizationContext ( ));
 		//	return t;
 		//}
-		//public static Task DoSingleBeep ( int freq = 280, int count = 300, int repeat = 1 )
-		//{
-		//	int x = 0;
-		//	Task t = new Task ( ( ) => x = 1 );
-		//	if ( Flags . UseBeeps )
-		//	{
-		//		for ( int i = 0 ; i < repeat ; i++ )
-		//		{
-		//			t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
-		//			Thread . Sleep ( 300 );
-		//		}
-
-		//		Thread . Sleep ( 500 );
-		//	}
-		//	else
-		//		t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
-		//	return t;
-		//}
-		//public static Task DoErrorBeep ( int freq = 280, int count = 100, int repeat = 3 )
-		//{
-		//	int x = 0;
-		//	Task t = new Task ( ( ) => x = 1 );
-		//	if ( Flags . UseBeeps )
-		//	{
-		//		for ( int i = 0 ; i < repeat ; i++ )
-		//		{
-		//			t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
-		//		}
-
-		//		Thread . Sleep ( 500 );
-		//	}
-		//	else
-		//		t = Task . Factory . StartNew ( ( ) => Console . WriteLine() );
-		//	return t;
-		//}
+		public static Task DoSingleBeep ( int freq = 280, int count = 300, int repeat = 1 )
+		{
+			int x = 0;
+			Task t = new Task ( ( ) => x = 1 );
+			if ( Flags . UseBeeps )
+			{
+				for ( int i = 0 ; i < repeat ; i++ )
+				{
+				Console . Beep ( freq, count );
+					//t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
+//					Thread . Sleep ( 100 );
+				}
+				Thread . Sleep ( 200 );
+			}
+			//else
+			//	t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
+			return t;
+		}
+		public static Task DoErrorBeep ( int freq = 280, int count = 100, int repeat = 3 )
+		{
+			int x = 0;
+			Task t = new Task ( ( ) => x = 1 );
+			if ( Flags . UseBeeps )
+			{
+				for ( int i = 0 ; i < repeat ; i++ )
+				{
+					Console . Beep ( freq, count );
+//					Thread . Sleep ( 200 );
+					//t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
+				}
+				Thread . Sleep ( 100 );
+			}
+				//else
+				//	t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
+				return t;
+		}
 
 		/// <summary>
 		/// A Func that takes ANY 2 (of 3 [Bank,Customer,Details] Db type records and returns true if the CustNo and Bankno match

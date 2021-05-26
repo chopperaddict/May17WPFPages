@@ -821,6 +821,7 @@ namespace WPFPages . Views
 		{
 			//			Debug . WriteLine ( $"Key1 = {key1}, Key : {e . Key . ToString ( )}" );
 			//PreviewKeyDown - in either list
+			return;
 			if ( e . Key == Key . LeftCtrl )
 			{
 				key1 = true;
