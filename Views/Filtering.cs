@@ -21,16 +21,16 @@ namespace WPFPages . Views
 		private string FilterCommand = "";
 		private string CurrentDb = "";
 
-		public string  DoFilters ( object obj , string currentDb , int mode = 0 )
+		public string DoFilters ( object obj, string currentDb, int mode = 0 )
 		{
 			string filterstring = "";
 			CurrentDb = currentDb;
-			Button Filters = new Button();
+			Button Filters = new Button ( );
 			// Make sure this window has it's pointer "Registered" cos we can
 			// Click the button before the window has had focus set
 			if ( Flags . MultiViewer != null && ( MultiViewer ) obj == Flags . MultiViewer )
 			{
-//				Flags . CurrentSqlViewer = obj as MultiViewer;
+				//				Flags . CurrentSqlViewer = obj as MultiViewer;
 				Filters = Flags . MultiViewer?.FilterBtn;
 				Filters . Content = "Filtering";
 			}
@@ -108,6 +108,7 @@ namespace WPFPages . Views
 			//			}
 			sf . currentDb = CurrentDb;
 			sf . FilterResult = false;
+			sf . Topmost = true;
 			sf . ShowDialog ( );
 			if ( sf . FilterResult )
 			{
@@ -143,7 +144,7 @@ namespace WPFPages . Views
 			return filterstring;
 
 		}
-		public string DoFilter ( object sender , MouseButtonEventArgs e )
+		public string DoFilter ( object sender, MouseButtonEventArgs e )
 		{
 			// carry out the filtering operation
 			string Commandline1 = "";
@@ -179,12 +180,29 @@ namespace WPFPages . Views
 					MessageBox . Show ( "The Filter you have selected needs TWO seperate Values.\r\nUnable to continue with Filtering process..." );
 					return "";
 				}
-				else if ( operand . Contains ( ">= value1 AND <= value2" ) )
-					Commandline = Commandline1 + $" {columnToFilterOn} >= {filtervalue1} AND {columnToFilterOn} <= '{filtervalue2}'";
-				else if ( operand . Contains ( "> value1 AND < value2" ) )
-					Commandline = Commandline1 + $" {columnToFilterOn} > {filtervalue1} AND {columnToFilterOn} < '{filtervalue2}'";
-				else if ( operand . Contains ( "< value1 OR > value2" ) )
-					Commandline = Commandline1 + $" {columnToFilterOn} < {filtervalue1} OR {columnToFilterOn} > '{filtervalue2}'";
+				int i1 = Convert . ToInt32 ( filtervalue1 );
+				int i2 = Convert . ToInt32 ( filtervalue2 );
+				if ( operand . Contains ( ">= value1 AND <= value2" ) )
+				{
+					if ( i1 >= 0 && i2 >= 0 )
+						Commandline = Commandline1 + $" {columnToFilterOn} >= {filtervalue1} AND {columnToFilterOn} <= {filtervalue2}";
+					else
+						Commandline = Commandline1 + $" {columnToFilterOn} >= '{filtervalue1}' AND {columnToFilterOn} <= '{filtervalue2}'";
+				}
+				if ( operand . Contains ( "> value1 AND < value2" ) )
+				{
+					if ( i1 >= 0 && i2 >= 0 )
+						Commandline = Commandline1 + $" {columnToFilterOn} > {filtervalue1} AND {columnToFilterOn} < {filtervalue2}";
+					else
+						Commandline = Commandline1 + $" {columnToFilterOn} > '{filtervalue1}' AND {columnToFilterOn} < '{filtervalue2}'";
+				}
+				if ( operand . Contains ( "< value1 OR > value2" ) )
+				{
+					if ( i1 >= 0 && i2 >= 0 )
+						Commandline = Commandline1 + $" {columnToFilterOn} < {filtervalue1} OR {columnToFilterOn} > {filtervalue2}";
+					else
+						Commandline = Commandline1 + $" {columnToFilterOn} < '{filtervalue1}' OR {columnToFilterOn} > '{filtervalue2}'";
+				}
 			}
 
 			Commandline += " Order  by ";

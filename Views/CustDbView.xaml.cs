@@ -57,10 +57,10 @@ namespace WPFPages . Views
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 
 			if ( CustViewerDbcollection . Count == 0 )
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection ,3, true );
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . MouseDown += delegate { DoDragMove ( ); };
-			Utils . SetUpGridSelection ( this.CustGrid, 0 );
+			Utils . SetUpGridSelection ( this . CustGrid, 0 );
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 
 			// Main update notification handler
@@ -90,7 +90,7 @@ namespace WPFPages . Views
 			Triggered = true;
 			// Handle selecton change if linkage is ON
 			this . CustGrid . SelectedIndex = e . Row;
-			this . CustGrid . Refresh (  );
+			this . CustGrid . Refresh ( );
 			Triggered = false;
 		}
 
@@ -101,7 +101,7 @@ namespace WPFPages . Views
 			int currsel = this . CustGrid . SelectedIndex;
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
-			CustViewerDbcollection = await CustCollection . LoadCust( CustViewerDbcollection );
+			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true );
 			this . CustGrid . SelectedIndex = currsel;
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . Refresh ( );
@@ -129,7 +129,7 @@ namespace WPFPages . Views
 			int currow = 0;
 			currow = this . CustGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
-//			Flags . SqlCustCurrentIndex = currow;
+			//			Flags . SqlCustCurrentIndex = currow;
 			CustomerViewModel ss = new CustomerViewModel ( );
 			ss = this . CustGrid . SelectedItem as CustomerViewModel;
 			// This is the NEW DATA from the current row
@@ -166,7 +166,7 @@ namespace WPFPages . Views
 		{
 			// Event handler for CustDataLoaded
 			this . CustGrid . ItemsSource = null;
-			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
+			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true );
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . Refresh ( );
 		}
@@ -196,7 +196,7 @@ namespace WPFPages . Views
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			if (Flags.LinkviewerRecords  == false && IsDirty )
+			if ( Flags . LinkviewerRecords == false && IsDirty )
 			{
 				MessageBoxResult result = System . Windows . MessageBox . Show
 					( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
@@ -217,15 +217,16 @@ namespace WPFPages . Views
 			Startup = false;
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
-//				Debug . WriteLine ( $" 7-1 *** TRACE *** CUSTDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Sending TriggerEditDbIndexChanged Event trigger" );
-				EventControl . TriggerEditDbIndexChanged ( this,
-				new IndexChangedArgs
-				{
-					dGrid = this . CustGrid,
-					Row = this . CustGrid . SelectedIndex,
-					SenderId = "CUSTOMER",
-					Sender = "CUSTDBVIEW"
-				} );
+				//				Debug . WriteLine ( $" 7-1 *** TRACE *** CUSTDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Sending TriggerEditDbIndexChanged Event trigger" );
+				TriggerViewerIndexChanged ( this . CustGrid );
+				//EventControl . TriggerEditDbIndexChanged ( this,
+				//new IndexChangedArgs
+				//{
+				//	dGrid = this . CustGrid,
+				//	Row = this . CustGrid . SelectedIndex,
+				//	SenderId = "CUSTOMER",
+				//	Sender = "CUSTDBVIEW"
+				//} );
 			}
 			IsDirty = false;
 			Triggered = false;
@@ -251,13 +252,13 @@ namespace WPFPages . Views
 			cvm . BankNo = Bankno . Text;
 			cvm . CustNo = Custno . Text;
 			cvm . AcType = Convert . ToInt32 ( acType . Text );
-//	cvm . Balance = Convert . ToDecimal ( balance . Text );
+			//	cvm . Balance = Convert . ToDecimal ( balance . Text );
 			cvm . ODate = Convert . ToDateTime ( odate . Text );
 			cvm . CDate = Convert . ToDateTime ( cdate . Text );
 			// Call Handler to update ALL Db's via SQL
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "CUSTOMER", cvm );
-			
+
 			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
 				new LoadedEventArgs
 				{
@@ -300,7 +301,7 @@ namespace WPFPages . Views
 			_bankno = Bankno . Text;
 			_custno = Custno . Text;
 			_actype = acType . Text;
-//			_balance = balance . Text;
+			//			_balance = balance . Text;
 			_odate = odate . Text;
 			_cdate = cdate . Text;
 		}
@@ -308,7 +309,7 @@ namespace WPFPages . Views
 		{
 			if ( SaveBttn == null )
 				return;
-			SaveBttn . IsEnabled = false;;
+			SaveBttn . IsEnabled = false; ;
 			if ( _bankno != Bankno . Text )
 				SaveBttn . IsEnabled = true;
 			if ( _custno != Custno . Text )
@@ -349,7 +350,7 @@ namespace WPFPages . Views
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
 				Flags . IsMultiMode = true;
 
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3);
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true);
 				this . CustGrid . ItemsSource = null;
 				this . CustGrid . ItemsSource = CustViewerDbcollection;
 				this . CustGrid . Refresh ( );
@@ -363,7 +364,7 @@ namespace WPFPages . Views
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
+				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
 				this . CustGrid . SelectedIndex = currsel;
 				if ( rec >= 0 )
 					this . CustGrid . SelectedIndex = rec;
@@ -375,7 +376,7 @@ namespace WPFPages . Views
 			{
 				Flags . IsMultiMode = false;
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection );
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection ,3, true );
 
 				// Just reset our iremssource to man Db
 				this . CustGrid . ItemsSource = null;
@@ -390,7 +391,7 @@ namespace WPFPages . Views
 				Count . Text = this . CustGrid . Items . Count . ToString ( );
 
 				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
+				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
 				this . CustGrid . SelectedIndex = 0;
 				if ( rec >= 0 )
 					this . CustGrid . SelectedIndex = rec;
@@ -407,7 +408,7 @@ namespace WPFPages . Views
 			//dca . SenderName = o . ToString ( );
 			//dca . DbName = dbName;
 
-			EventControl . TriggerCustDataLoaded( CustViewerDbcollection,
+			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
 			new LoadedEventArgs
 			{
 				CallerDb = "CUSTOMER",
@@ -531,6 +532,30 @@ namespace WPFPages . Views
 			this . WindowState = WindowState . Normal;
 		}
 
+		/// <summary>
+		/// Generic method to send Index changed Event trigger so that 
+		/// other viewers can update thier own grids as relevant
+		/// </summary>
+		/// <param name="grid"></param>
+		//*************************************************************************************************************//
+		public void TriggerViewerIndexChanged ( System . Windows . Controls . DataGrid grid )
+		{
+			string SearchCustNo = "";
+			string SearchBankNo = "";
+			CustomerViewModel CurrentCustSelectedRecord = this . CustGrid . SelectedItem as CustomerViewModel;
+			SearchCustNo = CurrentCustSelectedRecord . CustNo;
+			SearchBankNo = CurrentCustSelectedRecord . BankNo;
+			EventControl . TriggerViewerIndexChanged ( this,
+			new IndexChangedArgs
+			{
+				Senderviewer = null,
+				Bankno = SearchBankNo,
+				Custno = SearchCustNo,
+				dGrid = this . CustGrid,
+				Sender = "CUSTOMER",
+				Row = this . CustGrid . SelectedIndex
+			} );
+		}
 		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
 		{
 

@@ -386,14 +386,15 @@
 				RowEditEnding="DataGrid1_RowEditEnding"
 				Visibility="Visible"
 				>
-			
+			<!--This makes the selected row visible when window looses focus - works on any grid-->
+			<DataGrid.Resources>
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
+			</DataGrid.Resources>
+
 			<!--VirtualizingPanel.ScrollUnit="Pixel"-->
 			<!--CellEditEnding="DataGrid1_CellEditEnding"-->
 			<!--ItemsSource="{Binding Source={StaticResource BankData}}"-->
 			<!--SelectedItem="{Binding myData:BankAccountViewModel, Mode=TwoWay}"-->
-			<DataGrid.Resources>
-				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue" />
-			</DataGrid.Resources>
 
 			<DataGrid.Columns>
 				<DataGridTemplateColumn Header="Id" Width="40"
@@ -932,7 +933,7 @@
 			<!--ItemsSource="{Binding Source={StaticResource CustData}}"-->
 			<!--SelectedItem="{Binding CustModel, Mode=TwoWay}"-->
 			<DataGrid.Resources>
-				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DarkGray" />
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Yellow" />
 			</DataGrid.Resources>
 
 			<!--#region Fields-->
@@ -1088,7 +1089,7 @@
 			<!--ItemTemplate=""-->
 			<!--SelectedItem="{Binding DetModel, Mode=TwoWay}"-->
 			<DataGrid.Resources>
-				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue" />
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Blue" />
 			</DataGrid.Resources>
 
 			<!--#region DETAIL GRID FIELDS -->

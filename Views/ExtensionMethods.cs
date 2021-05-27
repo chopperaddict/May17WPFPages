@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Threading;
+using System . Windows;
+using System . Windows . Threading;
 
-namespace WPFPages.Views
+namespace WPFPages . Views
 {
 
 	/// <summary>
@@ -11,11 +11,11 @@ namespace WPFPages.Views
 	/// </summary>
 	public static class ExtensionMethods
 	{
-	private static Action EmptyDelegate = delegate ( ) { };
+		private static Action EmptyDelegate = delegate ( ) { };
 
-	public static void Refresh ( this UIElement uiElement )
-	{
-		uiElement . Dispatcher . Invoke ( DispatcherPriority . Render, EmptyDelegate );
+		public static void Refresh ( this UIElement uiElement )
+		{
+			uiElement . Dispatcher . Invoke ( DispatcherPriority . Render, EmptyDelegate );
+		}
 	}
-}
 }

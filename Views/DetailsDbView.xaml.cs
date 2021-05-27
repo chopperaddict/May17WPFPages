@@ -21,7 +21,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class DetailsDbView : Window
 	{
-		public  DetCollection DetViewerDbcollection = DetCollection.DetViewerDbcollection;
+		public DetCollection DetViewerDbcollection = DetCollection . DetViewerDbcollection;
 		private bool IsDirty = false;
 		private bool Startup = true;
 		public static bool Triggered = false;
@@ -56,7 +56,7 @@ namespace WPFPages . Views
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 
 			if ( DetViewerDbcollection . Count == 0 )
-				DetViewerDbcollection = await DetCollection . LoadDet( DetViewerDbcollection );
+				DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection ,2, true);
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 
 			this . MouseDown += delegate { DoDragMove ( ); };
@@ -74,7 +74,7 @@ namespace WPFPages . Views
 			Count . Text = this . DetGrid . Items . Count . ToString ( );
 			Utils . SetUpGridSelection ( this . DetGrid, 0 );
 			DetGrid . Refresh ( );
-			this . DetGrid . UpdateLayout( );
+			this . DetGrid . UpdateLayout ( );
 			Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 
 			if ( Flags . LinkviewerRecords )
@@ -103,7 +103,7 @@ namespace WPFPages . Views
 
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
-			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection );
+			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
 			this . DetGrid . SelectedIndex = currsel;
@@ -113,7 +113,7 @@ namespace WPFPages . Views
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
-			  DetGrid . ItemsSource = null;
+			DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
@@ -133,7 +133,7 @@ namespace WPFPages . Views
 			int currow = 0;
 			currow = this . DetGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
-//			Flags . SqlDetCurrentIndex = currow;
+			//			Flags . SqlDetCurrentIndex = currow;
 			DetailsViewModel ss = new DetailsViewModel ( );
 			ss = this . DetGrid . SelectedItem as DetailsViewModel;
 			// This is the NEW DATA from the current row
@@ -161,7 +161,7 @@ namespace WPFPages . Views
 		{
 			// Event handler for BankDataLoaded
 			this . DetGrid . ItemsSource = null;
-			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection );
+			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
 		}
@@ -208,28 +208,29 @@ namespace WPFPages . Views
 				return;
 
 			// Find matching record ?? - Whew
-//			DetailsViewModel dvm = e. SelectedItem as DetailsViewModel;
-//			MultiViewer mv = new MultiViewer ( );
-//			int rec = Utils. FindMatchingRecord  ( dvm. CustNo, dvm. BankNo, this . DetGrid, "DETAILS" );
-//			this . DetGrid . SelectedItem = rec;
+			//			DetailsViewModel dvm = e. SelectedItem as DetailsViewModel;
+			//			MultiViewer mv = new MultiViewer ( );
+			//			int rec = Utils. FindMatchingRecord  ( dvm. CustNo, dvm. BankNo, this . DetGrid, "DETAILS" );
+			//			this . DetGrid . SelectedItem = rec;
 			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
-			Utils . SetUpGridSelection ( this . DetGrid,  this . DetGrid.SelectedIndex);
+			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
 
 			//this . DetGrid . ScrollIntoView ( rec);
 			Startup = true;
 			DataFields . DataContext = this . DetGrid . SelectedItem;
 			Startup = false;
-			if ( Flags . LinkviewerRecords && Triggered == false)
+			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
-//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
-				EventControl . TriggerEditDbIndexChanged ( this,
-					new IndexChangedArgs
-					{
-						dGrid = this . DetGrid,
-						Row = this . DetGrid . SelectedIndex,
-						SenderId = "DETAILS",
-						Sender = "DETDBVIEW"
-					} );
+				//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
+				TriggerViewerIndexChanged ( this . DetGrid );
+				//EventControl . TriggerEditDbIndexChanged ( this,
+				//	new IndexChangedArgs
+				//	{
+				//		dGrid = this . DetGrid,
+				//		Row = this . DetGrid . SelectedIndex,
+				//		SenderId = "DETAILS",
+				//		Sender = "DETDBVIEW"
+				//	} );
 			}
 			Triggered = false;
 		}
@@ -247,6 +248,7 @@ namespace WPFPages . Views
 			this . DetGrid . SelectedItem = this . DetGrid . SelectedIndex;
 			DetailsViewModel bvm = new DetailsViewModel ( );
 			bvm = this . DetGrid . SelectedItem as DetailsViewModel;
+			if ( bvm == null ) return false;
 
 			SaveFieldData ( );
 
@@ -336,7 +338,7 @@ namespace WPFPages . Views
 				this . Topmost = false;
 		}
 
-		private  void SaveBtn ( object sender, RoutedEventArgs e )
+		private void SaveBtn ( object sender, RoutedEventArgs e )
 		{
 			SaveButton ( sender, e );
 		}
@@ -351,7 +353,7 @@ namespace WPFPages . Views
 				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 				Flags . IsMultiMode = true;
 				DetCollection det = new DetCollection ( );
-				det= await DetCollection . LoadDet(det );
+				det = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 				this . DetGrid . ItemsSource = null;
 				this . DetGrid . ItemsSource = det;
 				this . DetGrid . Refresh ( );
@@ -365,7 +367,7 @@ namespace WPFPages . Views
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
+				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
 				this . DetGrid . SelectedIndex = currsel;
 				if ( rec >= 0 )
 					this . DetGrid . SelectedIndex = rec;
@@ -380,7 +382,7 @@ namespace WPFPages . Views
 				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 
 				DetCollection det = new DetCollection ( );
-				det = await DetCollection . LoadDet ( det );
+				det = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 				// Just reset our iremssource to man Db
 				this . DetGrid . ItemsSource = null;
 				this . DetGrid . ItemsSource = DetViewerDbcollection;
@@ -394,7 +396,7 @@ namespace WPFPages . Views
 				Count . Text = this . DetGrid . Items . Count . ToString ( );
 
 				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
+				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
 				this . DetGrid . SelectedIndex = 0;
 
 				if ( rec >= 0 )
@@ -412,7 +414,7 @@ namespace WPFPages . Views
 			//dca . SenderName = o . ToString ( );
 			//dca . DbName = dbName;
 
-			EventControl . TriggerDetDataLoaded( DetViewerDbcollection,
+			EventControl . TriggerDetDataLoaded ( DetViewerDbcollection,
 			new LoadedEventArgs
 			{
 				CallerDb = "DETAILS",
@@ -448,45 +450,45 @@ namespace WPFPages . Views
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var accounts= from items in DetViewerDbcollection
-					   where ( items . AcType == 1 )
-					   orderby items . CustNo
-					   select items;
+			var accounts = from items in DetViewerDbcollection
+				       where ( items . AcType == 1 )
+				       orderby items . CustNo
+				       select items;
 			this . DetGrid . ItemsSource = accounts;
 		}
 		private void Linq2_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var accounts= from items in DetViewerDbcollection
-					   where ( items . AcType == 2 )
-					   orderby items . CustNo
-					   select items;
+			var accounts = from items in DetViewerDbcollection
+				       where ( items . AcType == 2 )
+				       orderby items . CustNo
+				       select items;
 			this . DetGrid . ItemsSource = accounts;
 		}
 		private void Linq3_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var accounts= from items in DetViewerDbcollection
-					   where ( items . AcType == 3 )
-					   orderby items . CustNo
-					   select items;
+			var accounts = from items in DetViewerDbcollection
+				       where ( items . AcType == 3 )
+				       orderby items . CustNo
+				       select items;
 			this . DetGrid . ItemsSource = accounts;
 		}
 		private void Linq4_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var accounts= from items in DetViewerDbcollection
-					   where ( items . AcType == 4 )
-					   orderby items . CustNo
-					   select items;
+			var accounts = from items in DetViewerDbcollection
+				       where ( items . AcType == 4 )
+				       orderby items . CustNo
+				       select items;
 			this . DetGrid . ItemsSource = accounts;
 		}
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
 			//select All the items first;			
-			var accounts= from items in DetViewerDbcollection orderby items . CustNo, items . AcType select items;
+			var accounts = from items in DetViewerDbcollection orderby items . CustNo, items . AcType select items;
 			//Next Group BankAccountViewModel collection on Custno
-			var grouped = accounts. GroupBy (
+			var grouped = accounts . GroupBy (
 				b => b . CustNo );
 
 			//Now filter content down to only those a/c's with multiple Bank A/c's
@@ -499,7 +501,7 @@ namespace WPFPages . Views
 			List<DetailsViewModel> output = new List<DetailsViewModel> ( );
 			foreach ( var item1 in sel )
 			{
-				foreach ( var item2 in accounts)
+				foreach ( var item2 in accounts )
 				{
 					if ( item2 . CustNo . ToString ( ) == item1 . Key )
 					{
@@ -521,6 +523,30 @@ namespace WPFPages . Views
 			MessageBox . Show ( "Filter dialog will appear here !!" );
 		}
 		#endregion Menu items
+		/// <summary>
+		/// Generic method to send Index changed Event trigger so that 
+		/// other viewers can update thier own grids as relevant
+		/// </summary>
+		/// <param name="grid"></param>
+		//*************************************************************************************************************//
+		public void TriggerViewerIndexChanged ( DataGrid grid )
+		{
+			string SearchCustNo = "";
+			string SearchBankNo = "";
+			DetailsViewModel CurrentDetSelectedRecord = grid . SelectedItem as DetailsViewModel;
+			SearchCustNo = CurrentDetSelectedRecord . CustNo;
+			SearchBankNo = CurrentDetSelectedRecord . BankNo;
+			EventControl . TriggerViewerIndexChanged ( this,
+				new IndexChangedArgs
+				{
+					Senderviewer = null,
+					Bankno = SearchBankNo,
+					Custno = SearchCustNo,
+					dGrid = grid,
+					Sender = "DETAILS",
+					Row = grid . SelectedIndex
+				} );
+		}
 
 		private void Exit_Click ( object sender, RoutedEventArgs e )
 		{

@@ -19,7 +19,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class BankDbView : Window
 	{
-		public  BankCollection BankViewercollection = BankCollection . EditDbBankcollection;
+		public BankCollection BankViewercollection = BankCollection . EditDbBankcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
 		private bool Triggered = false;
@@ -58,19 +58,19 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = BankViewercollection;
 
 			if ( BankViewercollection . Count == 0 )
-				BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, false );
+				BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, true);
 			this . BankGrid . ItemsSource = BankViewercollection;
 			this . BankGrid . Refresh ( );
 			// now subscribe to various Events
 			this . MouseDown += delegate { DoDragMove ( ); };
 
 			// An EditDb has changed the current index 
-			EventControl . EditIndexChanged += EventControl_EditIndexChanged; 
+			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index 
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index 
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-			// Main update notification handler
+												 // Main update notification handler
 			EventControl . DataUpdated += EventControl_DataUpdated;
 
 			// Set up the Data Context for the data fields
@@ -91,7 +91,7 @@ namespace WPFPages . Views
 			Count . Text = this . BankGrid . Items . Count . ToString ( );
 			this . BankGrid . SelectedIndex = 0;
 			this . BankGrid . SelectedItem = 0;
-			Utils . SetUpGridSelection ( this.BankGrid, 0 );
+			Utils . SetUpGridSelection ( this . BankGrid, 0 );
 			this . Focus ( );
 			this . BankGrid . Focus ( );
 			// Reset linkage setting
@@ -114,7 +114,7 @@ namespace WPFPages . Views
 			int currsel = this . BankGrid . SelectedIndex;
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-			BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, false );
+			BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, true);
 			this . BankGrid . ItemsSource = BankViewercollection;
 			this . BankGrid . Refresh ( );
 			this . BankGrid . SelectedIndex = currsel;
@@ -138,7 +138,7 @@ namespace WPFPages . Views
 			int currow = 0;
 			currow = this . BankGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
-//			Flags . SqlBankCurrentIndex = currow;
+			//			Flags . SqlBankCurrentIndex = currow;
 			BankAccountViewModel ss = new BankAccountViewModel ( );
 			ss = this . BankGrid . SelectedItem as BankAccountViewModel;
 			// This is the NEW DATA from the current row
@@ -154,9 +154,9 @@ namespace WPFPages . Views
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notification to SQLDBVIEWER AND OTHERS for sure !!!   14/5/21
-//			Debug . WriteLine ( $" 4-2 *** TRACE *** BANKDBVIEW : ViewerGrid_RowEndingEdit BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
+			//			Debug . WriteLine ( $" 4-2 *** TRACE *** BANKDBVIEW : ViewerGrid_RowEndingEdit BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
 			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
-			
+
 			//EventControl . TriggerBankDataLoaded ( BankViewercollection,
 			//	new LoadedEventArgs
 			//	{
@@ -206,7 +206,7 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index 
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
-			// Main update notification handler
+												 // Main update notification handler
 			EventControl . DataUpdated -= EventControl_DataUpdated;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 
@@ -214,8 +214,8 @@ namespace WPFPages . Views
 
 		private void BankGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			if ( (Flags.LinkviewerRecords == false && IsDirty ) 
-					|| SaveBttn.IsEnabled)
+			if ( ( Flags . LinkviewerRecords == false && IsDirty )
+					|| SaveBttn . IsEnabled )
 			{
 				MessageBoxResult result = MessageBox . Show
 					( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
@@ -232,19 +232,20 @@ namespace WPFPages . Views
 			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedItem );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
-			if ( Flags . LinkviewerRecords && Triggered  == false)
+			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
-//				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
-				EventControl . TriggerEditDbIndexChanged ( this,
-				new IndexChangedArgs
-				{
-					dGrid = this .
-					BankGrid,
-					Row = this .
-					BankGrid . SelectedIndex,
-					SenderId = "BANKACCOUNT",
-					Sender = "BANKDBVIEW"
-				} );
+				//				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
+				TriggerViewerIndexChanged ( this.BankGrid);
+				//EventControl . TriggerEditDbIndexChanged ( this,
+				//new IndexChangedArgs
+				//{
+				//	dGrid = this .
+				//	BankGrid,
+				//	Row = this .
+				//	BankGrid . SelectedIndex,
+				//	SenderId = "BANKACCOUNT",
+				//	Sender = "BANKDBVIEW"
+				//} );
 			}
 			Triggered = false;
 			IsDirty = false;
@@ -264,6 +265,7 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedItem = this . BankGrid . SelectedIndex;
 			BankAccountViewModel bvm = new BankAccountViewModel ( );
 			bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+			if ( bvm == null ) return false;
 
 			SaveFieldData ( );
 
@@ -284,8 +286,8 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = BankViewercollection;
 			this . BankGrid . Refresh ( );
 
-//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
-			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT");
+			//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
+			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
 
 			//EventControl . TriggerBankDataLoaded ( BankViewercollection,
 			//	new LoadedEventArgs
@@ -392,7 +394,7 @@ namespace WPFPages . Views
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils. FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 				this . BankGrid . SelectedIndex = currsel;
 				if ( rec >= 0 )
 					this . BankGrid . SelectedIndex = rec;
@@ -421,7 +423,7 @@ namespace WPFPages . Views
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils. FindMatchingRecord  ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
+				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
 				this . BankGrid . SelectedIndex = 0;
 
 				if ( rec >= 0 )
@@ -437,7 +439,7 @@ namespace WPFPages . Views
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-//			Debug . WriteLine ( $" 4-4 *** TRACE *** BANKDBVIEW : SendDataChanged BANKDBVIEW - Sending TriggerBankDataLoaded Event trigger" );
+			//			Debug . WriteLine ( $" 4-4 *** TRACE *** BANKDBVIEW : SendDataChanged BANKDBVIEW - Sending TriggerBankDataLoaded Event trigger" );
 			EventControl . TriggerBankDataLoaded ( BankViewercollection,
 			new LoadedEventArgs
 			{
@@ -468,15 +470,39 @@ namespace WPFPages . Views
 				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			LinkRecords . Refresh ( );
 		}
+		/// <summary>
+		/// Generic method to send Index changed Event trigger so that 
+		/// other viewers can update thier own grids as relevant
+		/// </summary>
+		/// <param name="grid"></param>
+		//*************************************************************************************************************//
+		public void TriggerViewerIndexChanged ( DataGrid grid )
+		{
+			string SearchCustNo = "";
+			string SearchBankNo = "";
+			BankAccountViewModel CurrentBankSelectedRecord = grid . SelectedItem as BankAccountViewModel;
+			SearchCustNo = CurrentBankSelectedRecord . CustNo;
+			SearchBankNo = CurrentBankSelectedRecord . BankNo;
+			EventControl . TriggerViewerIndexChanged ( this,
+				new IndexChangedArgs
+				{
+					Senderviewer = null,
+					Bankno = SearchBankNo,
+					Custno = SearchCustNo,
+					dGrid = grid,
+					Sender = "BANKACCOUNT",
+					Row = grid . SelectedIndex
+				} );
+		}
 
-	#region Menu items
+		#region Menu items
 
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
 			var bankaccounts = from items in BankViewercollection
 					   where ( items . AcType == 1 )
-					   orderby items .CustNo
+					   orderby items . CustNo
 					   select items;
 			this . BankGrid . ItemsSource = bankaccounts;
 		}
@@ -510,30 +536,30 @@ namespace WPFPages . Views
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
 			//select All the items first;			
-			var bankaccounts = from items in BankViewercollection orderby items.CustNo, items.AcType select items;
+			var bankaccounts = from items in BankViewercollection orderby items . CustNo, items . AcType select items;
 			//Next Group BankAccountViewModel collection on Custno
 			var grouped = bankaccounts . GroupBy (
-				b => b . CustNo);
-			
+				b => b . CustNo );
+
 			//Now filter content down to only those a/c's with multiple Bank A/c's
 			var sel = from g in grouped
-				  where g. Count() > 1
+				  where g . Count ( ) > 1
 				  select g;
-			
+
 			// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full Bankaccounts data
 			// giving us ONLY the full records for any recordss that have > 1 Bank accounts
 			List<BankAccountViewModel> output = new List<BankAccountViewModel> ( );
-			foreach ( var item1 in sel)
+			foreach ( var item1 in sel )
 			{
 				foreach ( var item2 in bankaccounts )
 				{
-					if (item2.CustNo.ToString() == item1.Key)
+					if ( item2 . CustNo . ToString ( ) == item1 . Key )
 					{
-						output . Add (item2 );
+						output . Add ( item2 );
 					}
 				}
 			}
-			this.BankGrid. ItemsSource = output;
+			this . BankGrid . ItemsSource = output;
 		}
 		private void Linq6_Click ( object sender, RoutedEventArgs e )
 		{
@@ -544,7 +570,7 @@ namespace WPFPages . Views
 		private void Filter_Click ( object sender, RoutedEventArgs e )
 		{
 			// Show Filter system
-			MessageBox . Show ("Filter dialog will appear here !!" );
+			MessageBox . Show ( "Filter dialog will appear here !!" );
 		}
 
 		private void Exit_Click ( object sender, RoutedEventArgs e )
@@ -577,4 +603,4 @@ namespace WPFPages . Views
 
 	}
 
-	}
+}

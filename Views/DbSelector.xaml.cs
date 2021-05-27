@@ -6,7 +6,6 @@ using System . Windows . Controls;
 using System . Windows . Input;
 
 using WPFPages . ViewModels;
-using static WPFPages . SqlDbViewer;
 
 namespace WPFPages . Views
 {
@@ -433,7 +432,8 @@ namespace WPFPages . Views
 					Flags . CurrentSqlViewer . UpdateDbSelectorBtns ( Flags . CurrentSqlViewer );
 					Flags . CurrentSqlViewer . Focus ( );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
+//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
+					Flags . CurrentSqlViewer . Refresh ( );
 				}
 				else if ( MainWindow . gv . ViewerCount == 1 )
 				{
@@ -583,7 +583,8 @@ namespace WPFPages . Views
 			int indx = Flags . DbSelectorOpen . ViewersList . Items . Add ( lbi );
 			//			MainWindow.gv.PrettyDetails = lbi.Content as string;
 			Flags . DbSelectorOpen . ViewersList . Items . Refresh ( );
-			ExtensionMethods . Refresh ( Flags . DbSelectorOpen . ViewersList );
+			//ExtensionMethods . Refresh ( Flags . DbSelectorOpen . ViewersList );
+			Flags . DbSelectorOpen . ViewersList . Refresh ( );
 			Flags . DbSelectorOpen . ViewersList . SelectedIndex = indx;
 			return MainWindow . gv . PrettyDetails;
 		}
@@ -821,7 +822,7 @@ namespace WPFPages . Views
 		{
 			//			Debug . WriteLine ( $"Key1 = {key1}, Key : {e . Key . ToString ( )}" );
 			//PreviewKeyDown - in either list
-			return;
+			//return;
 			if ( e . Key == Key . LeftCtrl )
 			{
 				key1 = true;
@@ -1421,7 +1422,7 @@ namespace WPFPages . Views
 		private void Cust_Click ( object sender, RoutedEventArgs e )
 		{
 			Window handle = null;
-			if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+			if ( Utils . FindWindowFromTitle ( "Customer Account Editor", ref handle ) )
 			{
 				handle . Focus ( );
 				handle . BringIntoView ( );
@@ -1437,7 +1438,7 @@ namespace WPFPages . Views
 		private void Det_Click ( object sender, RoutedEventArgs e )
 		{
 			Window handle = null;
-			if ( Utils . FindWindowFromTitle ( "Bank a/c editor", ref handle ) )
+			if ( Utils . FindWindowFromTitle ( "Details A/C Editor", ref handle ) )
 			{
 				handle . Focus ( );
 				handle . BringIntoView ( );

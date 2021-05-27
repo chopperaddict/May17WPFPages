@@ -6,8 +6,9 @@ using System . Diagnostics;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
+using System . Windows . Input;
 using System . Windows . Threading;
-
+using WPFPages . Properties;
 using WPFPages . ViewModels;
 
 using static WPFPages . SqlDbViewer;
@@ -30,6 +31,9 @@ namespace WPFPages . Views
 		public static bool USEFULLTASK = true;
 		public static bool Notify = false;
 
+		// Object used to lock Data Loadcfrom Sql and load into collection
+		private readonly object LockBankReadData = new object ( );
+		private readonly object LockBankLoadData = new object ( );
 
 		#region CONSTRUCTOR
 
@@ -53,12 +57,12 @@ namespace WPFPages . Views
 					Bankinternalcollection = new BankCollection ( );
 					Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				}
-//				Debug . WriteLine ( $"\n ***** Loading Bank Data from disk *****\n" );
+				//				Debug . WriteLine ( $"\n ***** Loading Bank Data from disk *****\n" );
 
 				if ( USEFULLTASK )
 				{
 					//Bankinternalcollection = null;
-//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
+					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
 					BankCollection db = new BankCollection ( );
 					await db . LoadBankTaskInSortOrderasync ( );
 					if ( cc != null )
@@ -67,7 +71,7 @@ namespace WPFPages . Views
 				}
 				else
 				{
-//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
+					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
 					Bankinternalcollection . ClearItems ( );
 					// Abstract the mail data load call to a method that uses AWAITABLE  calles
 					ProcessRequest ( ) . ConfigureAwait ( false );
@@ -75,7 +79,7 @@ namespace WPFPages . Views
 					// We now have the pointer to the the Bank data in variable Bankinternalcollection
 					if ( Flags . IsMultiMode == false )
 					{
-//						Debug . WriteLine ( "Returning Bank Data via Debug output...." );
+						//						Debug . WriteLine ( "Returning Bank Data via Debug output...." );
 						// Finally fill and return The global Dataset
 						BankCollection db = new BankCollection ( );
 						SelectViewer ( ViewerType, Bankinternalcollection, out db );
@@ -100,20 +104,20 @@ namespace WPFPages . Views
 					}
 				}
 			}
-			catch(Exception ex )
+			catch ( Exception ex )
 			{
-				Console . WriteLine ($"Bank Load Exception : {ex.Message}, {ex.Data}");
+				Console . WriteLine ( $"Bank Load Exception : {ex . Message}, {ex . Data}" );
 				return null;
 			}
 		}
 		private static async Task ProcessRequest ( )
 		{
 			// Load data fro SQL into dtBank Datatable
-			 LoadBankData ( );
+			LoadBankData ( );
 			// this returns "Bankinternalcollection" as a pointer to the correct viewer
 			Bankinternalcollection = await LoadBankCollection ( ) . ConfigureAwait ( false );
 		}
-		public static BankCollection  SelectViewer ( int ViewerType, BankCollection tmp , out BankCollection db)
+		public static BankCollection SelectViewer ( int ViewerType, BankCollection tmp, out BankCollection db )
 		{
 			db = null;
 			switch ( ViewerType )
@@ -124,7 +128,7 @@ namespace WPFPages . Views
 					break;
 				case 2:
 					EditDbBankcollection = tmp;
-					db = 
+					db =
 					db = EditDbBankcollection;
 					break;
 				case 3:
@@ -133,7 +137,7 @@ namespace WPFPages . Views
 					break;
 				case 4:
 					BankViewerDbcollection = tmp;
-					db =  BankViewerDbcollection;
+					db = BankViewerDbcollection;
 					break;
 				//case 5:
 				//	CustViewerDbcollection = tmp;
@@ -208,7 +212,7 @@ namespace WPFPages . Views
 		/// Handles the actual conneciton ot SQL to load the Details Db data required
 		/// </summary>
 		/// <returns></returns>
-		public static  void LoadBankData ( int mode = -1, bool isMultiMode = false )
+		public static void LoadBankData ( int mode = -1, bool isMultiMode = false )
 		{
 			try
 			{
@@ -218,44 +222,49 @@ namespace WPFPages . Views
 				//				ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 				//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
-				con = new SqlConnection ( ConString );
-				using ( con )
+				BankCollection bptr = new BankCollection ( );
+				lock ( bptr . LockBankReadData )
 				{
-					string commandline = "";
 
-					if ( Flags . IsMultiMode )
+					con = new SqlConnection ( ConString );
+					using ( con )
 					{
-						// Create a valid Query Command string including any active sort ordering
-						commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
-							+ $"(SELECT CUSTNO FROM BANKACCOUNT "
-							+ $" GROUP BY CUSTNO"
-							+ $" HAVING COUNT(*) > 1) ORDER BY ";
+						string commandline = "";
 
-						commandline = Utils . GetDataSortOrder ( commandline );
-					}
-					else if ( Flags . FilterCommand != "" )
-					{ commandline = Flags . FilterCommand; }
-					else
-					{
-						// Create a valid Query Command string including any active sort ordering
-						commandline = "Select * from BankAccount order by ";
-						commandline = Utils . GetDataSortOrder ( commandline );
-					}
+						if ( Flags . IsMultiMode )
+						{
+							// Create a valid Query Command string including any active sort ordering
+							commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
+								+ $"(SELECT CUSTNO FROM BANKACCOUNT "
+								+ $" GROUP BY CUSTNO"
+								+ $" HAVING COUNT(*) > 1) ORDER BY ";
 
-					SqlCommand cmd = new SqlCommand ( commandline, con );
-					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
-					if ( dtBank == null )
-						dtBank = new DataTable ( );
-					sda . Fill ( dtBank );
+							commandline = Utils . GetDataSortOrder ( commandline );
+						}
+						else if ( Flags . FilterCommand != "" )
+						{ commandline = Flags . FilterCommand; }
+						else
+						{
+							// Create a valid Query Command string including any active sort ordering
+							commandline = "Select * from BankAccount order by ";
+							commandline = Utils . GetDataSortOrder ( commandline );
+						}
+
+						SqlCommand cmd = new SqlCommand ( commandline, con );
+						SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+						if ( dtBank == null )
+							dtBank = new DataTable ( );
+						sda . Fill ( dtBank );
+					}
 				}
 			}
 			catch ( Exception ex )
 			{
-				Debug . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return ;
+				Debug . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return;
 				//				MessageBox . Show ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return false;
-				return ;
+				return;
 			}
-			return ;
+			return;
 		}
 
 		public static async Task<BankCollection> LoadBankCollection ( bool DoNotify = false )
@@ -263,23 +272,28 @@ namespace WPFPages . Views
 			int count = 0;
 			try
 			{
-				BankCollection bc = new BankCollection ( );
-				for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
+				BankCollection bptr = new BankCollection ( );
+				lock ( bptr . LockBankLoadData )
 				{
-					Bankinternalcollection . Add ( new BankAccountViewModel
+
+					BankCollection bc = new BankCollection ( );
+					for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
 					{
-						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
-						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
-						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
-						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
-						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
-						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
-						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
-						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
-					} );
-					count = i;
+						Bankinternalcollection . Add ( new BankAccountViewModel
+						{
+							Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
+							BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+							CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
+							AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+							Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
+							IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+							ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
+							CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
+						} );
+						count = i;
+					}
+					//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
 				}
-//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
 			}
 			catch ( Exception ex )
 			{
@@ -385,7 +399,7 @@ namespace WPFPages . Views
 			t1 . ContinueWith (
 			( Bankinternalcollection ) =>
 				{
-//					Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
+					//					Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -409,7 +423,7 @@ namespace WPFPages . Views
 				( Bankinternalcollection ) =>
 				{
 					//					Debug . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
-					Console. WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status} ]." );
+					Console . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status} ]." );
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -429,14 +443,48 @@ namespace WPFPages . Views
 
 			#endregion Continuations
 
-//			Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankinternalcollection . Count} ***\n\n" );
+			//			Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankinternalcollection . Count} ***\n\n" );
 
 			#endregion Success//Error reporting/handling
 			// Finally fill and return The global Dataset
 			Flags . BankCollection = Bankinternalcollection;
-//			MasterBankcollection = Bankinternalcollection;
-//			Bankcollection = Bankinternalcollection;
+			//			MasterBankcollection = Bankinternalcollection;
+			//			Bankcollection = Bankinternalcollection;
 			return null;
+		}
+		public static bool UpdateBankDb (  BankAccountViewModel NewData )
+		{
+
+			SqlConnection con;
+			string ConString = "";
+			ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+			//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+			con = new SqlConnection ( ConString );
+			try
+			{
+				//We need to update BOTH BankAccount AND DetailsViewModel to keep them in parallel
+				using ( con )
+				{
+					con . Open ( );
+					SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, "+
+						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
+					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@actype", Convert . ToInt32 ( NewData . AcType ) );
+					cmd . Parameters . AddWithValue ( "@balance", Convert . ToDecimal ( NewData . Balance ) );
+					cmd . Parameters . AddWithValue ( "@intrate", Convert . ToDecimal ( NewData . IntRate ) );
+					cmd . Parameters . AddWithValue ( "@odate", Convert . ToDateTime ( NewData . ODate ) );
+					cmd . Parameters . AddWithValue ( "@cdate", Convert . ToDateTime ( NewData . CDate ) );
+					cmd . ExecuteNonQuery ( );
+					Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
+				}
+			}
+			catch ( Exception ex )
+			{ Console . WriteLine ( $"BANKACCOUNT Update FAILED : {ex . Message}, {ex . Data}" ); }
+			finally
+			{ con . Close ( ); }
+			return true;
 		}
 	}
 }

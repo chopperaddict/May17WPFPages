@@ -8,7 +8,7 @@ using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Threading;
-
+using WPFPages . Properties;
 using WPFPages . ViewModels;
 
 namespace WPFPages . Views
@@ -27,6 +27,10 @@ namespace WPFPages . Views
 		public Stopwatch st;
 		public static bool USEFULLTASK = true;
 		public  static bool Notify = false;
+
+		private readonly object LockDetReadData = new object ( );
+		private readonly object LockDetLoadData = new object ( );
+
 
 		#region CONSTRUCTOR
 
@@ -185,47 +189,52 @@ namespace WPFPages . Views
 		public async Task<bool> LoadDetailsDataSql ( bool isMultiMode = false )
 		{
 			Stopwatch st = new Stopwatch ( );
-			try
+			DetCollection bptr = new DetCollection ( );
+			lock ( bptr . LockDetReadData )
 			{
-				st . Start ( );
-				SqlConnection con;
-				string ConString = "";
-				string commandline = "";
-				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
-				con = new SqlConnection ( ConString );
-				using ( con )
+
+				try
 				{
-					if ( Flags . IsMultiMode )
+					st . Start ( );
+					SqlConnection con;
+					string ConString = "";
+					string commandline = "";
+					ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+					con = new SqlConnection ( ConString );
+					using ( con )
 					{
-						// Create a valid Query Command string including any active sort ordering
-						commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
-							+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
-							+ $" GROUP BY CUSTNO"
-							+ $" HAVING COUNT(*) > 1) ORDER BY ";
-						commandline = Utils . GetDataSortOrder ( commandline );
+						if ( Flags . IsMultiMode )
+						{
+							// Create a valid Query Command string including any active sort ordering
+							commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
+								+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
+								+ $" GROUP BY CUSTNO"
+								+ $" HAVING COUNT(*) > 1) ORDER BY ";
+							commandline = Utils . GetDataSortOrder ( commandline );
+						}
+						else if ( Flags . FilterCommand != "" )
+						{
+							commandline = Flags . FilterCommand;
+						}
+						else
+						{
+							// Create a valid Query Command string including any active sort ordering
+							commandline = "Select * from SecAccounts  order by ";
+							commandline = Utils . GetDataSortOrder ( commandline );
+						}
+						SqlCommand cmd = new SqlCommand ( commandline, con );
+						SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+						sda . Fill ( dtDetails );
+						st . Stop ( );
+						//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 					}
-					else if ( Flags . FilterCommand != "" )
-					{
-						commandline = Flags . FilterCommand;
-					}
-					else
-					{
-						// Create a valid Query Command string including any active sort ordering
-						commandline = "Select * from SecAccounts  order by ";
-						commandline = Utils . GetDataSortOrder ( commandline );
-					}
-					SqlCommand cmd = new SqlCommand ( commandline, con );
-					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
-					sda . Fill ( dtDetails );
-					st . Stop ( );
-//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 				}
-			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
-				MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
-				return false;
+				catch ( Exception ex )
+				{
+					Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+					MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+					return false;
+				}
 			}
 			return true;
 		}
@@ -234,43 +243,47 @@ namespace WPFPages . Views
 		public static async Task<DetCollection> LoadDetCollection ( int row, bool DoNotify = true )
 		{
 			int count = 0;
-			try
+			DetCollection bptr = new DetCollection ( );
+			lock ( bptr . LockDetLoadData )
 			{
-				for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
+				try
 				{
-					Detinternalcollection . Add ( new DetailsViewModel
+					for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
 					{
-						Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
-						BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
-						CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
-						AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
-						Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
-						IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
-						ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
-						CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
-					} );
-					count = i;
-				}
-//				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"Detinternalcollection\" [{count}] ...." );
-				if ( Notify )
-				{
-					//					OnDetDataLoaded ( Detcollection , row );
-					EventControl . TriggerDetDataLoaded ( null,
-						new LoadedEventArgs
+						Detinternalcollection . Add ( new DetailsViewModel
 						{
-							CallerDb = "DETAILS",
-							DataSource = Detinternalcollection,
-							RowCount = Detinternalcollection . Count
+							Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
+							BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
+							CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
+							AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
+							Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
+							IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
+							ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
+							CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
 						} );
+						count = i;
+					}
+					//				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"Detinternalcollection\" [{count}] ...." );
+					if ( Notify )
+					{
+						//					OnDetDataLoaded ( Detcollection , row );
+						EventControl . TriggerDetDataLoaded ( null,
+							new LoadedEventArgs
+							{
+								CallerDb = "DETAILS",
+								DataSource = Detinternalcollection,
+								RowCount = Detinternalcollection . Count
+							} );
+					}
+					Flags . DetCollection = Detinternalcollection;
+					return Detinternalcollection;
 				}
-				Flags . DetCollection = Detinternalcollection;
-				return Detinternalcollection;
-			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
-				MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
-				return null;
+				catch ( Exception ex )
+				{
+					Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+					MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+					return null;
+				}
 			}
 		}
 
@@ -351,6 +364,40 @@ namespace WPFPages . Views
 					break;
 			}
 			return result;
+		}
+		public static bool UpdateDetailsDb ( DetailsViewModel sa )
+		{
+
+			SqlConnection con;
+			string ConString = "";
+			ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+			//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+			con = new SqlConnection ( ConString );
+			try
+			{
+				//We need to update BOTH BankAccount AND DetailsViewModel to keep them in parallel
+				using ( con )
+				{
+					con . Open ( );
+					SqlCommand cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
+					cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@actype", Convert . ToInt32 ( sa . AcType ) );
+					cmd . Parameters . AddWithValue ( "@balance", Convert . ToDecimal ( sa . Balance ) );
+					cmd . Parameters . AddWithValue ( "@intrate", Convert . ToDecimal ( sa . IntRate ) );
+					cmd . Parameters . AddWithValue ( "@odate", Convert . ToDateTime ( sa . ODate ) );
+					cmd . Parameters . AddWithValue ( "@cdate", Convert . ToDateTime ( sa . CDate ) );
+					cmd . ExecuteNonQuery ( );
+					Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
+
+				}
+			}
+			catch ( Exception ex )
+			{ Console . WriteLine ( $"DETAILS Update FAILED : {ex . Message}, {ex . Data}" ); }
+			finally
+			{ con . Close ( ); }
+			return true;
 		}
 
 		public static bool IsCompleted ( )

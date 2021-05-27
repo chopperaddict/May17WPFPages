@@ -297,6 +297,8 @@ namespace WPFPages
 					}
 					index++;
 				}
+				if ( index == Grid . Items . Count )
+					index = -1;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
@@ -310,6 +312,8 @@ namespace WPFPages
 					}
 					index++;
 				}
+				if ( index == Grid . Items . Count )
+					index = -1;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
@@ -323,6 +327,8 @@ namespace WPFPages
 					}
 					index++;
 				}
+				if ( index == Grid . Items . Count )
+					index = -1;
 			}
 			return index;
 		}
@@ -339,12 +345,19 @@ namespace WPFPages
 			else
 				return false;
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="Dgrid"></param>
+		/// <param name="CurrentRecord"></param>
 		public static void ScrollRecordIntoView ( DataGrid Dgrid, int CurrentRecord )
 		{
+			// Works well 26/5/21
 			double currentTop = 0;
 			double currentBottom = 0;
 			double currsel = 0;
 			double offset = 0;
+			if ( CurrentRecord == -1 ) return;
 			if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
 			{
 				currentTop = Flags . TopVisibleBankGridRow;

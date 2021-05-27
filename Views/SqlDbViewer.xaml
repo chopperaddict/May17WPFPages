@@ -433,7 +433,9 @@
 			HorizontalContentAlignment="Left"
 			Width="auto">
 			<!--<Menu.Background>
-				--><!--create an elegant left to right light-> Dark gradient as a background--><!--
+				-->
+			<!--create an elegant left to right light-> Dark gradient as a background-->
+			<!--
 				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
 					<GradientStop Color="#333333" Offset="1" />
 					<GradientStop Color="#35F6FB" Offset="0" />
@@ -471,9 +473,14 @@
 					    IsCheckable="false"
 				Foreground="Black"/>
 				<Separator />
+				<MenuItem Header="Show All records"
+					Background="#35F6FB" 
+					Click="Linq6_Click"
+					    IsCheckable="false"
+				Foreground="Black"/>
 			</MenuItem>
 
-			<MenuItem  Header="Filtering" 
+			<MenuItem  Header="Filter" 
 				    Click="Filter_Click"
 				     FontWeight="DemiBold"
 					Width="60" 
@@ -487,15 +494,15 @@
 			</MenuItem>
 			<MenuItem  Header="Options" 
 				    Click="Options_Click"
-					Width="50" 
+					Width="70" 
 				    Foreground="{StaticResource White2}">
 			</MenuItem>
 
-			<MenuItem  Header="Exit..." 
+			<MenuItem  Header="Close Viewer..." 
 				    Click="Exit_Click"
 				     FontWeight="SemiBold"
-				     Margin="2"
-					Width="70" 
+				     Margin="2,0"
+					Width="97" 
 				    Foreground="{StaticResource White1}">
 				<!--<MenuItem Header="Setup Filter"
 					    Background="#35F6FB" 
