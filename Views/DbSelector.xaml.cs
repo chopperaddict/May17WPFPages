@@ -101,7 +101,7 @@ namespace WPFPages . Views
 			sqlSelector . SelectedIndex = 2;
 			sqlSelector . Focus ( );
 			this . MouseDown += delegate { DoDragMove ( ); };
-			Utils . GetWindowHandles ( );
+			//			Utils . GetWindowHandles ( );
 			OntopChkbox . IsChecked = false;
 			this . Topmost = true;
 		}
@@ -432,7 +432,7 @@ namespace WPFPages . Views
 					Flags . CurrentSqlViewer . UpdateDbSelectorBtns ( Flags . CurrentSqlViewer );
 					Flags . CurrentSqlViewer . Focus ( );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
+					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 					Flags . CurrentSqlViewer . Refresh ( );
 				}
 				else if ( MainWindow . gv . ViewerCount == 1 )
@@ -806,7 +806,7 @@ namespace WPFPages . Views
 			}
 
 			HandleSelection ( sqlSelector, "NEW" );
-			Utils . GetWindowHandles ( );
+			//			Utils . GetWindowHandles ( );
 		}
 
 		//********************************************************************************************//
@@ -827,53 +827,11 @@ namespace WPFPages . Views
 			{
 				key1 = true;
 			}
-			if ( key1 && e . Key == Key . F8 )     // CTRL + F8
+			if ( key1 )
 			{
-				EventHandlers . ShowSubscribersCount ( );
-				e . Handled = true;
+				Utils . HandleCtrlFnKeys ( key1, e );
 				key1 = false;
 				return;
-			}
-			else if ( key1 && e . Key == Key . F9 )     // CTRL + F9
-			{
-				// lists all delegates & Events
-				EventHandlers . ShowSubscribersCount ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
-			{
-				// list various Flags in Console
-				Flags . PrintDbInfo ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
-			{
-				// list various Flags in Console
-				Flags . UseBeeps = !Flags . UseBeeps;
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . System )     // CTRL + F10
-			{
-				// Major  listof GV[] variables (Guids etc]
-				Flags . ListGridviewControlFlags ( 1 );
-				key1 = false;
-				e . Handled = true;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F11 )  // CTRL + F11
-			{
-				// list various Flags in Console
-				Flags . PrintSundryVariables ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-				//				Debug . WriteLine ("Left Ctrl hit");
 			}
 			else if ( e . Key == Key . Enter )
 			{
@@ -909,11 +867,6 @@ namespace WPFPages . Views
 				}
 				return;
 			}
-			else if ( e . Key == Key . OemQuotes )
-			{
-				EventHandlers . ShowSubscribersCount ( );
-				key1 = false;
-			}
 			else if ( e . Key == Key . NumPad8 || e . Key == Key . Up )
 			{
 				ListBox lb = sender as ListBox;
@@ -942,18 +895,6 @@ namespace WPFPages . Views
 			}
 		}
 
-		private void CloseviewerWindow ( int index )
-		{
-			//Close the specified viewer
-			if ( MainWindow . gv . window != null )
-			{
-				//Fn removes all record of it's very existence
-				MainWindow . gv . window [ index ] . Close ( );
-				Flags . CurrentSqlViewer = null;
-				MainWindow . gv . SqlViewerWindow = null;
-			}
-		}
-
 		//********************************************************************************************//
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
@@ -962,15 +903,8 @@ namespace WPFPages . Views
 
 		private void MultiViewer_Click ( object sender, RoutedEventArgs e )
 		{
-			//if ( Flags . CurrentSqlViewer == null )
-			//{
 			MultiViewer mv = new MultiViewer ( );
 			mv . Show ( );
-			//}
-			//else
-			//{
-			//	MessageBox.Show($"Please close ALL open Db Viewers before openking the MultiViewer", "Data Conflict Warning");
-			//}
 		}
 
 		private void Window_KeyDown ( object sender, KeyEventArgs e )
@@ -980,12 +914,10 @@ namespace WPFPages . Views
 				key1 = true;
 				return;
 			}
-			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
+			if ( key1 )
 			{
-				// lists all delegates & Events
-				Debug . WriteLine ( "\nEvent subscriptions " );
-				EventHandlers . ShowSubscribersCount ( );
-				e . Handled = true;
+				Utils . HandleCtrlFnKeys ( key1, e );
+				key1 = false;
 				return;
 			}
 			else if ( key1 && e . Key == Key . System )     // CTRL + F10
@@ -997,52 +929,6 @@ namespace WPFPages . Views
 				e . Handled = true;
 				return;
 			}
-			else if ( key1 && e . Key == Key . F8 )  // CTRL + F8
-			{
-				// list various Flags in Console
-				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F11 )
-			{
-				Debug . WriteLine ( "\nAll Flag. variables" );
-				Flags . ShowAllFlags ( );
-				key1 = false;
-				return;
-			}
-			//else if ( e . Key == Key . Escape )
-			//{
-			//	int currow = 0;
-			//	//clear flags in ViewModel
-			//	if ( CurrentDb == "BANKACCOUNT" )
-			//	{
-			//		Flags . ActiveSqlViewer = null;
-			//		currow = this . BankGrid . SelectedIndex;
-			//	}
-			//	else if ( CurrentDb == "CUSTOMER" )
-			//	{
-			//		Flags . ActiveSqlViewer = null;
-			//		currow = this . CustomerGrid . SelectedIndex;
-			//	}
-			//	else if ( CurrentDb == "DETAILS" )
-			//	{
-			//		Flags . ActiveSqlViewer = null;
-			//		currow = this . DetailsGrid . SelectedIndex;
-			//	}
-			//	//SendDbSelectorCommand ( 99, "Window is closing", Flags . CurrentSqlViewer );
-			//	// Clears Flags and the relevant Gv[] entry
-			//	RemoveFromViewerList ( 99 );
-
-			//	//				BankAccountViewModel . EditdbWndBank = null;
-			//	UpdateDbSelectorBtns ( Flags . CurrentSqlViewer );
-			//	Flags . CurrentSqlViewer = null;
-			//	Close ( );
-			//	e . Handled = true;
-			//	key1 = false;
-			//	return;
-			//}
 			else if ( e . Key == Key . OemQuestion )
 			{
 				// list Flags in Console
@@ -1058,16 +944,6 @@ namespace WPFPages . Views
 				key1 = false;
 				return;
 			}
-			//else if ( e . Key == Key . RightAlt )
-			//{
-			//	Flags . ListGridviewControlFlags ( );
-			//	key1 = false;
-			//	return;
-			//}
-			//else
-			//{
-			//	key1 = false;
-			//}
 		}
 
 		/// <summary>
@@ -1340,7 +1216,7 @@ namespace WPFPages . Views
 		public static void UpdateControlFlags ( SqlDbViewer caller, string callertype, string PrettyString )
 		{
 			int x = 0;
-			Debug . WriteLine ( $"In UpdateControlFlags setting up gv[] structure variables..." );
+			//			Debug . WriteLine ( $"In UpdateControlFlags setting up gv[] structure variables..." );
 			// We are starting up a new viewer, so need to create the flags structure
 			// Get the first empty set of structures  and fill them out ofr this NEW Viewer Window
 			for ( x = 0 ; x < 3 ; x++ )

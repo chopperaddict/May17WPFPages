@@ -34,11 +34,6 @@ namespace WPFPages . Views
 		dynamic CurrentSelection = 0;
 		dynamic key1 = false;
 		dynamic GridsLinked = true;
-		#region DELEGATES / EVENTS Declarations
-
-		//		public static event EventHandler<LoadedEventArgs> DetDataLoaded;
-
-		#endregion DELEGATES / EVENTS Declarations
 
 		#region DECLARATIONS
 
@@ -72,28 +67,7 @@ namespace WPFPages . Views
 			Mouse . OverrideCursor = Cursors . Wait;
 			inprogress = true;
 			LoadAllData ( );
-			this . MouseDown += delegate { DoDragMove ( ); };
-			this . BankGrid . MouseDown += delegate { DoDragMove ( ); };
-			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
-			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
-
-			// An EditDb has changed the current index 
-			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
-			// A Multiviewer has changed the current index 
-			EventControl . MultiViewerIndexChanged += EventControl_ViewerIndexChanged;
-			// Another SqlDbviewer has changed the current index 
-			EventControl . ViewerIndexChanged += EventControl_ViewerIndexChanged;      // Callback in THIS FILE
-
-			// Event triggers when a Specific Db viewer (SqlDbViewer/BankDbViewer etc) updates the data
-			EventControl . ViewerDataUpdated += EventControl_SqlViewerDataUpdated;
-
-			// Event triggers when WE have updated the data in one of the three grids we have
-			EventControl . MultiViewerDataUpdated += EventControl_ViewerDataUpdated;
-
-			EventControl . EditDbDataUpdated += EventControl_DataUpdated;
-			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
-			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
-			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
+			SubscribeToEvents ( );
 
 			Flags . MultiViewer = this;
 			Flags . SqlMultiViewer = this;
@@ -122,47 +96,144 @@ namespace WPFPages . Views
 			this . Topmost = true;
 			inprogress = false;
 			Mouse . OverrideCursor = Cursors . Arrow;
+		}
+		private void SubscribeToEvents ( )
+		{
+			this . MouseDown += delegate { DoDragMove ( ); };
+			this . BankGrid . MouseDown += delegate { DoDragMove ( ); };
+			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
+			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
 
+			// An EditDb has changed the current index 
+			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
+			// This is THIS  Multiviewer so we do NOT suscribe to it, Only other windows do so
+			//EventControl . MultiViewerIndexChanged += EventControl_MultiViewerIndexChanged;
+			// Another SqlDbviewer has changed the current index 
+			EventControl . ViewerIndexChanged += EventControl_ViewerIndexChanged;      // Callback in THIS FILE
+
+			// Event triggers when a Specific Db viewer (SqlDbViewer/BankDbViewer etc) updates the data
+			EventControl . ViewerDataUpdated += EventControl_SqlViewerDataUpdated;
+
+			// Event triggers when WE have updated the data in one of the three grids we have
+			EventControl . MultiViewerDataUpdated += EventControl_ViewerDataUpdated;
+
+			EventControl . EditDbDataUpdated += EventControl_DataUpdated;
+			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
+			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
+			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
+		}
+
+		private async void EventControl_MultiViewerIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			//object RowTofind = null;
+			//object gr = null;
+			//int rec = 0;
+			//inprogress = true;
+			//if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
+			//{
+			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//	this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//	bindex = rec;
+			//	Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//	if ( rec == -1 )
+			//	{
+			//		this . CustomerGrid . SelectedIndex = -1;
+			//		this . CustomerGrid . SelectedItem = -1;
+			//	}
+			//	else
+			//	{
+			//		this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//}
+
+			//// Now check to see if we need  to update the other grids in our own MultiViewer window here
+			//if ( GridsLinked )
+			//{                                       // Update all three grids
+			//	if ( e . Sender == "BANKACCOUNT" )
+			//	{
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//		this . CustomerGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//	else if ( e . Sender == "CUSTOMER" )
+			//	{
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//		this . BankGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		bindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//	else if ( e . Sender == "DETAILS" )
+			//	{
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//		this . BankGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		bindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//		this . CustomerGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//	}
+			//}
+
+			//return;
 		}
 		private async void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
 		{
 			// Sanity check, if we MADE the index change, so don't bother
-			//			if ( e . Senderviewer == null )
-			//				return;
+			if ( e . Senderviewer == null )
+				return;
 
-			//			await Utils . DoBeep ( 700, 200, true );
 			// Dont go in here if we have just triggered a data update
 			//			if ( e . SenderId == "MultiBank" || e . SenderId == "Multicust" || e . SenderId == "MultiDet" )
 			//				return;
-			if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
-			{
-				object RowTofind = null;
-				object gr = null;
-				int rec = 0;
-				inprogress = true;
-				rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
-				this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-				bindex = rec;
-				Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-				rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
-				if ( rec == -1 )
-				{
-					this . CustomerGrid . SelectedIndex = -1;
-					this . CustomerGrid . SelectedItem = -1;
-				}
-				else
-				{
-					this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-					cindex = rec;
-					BankData . DataContext = this . CustomerGrid . SelectedItem;
-					Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-					rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
-					this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-					dindex = rec;
-					Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-				}
-				return;
-			}
+			//if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
+			//{
+			//	object RowTofind = null;
+			//	object gr = null;
+			//	int rec = 0;
+			//	inprogress = true;
+			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//	this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//	bindex = rec;
+			//	Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//	if ( rec == -1 )
+			//	{
+			//		this . CustomerGrid . SelectedIndex = -1;
+			//		this . CustomerGrid . SelectedItem = -1;
+			//	}
+			//	else
+			//	{
+			//		this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//	return;
+			//}
 			if ( Flags . LinkviewerRecords && Triggered == false ) //|| Flags.IsFiltered|| Flags.IsMultiMode	)
 			{
 				object RowTofind = null;
@@ -229,55 +300,22 @@ namespace WPFPages . Views
 						bvm = this . BankGrid . CurrentItem as BankAccountViewModel;
 						if ( bvm == null ) return;
 						TriggerMultiViewerIndexChanged ( this . BankGrid );
-						//EventControl . TriggerMultiViewerIndexChanged ( MultiBankcollection,
-						//new IndexChangedArgs
-						//{
-						//	Senderviewer = null,            // This is ONLY for SqlDbViewers
-						//	SenderId = "MultiBank",
-						//	Bankno = bvm . BankNo,
-						//	Custno = bvm . CustNo,
-						//	dGrid = this . BankGrid,
-						//	Sender = "BANKACCOUNT",
-						//	Row = this . BankGrid . SelectedIndex
-						//} );
 					}
-					if ( e . Sender == "CUSTOMER" )
+					else if ( e . Sender == "CUSTOMER" )
 					{
 						CustomerViewModel bvm = new CustomerViewModel ( );
 						bvm = this . CustomerGrid . CurrentItem as CustomerViewModel;
 						if ( bvm == null ) return;
 
 						TriggerMultiViewerIndexChanged ( this . CustomerGrid );
-						//EventControl . TriggerMultiViewerIndexChanged ( MultiCustcollection,
-						//new IndexChangedArgs
-						//{
-						//	Senderviewer = null,            // This is ONLY for SqlDbViewers
-						//	SenderId = "MultiBank",
-						//	Bankno = bvm . BankNo,
-						//	Custno = bvm . CustNo,
-						//	dGrid = this . BankGrid,
-						//	Sender = "CUSTOMER",
-						//	Row = this . CustomerGrid . SelectedIndex
-						//} );
 					}
-					if ( e . Sender == "DETAILS" )
+					else if ( e . Sender == "DETAILS" )
 					{
 						DetailsViewModel bvm = new DetailsViewModel ( );
 						bvm = this . DetailsGrid . CurrentItem as DetailsViewModel;
 						if ( bvm == null ) return;
 
 						TriggerMultiViewerIndexChanged ( this . DetailsGrid );
-						//EventControl . TriggerMultiViewerIndexChanged ( MultiDetcollection,
-						//new IndexChangedArgs
-						//{
-						//	Senderviewer = null,            // This is ONLY for SqlDbViewers
-						//	SenderId = "MultiBank",
-						//	Bankno = bvm . BankNo,
-						//	Custno = bvm . CustNo,
-						//	dGrid = this . DetailsGrid,
-						//	Sender = "BANKACCOUNT",
-						//	Row = this . DetailsGrid . SelectedIndex
-						//} );
 					}
 				}
 				inprogress = false;
@@ -332,22 +370,6 @@ namespace WPFPages . Views
 
 		#region EVENT HANDLERS
 
-		/// <summary>
-		/// EVENT HANDLER
-		/// for data changes made to BankCollection
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void UpdatedDataLoaded ( object sender, LoadedEventArgs e )
-		{
-			// Update ALL datagrids
-			if ( inprogress ) return;
-
-			Mouse . OverrideCursor = Cursors . Wait;
-			RefreshAllGrids ( CurrentDb, e . RowCount );
-			Mouse . OverrideCursor = Cursors . Arrow;
-			inprogress = false;
-		}
 		#endregion EVENT HANDLERS
 
 		#region DATA UPDATING
@@ -520,70 +542,8 @@ namespace WPFPages . Views
 			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 
 		}
-
 		#endregion EVENT DATA UPDATING
 
-
-		/// <summary>
-		/// Just resets  the SelectedITEM and scroills it into view
-		/// </summary>
-		public void ResetIndexes ( )
-		{
-			inprogress = true;
-			BankGrid . SelectedIndex = bindex;
-			if ( CurrentDb == "BANKACCOUNT" )
-			{
-				this . BankGrid . SelectedItem = bindex;
-				this . BankGrid . ScrollIntoView ( bindex );
-			}
-			else if ( CurrentDb == "CUSTOMER" )
-			{
-				this . CustomerGrid . SelectedItem = cindex;
-				this . CustomerGrid . ScrollIntoView ( cindex );
-			}
-			else if ( CurrentDb == "DETAILS" )
-			{
-				this . DetailsGrid . SelectedItem = dindex;
-				this . DetailsGrid . ScrollIntoView ( dindex );
-			}
-			inprogress = false;
-		}
-		private async void ReloadData ( DataGrid DGrid )
-		{
-			try
-			{
-				Mouse . OverrideCursor = Cursors . Wait;
-				// Make sure we are back on UI thread
-
-				int current = 0;
-				current = DGrid . SelectedIndex == -1 ? 0 : DGrid . SelectedIndex;
-				this . BankGrid . ItemsSource = null;
-				this . CustomerGrid . ItemsSource = null;
-				this . DetailsGrid . ItemsSource = null;
-
-				await BankCollection . LoadBank ( MultiBankcollection, 1, true );
-				this . BankGrid . ItemsSource = MultiBankcollection;
-
-				await CustCollection . LoadCust ( MultiCustcollection, 3, true );
-				this . CustomerGrid . ItemsSource = MultiCustcollection;
-
-				await DetCollection . LoadDet ( MultiDetcollection, 3, true );
-				this . DetailsGrid . ItemsSource = MultiDetcollection;
-
-				DGrid . SelectedIndex = current;
-				Debug . WriteLine ( $"End of ReloadGrid() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
-			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"ERROR: ReloadGrid() {ex . Message}, : {ex . Data}" );
-			}
-		}
-
-		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
-		{
-			Debug . WriteLine ( $"MultiViewer : Data changed event notification received successfully." );
-			int x = 0;
-		}
 
 		public void RefreshData ( int row, string Custno = "", string Bankno = "" )
 		{
@@ -624,13 +584,10 @@ namespace WPFPages . Views
 				if ( showdebug ) Debug . WriteLine ( $"key1 = set to TRUE" );
 				return;
 			}
-			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
+			if ( key1 )
 			{
-				// lists all delegates & Events
-				Debug . WriteLine ( "\nEvent subscriptions " );
-				EventHandlers . ShowSubscribersCount ( );
-				e . Handled = true;
-				return;
+				Utils . HandleCtrlFnKeys ( key1, e );
+				key1 = false;
 			}
 			else if ( key1 && e . Key == Key . System )     // CTRL + F10
 			{
@@ -639,6 +596,14 @@ namespace WPFPages . Views
 				Flags . ListGridviewControlFlags ( 1 );
 				key1 = false;
 				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F5 )
+			{
+				// list Flags in Console
+				Utils . GetWindowHandles ( );
+				e . Handled = true;
+				key1 = false;
 				return;
 			}
 			else if ( key1 && e . Key == Key . F8 )  // CTRL + F8
@@ -663,6 +628,14 @@ namespace WPFPages . Views
 				Flags . UseBeeps = !Flags . UseBeeps;
 				e . Handled = true;
 				key1 = false;
+				return;
+			}
+			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
+			{
+				// lists all delegates & Events
+				Debug . WriteLine ( "\nEvent subscriptions " );
+				EventHandlers . ShowSubscribersCount ( );
+				e . Handled = true;
 				return;
 			}
 			else if ( key1 && e . Key == Key . F11 )
@@ -928,6 +901,7 @@ namespace WPFPages . Views
 			int rec = 0;
 			string SearchCustNo = "";
 			string SearchBankNo = "";
+			//			ScrollViewer scroll;
 
 			if ( ReloadingData )
 				return;
@@ -936,42 +910,22 @@ namespace WPFPages . Views
 			if ( CurrentSelectedRecord == null )
 				return;
 
-			ScrollViewer scroll;
-
 			if ( inprogress )
 				return;
 			inprogress = true;
 
-			DataGrid dg = sender as DataGrid;
-			int currsel = dg . SelectedIndex;
-			bindex = currsel;
-			if ( currsel <= 0 ) currsel = bindex;
-			this . BankGrid . SelectedIndex = currsel;
-			this . BankGrid . SelectedItem = currsel;
-
-			Type tthis = this . GetType ( );
-			if ( tthis . FullName . Contains ( "MultiViewer" ) )
+			if ( LinkGrids . IsChecked == true )
 			{
-				// We triggered this change
+				// We have the link our own grids option checked
+				// so update our other 2 grids positions
 				CurrentSelectedRecord = this . BankGrid . CurrentItem as BankAccountViewModel;
 				if ( CurrentSelectedRecord == null )
-				{
-					Console . WriteLine ( $"Bank Grid ERROR - Currentitem is NULL !!" );
-					//					await Utils . DoSingleBeep ( 200, 200, 4 ) . ConfigureAwait ( false );
-					return;
-				}
+				{ Console . WriteLine ( $"Bank Grid ERROR - Currentitem is NULL !!" ); return; }
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
-				{
-					inprogress = false;
-					return;
-				}
-			}
+				{ inprogress = false; return; }
 
-			if ( GridsLinked )
-			{
-				// update all grids position
 				Triggered = true;
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . CustomerGrid, "CUSTOMER" );
 				// Store current index to global
@@ -983,19 +937,18 @@ namespace WPFPages . Views
 				Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
 				Triggered = false;
 			}
-			else
-			{
-				// just update our own position
-				Triggered = true;
-				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . BankGrid, "BANKACCOUNT" );
-				// Store current index to global
-				bindex = rec;
-				Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-				Triggered = false;
-			}
-			Triggered = false;
-			inprogress = false;
 			BankData . DataContext = this . BankGrid . SelectedItem;
+
+			if ( LinkRecords . IsChecked == true )
+			{
+				// The global linkage is set, so
+				// we must notify any other windows that may need to update themselves
+				TriggerMultiViewerIndexChanged ( this . BankGrid );
+			}
+			inprogress = false;
+			try
+			{ e . Handled = true; }
+			catch ( Exception ex ) { }
 			return;
 		}
 		//****************************************************************************************************//
@@ -1012,21 +965,11 @@ namespace WPFPages . Views
 			if ( CurrentSelectedRecord == null )
 				return;
 
-			ScrollViewer scroll;
-
 			if ( inprogress )
 				return;
 			inprogress = true;
 
-			DataGrid dg = sender as DataGrid;
-			int currsel = dg . SelectedIndex;
-			cindex = currsel;
-			if ( currsel <= 0 ) currsel = cindex;
-			this . CustomerGrid . SelectedIndex = currsel;
-			this . CustomerGrid . SelectedItem = currsel;
-
-			Type tthis = this . GetType ( );
-			if ( tthis . FullName . Contains ( "MultiViewer" ) )
+			if ( LinkGrids . IsChecked == true )
 			{
 				// We triggered this change
 				CurrentSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
@@ -1043,12 +986,9 @@ namespace WPFPages . Views
 					inprogress = false;
 					return;
 				}
-//				TriggerMultiViewerIndexChanged ( this . CustomerGrid );
-			}
 
-			if ( GridsLinked )
-			{
-				// update all grids position
+				// We have the link our own grids option checked
+				// so update all our grids position
 				Triggered = true;
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . BankGrid, "BANKACCOUNT" );
 				// Store current index to global
@@ -1061,22 +1001,23 @@ namespace WPFPages . Views
 				Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
 				Triggered = false;
 			}
-			else
+			BankData . DataContext = this . DetailsGrid . SelectedItem;
+
+			if ( LinkRecords . IsChecked == true )
 			{
-				// just update our own position
-				Triggered = true;
-				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . CustomerGrid, "CUSTOMER" );
-				// Store current index to global
-				cindex = rec;
-				Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-				Triggered = false;
+				// The global linkage is set, so
+				// we must notify any other windows that may need to update themselves
+				TriggerMultiViewerIndexChanged ( this . CustomerGrid );
 			}
-			Triggered = false;
+
 			inprogress = false;
-			BankData . DataContext = this . CustomerGrid . SelectedItem;
+			try
+			{e . Handled = true;}
+			catch ( Exception ex ) { }
 			return;
 
 		}
+
 		private async void DetGrid_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
 			int rec = 0;
@@ -1089,28 +1030,15 @@ namespace WPFPages . Views
 			DetailsViewModel CurrentSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
 			if ( CurrentSelectedRecord == null )
 			{
-				//				Console . WriteLine ( $"Details Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
-				//				await Utils . DoErrorBeep ( 400, 400, 2 ) . ConfigureAwait ( false );
 				return;
 			}
-
-			ScrollViewer scroll;
 
 			if ( inprogress )
 				return;
 			inprogress = true;
 
-			DataGrid dg = sender as DataGrid;
-			int currsel = dg . SelectedIndex;
-			dindex = currsel;
-			if ( currsel <= 0 ) currsel = dindex;
-			this . DetailsGrid . SelectedIndex = currsel;
-			this . DetailsGrid . SelectedItem = currsel;
-
-			Type tthis = this . GetType ( );
-			if ( tthis . FullName . Contains ( "MultiViewer" ) )
+			if ( LinkGrids . IsChecked == true )
 			{
-				// We triggered this change
 				CurrentSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
 				if ( CurrentSelectedRecord == null )
 				{
@@ -1120,16 +1048,8 @@ namespace WPFPages . Views
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
-				{
-					inprogress = false;
-					//					await Utils . DoErrorBeep ( 400, 200, 4 ) . ConfigureAwait ( false );
-					return;
-				}
-//				TriggerMultiViewerIndexChanged ( this . DetailsGrid );
-			}
+				{inprogress = false;return;}
 
-			if ( GridsLinked )
-			{
 				// update all grids position
 				Triggered = true;
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . BankGrid, "BANKACCOUNT" );
@@ -1143,19 +1063,19 @@ namespace WPFPages . Views
 				Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
 				Triggered = false;
 			}
-			else
-			{
-				// just update our own position
-				Triggered = true;
-				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . DetailsGrid, "DETAILS" );
-				// Store current index to global
-				dindex = rec;
-				Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-				Triggered = false;
-			}
-			Triggered = false;
-			inprogress = false;
 			BankData . DataContext = this . DetailsGrid . SelectedItem;
+
+			if ( LinkRecords . IsChecked == true )
+			{
+				// The global linkage is set, so
+				// we must notify any other windows that may need to update themselves
+				TriggerMultiViewerIndexChanged ( this . DetailsGrid );
+			}
+
+			inprogress = false;
+			try
+			{e . Handled = true;}
+			catch ( Exception ex ) { }
 			return;
 		}
 
@@ -1462,56 +1382,6 @@ namespace WPFPages . Views
 			}
 		}
 
-		/// <summary>
-		///  Function that broadcasts a notification to whoever to
-		///  notify that one of the Obs collections has been changed by something
-		/// </summary>
-		/// <param name="o"> The sending object</param>
-		/// <param name="args"> Sender name and Db Type</param>
-		//		private static bool hasupdated = false;
-
-		public void SendDataChanged ( string dbName )
-		{
-			// Databases have DEFINITELY been updated successfully after a change
-			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
-
-			//dca . SenderName = o . ToString ( );
-			//dca . DbName = dbName;
-
-			if ( dbName == "BANKACCOUNT" )
-			{
-				EventControl . TriggerMultiViewerDataUpdated ( MultiBankcollection,
-					new LoadedEventArgs
-					{
-						CallerDb = "BANKACCOUNT",
-						DataSource = MultiBankcollection,
-						RowCount = this . BankGrid . SelectedIndex
-					} );
-			}
-			else if ( dbName == "CUSTOMER" )
-			{
-				EventControl . TriggerMultiViewerDataUpdated ( MultiCustcollection,
-					new LoadedEventArgs
-					{
-						CallerDb = "CUSTOMER",
-						DataSource = MultiCustcollection,
-						RowCount = this . CustomerGrid . SelectedIndex
-
-					} );
-			}
-			else if ( dbName == "DETAILS" )
-			{
-				EventControl . TriggerMultiViewerDataUpdated ( MultiDetcollection,
-					new LoadedEventArgs
-					{
-						CallerDb = "DETAILS",
-						DataSource = MultiDetcollection,
-						RowCount = this . DetailsGrid . SelectedIndex
-					} );
-			}
-
-			Mouse . OverrideCursor = Cursors . Arrow;
-		}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
 			Flags . LinkviewerRecords = !Flags . LinkviewerRecords;
@@ -1748,104 +1618,6 @@ namespace WPFPages . Views
 				GridsLinked = false;
 
 		}
-		/// <summary>
-		/// Method that is called when ANY grid has a data change made to it.
-		/// It updates ALL the Db's first, then triggers a ViewerDataUpdated()  EVENT
-		/// to notify any other open viewers
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		//private async void ViewerGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
-		//{
-		//	string SearchCustNo = "";
-		//	string SearchBankNo = "";
-		//	// Save current positions so we can reposition later
-		//	inprogress = true;
-
-		//	// Set globals
-		//	bindex = this . BankGrid . SelectedIndex;
-		//	cindex = this . CustomerGrid . SelectedIndex;
-		//	dindex = this . DetailsGrid . SelectedIndex;
-
-
-		//	if ( CurrentDb == "BANKACCOUNT" )
-		//	{
-		//		BankAccountViewModel CurrentBankSelectedRecord = this . BankGrid . CurrentItem as BankAccountViewModel;
-		//		if ( CurrentBankSelectedRecord == null )
-		//		{
-		//			Console . WriteLine ( $"Bank Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
-		//			//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
-		//			return;
-		//		}
-		//		SearchCustNo = CurrentBankSelectedRecord . CustNo;
-		//		SearchBankNo = CurrentBankSelectedRecord . BankNo;
-		//		bindex = this . BankGrid . SelectedIndex;
-		//		// This does the SQL update of the record that has been changed
-		//		UpdateOnDataChange ( CurrentDb, e );
-		//		EventControl . TriggerMultiViewerDataUpdated ( MultiBankcollection,
-		//			new LoadedEventArgs
-		//			{
-		//				Bankno = SearchBankNo,
-		//				Custno = SearchCustNo,
-		//				CallerDb = "BANKACCOUNT",
-		//				DataSource = MultiBankcollection,
-		//				RowCount = this . BankGrid . SelectedIndex
-		//			} );
-		//	}
-		//	else if ( CurrentDb == "CUSTOMER" )
-		//	{
-		//		CustomerViewModel CurrentBankSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
-		//		if ( CurrentBankSelectedRecord == null )
-		//		{
-		//			Console . WriteLine ( $"Customer Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
-		//			//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
-		//			return;
-		//		}
-		//		SearchCustNo = CurrentBankSelectedRecord . CustNo;
-		//		SearchBankNo = CurrentBankSelectedRecord . BankNo;
-		//		cindex = this . CustomerGrid . SelectedIndex;
-
-		//		// This does the SQL update of the record that has been changed
-		//		UpdateOnDataChange ( CurrentDb, e );
-		//		EventControl . TriggerMultiViewerDataUpdated ( MultiCustcollection,
-		//			new LoadedEventArgs
-		//			{
-		//				Bankno = SearchBankNo,
-		//				Custno = SearchCustNo,
-		//				CallerDb = "CUSTOMER",
-		//				DataSource = MultiCustcollection,
-		//				RowCount = this . CustomerGrid . SelectedIndex
-		//			} );
-		//	}
-		//	else if ( CurrentDb == "DETAILS" )
-		//	{
-		//		DetailsViewModel CurrentBankSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
-		//		if ( CurrentBankSelectedRecord == null )
-		//		{
-		//			Console . WriteLine ( $"Details Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
-		//			//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
-		//			return;
-		//		}
-		//		SearchCustNo = CurrentBankSelectedRecord . CustNo;
-		//		SearchBankNo = CurrentBankSelectedRecord . BankNo;
-		//		dindex = this . DetailsGrid . SelectedIndex;
-
-		//		// This does the SQL update of the record that has been changed
-		//		UpdateOnDataChange ( CurrentDb, e );
-		//		EventControl . TriggerMultiViewerDataUpdated ( MultiDetcollection,
-		//			new LoadedEventArgs
-		//			{
-		//				Bankno = SearchBankNo,
-		//				Custno = SearchCustNo,
-		//				CallerDb = "DETAILS",
-		//				DataSource = MultiDetcollection,
-		//				RowCount = this . DetailsGrid . SelectedIndex
-		//			} );
-		//	}
-		//	ResetIndexes ( );
-		//	inprogress = false;
-		//}
-
 
 		/// <summary>
 		///  Event handkler for data changes made by EditDb viewers only
@@ -2059,14 +1831,6 @@ namespace WPFPages . Views
 		}
 		#endregion Post Data Reloaded event handlers
 
-		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
-		{
-			EventControl_ViewerIndexChanged ( sender, e );
-			//Triggered = true;
-			//// update rows when another window changes it if linkage is ON
-			//this . BankGrid . SelectedIndex = e . Row;
-			//Triggered = false;
-		}
 
 		/// <summary>
 		/// Main Event handler for data changes made in this multiviewer
@@ -2147,7 +1911,7 @@ namespace WPFPages . Views
 						Row = this . BankGrid . SelectedIndex
 					} );
 			}
-			else if ( grid == this . BankGrid )
+			else if ( grid == this . CustomerGrid )
 			{
 				CustomerViewModel CurrentCustSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
 				SearchCustNo = CurrentCustSelectedRecord . CustNo;
@@ -2163,7 +1927,7 @@ namespace WPFPages . Views
 					Row = this . CustomerGrid . SelectedIndex
 				} );
 			}
-			else if ( grid == this . BankGrid )
+			else if ( grid == this . DetailsGrid )
 			{
 				DetailsViewModel CurrentDetSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
 				SearchCustNo = CurrentDetSelectedRecord . CustNo;
@@ -2180,6 +1944,257 @@ namespace WPFPages . Views
 					} );
 			}
 		}
-
 	}
+	/* UNUSED METHODS
+
+			#region UNUSED CODE
+
+			/// <summary>
+			/// Method that is called when ANY grid has a data change made to it.
+			/// It updates ALL the Db's first, then triggers a ViewerDataUpdated()  EVENT
+			/// to notify any other open viewers
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			private async void ViewerGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
+			{
+				//	string SearchCustNo = "";
+				//	string SearchBankNo = "";
+				//	// Save current positions so we can reposition later
+				//	inprogress = true;
+
+				//	// Set globals
+				//	bindex = this . BankGrid . SelectedIndex;
+				//	cindex = this . CustomerGrid . SelectedIndex;
+				//	dindex = this . DetailsGrid . SelectedIndex;
+
+
+				//	if ( CurrentDb == "BANKACCOUNT" )
+				//	{
+				//		BankAccountViewModel CurrentBankSelectedRecord = this . BankGrid . CurrentItem as BankAccountViewModel;
+				//		if ( CurrentBankSelectedRecord == null )
+				//		{
+				//			Console . WriteLine ( $"Bank Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
+				//			//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
+				//			return;
+				//		}
+				//		SearchCustNo = CurrentBankSelectedRecord . CustNo;
+				//		SearchBankNo = CurrentBankSelectedRecord . BankNo;
+				//		bindex = this . BankGrid . SelectedIndex;
+				//		// This does the SQL update of the record that has been changed
+				//		UpdateOnDataChange ( CurrentDb, e );
+				//		EventControl . TriggerMultiViewerDataUpdated ( MultiBankcollection,
+				//			new LoadedEventArgs
+				//			{
+				//				Bankno = SearchBankNo,
+				//				Custno = SearchCustNo,
+				//				CallerDb = "BANKACCOUNT",
+				//				DataSource = MultiBankcollection,
+				//				RowCount = this . BankGrid . SelectedIndex
+				//			} );
+				//	}
+				//	else if ( CurrentDb == "CUSTOMER" )
+				//	{
+				//		CustomerViewModel CurrentBankSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
+				//		if ( CurrentBankSelectedRecord == null )
+				//		{
+				//			Console . WriteLine ( $"Customer Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
+				//			//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
+				//			return;
+				//		}
+				//		SearchCustNo = CurrentBankSelectedRecord . CustNo;
+				//		SearchBankNo = CurrentBankSelectedRecord . BankNo;
+				//		cindex = this . CustomerGrid . SelectedIndex;
+
+				//		// This does the SQL update of the record that has been changed
+				//		UpdateOnDataChange ( CurrentDb, e );
+				//		EventControl . TriggerMultiViewerDataUpdated ( MultiCustcollection,
+				//			new LoadedEventArgs
+				//			{
+				//				Bankno = SearchBankNo,
+				//				Custno = SearchCustNo,
+				//				CallerDb = "CUSTOMER",
+				//				DataSource = MultiCustcollection,
+				//				RowCount = this . CustomerGrid . SelectedIndex
+				//			} );
+				//	}
+				//	else if ( CurrentDb == "DETAILS" )
+				//	{
+				//		DetailsViewModel CurrentBankSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
+				//		if ( CurrentBankSelectedRecord == null )
+				//		{
+				//			Console . WriteLine ( $"Details Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!" );
+				//			//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
+				//			return;
+				//		}
+				//		SearchCustNo = CurrentBankSelectedRecord . CustNo;
+				//		SearchBankNo = CurrentBankSelectedRecord . BankNo;
+				//		dindex = this . DetailsGrid . SelectedIndex;
+
+				//		// This does the SQL update of the record that has been changed
+				//		UpdateOnDataChange ( CurrentDb, e );
+				//		EventControl . TriggerMultiViewerDataUpdated ( MultiDetcollection,
+				//			new LoadedEventArgs
+				//			{
+				//				Bankno = SearchBankNo,
+				//				Custno = SearchCustNo,
+				//				CallerDb = "DETAILS",
+				//				DataSource = MultiDetcollection,
+				//				RowCount = this . DetailsGrid . SelectedIndex
+				//			} );
+				//	}
+				//	ResetIndexes ( );
+				//	inprogress = false;
+			}
+
+			/// <summary>
+			/// NOT IN USE currently !!!
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
+			{
+				EventControl_ViewerIndexChanged ( sender, e );
+				//Triggered = true;
+				//// update rows when another window changes it if linkage is ON
+				//this . BankGrid . SelectedIndex = e . Row;
+				//Triggered = false;
+			}
+
+			/// <summary>
+			/// NOT IN USE currently !!!
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			public void SendDataChanged ( string dbName )
+			{
+				//// Databases have DEFINITELY been updated successfully after a change
+				//// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
+
+				////dca . SenderName = o . ToString ( );
+				////dca . DbName = dbName;
+
+				//if ( dbName == "BANKACCOUNT" )
+				//{
+				//	EventControl . TriggerMultiViewerDataUpdated ( MultiBankcollection,
+				//		new LoadedEventArgs
+				//		{
+				//			CallerDb = "BANKACCOUNT",
+				//			DataSource = MultiBankcollection,
+				//			RowCount = this . BankGrid . SelectedIndex
+				//		} );
+				//}
+				//else if ( dbName == "CUSTOMER" )
+				//{
+				//	EventControl . TriggerMultiViewerDataUpdated ( MultiCustcollection,
+				//		new LoadedEventArgs
+				//		{
+				//			CallerDb = "CUSTOMER",
+				//			DataSource = MultiCustcollection,
+				//			RowCount = this . CustomerGrid . SelectedIndex
+
+				//		} );
+				//}
+				//else if ( dbName == "DETAILS" )
+				//{
+				//	EventControl . TriggerMultiViewerDataUpdated ( MultiDetcollection,
+				//		new LoadedEventArgs
+				//		{
+				//			CallerDb = "DETAILS",
+				//			DataSource = MultiDetcollection,
+				//			RowCount = this . DetailsGrid . SelectedIndex
+				//		} );
+				//}
+
+				//Mouse . OverrideCursor = Cursors . Arrow;
+			}
+
+			/// <summary>
+			/// NOT IN USE currently !!!
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
+			{
+				//Debug . WriteLine ( $"MultiViewer : Data changed event notification received successfully." );
+				//int x = 0;
+			}
+			private async void ReloadData ( DataGrid DGrid )
+			{
+				//try
+				//{
+				//	Mouse . OverrideCursor = Cursors . Wait;
+				//	// Make sure we are back on UI thread
+
+				//	int current = 0;
+				//	current = DGrid . SelectedIndex == -1 ? 0 : DGrid . SelectedIndex;
+				//	this . BankGrid . ItemsSource = null;
+				//	this . CustomerGrid . ItemsSource = null;
+				//	this . DetailsGrid . ItemsSource = null;
+
+				//	await BankCollection . LoadBank ( MultiBankcollection, 1, true );
+				//	this . BankGrid . ItemsSource = MultiBankcollection;
+
+				//	await CustCollection . LoadCust ( MultiCustcollection, 3, true );
+				//	this . CustomerGrid . ItemsSource = MultiCustcollection;
+
+				//	await DetCollection . LoadDet ( MultiDetcollection, 3, true );
+				//	this . DetailsGrid . ItemsSource = MultiDetcollection;
+
+				//	DGrid . SelectedIndex = current;
+				//	Debug . WriteLine ( $"End of ReloadGrid() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+				//}
+				//catch ( Exception ex )
+				//{
+				//	Debug . WriteLine ( $"ERROR: ReloadGrid() {ex . Message}, : {ex . Data}" );
+				//}
+			}
+
+			/// <summary>
+			/// Just resets  the SelectedITEM and scroills it into view
+			/// </summary>
+			public void ResetIndexes ( )
+			{
+				//inprogress = true;
+				//BankGrid . SelectedIndex = bindex;
+				//if ( CurrentDb == "BANKACCOUNT" )
+				//{
+				//	this . BankGrid . SelectedItem = bindex;
+				//	this . BankGrid . ScrollIntoView ( bindex );
+				//}
+				//else if ( CurrentDb == "CUSTOMER" )
+				//{
+				//	this . CustomerGrid . SelectedItem = cindex;
+				//	this . CustomerGrid . ScrollIntoView ( cindex );
+				//}
+				//else if ( CurrentDb == "DETAILS" )
+				//{
+				//	this . DetailsGrid . SelectedItem = dindex;
+				//	this . DetailsGrid . ScrollIntoView ( dindex );
+				//}
+				//inprogress = false;
+			}
+
+			/// <summary>
+			/// EVENT HANDLER
+			/// for data changes made to BankCollection
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			private void UpdatedDataLoaded ( object sender, LoadedEventArgs e )
+			{
+				//// Update ALL datagrids
+				//if ( inprogress ) return;
+
+				//Mouse . OverrideCursor = Cursors . Wait;
+				//RefreshAllGrids ( CurrentDb, e . RowCount );
+				//Mouse . OverrideCursor = Cursors . Arrow;
+				//inprogress = false;
+			}
+
+			#endregion UNUSED CODE
+
+
+	 * 
+	 * */
 }

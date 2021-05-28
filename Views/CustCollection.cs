@@ -31,7 +31,7 @@ namespace WPFPages . Views
 
 		private readonly object LockCustReadData = new object ( );
 		private readonly object LockCustLoadData = new object ( );
-		
+
 
 		#region CONSTRUCTOR
 
@@ -57,11 +57,11 @@ namespace WPFPages . Views
 
 				if ( Custinternalcollection . Count > 0 )
 					Custinternalcollection . ClearItems ( );
-//				Debug . WriteLine ( $"\n ***** Loading Customer Data from disk *****\n" );
+				//				Debug . WriteLine ( $"\n ***** Loading Customer Data from disk *****\n" );
 
 				if ( USEFULLTASK )
 				{
-//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
+					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
 					CustCollection c = new CustCollection ( );
 					await c . LoadCustomerTaskInSortOrderAsync ( );
 					cc = Custinternalcollection;
@@ -69,7 +69,7 @@ namespace WPFPages . Views
 				}
 				else
 				{
-//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
+					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
 					// Abstract the mail data load call to a method that uses AWAITABLE  calles
 					await ProcessRequest ( );
 
@@ -116,51 +116,52 @@ namespace WPFPages . Views
 		public async Task<bool> LoadCustDataSql ( DataTable dt = null, int mode = -1, bool isMultiMode = false )
 		//Load data from Sql Server
 		{
-			CustCollection bptr = new CustCollection ( );
-			lock ( bptr . LockCustReadData )
+
+			try
 			{
+				SqlConnection con;
+				string ConString = "";
+				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+				con = new SqlConnection ( ConString );
 
-				try
+				using ( con )
 				{
-					SqlConnection con;
-					string ConString = "";
-					ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
-					con = new SqlConnection ( ConString );
+					string commandline = "";
 
-					using ( con )
+					if ( Flags . IsMultiMode )
 					{
-						string commandline = "";
-
-						if ( Flags . IsMultiMode )
-						{
-							// Create a valid Query Command string including any active sort ordering
-							commandline = $"SELECT * FROM CUSTOMER WHERE CUSTNO IN "
-								+ $"(SELECT CUSTNO FROM CUSTOMER  "
-								+ $" GROUP BY CUSTNO"
-								+ $" HAVING COUNT(*) > 1) ORDER BY ";
-							commandline = Utils . GetDataSortOrder ( commandline );
-						}
-						else if ( Flags . FilterCommand != "" )
-						{ commandline = Flags . FilterCommand; }
-						else
-						{
-							// Create a valid Query Command string including any active sort ordering
-							commandline = "Select * from Customer  order by ";
-							commandline = Utils . GetDataSortOrder ( commandline );
-						}
-						SqlCommand cmd = new SqlCommand ( commandline, con );
-						SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+						// Create a valid Query Command string including any active sort ordering
+						commandline = $"SELECT * FROM CUSTOMER WHERE CUSTNO IN "
+							+ $"(SELECT CUSTNO FROM CUSTOMER  "
+							+ $" GROUP BY CUSTNO"
+							+ $" HAVING COUNT(*) > 1) ORDER BY ";
+						commandline = Utils . GetDataSortOrder ( commandline );
+					}
+					else if ( Flags . FilterCommand != "" )
+					{ commandline = Flags . FilterCommand; }
+					else
+					{
+						// Create a valid Query Command string including any active sort ordering
+						commandline = "Select * from Customer  order by ";
+						commandline = Utils . GetDataSortOrder ( commandline );
+					}
+					SqlCommand cmd = new SqlCommand ( commandline, con );
+					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+					CustCollection bptr = new CustCollection ( );
+//					lock ( bptr . LockCustReadData )
+//					{
 						sda . Fill ( dtCust );
 						//					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
-					}
-				}
-				catch ( Exception ex )
-				{
-					Debug . WriteLine ( $"Failed to load Customer Details - {ex . Message}" );
-					MessageBox . Show ( $"Failed to load Customer Details - {ex . Message}" );
-					return false;
+//					}
 				}
 			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"Failed to load Customer Details - {ex . Message}" );
+				MessageBox . Show ( $"Failed to load Customer Details - {ex . Message}" );
+				return false;
+			}
+
 			return true;
 		}
 
@@ -170,8 +171,8 @@ namespace WPFPages . Views
 		{
 			int count = 0;
 			CustCollection bptr = new CustCollection ( );
-			lock ( bptr . LockCustLoadData )
-			{
+//			lock ( bptr . LockCustLoadData )
+//			{
 				try
 				{
 					for ( int i = 0 ; i < dtCust . Rows . Count ; i++ )
@@ -215,7 +216,7 @@ namespace WPFPages . Views
 					Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
 					//MessageBox . Show ( $"CUSTOMERS : ERROR :\n		Error was  : [{ex . Message}] ...." );
 				}
-			} // End Lock
+//			} // End Lock
 			return true;
 		}
 		public async static Task<CustCollection> LoadCustomerTest ( bool Notify = true )
@@ -361,7 +362,7 @@ namespace WPFPages . Views
 					}
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnFaulted, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
-//			Debug . WriteLine ( $"CUSTOMER : END OF PROCESSING & Error checking functionality\nCUSTOMER : *** Detcollection total = {Custinternalcollection . Count} ***\n\n" );
+			//			Debug . WriteLine ( $"CUSTOMER : END OF PROCESSING & Error checking functionality\nCUSTOMER : *** Detcollection total = {Custinternalcollection . Count} ***\n\n" );
 
 			#endregion Success//Error reporting/handling
 			Flags . CustCollection = Custinternalcollection;

@@ -114,6 +114,8 @@ namespace WPFPages . Views
 			{
 				if ( CurrentDb == "BANKACCOUNT" )
 				{
+					dvm . BankNo = bankno1 . Text;
+					dvm . CustNo = custno1 . Text;
 					bvm . AcType = Convert . ToInt32 ( actype1 . Text );
 					bvm . IntRate = Convert . ToDecimal( intrate1 . Text );
 					bvm . Balance = Convert . ToDecimal ( balance1 . Text );
@@ -122,6 +124,8 @@ namespace WPFPages . Views
 				}
 				else
 				{
+					dvm . BankNo = bankno1 . Text;
+					dvm . CustNo = custno1 . Text;
 					dvm . AcType = Convert . ToInt32 ( actype1 . Text );
 					dvm . IntRate = Convert . ToDecimal( intrate1 . Text );
 					dvm . Balance = Convert . ToDecimal (balance1.Text );
@@ -131,6 +135,8 @@ namespace WPFPages . Views
 			}
 			else
 			{
+				dvm . BankNo = bankno . Text;
+				dvm . CustNo = custno . Text;
 				cvm . AcType = Convert . ToInt32 ( actype1 . Text );
 				cvm . Addr1 = addr1 . Text;
 				cvm . Addr2 = addr2 . Text;

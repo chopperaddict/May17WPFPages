@@ -189,52 +189,53 @@ namespace WPFPages . Views
 		public async Task<bool> LoadDetailsDataSql ( bool isMultiMode = false )
 		{
 			Stopwatch st = new Stopwatch ( );
-			DetCollection bptr = new DetCollection ( );
-			lock ( bptr . LockDetReadData )
-			{
 
-				try
+			try
+			{
+				st . Start ( );
+				SqlConnection con;
+				string ConString = "";
+				string commandline = "";
+				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+				con = new SqlConnection ( ConString );
+				using ( con )
 				{
-					st . Start ( );
-					SqlConnection con;
-					string ConString = "";
-					string commandline = "";
-					ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
-					con = new SqlConnection ( ConString );
-					using ( con )
+					if ( Flags . IsMultiMode )
 					{
-						if ( Flags . IsMultiMode )
-						{
-							// Create a valid Query Command string including any active sort ordering
-							commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
-								+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
-								+ $" GROUP BY CUSTNO"
-								+ $" HAVING COUNT(*) > 1) ORDER BY ";
-							commandline = Utils . GetDataSortOrder ( commandline );
-						}
-						else if ( Flags . FilterCommand != "" )
-						{
-							commandline = Flags . FilterCommand;
-						}
-						else
-						{
-							// Create a valid Query Command string including any active sort ordering
-							commandline = "Select * from SecAccounts  order by ";
-							commandline = Utils . GetDataSortOrder ( commandline );
-						}
-						SqlCommand cmd = new SqlCommand ( commandline, con );
-						SqlDataAdapter sda = new SqlDataAdapter ( cmd );
-						sda . Fill ( dtDetails );
-						st . Stop ( );
-						//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
+						// Create a valid Query Command string including any active sort ordering
+						commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
+							+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
+							+ $" GROUP BY CUSTNO"
+							+ $" HAVING COUNT(*) > 1) ORDER BY ";
+						commandline = Utils . GetDataSortOrder ( commandline );
 					}
+					else if ( Flags . FilterCommand != "" )
+					{
+						commandline = Flags . FilterCommand;
+					}
+					else
+					{
+						// Create a valid Query Command string including any active sort ordering
+						commandline = "Select * from SecAccounts  order by ";
+						commandline = Utils . GetDataSortOrder ( commandline );
+					}
+					SqlCommand cmd = new SqlCommand ( commandline, con );
+					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+
+					DetCollection bptr = new DetCollection ( );
+//					lock ( bptr . LockDetReadData )
+//					{
+						sda . Fill ( dtDetails );
+//					}
+					st . Stop ( );
+					//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 				}
-				catch ( Exception ex )
-				{
-					Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
-					MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
-					return false;
-				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+				MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+				return false;
 			}
 			return true;
 		}
@@ -244,8 +245,8 @@ namespace WPFPages . Views
 		{
 			int count = 0;
 			DetCollection bptr = new DetCollection ( );
-			lock ( bptr . LockDetLoadData )
-			{
+//			lock ( bptr . LockDetLoadData )
+//			{
 				try
 				{
 					for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
@@ -284,7 +285,7 @@ namespace WPFPages . Views
 					MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
 					return null;
 				}
-			}
+//			}
 		}
 
 		public static async Task<DetCollection> LoadDetTest ( DetCollection Detinternalcollection )

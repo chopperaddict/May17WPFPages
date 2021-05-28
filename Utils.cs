@@ -1,5 +1,6 @@
 ﻿#define SHOWWINDOWDATA
 using System;
+using System . Diagnostics;
 using System . Runtime . InteropServices . WindowsRuntime;
 using System . Threading;
 using System . Threading . Tasks;
@@ -165,14 +166,85 @@ namespace WPFPages
 				for ( int i = 0 ; i < repeat ; i++ )
 				{
 					Console . Beep ( freq, count );
-//					Thread . Sleep ( 200 );
-					//t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
 				}
 				Thread . Sleep ( 100 );
 			}
-				//else
-				//	t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
-				return t;
+			return t;
+		}
+
+		public static void HandleCtrlFnKeys ( bool key1, KeyEventArgs e )
+		{
+			if ( key1 && e . Key == Key . F5 )
+			{
+				// list Flags in Console
+				Utils . GetWindowHandles ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
+			{
+				// list various Flags in Console
+				Debug . WriteLine ( $"\nCTRL + F6 pressed..." );
+				Flags . UseBeeps = !Flags . UseBeeps;
+				e . Handled = true;
+				key1 = false;
+				Debug . WriteLine ( $"Flags.UseBeeps reset to  {Flags . UseBeeps }" );
+				return;
+			}
+			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
+			{
+				// list various Flags in Console
+				Debug . WriteLine ($"\nCTRL + F7 pressed..." );
+				Flags . PrintDbInfo ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F8 )     // CTRL + F8
+			{
+				Debug . WriteLine ( $"\nCTRL + F8 pressed..." );
+				EventHandlers . ShowSubscribersCount ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F9 )     // CTRL + F9
+			{
+				Debug . WriteLine ( "\nCtrl + F9 NOT Implemented" );
+				key1 = false;
+				return;
+
+			}
+			else if ( key1 && e . Key == Key . System )     // CTRL + F10
+			{
+				// Major  listof GV[] variables (Guids etc]
+				Debug . WriteLine ( $"\nCTRL + F10 pressed..." );
+				Flags . ListGridviewControlFlags ( 1 );
+				key1 = false;
+				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F11 )  // CTRL + F11
+			{
+				// list various Flags in Console
+				Debug . WriteLine ( $"\nCTRL + F11 pressed..." );
+				Flags . PrintSundryVariables ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+		}
+		private void CloseviewerWindow ( int index )
+		{
+			//Close the specified viewer
+			if ( MainWindow . gv . window != null )
+			{
+				//Fn removes all record of it's very existence
+				MainWindow . gv . window [ index ] . Close ( );
+				Flags . CurrentSqlViewer = null;
+				MainWindow . gv . SqlViewerWindow = null;
+			}
 		}
 
 		/// <summary>
@@ -299,6 +371,7 @@ namespace WPFPages
 				}
 				if ( index == Grid . Items . Count )
 					index = -1;
+				return index;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
@@ -314,6 +387,7 @@ namespace WPFPages
 				}
 				if ( index == Grid . Items . Count )
 					index = -1;
+				return index;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
@@ -329,8 +403,9 @@ namespace WPFPages
 				}
 				if ( index == Grid . Items . Count )
 					index = -1;
+				return index;
 			}
-			return index;
+			return -1;
 		}
 
 

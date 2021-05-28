@@ -407,7 +407,7 @@
 						    HorizontalAlignment="Left"
 						    Margin="5,5,5,5"
 					    />
-					<TextBlock
+					<TextBlock x:Name="bankno1"
 							    Text="{Binding Path=Item.BankNo}"
 							    Height="20"
 							    Width="100"
@@ -417,7 +417,7 @@
 							    HorizontalAlignment="Left"
 							    Margin="5,5,5,5"
 						    />
-					<TextBlock
+					<TextBlock x:Name="custno1"
 							    Text="{Binding Path=Item.CustNo }"
 							    Height="20"
 							    Width="100"
@@ -536,7 +536,7 @@
 						    HorizontalAlignment="Left"
 						    Margin="5,5,5,5"
 					    />
-					<TextBlock
+					<TextBlock x:Name="bankno"
 							    Text="{Binding Path=Item.BankNo}"
 							    Height="20"
 							    Width="100"
@@ -546,7 +546,7 @@
 							    HorizontalAlignment="Left"
 							    Margin="5,5,5,5"
 						    />
-					<TextBlock
+					<TextBlock	x:Name="custno"
 							    Text="{Binding Path=Item.CustNo }"
 							    Height="20"
 							    Width="150"
