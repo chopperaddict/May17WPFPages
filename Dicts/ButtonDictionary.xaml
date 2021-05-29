@@ -1,102 +1,232 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                   xmlns:local="clr-namespace:WPFPages">
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:WPFPages">
 
 
 	<!--#region declared COLOR data values-->
 
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%%% DEFAULT colors FOR ALL CONTROLS %%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--This is a YouTube Template-->
-	<Color x:Key="BackgroundColor1" A="255" R="126" G="147" B="226"/>
-	<Color x:Key="BackgroundColor2" A="255" R="2" G="5" B="119"/>
-	<Color x:Key="MouseOverBackgroundColor1" A="255" R="176" G="189" B="238"/>
-	<Color x:Key="MouseOverBackgroundColor2" A="255" R="4" G="10" B="227"/>
-	<Color x:Key="IsNotEnabledBackgroundColor1" A="28" R="128" G="128" B="227"/>
-	<Color x:Key="IsNotEnabledBackgroundColor2" A="255" R="4" G="100" B="255"/>
-	<SolidColorBrush x:Key="BorderBrush" Color="#ECECEC"/>
-	<SolidColorBrush x:Key="BorderBrushDark" Color="DarkGoldenrod"/>
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%% DEFAULT colors FOR ALL CONTROLS %%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  This is a YouTube Template  -->
+	<Color
+		x:Key="BackgroundColor1"
+		A="255"
+		B="226"
+		G="147"
+		R="126" />
+	<Color
+		x:Key="BackgroundColor2"
+		A="255"
+		B="119"
+		G="5"
+		R="2" />
+	<Color
+		x:Key="MouseOverBackgroundColor1"
+		A="255"
+		B="238"
+		G="189"
+		R="176" />
+	<Color
+		x:Key="MouseOverBackgroundColor2"
+		A="255"
+		B="227"
+		G="10"
+		R="4" />
+	<Color
+		x:Key="IsNotEnabledBackgroundColor1"
+		A="28"
+		B="227"
+		G="128"
+		R="128" />
+	<Color
+		x:Key="IsNotEnabledBackgroundColor2"
+		A="255"
+		B="255"
+		G="100"
+		R="4" />
+	<SolidColorBrush x:Key="BorderBrush" Color="#ECECEC" />
+	<SolidColorBrush x:Key="BorderBrushDark" Color="DarkGoldenrod" />
 
 
-	<!--Mouse down colors-->
-	<Color x:Key="MousedownBackgroundColor1" A="255" R="187" G="4" B="54"/>
-	<Color x:Key="MousedownBackgroundColor2" A="255" R="254" G="203" B="217"/>
-	<Color x:Key="MousePressedBackgroundColor1" A="255" R="187" G="4" B="54"/>
-	<Color x:Key="MousePressedBackgroundColor2" A="255" R="254" G="203" B="217"/>
+	<!--  Mouse down colors  -->
+	<Color
+		x:Key="MousedownBackgroundColor1"
+		A="255"
+		B="54"
+		G="4"
+		R="187" />
+	<Color
+		x:Key="MousedownBackgroundColor2"
+		A="255"
+		B="217"
+		G="203"
+		R="254" />
+	<Color
+		x:Key="MousePressedBackgroundColor1"
+		A="255"
+		B="54"
+		G="4"
+		R="187" />
+	<Color
+		x:Key="MousePressedBackgroundColor2"
+		A="255"
+		B="217"
+		G="203"
+		R="254" />
 
-	<!--Button Disabled colors-->
-	<Color x:Key="DisabledBackgroundColor1" A="255" R="171" G="163" B="220"/>
-	<Color x:Key="DisabledBackgroundColor2" A="255" R="163" G="133" B="250"/>
-	<!--#endregion  data -->
+	<!--  Button Disabled colors  -->
+	<Color
+		x:Key="DisabledBackgroundColor1"
+		A="255"
+		B="220"
+		G="163"
+		R="171" />
+	<Color
+		x:Key="DisabledBackgroundColor2"
+		A="255"
+		B="250"
+		G="133"
+		R="163" />
+	<!--#endregion  data-->
 
 
-	<!-- #endregion DEFAULT BUtto Style - overrides everything-->
+	<!--#endregion DEFAULT BUtto Style - overrides everything-->
 
-	<!-- #region moredata-->
-	<!--Defaults for style : GradientStyleButton-->
-	<Color x:Key="BackgroundColor1a" A="255" R="126" G="147" B="226"/>
-	<Color x:Key="BackgroundColor2a" A="255" R="254" G="164" B="148"/>
-	<Color x:Key="BackgroundColor3a" A="255" R="254" G="10" B="48"/>
-	<Color x:Key="MouseOverBackgroundColor1a" A="255" R="180" G="146" B="57"/>
-	<Color x:Key="MouseOverBackgroundColor2a" A="255" R="223" G="202" B="153"/>
-	<Color x:Key="IsNotEnabledBackgroundColor1a" A="28" R="128" G="128" B="227"/>
-	<Color x:Key="IsNotEnabledBackgroundColor2a" A="255" R="4" G="100" B="255"/>
-	<SolidColorBrush x:Key="BorderBrusha" Color="#ECECEC"/>
-	<SolidColorBrush x:Key="BorderBrushDarka" Color="DarkGoldenrod"/>
+	<!--#region moredata-->
+	<!--  Defaults for style : GradientStyleButton  -->
+	<Color
+		x:Key="BackgroundColor1a"
+		A="255"
+		B="226"
+		G="147"
+		R="126" />
+	<Color
+		x:Key="BackgroundColor2a"
+		A="255"
+		B="148"
+		G="164"
+		R="254" />
+	<Color
+		x:Key="BackgroundColor3a"
+		A="255"
+		B="48"
+		G="10"
+		R="254" />
+	<Color
+		x:Key="MouseOverBackgroundColor1a"
+		A="255"
+		B="57"
+		G="146"
+		R="180" />
+	<Color
+		x:Key="MouseOverBackgroundColor2a"
+		A="255"
+		B="153"
+		G="202"
+		R="223" />
+	<Color
+		x:Key="IsNotEnabledBackgroundColor1a"
+		A="28"
+		B="227"
+		G="128"
+		R="128" />
+	<Color
+		x:Key="IsNotEnabledBackgroundColor2a"
+		A="255"
+		B="255"
+		G="100"
+		R="4" />
+	<SolidColorBrush x:Key="BorderBrusha" Color="#ECECEC" />
+	<SolidColorBrush x:Key="BorderBrushDarka" Color="DarkGoldenrod" />
 
 
-	<!--Mouse down colors-->
-	<Color x:Key="MousedownBackgroundColor1a" A="200" R="160" G="3" B="50"/>
-	<Color x:Key="MousedownBackgroundColor2a" A="200" R="254" G="226" B="235"/>
-	<Color x:Key="MousePressedBackgroundColor1a" A="255" R="47" G="147" B="36"/>
-	<Color x:Key="MousePressedBackgroundColor2a" A="255" R="174" G="234" B="168"/>
+	<!--  Mouse down colors  -->
+	<Color
+		x:Key="MousedownBackgroundColor1a"
+		A="200"
+		B="50"
+		G="3"
+		R="160" />
+	<Color
+		x:Key="MousedownBackgroundColor2a"
+		A="200"
+		B="235"
+		G="226"
+		R="254" />
+	<Color
+		x:Key="MousePressedBackgroundColor1a"
+		A="255"
+		B="36"
+		G="147"
+		R="47" />
+	<Color
+		x:Key="MousePressedBackgroundColor2a"
+		A="255"
+		B="168"
+		G="234"
+		R="174" />
 
-	<!--Button Disabled colors-->
-	<Color x:Key="DisabledBackgroundColor1a" A="255" R="171" G="163" B="220"/>
-	<Color x:Key="DisabledBackgroundColor2a" A="255" R="163" G="133" B="250"/>
-	<!-- #endregion moredata-->
+	<!--  Button Disabled colors  -->
+	<Color
+		x:Key="DisabledBackgroundColor1a"
+		A="255"
+		B="220"
+		G="163"
+		R="171" />
+	<Color
+		x:Key="DisabledBackgroundColor2a"
+		A="255"
+		B="250"
+		G="133"
+		R="163" />
+	<!--#endregion moredata-->
 
-	<!--%%%%%%%%%%%%%%%%%%%%%%% BUTTONTEMPLATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--A  template for an Ellipse shaped button with RadialGradient coloring-->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%% BUTTONTEMPLATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  A  template for an Ellipse shaped button with RadialGradient coloring  -->
 	<ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
-		<!--Handle text presentation over the Ellipse -->
-		<Grid >
+		<!--  Handle text presentation over the Ellipse  -->
+		<Grid>
 
-			<Ellipse Width="160" Height="160" x:Name="outerCircle">
-			<Ellipse.Fill>
-				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-					<GradientStop Offset="0" Color="Green"></GradientStop>
-					<GradientStop Offset="1" Color="Purple"></GradientStop>
-				</LinearGradientBrush>
-			</Ellipse.Fill>
+			<Ellipse
+				x:Name="outerCircle"
+				Width="160"
+				Height="160">
+				<Ellipse.Fill>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Offset="0" Color="Green" />
+						<GradientStop Offset="1" Color="Purple" />
+					</LinearGradientBrush>
+				</Ellipse.Fill>
 			</Ellipse>
-				
+
 
 			<Ellipse Width="140" Height="140">
-			<Ellipse.Fill>
-				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-					<GradientStop Offset="0" Color="Gray"></GradientStop>
-					<GradientStop Offset="1" Color="Blue"></GradientStop>
-				</LinearGradientBrush>
-			</Ellipse.Fill>
+				<Ellipse.Fill>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Offset="0" Color="Gray" />
+						<GradientStop Offset="1" Color="Blue" />
+					</LinearGradientBrush>
+				</Ellipse.Fill>
 			</Ellipse>
-			<!--Show the "Content=" text on top of the Ellipse's-->
-			<ContentPresenter HorizontalAlignment="Center" 
-							VerticalAlignment="Center"/>
+			<!--  Show the "Content=" text on top of the Ellipse's  -->
+			<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
 		</Grid>
 
-		<!--NOT WORKING RIGHT NOW !!!!
-		IN FACT, NONE OF THE SPECIFIED STYLE MOUSEOVERS ETC ARE WORKING-->
-		
-		<!--This is how to make Background change on mouseover-->
+		<!--
+			NOT WORKING RIGHT NOW !!!!
+			IN FACT, NONE OF THE SPECIFIED STYLE MOUSEOVERS ETC ARE WORKING
+		-->
+
+		<!--  This is how to make Background change on mouseover  -->
 		<ControlTemplate.Triggers>
 			<Trigger Property="Button.IsMouseOver" Value="True">
-				<Setter TargetName="outerCircle" Property="Fill" >
+				<Setter TargetName="outerCircle" Property="Fill">
 					<Setter.Value>
 						<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-							<GradientStop Offset="1" Color="Green"></GradientStop>
-							<GradientStop Offset="0" Color="Purple"></GradientStop>
+							<GradientStop Offset="1" Color="Green" />
+							<GradientStop Offset="0" Color="Purple" />
 						</LinearGradientBrush>
 					</Setter.Value>
 				</Setter>
@@ -105,241 +235,257 @@
 			<Trigger Property="Button.IsPressed" Value="True">
 				<Setter Property="RenderTransform">
 					<Setter.Value>
-						<ScaleTransform ScaleX=".95" ScaleY=".95"></ScaleTransform>
+						<ScaleTransform ScaleX=".95" ScaleY=".95" />
 					</Setter.Value>
 				</Setter>
-				<Setter Property="RenderTransformOrigin" Value=".7,.7"></Setter>
+				<Setter Property="RenderTransformOrigin" Value=".7,.7" />
 			</Trigger>
 		</ControlTemplate.Triggers>
 	</ControlTemplate>
 
- <!--#region Named  button styles-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%% NAMED BUTTON STYLES %%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<Style TargetType="{x:Type Button}" x:Key="page1">
-		<Setter Property="Content" Value="Home"/>
-		<Setter Property="Background" Value="Gold"/>
-		<Setter Property="Foreground" Value="Black"/>
-		<Setter Property="FontSize" Value="16"/>
-		<Setter Property="FontStyle" Value="Italic"/>
-		<Setter Property="FontWeight" Value="DemiBold"/>
-		<Setter Property="Width" Value="100"/>
+	<!--#region Named  button styles-->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%% NAMED BUTTON STYLES %%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<Style x:Key="page1" TargetType="{x:Type Button}">
+		<Setter Property="Content" Value="Home" />
+		<Setter Property="Background" Value="Gold" />
+		<Setter Property="Foreground" Value="Black" />
+		<Setter Property="FontSize" Value="16" />
+		<Setter Property="FontStyle" Value="Italic" />
+		<Setter Property="FontWeight" Value="DemiBold" />
+		<Setter Property="Width" Value="100" />
 	</Style>
-	<Style TargetType="{x:Type Button}" x:Key="page2">
-		<Setter Property="Content" Value="List Views"/>
-		<Setter Property="Background" Value="Gold"/>
-		<Setter Property="Foreground" Value="Black"/>
-		<Setter Property="FontSize" Value="16"/>
-		<Setter Property="FontStyle" Value="Italic"/>
-		<Setter Property="FontWeight" Value="DemiBold"/>
-		<Setter Property="Width" Value="110"/>
+	<Style x:Key="page2" TargetType="{x:Type Button}">
+		<Setter Property="Content" Value="List Views" />
+		<Setter Property="Background" Value="Gold" />
+		<Setter Property="Foreground" Value="Black" />
+		<Setter Property="FontSize" Value="16" />
+		<Setter Property="FontStyle" Value="Italic" />
+		<Setter Property="FontWeight" Value="DemiBold" />
+		<Setter Property="Width" Value="110" />
 	</Style>
-	<Style TargetType="{x:Type Button}" x:Key="page3">
-		<Setter Property="Content" Value="List Boxes"/>
-		<Setter Property="Background" Value="Gold"/>
-		<Setter Property="Foreground" Value="Black"/>
-		<Setter Property="FontSize" Value="16"/>
-		<Setter Property="FontStyle" Value="Italic"/>
-		<Setter Property="FontWeight" Value="DemiBold"/>
-		<Setter Property="Width" Value="110"/>
+	<Style x:Key="page3" TargetType="{x:Type Button}">
+		<Setter Property="Content" Value="List Boxes" />
+		<Setter Property="Background" Value="Gold" />
+		<Setter Property="Foreground" Value="Black" />
+		<Setter Property="FontSize" Value="16" />
+		<Setter Property="FontStyle" Value="Italic" />
+		<Setter Property="FontWeight" Value="DemiBold" />
+		<Setter Property="Width" Value="110" />
 	</Style>
-	<Style TargetType="{x:Type Button}" x:Key="page4">
-		<Setter Property="Content" Value="List Boxes"/>
-		<Setter Property="Background" Value="DarkGray"/>
-		<Setter Property="Foreground" Value="White"/>
-		<Setter Property="FontSize" Value="16"/>
-		<Setter Property="FontStyle" Value="Italic"/>
-		<Setter Property="FontWeight" Value="DemiBold"/>
-		<Setter Property="Width" Value="110"/>
+	<Style x:Key="page4" TargetType="{x:Type Button}">
+		<Setter Property="Content" Value="List Boxes" />
+		<Setter Property="Background" Value="DarkGray" />
+		<Setter Property="Foreground" Value="White" />
+		<Setter Property="FontSize" Value="16" />
+		<Setter Property="FontStyle" Value="Italic" />
+		<Setter Property="FontWeight" Value="DemiBold" />
+		<Setter Property="Width" Value="110" />
 	</Style>
-	<Style TargetType="{x:Type Button}" x:Key="Exit">
-		<Setter Property="Content" Value="** Exit **"/>
-		<Setter Property="Background" Value="Red"/>
-		<Setter Property="Foreground" Value="White"/>
-		<Setter Property="FontSize" Value="16"/>
-		<Setter Property="FontStyle" Value="Italic"/>
-		<Setter Property="FontWeight" Value="DemiBold"/>
-		<Setter Property="Width" Value="125"/>
+	<Style x:Key="Exit" TargetType="{x:Type Button}">
+		<Setter Property="Content" Value="** Exit **" />
+		<Setter Property="Background" Value="Red" />
+		<Setter Property="Foreground" Value="White" />
+		<Setter Property="FontSize" Value="16" />
+		<Setter Property="FontStyle" Value="Italic" />
+		<Setter Property="FontWeight" Value="DemiBold" />
+		<Setter Property="Width" Value="125" />
 	</Style>
 	<!--#endregion Named  button styles-->
 
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%% GRADIENTSTYLEBUTTON %%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%% THIS ONE WORKS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%% GRADIENTSTYLEBUTTON %%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%% THIS ONE WORKS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
+	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
 
-	<Style x:Key="GradientStyleButton"
-		TargetType="{x:Type Button}">
-	
-		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="BorderBrush" Value="{StaticResource BorderBrusha}"/>
+	<Style x:Key="GradientStyleButton" TargetType="{x:Type Button}">
 
-		<!--This is how we declare an overriding Template-->
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderBrush" Value="{StaticResource BorderBrusha}" />
+
+		<!--  This is how we declare an overriding Template  -->
 		<Setter Property="Template">
 			<Setter.Value>
 
-				<!--Here we go designing our button - From Scratch ...-->
+				<!--  Here we go designing our button - From Scratch ...  -->
 				<ControlTemplate TargetType="{x:Type Button}">
 
-					<!--We use x:Name on most dependency properties so we can cross refer
-					so they can be changed in the end user's xaml or .cs code
-					NB Watch out for how {StaticResource} and {TemplateBinding} commands are used
-
-					Here we are setting it all up using a Border for our Main button visual content-->
-					<Border x:Name="t" 
-								Margin="{TemplateBinding Margin}"
-								BorderBrush="{TemplateBinding BorderBrush}" 
-								BorderThickness="{TemplateBinding BorderThickness}">
-						<!--Draw the Main background-->
+					<!--
+						We use x:Name on most dependency properties so we can cross refer
+						so they can be changed in the end user's xaml or .cs code
+						NB Watch out for how {StaticResource} and {TemplateBinding} commands are used
+						
+						Here we are setting it all up using a Border for our Main button visual content
+					-->
+					<Border
+						x:Name="t"
+						Margin="{TemplateBinding Margin}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}">
+						<!--  Draw the Main background  -->
 						<Border.Background>
-							<!--Start = top left, End is Bottom right co-ords-->
+							<!--  Start = top left, End is Bottom right co-ords  -->
 							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-								<GradientStop x:Name="BackgroundGradient2" Offset="0" 
-											Color="{DynamicResource BackgroundColor1a}"/>
-								<GradientStop x:Name="BackgroundGradient1" Offset=".5" 
-											Color="{DynamicResource BackgroundColor2a}"/>
-								<GradientStop x:Name="BackgroundGradient3" Offset="1" 
-											Color="{DynamicResource BackgroundColor3a}"/>
+								<GradientStop x:Name="BackgroundGradient2" Offset="0" Color="{DynamicResource BackgroundColor1a}" />
+								<GradientStop x:Name="BackgroundGradient1" Offset=".5" Color="{DynamicResource BackgroundColor2a}" />
+								<GradientStop x:Name="BackgroundGradient3" Offset="1" Color="{DynamicResource BackgroundColor3a}" />
 							</LinearGradientBrush>
 						</Border.Background>
 
-						<!--This is the only way to Include the Button Text-->
-						<ContentPresenter Margin="{TemplateBinding Padding}"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Center"/>
+						<!--  This is the only way to Include the Button Text  -->
+						<ContentPresenter
+							Margin="{TemplateBinding Padding}"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center" />
 					</Border>
-					<!--Thats it - The button is now displayed
-
-					Now we have to handle all the events which takes far more work-->
+					<!--
+						Thats it - The button is now displayed
+						
+						Now we have to handle all the events which takes far more work
+					-->
 					<ControlTemplate.Triggers>
 						<MultiTrigger>
-							<!--Mouse move over our button-->
+							<!--  Mouse move over our button  -->
 							<MultiTrigger.Conditions>
-								<Condition Property="IsEnabled" Value="true"/>
-								<Condition Property="IsMouseOver" Value="true"/>
+								<Condition Property="IsEnabled" Value="true" />
+								<Condition Property="IsMouseOver" Value="true" />
 							</MultiTrigger.Conditions>
 
-							<!--Mouse entering our button (MJUSENTER)-->
+							<!--  Mouse entering our button (MJUSENTER)  -->
 							<MultiTrigger.EnterActions>
 								<BeginStoryboard>
-									<!--Change to a different pair of colors over a period of 1/2 sec-->
-									<Storyboard x:Name="MouseOverAnimation" >
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource MouseOverBackgroundColor2a}"
-													Duration="0:0:0:.2"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient1"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource MouseOverBackgroundColor1a}"
-													Duration="0:0:0:.2"/>
+									<!--  Change to a different pair of colors over a period of 1/2 sec  -->
+									<Storyboard x:Name="MouseOverAnimation">
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource MouseOverBackgroundColor2a}"
+											Duration="0:0:0:.2" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient1"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource MouseOverBackgroundColor1a}"
+											Duration="0:0:0:.2" />
 									</Storyboard>
 								</BeginStoryboard>
 							</MultiTrigger.EnterActions>
 
-							
-							<!--Mouse leaving Button (MOUSELEAVE)-->
+
+							<!--  Mouse leaving Button (MOUSELEAVE)  -->
 							<MultiTrigger.ExitActions>
-								<!--Return to original colors over a period of 1/2 sec-->
+								<!--  Return to original colors over a period of 1/2 sec  -->
 								<BeginStoryboard>
-									<!--The addition of FillBehaviour here is important-->
-									<Storyboard x:Name="MouseOutAnimation"  FillBehavior="Stop">
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource BackgroundColor2a}"
-													Duration="0:0:0:.2"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient1"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource BackgroundColor1a}"
-													Duration="0:0:0:.2"/>
+									<!--  The addition of FillBehaviour here is important  -->
+									<Storyboard x:Name="MouseOutAnimation" FillBehavior="Stop">
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource BackgroundColor2a}"
+											Duration="0:0:0:.2" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient1"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource BackgroundColor1a}"
+											Duration="0:0:0:.2" />
 									</Storyboard>
 								</BeginStoryboard>
 							</MultiTrigger.ExitActions>
-							<Setter Property="Foreground"  Value="Black"/>
+							<Setter Property="Foreground" Value="Black" />
 						</MultiTrigger>
 
 
-						<!--Mouse Button Down (MOUSEDOWN)-->
+						<!--  Mouse Button Down (MOUSEDOWN)  -->
 						<MultiTrigger>
-							<!--Left MouseButton is Down-->
+							<!--  Left MouseButton is Down  -->
 							<MultiTrigger.Conditions>
-								<Condition Property="IsEnabled" Value="true"/>
-								<Condition Property="IsPressed" Value="true"/>
-								<!--This is LEFT button down-->
+								<Condition Property="IsEnabled" Value="true" />
+								<Condition Property="IsPressed" Value="true" />
+								<!--  This is LEFT button down  -->
 							</MultiTrigger.Conditions>
 
-							<!--Handle left button Down actions-->
+							<!--  Handle left button Down actions  -->
 							<MultiTrigger.EnterActions>
 								<BeginStoryboard>
 									<Storyboard x:Name="MouseDownAnimation">
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource MousedownBackgroundColor2a}"
-													Duration="0:0:0:.2"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient1"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource MousedownBackgroundColor1a}"
-													Duration="0:0:0:.2"/>
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource MousedownBackgroundColor2a}"
+											Duration="0:0:0:.2" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient1"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource MousedownBackgroundColor1a}"
+											Duration="0:0:0:.2" />
 									</Storyboard>
 								</BeginStoryboard>
 							</MultiTrigger.EnterActions>
 
-							<!--Handle left button Up <LEFTMOUSEBUTTONUP-->
+							<!--  Handle left button Up <LEFTMOUSEBUTTONUP  -->
 							<MultiTrigger.ExitActions>
-								<!--This makes it go back to original colors over a period of 1/2 sec-->
+								<!--  This makes it go back to original colors over a period of 1/2 sec  -->
 								<BeginStoryboard>
-									<!--Not sure what FillBehaviour does here but setting 
-									it to Hold makes it Jump around a bit ??-->
-									<Storyboard x:Name="MouseBtnUpAnimation" FillBehavior="HoldEnd" 
-											  >
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
-													Storyboard.TargetProperty="Color"
-													Duration="0:0:0:.4"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource MousedownBackgroundColor1a}"
-													Duration="0:0:0:.4"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient1"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource MousedownBackgroundColor2a}"
-													Duration="0:0:0:.4"/>
+									<!--
+										Not sure what FillBehaviour does here but setting
+										it to Hold makes it Jump around a bit ??
+									-->
+									<Storyboard x:Name="MouseBtnUpAnimation" FillBehavior="HoldEnd">
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
+											Storyboard.TargetProperty="Color"
+											Duration="0:0:0:.4" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource MousedownBackgroundColor1a}"
+											Duration="0:0:0:.4" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient1"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource MousedownBackgroundColor2a}"
+											Duration="0:0:0:.4" />
 									</Storyboard>
 								</BeginStoryboard>
 							</MultiTrigger.ExitActions>
 						</MultiTrigger>
 
-						<!--//Handle button ENABLED/DISABLED STATUS -->
+						<!--  //Handle button ENABLED/DISABLED STATUS  -->
 						<Trigger Property="IsEnabled" Value="False">
-							<!--Button is Disabled-->
+							<!--  Button is Disabled  -->
 							<Trigger.EnterActions>
 								<BeginStoryboard>
-									<Storyboard x:Name="DisabledAnimation" >
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
+									<Storyboard x:Name="DisabledAnimation">
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
 											Storyboard.TargetProperty="Color"
 											To="{StaticResource DisabledBackgroundColor2a}"
-											Duration="0:0:0:0.2"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient1"
-												Storyboard.TargetProperty="Color"
-												To="{StaticResource DisabledBackgroundColor1a}"
-												Duration="0:0:0:.2"/>
+											Duration="0:0:0:0.2" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient1"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource DisabledBackgroundColor1a}"
+											Duration="0:0:0:.2" />
 
 									</Storyboard>
 								</BeginStoryboard>
 							</Trigger.EnterActions>
-							
-							<!--Button is ENABLED-->
+
+							<!--  Button is ENABLED  -->
 							<Trigger.ExitActions>
 								<BeginStoryboard>
-									<!--The addition of FillBehaviour here is important-->
+									<!--  The addition of FillBehaviour here is important  -->
 									<Storyboard x:Name="EnabledAnimation" FillBehavior="Stop">
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient2"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource BackgroundColor2a}"
-													Duration="0:0:0:.2"/>
-										<ColorAnimation Storyboard.TargetName="BackgroundGradient1"
-													Storyboard.TargetProperty="Color"
-													To="{StaticResource BackgroundColor1a}"
-													Duration="0:0:0:.2"/>
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient2"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource BackgroundColor2a}"
+											Duration="0:0:0:.2" />
+										<ColorAnimation
+											Storyboard.TargetName="BackgroundGradient1"
+											Storyboard.TargetProperty="Color"
+											To="{StaticResource BackgroundColor1a}"
+											Duration="0:0:0:.2" />
 
 									</Storyboard>
 								</BeginStoryboard>
@@ -350,12 +496,14 @@
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
 
-				<!--End of button design-->
+				<!--  End of button design  -->
 			</Setter.Value>
 		</Setter>
 	</Style>
-	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	<!--
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		END OF BUTTON TEMPLATE
-		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	-->
 
 </ResourceDictionary>

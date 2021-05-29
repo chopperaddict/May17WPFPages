@@ -95,11 +95,11 @@ namespace WPFPages . ViewModels
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
-		public int SelectedItem
-		{
-			get { return selectedItem; }
-			set { selectedItem = value; OnPropertyChanged ( SelectedItem . ToString ( ) ); }
-		}
+		//public int SelectedItem
+		//{
+		//	get { return selectedItem; }
+		//	set { selectedItem = value; OnPropertyChanged ( SelectedItem . ToString ( ) ); }
+		//}
 
 		public int SelectedIndex
 		{

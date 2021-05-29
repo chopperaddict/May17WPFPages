@@ -1,9 +1,9 @@
 ﻿<Window x:Class="WPFPages.SqlDbViewer"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	  mc:Ignorable="d"
 	  DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		Title="Database Edit/View Utility"
 		Height="550" Width="867"
@@ -30,9 +30,9 @@
 			<Setter Property="Control.Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Rectangle Margin="2" 
-							     SnapsToDevicePixels="true" 
-							     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" 
+						<Rectangle Margin="2"
+							     SnapsToDevicePixels="true"
+							     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
 							     StrokeThickness="1" StrokeDashArray="1 2"/>
 					</ControlTemplate>
 				</Setter.Value>
@@ -422,12 +422,12 @@
 
 
 		</Canvas>
-		<Menu  			
+		<Menu
 			Background="Transparent"
 			Grid.Column="1"
 			Grid.ColumnSpan="2"
 			Grid.Row="1"
-			Height="30" 
+			Height="30"
 			Margin="0,3"
 			HorizontalAlignment="Left"
 			HorizontalContentAlignment="Left"
@@ -442,70 +442,70 @@
 				</LinearGradientBrush>
 			</Menu.Background>-->
 
-			<MenuItem  Header="_Linq Queries" 
+			<MenuItem  Header="_Linq Queries"
 				     Margin="2"
 				     FontWeight="Bold"
-					Width="80" 
+					Width="80"
 				    Foreground="{StaticResource Black1}">
 				<MenuItem Header="A/c Type 1 Only"
-					    Background="#35F6FB" 
+					    Background="#35F6FB"
 					    Click="Linq1_Click"
 					    Foreground="Black"
 					    IsCheckable="false"/>
 				<MenuItem Header="A/c Type 2 Only"
-					Background="#35F6FB" 
+					Background="#35F6FB"
 					Click="Linq2_Click"
 					Foreground="Black"
 					    IsCheckable="false"/>
 				<MenuItem Header="A/c Type 3 Only"
-					Background="#35F6FB" 
+					Background="#35F6FB"
 					Click="Linq3_Click"
 					Foreground="Black"
 					    IsCheckable="false"/>
 				<MenuItem Header="A/c Type 4 Only"
-					Background="#35F6FB" 
+					Background="#35F6FB"
 					Click="Linq4_Click"
 					Foreground="Black"
 				    IsCheckable="false"/>
 				<MenuItem Header="Multi A/C Holders"
-					Background="#35F6FB" 
+					Background="#35F6FB"
 					Click="Linq5_Click"
 					    IsCheckable="false"
 				Foreground="Black"/>
 				<Separator />
 				<MenuItem Header="Show All records"
-					Background="#35F6FB" 
+					Background="#35F6FB"
 					Click="Linq6_Click"
 					    IsCheckable="false"
 				Foreground="Black"/>
 			</MenuItem>
 
-			<MenuItem  Header="Filter" 
+			<MenuItem  Header="Filter"
 				    Click="Filter_Click"
 				     FontWeight="DemiBold"
-					Width="60" 
+					Width="60"
 				     Margin="2"
 				    Foreground="{StaticResource Black1}">
 				<!--<MenuItem Header="Setup Filter"
-					    Background="#35F6FB" 
+					    Background="#35F6FB"
 					    Click="Filter_Click"
 					    Foreground="Black"
 					    IsCheckable="false"/>-->
 			</MenuItem>
-			<MenuItem  Header="Options" 
+			<MenuItem  Header="Options"
 				    Click="Options_Click"
-					Width="70" 
+					Width="70"
 				    Foreground="{StaticResource White2}">
 			</MenuItem>
 
-			<MenuItem  Header="Close Viewer..." 
+			<MenuItem  Header="Close Viewer..."
 				    Click="Exit_Click"
 				     FontWeight="SemiBold"
 				     Margin="2,0"
-					Width="97" 
+					Width="97"
 				    Foreground="{StaticResource White1}">
 				<!--<MenuItem Header="Setup Filter"
-					    Background="#35F6FB" 
+					    Background="#35F6FB"
 					    Click="Filter_Click"
 					    Foreground="Black"
 					    IsCheckable="false"/>-->
@@ -527,7 +527,7 @@
 				Content="A/c Id#"
 				FontWeight="Normal"
 				Foreground="{StaticResource Black4}"
-				Width="70"				
+				Width="70"
 				Height="35"
 				Click="Id_option_Click" />
 			<CheckBox
@@ -654,7 +654,7 @@
 			<Button x:Name="Edit" Width="65" Height="35" Margin="1"
 				Background="{StaticResource HeaderBrushGray}"
 				Click="Edit_Click"
-   				Content="Edit"
+				Content="Edit"
 				FontWeight="DemiBold"
 				Foreground="White"
 				IsEnabled="true"
@@ -702,8 +702,7 @@
 				MouseDown="Window_MouseDown"
 				Background="{StaticResource HeaderBrushBlue}"
 				Foreground="White"
-				Template="{StaticResource HorizontalGradientTemplateBlue}" 
-				  KeyDown="ShowBank_KeyDown" />
+				Template="{StaticResource HorizontalGradientTemplateBlue}" />
 
 			<!--Customer Account Button-->
 			<Button x:Name="ShowCust" Width="145" Height="35" Margin="1"
@@ -752,7 +751,7 @@
 			>
 			<WrapPanel
 				x:Name="WaitMessage"
-				Background="ForestGreen"					
+				Background="ForestGreen"
 				Height="200"
 				Orientation="Vertical"
 				Width="600"
@@ -779,164 +778,43 @@
 			Grid.ColumnSpan="3"
 			Grid.RowSpan="2">
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="727*" />
-				<ColumnDefinition Width="65*" />
-			</Grid.ColumnDefinitions>
-
-			<!--#region Customers data Grid-->
-			<DataGrid x:Name="CustomerGrid"
-				AlternatingRowBackground="{StaticResource Yellow3}"
-				AutoGenerateColumns="False"
-				BeginningEdit="CustomerGrid_BeginningEdit"
-				BorderBrush="{StaticResource Yellow3}"
-				BorderThickness="2"
-				CanUserAddRows="false"
-				CanUserSortColumns="False"
-				CellEditEnding="CustomerGrid_CellEditEnding"
-				ColumnHeaderHeight="25"
-				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
-				CurrentCellChanged="CustomerGrid_CurrentCellChanged"
-				DataContext="Custcollection"
-				 GotFocus="CustomerGrid_GotFocus"
-				Grid.ColumnSpan="4"
-				IsSynchronizedWithCurrentItem="false"
-				RowEditEnding="ViewerGrid_RowEditEnding"
-				RowHeight="27"
-				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
-				SelectedCellsChanged="CustomerGrid_SelectedCellsChanged"
-				SelectionChanged="ItemsView_OnSelectionChanged"
-				SelectionMode="Single"
-				SelectionUnit="FullRow"
-				TargetUpdated="CustomerGrid_TargetUpdated"
-				TabIndex="2"
-				VerticalContentAlignment="Stretch"
-				VerticalGridLinesBrush="{StaticResource Orange0}"
-				VirtualizingPanel.ScrollUnit="Pixel"				    
-				Visibility="Collapsed"
-				PreviewMouseDown="CustomerGrid_PreviewMouseDown">
-				<!--MouseDown="CustomerGrid_MouseDown"-->
-				<!--VerticalContentAlignment="Center"-->
-				<!--PreparingCellForEdit="CustomerGrid_PreparingCellForEdit"-->
-				<!--Initialized="CustomerGrid_Initialized_1"-->
-				<!--SourceUpdated="CustomerGrid_SourceUpdated"-->
-
-				<!--This makes the selected row visible when window looses focus - works on any grid-->
-				<DataGrid.Resources>
-					<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
-				</DataGrid.Resources>
-
-				<DataGrid.Columns>
-					<!--Force column to be Read only-->
-					<DataGridTemplateColumn Header="Id" Width="40">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Path=Id}"
- 									HorizontalAlignment="Center"
-									VerticalAlignment="Center" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
-					<DataGridTextColumn Header="Customer #" Width="70"
-									Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Bank #" Width="70"
-									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
-					<DataGridTextColumn Header="Type" Width="30"
-									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
-					<DataGridTextColumn Header="First Name" Width="80"
-									Binding="{Binding FName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Surname" Width="80"
-									Binding="{Binding LName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Address 1" Width="130"
-									Binding="{Binding Addr1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Address 2" Width="120"
-									Binding="{Binding Addr2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Town" Width="80"
-									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="County" Width="70"
-									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="PostCode" Width="80"
-									Binding="{Binding PCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Phone #" Width="80"
-									Binding="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Mobile" Width="80"
-									Binding="{Binding Mobile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<DataGridTextColumn Header="Birthday" Width="80"
-									Binding="{Binding Dob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
-					<DataGridTextColumn Header="A/c Opened"
-									Binding ="{Binding Path=ODate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
-					<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
-					<DataGridTemplateColumn Header="A/c Closed" Width="80">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Path=CDate,
-									Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
-									StringFormat='dd/MM/yyyy'}" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
-					<!--<DataGridTemplateColumn Header="Close Date" Width="80">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Path=CDate,
-									StringFormat='dd/MM/yyyy'}"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Top" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-						<DataGridTemplateColumn.CellEditingTemplate>
-							<DataTemplate>
-								<DatePicker SelectedDate="{Binding Path=CDate,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellEditingTemplate>
-					</DataGridTemplateColumn>-->
-				</DataGrid.Columns>
-			</DataGrid>
-			<!--#endregion Customers data Grid-->
-		</Grid>
-
-
-		<Grid Grid.Row="4"
-			Grid.Column="1"
-			Grid.ColumnSpan="3"
-			Grid.RowSpan="2">
-
 			<!--b:DataGridBehaviour.FullRowSelect="true"-->
 			<!--#region BankAccount data Grid-->
 			<DataGrid x:Name="BankGrid"
-					AutoGenerateColumns="False"
-					AlternatingRowBackground="{StaticResource Blue4}"
-					BeginningEdit="BankGrid_BeginningEdit"
-					BorderThickness="0"
-					CanUserSortColumns="False"
-					CellEditEnding="BankGrid_CellEditEnding"
-					CanUserAddRows="False"
-					ColumnHeaderHeight="25"
-					ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
-					Grid.ColumnSpan="4"
-					GotFocus="BankGrid_GotFocus"
-					HorizontalAlignment="Stretch"
-					IsReadOnly="False"
-					IsSynchronizedWithCurrentItem="false"
-					MouseRightButtonUp="BankGrid_MouseRightButtonUp"
-					MouseRightButtonDown="BankGrid_MouseRightButtonDown"
-					PreviewMouseDown="BankGrid_PreviewMouseDown"
-				      RowEditEnding="ViewerGrid_RowEditEnding"
-					RowHeight="27"
-					ScrollViewer.ScrollChanged="BankGrid_ScrollChanged"
-					SelectedCellsChanged="BankGrid_SelectedCellsChanged"
-					SelectionChanged="ItemsView_OnSelectionChanged"
-					SelectionMode="Single"
-					SelectionUnit="FullRow"
-					TabIndex="1"
-					VerticalAlignment="Stretch"
-					VerticalContentAlignment="Stretch"
-					VerticalGridLinesBrush="{StaticResource Blue2}"
-					VirtualizingPanel.ScrollUnit="Pixel"
-					Visibility="Collapsed" 
+				AlternatingRowBackground="{StaticResource Blue4}"
+				AutoGenerateColumns="False"
+				BeginningEdit="BankGrid_BeginningEdit"
+				BorderBrush="{StaticResource Blue3}"
+				BorderThickness="0"
+				CanUserAddRows="False"
+				CanUserSortColumns="False"
+				CellEditEnding="BankGrid_CellEditEnding"
+				ColumnHeaderHeight="25"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
+				GotFocus="BankGrid_GotFocus"
+				Grid.ColumnSpan="4"
+				HorizontalAlignment="Stretch"
+				IsEnabled="true"
+				IsSynchronizedWithCurrentItem="false"
+				MouseRightButtonDown="BankGrid_MouseRightButtonDown"
+				PreviewMouseDown="BankGrid_PreviewMouseDown"
+				RowEditEnding="ViewerGrid_RowEditEnding"
+				RowHeight="27"
+				ScrollBar.Scroll="BankGrid_Scroll"
+				ScrollViewer.ScrollChanged="BankGrid_ScrollChanged"
+				SelectedCellsChanged="BankGrid_SelectedCellsChanged"
+				SelectionChanged="ItemsView_OnSelectionChanged"
+				SelectionMode="Single"
+				SelectionUnit="FullRow"
+				TabIndex="1"
+				TargetUpdated="BankGrid_TargetUpdated"
+				VerticalAlignment="Stretch"
+				VerticalGridLinesBrush="{StaticResource Blue2}"
+				VirtualizingPanel.ScrollUnit="Pixel"
+				Visibility="Collapsed"
 				    >
+				<!--VirtualizingPanel.ScrollUnit="Pixel"-->
+				<!--PreviewMouseDown="BankGrid_PreviewMouseDown"-->
 
 				<!--This makes the selected row visible when window looses focus - works on any grid-->
 				<DataGrid.Resources>
@@ -1059,34 +937,168 @@
 			Grid.ColumnSpan="3"
 			Grid.RowSpan="2">
 
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="727*" />
+				<ColumnDefinition Width="65*" />
+			</Grid.ColumnDefinitions>
+
+			<!--#region Customers data Grid-->
+			<DataGrid x:Name="CustomerGrid"
+				AlternatingRowBackground="{StaticResource Yellow3}"
+				AutoGenerateColumns="False"
+				BeginningEdit="CustomerGrid_BeginningEdit"
+				BorderBrush="{StaticResource Yellow3}"
+				BorderThickness="2"
+				CanUserAddRows="false"
+				CanUserSortColumns="False"
+				CellEditEnding="CustomerGrid_CellEditEnding"
+				ColumnHeaderHeight="25"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
+				GotFocus="CustomerGrid_GotFocus"
+				Grid.ColumnSpan="4"
+				HorizontalAlignment="Stretch"
+				IsEnabled="true"
+				IsSynchronizedWithCurrentItem="true"
+				MouseRightButtonDown="CustomerGrid_MouseRightButtonDown"
+				PreviewMouseDown="CustomerGrid_PreviewMouseDown"
+				RowEditEnding="ViewerGrid_RowEditEnding"
+				RowHeight="27"
+				ScrollBar.Scroll="CustomerGrid_Scroll"
+				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
+				SelectedCellsChanged="CustomerGrid_SelectedCellsChanged"
+				SelectionChanged="ItemsView_OnSelectionChanged"
+				SelectionMode="Single"
+				SelectionUnit="FullRow"
+				TabIndex="2"
+				TargetUpdated="CustomerGrid_TargetUpdated"
+				VerticalAlignment="Stretch"
+				VerticalGridLinesBrush="{StaticResource Orange0}"
+				VirtualizingPanel.ScrollUnit="Pixel"
+				Visibility="Collapsed"
+				>
+
+				<!--MouseDown="CustomerGrid_MouseDown"-->
+				<!--VerticalContentAlignment="Center"-->
+				<!--PreparingCellForEdit="CustomerGrid_PreparingCellForEdit"-->
+				<!--Initialized="CustomerGrid_Initialized_1"-->
+				<!--SourceUpdated="CustomerGrid_SourceUpdated"-->
+
+				<!--This makes the selected row visible when window looses focus - works on any grid-->
+				<DataGrid.Resources>
+					<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
+				</DataGrid.Resources>
+
+				<DataGrid.Columns>
+					<!--Force column to be Read only-->
+					<DataGridTemplateColumn Header="Id" Width="40">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=Id}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTextColumn Header="Customer #" Width="70"
+									Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Bank #" Width="70"
+									Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+					<DataGridTextColumn Header="Type" Width="30"
+									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+					<DataGridTextColumn Header="First Name" Width="80"
+									Binding="{Binding FName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Surname" Width="80"
+									Binding="{Binding LName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Address 1" Width="130"
+									Binding="{Binding Addr1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Address 2" Width="120"
+									Binding="{Binding Addr2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Town" Width="80"
+									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="County" Width="70"
+									Binding="{Binding County, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="PostCode" Width="80"
+									Binding="{Binding PCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Phone #" Width="80"
+									Binding="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Mobile" Width="80"
+									Binding="{Binding Mobile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<DataGridTextColumn Header="Birthday" Width="80"
+									Binding="{Binding Dob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
+					<DataGridTextColumn Header="A/c Opened"
+									Binding ="{Binding Path=ODate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,StringFormat='dd/MM/yyyy'}" />
+					<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
+					<DataGridTemplateColumn Header="A/c Closed" Width="80">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=CDate,
+									Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+									StringFormat='dd/MM/yyyy'}" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<!--<DataGridTemplateColumn Header="Close Date" Width="80">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=CDate,
+									StringFormat='dd/MM/yyyy'}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Top" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+						<DataGridTemplateColumn.CellEditingTemplate>
+							<DataTemplate>
+								<DatePicker SelectedDate="{Binding Path=CDate,
+									Mode=TwoWay,
+									UpdateSourceTrigger=PropertyChanged}" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellEditingTemplate>
+					</DataGridTemplateColumn>-->
+				</DataGrid.Columns>
+			</DataGrid>
+			<!--#endregion Customers data Grid-->
+		</Grid>
+
+
+		<Grid Grid.Row="4"
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="2">
+
 			<!--#region DetailsViewModel data Grid-->
 			<DataGrid x:Name="DetailsGrid"
-					AlternatingRowBackground="{StaticResource Green3}"
-					AutoGenerateColumns="False"
-					BeginningEdit="DetailsGrid_BeginningEdit"
-					BorderThickness="2"
-					BorderBrush="{StaticResource Green3}"
-					CanUserSortColumns="False"				    
-					CanUserAddRows="false"
-					CellEditEnding="DetailsGrid_CellEditEnding"
-					ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
-					GotFocus="DetailsGrid_GotFocus"
-					Grid.ColumnSpan="4"
-					IsSynchronizedWithCurrentItem="false"
-					PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
-					RowEditEnding="ViewerGrid_RowEditEnding"
-					RowHeight="27"
-				      ScrollBar.Scroll="DetailsGrid_Scroll"
-					ScrollViewer.ScrollChanged="DetailsGrid_ScrollChanged"
-	    				SelectedCellsChanged="DetailsGrid_SelectedCellsChanged"
-					SelectionChanged="ItemsView_OnSelectionChanged"
-					SelectionMode="Single"
-					TabIndex="3"
-					Visibility="Collapsed"
-					VerticalAlignment="Stretch"
-					VerticalContentAlignment="Stretch"
-					VerticalGridLinesBrush="{StaticResource Green0}" 
-					VirtualizingPanel.ScrollUnit="Pixel"
+				    
+				AlternatingRowBackground="{StaticResource Green3}"
+				AutoGenerateColumns="False"
+				BeginningEdit="DetailsGrid_BeginningEdit"
+				BorderBrush="{StaticResource Green3}"
+				BorderThickness="2"
+				CanUserAddRows="false"
+				CanUserSortColumns="False"
+				CellEditEnding="DetailsGrid_CellEditEnding"
+				ColumnHeaderHeight="25"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
+				GotFocus="DetailsGrid_GotFocus"
+				Grid.ColumnSpan="4"
+				HorizontalAlignment="Stretch"
+				IsEnabled="true"
+				IsSynchronizedWithCurrentItem="true"
+				MouseRightButtonDown="DetailsGrid_MouseRightButtonDown"
+				PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
+				RowEditEnding="ViewerGrid_RowEditEnding"
+				RowHeight="27"
+				ScrollBar.Scroll="DetailsGrid_Scroll"
+				ScrollViewer.ScrollChanged="DetailsGrid_ScrollChanged"
+				SelectedCellsChanged="DetailsGrid_SelectedCellsChanged"
+				SelectionChanged="ItemsView_OnSelectionChanged"
+				SelectionMode="Single"
+				SelectionUnit="FullRow"
+				TabIndex="3"
+				TargetUpdated="DetailsGrid_TargetUpdated"
+				VerticalAlignment="Stretch"
+				VerticalGridLinesBrush="{StaticResource Green0}"
+				VirtualizingPanel.ScrollUnit="Pixel"
+				Visibility="Collapsed"
 				    >
 
 				<!--This makes the selected row visible when window looses focus - works on any grid-->
@@ -1099,7 +1111,7 @@
 						<DataGridTemplateColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Path=Id}"
- 									HorizontalAlignment="Center"
+									HorizontalAlignment="Center"
 									VerticalAlignment="Center" />
 							</DataTemplate>
 						</DataGridTemplateColumn.CellTemplate>
@@ -1140,11 +1152,11 @@
 			<!--#endregion DetailsViewModel data Grid-->
 		</Grid>
 		<Grid
-			Grid.Row="6" 
+			Grid.Row="6"
 			Grid.Column="0"
-			Grid.ColumnSpan="4" 
-			HorizontalAlignment="Right" 
-			VerticalAlignment="Center"										    
+			Grid.ColumnSpan="4"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Center"
 			Height="45"
 			>
 			<Grid.ColumnDefinitions>
@@ -1155,22 +1167,22 @@
 
 			<TextBlock
 				x:Name="Count"
-				Background="DarkGray"						
+				Background="DarkGray"
 				FontSize="14"
 				FontWeight="DemiBold"
 				Foreground="Red"
 				Grid.Row="1"
 				Grid.Column="1"
 				Height="40"
-				HorizontalAlignment="Right"	  			
+				HorizontalAlignment="Right"
 				Margin="5,5,5,5"
 				Padding="10"
 				Text="Count"
 				TextAlignment="Center"
-				VerticalAlignment="Center" 
+				VerticalAlignment="Center"
 				Width="100"
 				/>
-			<Button		
+			<Button
 					x:Name="RefreshBtn"
 					Background="{StaticResource HeaderBrushGray}"
 					Foreground="White"
@@ -1195,13 +1207,13 @@
 				Grid.Column="1"
 				Grid.Row="6"
 				Height="30"
-				HorizontalAlignment="Stretch"		   							
+				HorizontalAlignment="Stretch"
 				Margin="0,5,5,5"
 				Padding="6"
 				Style="{StaticResource gradientblue}"
 				Text="Status comments "
 				TextAlignment="Center"
-				VerticalAlignment="Center"				
+				VerticalAlignment="Center"
 				/>
 
 	</Grid>

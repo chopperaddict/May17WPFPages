@@ -419,7 +419,7 @@ namespace WPFPages . Views
 }
 /*
  * 
- 				Debug . WriteLine ( $"\nCalling dat aload system in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+				Debug . WriteLine ( $"\nCalling dat aload system in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				Task t1 = Task . Run( 
 					async ( ) =>
 						{

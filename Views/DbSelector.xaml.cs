@@ -160,15 +160,18 @@ namespace WPFPages . Views
 			if ( Command == "NEW" )
 			{
 				selectedItem = listbox . SelectedItem . ToString ( );
-				//				BankCollection Bankcollection = new BankCollection    ();
+				BankCollection Bankcollection = new BankCollection    ();
 				CustCollection Custcollection = new CustCollection ( );
 				DetCollection Detcollection = new DetCollection ( );
 				if ( selectedItem . ToUpper ( ) . Contains ( "MULTI BANK ACCOUNTS" ) )
 				{
 					// DETAILS DATABASE
-					if ( MainWindow . gv . Detviewer != Guid . Empty )
+					if (Flags.SqlDetViewer != null)
+//					if ( MainWindow . gv . Detviewer != Guid . Empty )
 					{
-						SetFocusToExistingViewer ( MainWindow . gv . Detviewer );
+						Flags . SqlDetViewer . BringIntoView ( );
+						Flags . SqlDetViewer . Focus ( );
+//						SetFocusToExistingViewer ( MainWindow . gv . Detviewer );
 						return;
 					}
 					callertype = 2;
@@ -903,7 +906,14 @@ namespace WPFPages . Views
 
 		private void MultiViewer_Click ( object sender, RoutedEventArgs e )
 		{
-			MultiViewer mv = new MultiViewer ( );
+			if( Flags . MultiViewer != null )
+			{
+				Flags . MultiViewer . BringIntoView ( );
+				Flags . MultiViewer . Focus ( );
+				return;
+			}
+
+				MultiViewer mv = new MultiViewer ( );
 			mv . Show ( );
 		}
 

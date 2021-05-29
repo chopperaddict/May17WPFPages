@@ -191,27 +191,27 @@ namespace WPFPages . Views
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
-		public int SelectedItem
-		{
-			get { return selectedItem; }
+		//public int SelectedItem
+		//{
+		//	get { return selectedItem; }
 
-			set
-			{
-				selectedItem = value;
-				OnPropertyChanged ( SelectedItem . ToString ( ) );
-			}
-		}
+		//	set
+		//	{
+		//		selectedItem = value;
+		//		OnPropertyChanged ( SelectedItem . ToString ( ) );
+		//	}
+		//}
 
-		public int SelectedIndex
-		{
-			get { return selectedIndex; }
+		//public int SelectedIndex
+		//{
+		//	get { return selectedIndex; }
 
-			set
-			{
-				selectedIndex = value;
-				OnPropertyChanged ( SelectedIndex . ToString ( ) );
-			}
-		}
+		//	set
+		//	{
+		//		selectedIndex = value;
+		//		OnPropertyChanged ( SelectedIndex . ToString ( ) );
+		//	}
+		//}
 
 		public int SelectedRow
 		{

@@ -101,27 +101,27 @@ namespace WPFPages . ViewModels
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
-		public int SelectedItem
-		{
-			get { return selectedItem; }
+		//public int SelectedItem
+		//{
+		//	get { return selectedItem; }
 
-			set
-			{
-				selectedItem = value;
-				OnPropertyChanged ( SelectedItem . ToString ( ) );
-			}
-		}
+		//	set
+		//	{
+		//		selectedItem = value;
+		//		OnPropertyChanged ( SelectedItem . ToString ( ) );
+		//	}
+		//}
 
-		public int SelectedRow
-		{
-			get { return selectedRow; }
+		//public int SelectedRow
+		//{
+		//	get { return selectedRow; }
 
-			set
-			{
-				selectedRow = value;
-				OnPropertyChanged ( selectedRow . ToString ( ) );
-			}
-		}
+		//	set
+		//	{
+		//		selectedRow = value;
+		//		OnPropertyChanged ( selectedRow . ToString ( ) );
+		//	}
+		//}
 
 		#endregion properties
 	}

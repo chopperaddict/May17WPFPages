@@ -1,18 +1,21 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:WPFPages.Dicts">
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:WPFPages.Dicts">
 
 
-	<!-- used by Textblock and WORKING -->
-	<Style x:Key="TextblockEventTriggerStyle" 
-		  TargetType="TextBlock">
-		<!--This is how to make Background change on mouseover-->
+	<!--  used by Textblock and WORKING  -->
+	<Style x:Key="TextblockEventTriggerStyle" TargetType="TextBlock">
+		<!--  This is how to make Background change on mouseover  -->
 		<Style.Triggers>
 			<EventTrigger RoutedEvent="MouseEnter">
 				<EventTrigger.Actions>
 					<BeginStoryboard>
 						<Storyboard>
-							<DoubleAnimation Duration="0:0:0.200" Storyboard.TargetProperty="FontSize" To="24" />
+							<DoubleAnimation
+								Storyboard.TargetProperty="FontSize"
+								To="24"
+								Duration="0:0:0.200" />
 						</Storyboard>
 					</BeginStoryboard>
 				</EventTrigger.Actions>
@@ -21,7 +24,10 @@
 				<EventTrigger.Actions>
 					<BeginStoryboard>
 						<Storyboard>
-							<DoubleAnimation Duration="0:0:0.100" Storyboard.TargetProperty="FontSize" To="12" />
+							<DoubleAnimation
+								Storyboard.TargetProperty="FontSize"
+								To="12"
+								Duration="0:0:0.100" />
 						</Storyboard>
 					</BeginStoryboard>
 				</EventTrigger.Actions>
@@ -30,38 +36,38 @@
 	</Style>
 
 
-	<!-- used by Button-->
+	<!--  used by Button  -->
 
-	<Style x:Key="ButtonPropertyTriggerStyle"
-		TargetType="TextBlock"
-		  >
-		<!--BasedOn="{StaticResource GradientStyleButton}">-->
-		<!--Line above would let us Inherit another style and just modify it-->
+	<Style x:Key="ButtonPropertyTriggerStyle" TargetType="TextBlock">
+		<!--  BasedOn="{StaticResource GradientStyleButton}">  -->
+		<!--  Line above would let us Inherit another style and just modify it  -->
 
-		<Setter Property="Background" Value="{StaticResource Background}"/>
-		<Setter Property="Foreground" Value="Red"/>
+		<Setter Property="Background" Value="{StaticResource Background}" />
+		<Setter Property="Foreground" Value="Red" />
 		<Style.Triggers>
 
-			<!--This is a PROPERTY Trigger-->
+			<!--  This is a PROPERTY Trigger  -->
 
 			<Trigger Property="IsMouseOver" Value="True">
-				<Setter Property="Foreground" Value="Black"/>
-				<Setter Property="Background" Value="DarkGoldenrod"/>
-				<Setter Property="FontWeight" Value="ExtraBlack"/>
-				<Setter Property="Foreground" Value="Green"/>
+				<Setter Property="Foreground" Value="Black" />
+				<Setter Property="Background" Value="DarkGoldenrod" />
+				<Setter Property="FontWeight" Value="ExtraBlack" />
+				<Setter Property="Foreground" Value="Green" />
 			</Trigger>
 		</Style.Triggers>
 	</Style>
 
-	<Style x:Key="ButtonEventTriggerStyle" 
-		  TargetType="Button">
-		<!--This is how to make Background change on mouseover-->
+	<Style x:Key="ButtonEventTriggerStyle" TargetType="Button">
+		<!--  This is how to make Background change on mouseover  -->
 		<Style.Triggers>
 			<EventTrigger RoutedEvent="MouseEnter">
 				<EventTrigger.Actions>
 					<BeginStoryboard>
 						<Storyboard>
-							<DoubleAnimation Duration="0:0:0.200" Storyboard.TargetProperty="FontSize" To="24" />
+							<DoubleAnimation
+								Storyboard.TargetProperty="FontSize"
+								To="24"
+								Duration="0:0:0.200" />
 						</Storyboard>
 					</BeginStoryboard>
 				</EventTrigger.Actions>
@@ -70,7 +76,10 @@
 				<EventTrigger.Actions>
 					<BeginStoryboard>
 						<Storyboard>
-							<DoubleAnimation Duration="0:0:0.100" Storyboard.TargetProperty="FontSize" To="12" />
+							<DoubleAnimation
+								Storyboard.TargetProperty="FontSize"
+								To="12"
+								Duration="0:0:0.100" />
 						</Storyboard>
 					</BeginStoryboard>
 				</EventTrigger.Actions>
@@ -80,23 +89,21 @@
 
 
 
-	<!--Simple Button Style - with Event handling ?-->
-	<!--NB Style do NOT override settings made in  the button declarations-->
-	<Style x:Key="ButtonDataTriggerStyle"
-		TargetType="TextBlock"
-		  >
-		<!--BasedOn="{StaticResource GradientStyleButton}">-->
-		<!--Line above would let us Inherit another style and just modify it-->
+	<!--  Simple Button Style - with Event handling ?  -->
+	<!--  NB Style do NOT override settings made in  the button declarations  -->
+	<Style x:Key="ButtonDataTriggerStyle" TargetType="TextBlock">
+		<!--  BasedOn="{StaticResource GradientStyleButton}">  -->
+		<!--  Line above would let us Inherit another style and just modify it  -->
 
-		<Setter Property="Background" Value="{StaticResource Background}"/>
-		<Setter Property="Foreground" Value="Red"/>
+		<Setter Property="Background" Value="{StaticResource Background}" />
+		<Setter Property="Foreground" Value="Red" />
 		<Style.Triggers>
-				<!--This is a DATA Trigger-->
+			<!--  This is a DATA Trigger  -->
 			<DataTrigger Binding="{Binding ElementName=chkBox, Path=IsChecked}" Value="True">
-					<Setter Property="Foreground" Value="Black"/>
-					<Setter Property="Background" Value="DarkGoldenrod"/>
-					<Setter Property="FontWeight" Value="ExtraBlack"/>
-					<Setter Property="Foreground" Value="Green"/>
+				<Setter Property="Foreground" Value="Black" />
+				<Setter Property="Background" Value="DarkGoldenrod" />
+				<Setter Property="FontWeight" Value="ExtraBlack" />
+				<Setter Property="Foreground" Value="Green" />
 			</DataTrigger>
 		</Style.Triggers>
 	</Style>

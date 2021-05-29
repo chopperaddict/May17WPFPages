@@ -354,10 +354,10 @@ namespace WPFPages
 			dGrid . UpdateLayout ( );
 			Utils . ScrollRecordIntoView ( dGrid, row );
 		}
-		public static int FindMatchingRecord ( string Custno, string Bankno, DataGrid Grid, string CurrentDb )
+		public static int FindMatchingRecord ( string Custno, string Bankno, DataGrid Grid, string currentDb = "" )
 		{
 			int index = 0;
-			if ( CurrentDb == "BANKACCOUNT" )
+			if ( currentDb == "BANKACCOUNT" )
 			{
 				foreach ( var item in Grid . Items )
 				{
@@ -373,7 +373,7 @@ namespace WPFPages
 					index = -1;
 				return index;
 			}
-			else if ( CurrentDb == "CUSTOMER" )
+			else if ( currentDb == "CUSTOMER" )
 			{
 				foreach ( var item in Grid . Items )
 				{
@@ -389,13 +389,13 @@ namespace WPFPages
 					index = -1;
 				return index;
 			}
-			else if ( CurrentDb == "DETAILS" )
+			else if ( currentDb == "DETAILS" )
 			{
 				foreach ( var item in Grid . Items )
 				{
-					DetailsViewModel cvm = item as DetailsViewModel;
-					if ( cvm == null ) break;
-					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
+					DetailsViewModel dvm = item as DetailsViewModel;
+					if ( dvm == null ) break;
+					if ( dvm . CustNo == Custno && dvm . BankNo == Bankno )
 					{
 						break;
 					}
@@ -461,7 +461,7 @@ namespace WPFPages
 			Dgrid . UpdateLayout ( );
 			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
 			Dgrid . UpdateLayout ( );
-			Dgrid . SelectedIndex = ( int ) CurrentRecord;
+//			Dgrid . SelectedIndex = ( int ) CurrentRecord;
 			//			if ( caller == 0 )
 			Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
 

@@ -49,6 +49,8 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			this . Show ( );
+			this . Refresh ( ); 
 			Startup = true;
 			// Data source is handled in XAML !!!!
 			if ( this . DetGrid . Items . Count > 0 )
@@ -57,33 +59,41 @@ namespace WPFPages . Views
 
 			if ( DetViewerDbcollection . Count == 0 )
 				DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection ,2, true);
-			this . DetGrid . ItemsSource = DetViewerDbcollection;
+			else
+			{
+				this . DetGrid . ItemsSource = DetViewerDbcollection;
+				this . DetGrid . SelectedIndex = 0;
+				this . DetGrid . SelectedItem = 0;
+				DataFields . DataContext = this . DetGrid . SelectedItem;
+				Utils . SetUpGridSelection ( this . DetGrid, 0 );
+				Count . Text = this . DetGrid . Items . Count . ToString ( );
+			}
 
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index 
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index 
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
-			// Another SqlDbviewer has changed the current index 
+			// Another viewer has changed the current index 
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-			EventControl . DataUpdated += EventControl_DataUpdated;
-			DataFields . DataContext = this . DetGrid . SelectedItem;
+												 // Main Database updated notification handler
+												 //			EventControl . DataUpdated += EventControl_DataUpdated;
+			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 
 			SaveBttn . IsEnabled = false;
-			Startup = false;
-			Count . Text = this . DetGrid . Items . Count . ToString ( );
-			Utils . SetUpGridSelection ( this . DetGrid, 0 );
-			DetGrid . Refresh ( );
-			this . DetGrid . UpdateLayout ( );
-			Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
-
+			// Save linkage setting as we need to disable it while we are loading
+			bool tmp = Flags . LinkviewerRecords;
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
-
+			Flags . DetDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
-			Flags . DetDbEditor = this;
+			this . Focus ( );
+			this . DetGrid . Focus ( );
+			// Reset linkage setting
+			Flags . LinkviewerRecords = tmp;
+			Startup = false;
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -141,7 +151,9 @@ namespace WPFPages . Views
 			sqlh . UpdateDbRowAsync ( "DETAILS", ss, this . DetGrid . SelectedIndex );
 
 			this . DetGrid . SelectedIndex = currow;
-			this . DetGrid . ScrollIntoView ( currow );
+			this . DetGrid . SelectedItem = currow;
+			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
+//			this . DetGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "DETAILS" );
@@ -159,10 +171,12 @@ namespace WPFPages . Views
 
 		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
-			// Event handler for BankDataLoaded
+			// Event handler for DetDataLoaded
 			this . DetGrid . ItemsSource = null;
 			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
+			this . DetGrid . SelectedIndex = 0;
+			this . DetGrid . SelectedItem= 0;
 			this . DetGrid . Refresh ( );
 		}
 
@@ -181,13 +195,16 @@ namespace WPFPages . Views
 			//			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
 			//UnSubscribe from Bank Data Changed event declared in EventControl
 			Flags . DetDbEditor = null;
+			//Another viewer has changed selection
 			EventControl . EditIndexChanged -= EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index 
 			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index 
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main update notification handler
-			EventControl . DataUpdated -= EventControl_DataUpdated;
+			 // Main update notification handler
+//			EventControl . DataUpdated -= EventControl_DataUpdated;
+			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
+
 		}
 
 		private void DetGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )

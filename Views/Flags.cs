@@ -320,15 +320,15 @@ namespace WPFPages
 					GridViewerArrayIndex = x;
 					// we have got the index in "x"  of the viewer in the Mainindow.gv[] array
 					// so  get the Tag of that selected Entry in the ViewersList
-					for ( int i = 0 ; i < DbSelectorOpen . ViewersList . Items . Count ; i++ )
+					for ( int i = 1 ; i < DbSelectorOpen . ViewersList . Items . Count ; i++ )
 					{
 						lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
-						if ( MainWindow . gv . ListBoxId [ i ] == ( Guid ) Flags . CurrentSqlViewer?.Tag )
+						if ( MainWindow . gv . ListBoxId [ GridViewerArrayIndex ] == ( Guid ) lbi.Tag)
 						{
 							//lbi = Flags . DbSelectorOpen . ViewersList . Items [ i ] as ListBoxItem;
-							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( GridViewerArrayIndex );
+							Flags . DbSelectorOpen . ViewersList . Items . RemoveAt ( i );
 							Flags . DbSelectorOpen . ViewersList . Refresh ( );
-							GridViewerArrayIndex = i;
+//							GridViewerArrayIndex = i;
 							break;
 						}
 					}

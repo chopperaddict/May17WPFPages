@@ -104,11 +104,11 @@ namespace WPFPages . Views
 			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
 			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
 
-			// An EditDb has changed the current index 
+			// An EditDb has changed the current index
 			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
 			// This is THIS  Multiviewer so we do NOT suscribe to it, Only other windows do so
 			//EventControl . MultiViewerIndexChanged += EventControl_MultiViewerIndexChanged;
-			// Another SqlDbviewer has changed the current index 
+			// Another SqlDbviewer has changed the current index
 			EventControl . ViewerIndexChanged += EventControl_ViewerIndexChanged;      // Callback in THIS FILE
 
 			// Event triggers when a Specific Db viewer (SqlDbViewer/BankDbViewer etc) updates the data
@@ -199,9 +199,10 @@ namespace WPFPages . Views
 		private async void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
 		{
 			// Sanity check, if we MADE the index change, so don't bother
-			if ( e . Senderviewer == null )
-				return;
-
+			//			if ( e . Senderviewer == null )
+			//				return;
+			if(true == false)
+			{
 			// Dont go in here if we have just triggered a data update
 			//			if ( e . SenderId == "MultiBank" || e . SenderId == "Multicust" || e . SenderId == "MultiDet" )
 			//				return;
@@ -233,7 +234,7 @@ namespace WPFPages . Views
 			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
 			//	}
 			//	return;
-			//}
+			}
 			if ( Flags . LinkviewerRecords && Triggered == false ) //|| Flags.IsFiltered|| Flags.IsMultiMode	)
 			{
 				object RowTofind = null;
@@ -298,23 +299,33 @@ namespace WPFPages . Views
 					{
 						BankAccountViewModel bvm = new BankAccountViewModel ( );
 						bvm = this . BankGrid . CurrentItem as BankAccountViewModel;
-						if ( bvm == null ) return;
+						if ( bvm == null )
+						{
+							inprogress = false;
+							return;
+						}
 						TriggerMultiViewerIndexChanged ( this . BankGrid );
 					}
 					else if ( e . Sender == "CUSTOMER" )
 					{
 						CustomerViewModel bvm = new CustomerViewModel ( );
 						bvm = this . CustomerGrid . CurrentItem as CustomerViewModel;
-						if ( bvm == null ) return;
-
+						if ( bvm == null )
+						{
+							inprogress = false;
+							return;
+						}
 						TriggerMultiViewerIndexChanged ( this . CustomerGrid );
 					}
 					else if ( e . Sender == "DETAILS" )
 					{
 						DetailsViewModel bvm = new DetailsViewModel ( );
 						bvm = this . DetailsGrid . CurrentItem as DetailsViewModel;
-						if ( bvm == null ) return;
-
+						if ( bvm == null )
+						{
+							inprogress = false;
+							return;
+						}
 						TriggerMultiViewerIndexChanged ( this . DetailsGrid );
 					}
 				}
@@ -402,6 +413,7 @@ namespace WPFPages . Views
 			ReloadingData = false; ;
 			StatusBar . Text = "All available Records are shown above in all three grids";
 			Mouse . OverrideCursor = Cursors . Arrow;
+			ReloadingData = false;
 		}
 
 		private async Task ReLoadAllDataBases ( string CurrentD, int row, string Custno = "", string Bankno = "" )
@@ -491,7 +503,8 @@ namespace WPFPages . Views
 				this . BankGrid . SelectedIndex = bbindex;
 				this . BankGrid . SelectedItem = bbindex;
 				this . BankGrid . Refresh ( );
-				this . BankGrid . ScrollIntoView ( bbindex );
+				Utils . SetUpGridSelection ( this . BankGrid, bbindex);
+//				this . BankGrid . ScrollIntoView ( bbindex );
 			}
 
 
@@ -503,7 +516,8 @@ namespace WPFPages . Views
 				this . CustomerGrid . SelectedIndex = ccindex;
 				this . CustomerGrid . SelectedItem = ccindex;
 				this . CustomerGrid . Refresh ( );
-				this . CustomerGrid . ScrollIntoView ( ccindex );
+				Utils . SetUpGridSelection ( this . CustomerGrid, ccindex );
+				//				this . CustomerGrid . ScrollIntoView ( ccindex );
 			}
 
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
@@ -514,7 +528,8 @@ namespace WPFPages . Views
 				this . DetailsGrid . SelectedIndex = ddindex;
 				this . DetailsGrid . SelectedItem = ddindex;
 				this . DetailsGrid . Refresh ( );
-				this . DetailsGrid . ScrollIntoView ( ddindex );
+				Utils . SetUpGridSelection ( this . DetailsGrid, ddindex );
+//				this . DetailsGrid . ScrollIntoView ( ddindex );
 			}
 
 			//inprogress = false;;
@@ -901,49 +916,50 @@ namespace WPFPages . Views
 			int rec = 0;
 			string SearchCustNo = "";
 			string SearchBankNo = "";
-			//			ScrollViewer scroll;
 
 			if ( ReloadingData )
 				return;
-
-			BankAccountViewModel CurrentSelectedRecord = this . BankGrid . CurrentItem as BankAccountViewModel;
-			if ( CurrentSelectedRecord == null )
-				return;
-
 			if ( inprogress )
 				return;
+
+			BankAccountViewModel CurrentSelectedRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
+			if ( CurrentSelectedRecord == null )	return;
+
 			inprogress = true;
 
+			// See if we need to update th eother grids on this multi viewer
 			if ( LinkGrids . IsChecked == true )
 			{
+				int currsel = this . BankGrid . SelectedIndex;
 				// We have the link our own grids option checked
 				// so update our other 2 grids positions
-				CurrentSelectedRecord = this . BankGrid . CurrentItem as BankAccountViewModel;
-				if ( CurrentSelectedRecord == null )
-				{ Console . WriteLine ( $"Bank Grid ERROR - Currentitem is NULL !!" ); return; }
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
 				{ inprogress = false; return; }
 
 				Triggered = true;
+
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . CustomerGrid, "CUSTOMER" );
 				// Store current index to global
 				cindex = rec;
-				Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+				this . CustomerGrid . UnselectAll ( );
+				this . CustomerGrid . SelectedIndex = rec;
+				this . CustomerGrid . SelectedItem = rec;
+				Utils . SetUpGridSelection ( this . CustomerGrid, rec );
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . DetailsGrid, "DETAILS" );
 				// Store current index to global
 				dindex = rec;
-				Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-				Triggered = false;
-			}
-			BankData . DataContext = this . BankGrid . SelectedItem;
-
-			if ( LinkRecords . IsChecked == true )
-			{
+				this . DetailsGrid . UnselectAll ( );
+				this . DetailsGrid . SelectedIndex = rec;
+				this . DetailsGrid . SelectedItem = rec;
+				Utils . SetUpGridSelection ( this . DetailsGrid, rec );
 				// The global linkage is set, so
 				// we must notify any other windows that may need to update themselves
-				TriggerMultiViewerIndexChanged ( this . BankGrid );
+				if ( Flags . LinkviewerRecords )
+					TriggerMultiViewerIndexChanged ( this . BankGrid );
+				BankData . DataContext = this . BankGrid . SelectedItem;
+				Triggered = false;
 			}
 			inprogress = false;
 			try
@@ -960,54 +976,50 @@ namespace WPFPages . Views
 
 			if ( ReloadingData )
 				return;
-
-			CustomerViewModel CurrentSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
-			if ( CurrentSelectedRecord == null )
-				return;
-
 			if ( inprogress )
 				return;
+
+			CustomerViewModel CurrentSelectedRecord = this . CustomerGrid . SelectedItem  as CustomerViewModel;
+			if ( CurrentSelectedRecord == null )	return;
+
 			inprogress = true;
 
 			if ( LinkGrids . IsChecked == true )
 			{
+				int currsel = this . CustomerGrid . SelectedIndex;
 				// We triggered this change
-				CurrentSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
-				if ( CurrentSelectedRecord == null )
-				{
-					Console . WriteLine ( $"Customer Grid ERROR - Currentitem is NULL !!" );
-					//					await Utils . DoErrorBeep ( 300, 200 , 4) . ConfigureAwait ( false );
-					return;
-				}
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
-				{
-					inprogress = false;
-					return;
-				}
+				{inprogress = false;	return;}
 
 				// We have the link our own grids option checked
 				// so update all our grids position
 				Triggered = true;
+
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . BankGrid, "BANKACCOUNT" );
 				// Store current index to global
 				bindex = rec;
-				Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+				this . BankGrid . UnselectAll ( );
+				this . BankGrid . SelectedIndex = rec;
+				this . BankGrid . SelectedItem= rec;
+				Utils . SetUpGridSelection ( this . BankGrid, rec );
+				//Utils . ScrollRecordIntoView ( this . BankGrid, rec );
 
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . DetailsGrid, "DETAILS" );
 				// Store current index to global
 				dindex = rec;
-				Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-				Triggered = false;
-			}
-			BankData . DataContext = this . DetailsGrid . SelectedItem;
+				this . DetailsGrid . UnselectAll ( );
+				this . DetailsGrid . SelectedIndex = rec;
+				this . DetailsGrid . SelectedItem = rec;
+				Utils.SetUpGridSelection ( this . DetailsGrid, rec );
 
-			if ( LinkRecords . IsChecked == true )
-			{
 				// The global linkage is set, so
 				// we must notify any other windows that may need to update themselves
-				TriggerMultiViewerIndexChanged ( this . CustomerGrid );
+				if ( Flags . LinkviewerRecords )
+					TriggerMultiViewerIndexChanged ( this . CustomerGrid );
+				BankData . DataContext = this . DetailsGrid . SelectedItem;
+				Triggered = false;
 			}
 
 			inprogress = false;
@@ -1026,50 +1038,47 @@ namespace WPFPages . Views
 
 			if ( ReloadingData )
 				return;
-
-			DetailsViewModel CurrentSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
-			if ( CurrentSelectedRecord == null )
-			{
-				return;
-			}
-
 			if ( inprogress )
 				return;
+
+			DetailsViewModel CurrentSelectedRecord = this . DetailsGrid . SelectedItem  as DetailsViewModel;
+			if ( CurrentSelectedRecord == null )	return;
+
 			inprogress = true;
 
 			if ( LinkGrids . IsChecked == true )
 			{
-				CurrentSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
-				if ( CurrentSelectedRecord == null )
-				{
-					Console . WriteLine ( $"Details Grid ERROR - Currentitem is NULL !!" );
-					return;
-				}
+				int currsel = this . DetailsGrid . SelectedIndex;
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
-				{inprogress = false;return;}
+				{inprogress = false;	return;}
 
 				// update all grids position
 				Triggered = true;
+
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . BankGrid, "BANKACCOUNT" );
 				// Store current index to global
 				bindex = rec;
-				Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+				this . BankGrid . UnselectAll ( );
+				this . BankGrid . SelectedIndex = rec;
+				this . BankGrid . SelectedItem = rec;
+				Utils . SetUpGridSelection ( this . BankGrid, rec );
 
 				rec = Utils . FindMatchingRecord ( SearchCustNo, SearchBankNo, this . CustomerGrid, "CUSTOMER" );
 				// Store current index to global
 				cindex = rec;
-				Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-				Triggered = false;
-			}
-			BankData . DataContext = this . DetailsGrid . SelectedItem;
-
-			if ( LinkRecords . IsChecked == true )
-			{
+				this . CustomerGrid . UnselectAll ( );
+				this . CustomerGrid . SelectedIndex = rec;
+				this . CustomerGrid . SelectedItem = rec;
+				Utils . SetUpGridSelection ( this . CustomerGrid, rec );
 				// The global linkage is set, so
 				// we must notify any other windows that may need to update themselves
-				TriggerMultiViewerIndexChanged ( this . DetailsGrid );
+				if(Flags.LinkviewerRecords)
+					TriggerMultiViewerIndexChanged ( this . DetailsGrid ); 
+				Triggered = false;
+				BankData . DataContext = this . DetailsGrid . SelectedItem;
+				Triggered = false;
 			}
 
 			inprogress = false;
@@ -1104,9 +1113,12 @@ namespace WPFPages . Views
 			var scroll = DataGridNavigation . FindVisualChild<ScrollViewer> ( ( DependencyObject ) dg );
 			scroll . CanContentScroll = true;
 			SetScrollVariables ( sender );
-			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
-			this . CustomerGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
-			this . DetailsGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . CustomerGrid, this . BankGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . DetailsGrid, this . BankGrid . SelectedIndex );
+			//			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
+			//			this . CustomerGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
+			//			this . DetailsGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
 
 		}
 		private void CustGrid_ScrollChanged ( object sender, ScrollChangedEventArgs e )
@@ -1116,9 +1128,12 @@ namespace WPFPages . Views
 			var scroll = DataGridNavigation . FindVisualChild<ScrollViewer> ( ( DependencyObject ) dg );
 			scroll . CanContentScroll = true;
 			SetScrollVariables ( sender );
-			this . BankGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
-			this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
-			this . DetailsGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . CustomerGrid, this . BankGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . DetailsGrid, this . BankGrid . SelectedIndex );
+//			this . BankGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
+//			this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
+//			this . DetailsGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
 		}
 
 		private void DetGrid_ScrollChanged ( object sender, ScrollChangedEventArgs e )
@@ -1128,9 +1143,12 @@ namespace WPFPages . Views
 			var scroll = DataGridNavigation . FindVisualChild<ScrollViewer> ( ( DependencyObject ) dg );
 			scroll . CanContentScroll = true;
 			SetScrollVariables ( sender );
-			this . CustomerGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
-			this . BankGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
-			this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . BankGrid, this . DetailsGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . CustomerGrid, this . DetailsGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex ); 
+//			this . CustomerGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
+//			this . BankGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
+//			this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
 		}
 		#endregion SCROLLBARS
 
@@ -1508,7 +1526,7 @@ namespace WPFPages . Views
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
 			int q = 1;
-			//select All the items first;			
+			//select All the items first;
 			Mouse . OverrideCursor = Cursors . Wait;
 			if ( q == 1 )
 			{
@@ -1665,6 +1683,7 @@ namespace WPFPages . Views
 				//				Console . WriteLine ( $"\nBank Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!\n" );
 				//				Utils . DoErrorBeep ( 200, 100, 2 );
 				//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
+				inprogress = false;
 				return;
 			}
 			SearchCustNo = CurrentBankSelectedRecord . CustNo;
@@ -1707,6 +1726,7 @@ namespace WPFPages . Views
 				//				Console . WriteLine ( $"\nCustomer Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!\n" );
 				//				Utils . DoErrorBeep ( 250, 100, 3 );
 				//					await Utils . DoBeep ( 300, 300 ) . ConfigureAwait ( false );
+				inprogress = false;
 				return;
 			}
 			SearchCustNo = CurrentBankSelectedRecord . CustNo;
@@ -1725,6 +1745,7 @@ namespace WPFPages . Views
 					RowCount = this . CustomerGrid . SelectedIndex
 				} );
 			Utils . DoSingleBeep ( 250, 300, 2 );
+			inprogress = false;
 		}
 		/// <summary>
 		/// Method that is called when Details grid has a data change made to it.
@@ -1747,6 +1768,7 @@ namespace WPFPages . Views
 			{
 				//				Console . WriteLine ( $"\nDetails Grid ERROR - Currentitem is NULL on Entry to Selectionchanged !!\n" );
 				//				Utils . DoErrorBeep ( 300, 100 , 4);
+				inprogress = false;
 				return;
 			}
 			SearchCustNo = CurrentBankSelectedRecord . CustNo;
@@ -1765,6 +1787,7 @@ namespace WPFPages . Views
 					RowCount = this . DetailsGrid . SelectedIndex
 				} );
 			Utils . DoSingleBeep ( 300, 300, 3 );
+			inprogress = false;
 		}
 		#endregion Data Edited event creators
 
@@ -1886,7 +1909,7 @@ namespace WPFPages . Views
 		}
 
 		/// <summary>
-		/// Generic method to send Index changed Event trigger so that 
+		/// Generic method to send Index changed Event trigger so that
 		/// other viewers can update thier own grids as relevant
 		/// </summary>
 		/// <param name="grid"></param>
@@ -1898,6 +1921,7 @@ namespace WPFPages . Views
 			if ( grid == this . BankGrid )
 			{
 				BankAccountViewModel CurrentBankSelectedRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
+				if ( CurrentBankSelectedRecord == null ) return;
 				SearchCustNo = CurrentBankSelectedRecord . CustNo;
 				SearchBankNo = CurrentBankSelectedRecord . BankNo;
 				EventControl . TriggerMultiViewerIndexChanged ( this,
@@ -1914,6 +1938,7 @@ namespace WPFPages . Views
 			else if ( grid == this . CustomerGrid )
 			{
 				CustomerViewModel CurrentCustSelectedRecord = this . CustomerGrid . CurrentItem as CustomerViewModel;
+				if ( CurrentCustSelectedRecord == null ) return;
 				SearchCustNo = CurrentCustSelectedRecord . CustNo;
 				SearchBankNo = CurrentCustSelectedRecord . BankNo;
 				EventControl . TriggerMultiViewerIndexChanged ( this,
@@ -1930,6 +1955,7 @@ namespace WPFPages . Views
 			else if ( grid == this . DetailsGrid )
 			{
 				DetailsViewModel CurrentDetSelectedRecord = this . DetailsGrid . CurrentItem as DetailsViewModel;
+				if ( CurrentDetSelectedRecord == null ) return;
 				SearchCustNo = CurrentDetSelectedRecord . CustNo;
 				SearchBankNo = CurrentDetSelectedRecord . BankNo;
 				EventControl . TriggerMultiViewerIndexChanged ( this,
@@ -2195,6 +2221,6 @@ namespace WPFPages . Views
 			#endregion UNUSED CODE
 
 
-	 * 
+	 *
 	 * */
 }

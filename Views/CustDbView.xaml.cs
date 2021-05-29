@@ -50,6 +50,8 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			this . Show ( );
+			this . Refresh ( );
 			Startup = true;
 			// Data source is handled in XAML !!!!
 			if ( this . CustGrid . Items . Count > 0 )
@@ -57,32 +59,42 @@ namespace WPFPages . Views
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 
 			if ( CustViewerDbcollection . Count == 0 )
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection ,3, true );
-			this . CustGrid . ItemsSource = CustViewerDbcollection;
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
+			else
+			{
+				this . CustGrid . ItemsSource = CustViewerDbcollection;
+				this . CustGrid . SelectedIndex = 0;
+				this . CustGrid . SelectedItem = 0;
+				DataFields . DataContext = this . CustGrid . SelectedItem;
+				Utils . SetUpGridSelection ( this . CustGrid, 0 );
+				Count . Text = this . CustGrid . Items . Count . ToString ( );
+			}
+
 			this . MouseDown += delegate { DoDragMove ( ); };
-			Utils . SetUpGridSelection ( this . CustGrid, 0 );
-			DataFields . DataContext = this . CustGrid . SelectedItem;
-
-			// Main update notification handler
-			EventControl . DataUpdated += EventControl_DataUpdated;
-
-			// An EditDb has changed the current index 
+			// An EditDb has changed the current index
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
-			// A Multiviewer has changed the current index 
+			// A Multiviewer has changed the current index
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
-			// Another SqlDbviewer has changed the current index 
+			// Another viewer has changed the current index
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
+			 // Main Database updated notification handler
+//			EventControl . DataUpdated += EventControl_DataUpdated;
+			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 
 			SaveBttn . IsEnabled = false;
-			Startup = false;
-			Count . Text = this . CustGrid . Items . Count . ToString ( );
-			//this . CustGrid . SelectedIndex = 0;
+			// Save linkage setting as we need to disable it while we are loading
+			bool tmp = Flags . LinkviewerRecords;
+			if ( Flags . LinkviewerRecords )
+				LinkRecords . IsChecked = true;
 			Flags . CustDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
-			if ( Flags . LinkviewerRecords )
-				LinkRecords . IsChecked = true;
+			this . Focus ( );
+			this . CustGrid . Focus ( );
+			// Reset linkage setting
+			Flags . LinkviewerRecords = tmp;
+			Startup = false;
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -102,9 +114,9 @@ namespace WPFPages . Views
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
 			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true );
-			this . CustGrid . SelectedIndex = currsel;
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
-			this . CustGrid . Refresh ( );
+			this . CustGrid . SelectedIndex = currsel;
+			this . CustGrid . SelectedItem = currsel; this . CustGrid . Refresh ( );
 		}
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
@@ -128,7 +140,7 @@ namespace WPFPages . Views
 			// Save changes and tell other viewers about the change
 			int currow = 0;
 			currow = this . CustGrid . SelectedIndex;
-			// Save current row so we can reposition correctly at end of the entire refresh process					
+			// Save current row so we can reposition correctly at end of the entire refresh process
 			//			Flags . SqlCustCurrentIndex = currow;
 			CustomerViewModel ss = new CustomerViewModel ( );
 			ss = this . CustGrid . SelectedItem as CustomerViewModel;
@@ -137,7 +149,8 @@ namespace WPFPages . Views
 			sqlh . UpdateDbRowAsync ( "CUSTOMER", ss, this . CustGrid . SelectedIndex );
 
 			this . CustGrid . SelectedIndex = currow;
-			this . CustGrid . ScrollIntoView ( currow );
+			Utils . SetUpGridSelection ( this . CustGrid, currow );
+//			this . CustGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "CUSTOMER" );
@@ -185,12 +198,13 @@ namespace WPFPages . Views
 		{
 			Flags . CustDbEditor = null;
 			EventControl . EditIndexChanged -= EventControl_EditIndexChanged;
-			// A Multiviewer has changed the current index 
+			// A Multiviewer has changed the current index
 			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
-			// Another SqlDbviewer has changed the current index 
+			// Another SqlDbviewer has changed the current index
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
 												 // Main update notification handler
-			EventControl . DataUpdated -= EventControl_DataUpdated;
+												 //			EventControl . DataUpdated -= EventControl_DataUpdated;
+			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 
 		}
 
@@ -211,7 +225,8 @@ namespace WPFPages . Views
 			IsDirty = false;
 			if ( this . CustGrid . SelectedItem == null )
 				return;
-			this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
+			Utils . SetUpGridSelection ( this . CustGrid, this . CustGrid . SelectedIndex);
+//			this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
 			//Startup = true;
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 			Startup = false;
@@ -478,7 +493,7 @@ namespace WPFPages . Views
 		}
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
-			//select All the items first;			
+			//select All the items first;
 			var bankaccounts = from items in CustViewerDbcollection orderby items . CustNo, items . AcType select items;
 			//Next Group BankAccountViewModel collection on Custno
 			var grouped = bankaccounts . GroupBy (
@@ -533,7 +548,7 @@ namespace WPFPages . Views
 		}
 
 		/// <summary>
-		/// Generic method to send Index changed Event trigger so that 
+		/// Generic method to send Index changed Event trigger so that
 		/// other viewers can update thier own grids as relevant
 		/// </summary>
 		/// <param name="grid"></param>
@@ -566,7 +581,7 @@ namespace WPFPages . Views
 /*			BankAccountViewModel bank = new BankAccountViewModel();
 //			var filtered = from bank inCustViewerDbcollection . Where ( x => bank . CustNo = "1055033" ) select x;
 //		   GroupBy bank.CustNo having count(*) > 1
-//where  
+//where
 //having COUNT (*) > 1
 //	select bank;
 //	Where ( b.CustNo = "1055033") ;

@@ -47,6 +47,7 @@ namespace WPFPages . Views
 		public static event EventHandler<IndexChangedArgs> ViewerIndexChanged;
 		public static event EventHandler<IndexChangedArgs> EditIndexChanged;
 		public static event EventHandler<IndexChangedArgs> MultiViewerIndexChanged;
+		public static event EventHandler<IndexChangedArgs> ForceEditDbIndexChanged;
 
 		// Used to broadcast to everyone
 		public static event EventHandler<LoadedEventArgs> ViewerDataUpdated;
@@ -89,51 +90,56 @@ namespace WPFPages . Views
 		}
 
 		// INDEX CHANGE EVENTS
+		public static void TriggerForceEditDbIndexChanged ( object obj, IndexChangedArgs e )
+		{
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ForceEditDbIndexChanged EVENT trigger" );
+			ForceEditDbIndexChanged?.Invoke ( obj, e );
+		}
 		public static void TriggerEditDbIndexChanged ( object obj, IndexChangedArgs e )
 		{
-			EditIndexChanged?.Invoke ( obj, e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  EditIndexChanged EVENT trigger" );
+			EditIndexChanged?.Invoke ( obj, e );
 		}
 		public static void TriggerViewerIndexChanged ( object obj, IndexChangedArgs e )
 		{
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerIndexChanged EVENT trigger (from {obj?.ToString ( )})" );
 			ViewerIndexChanged?.Invoke ( obj, e );
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerIndexChanged EVENT trigger (from {obj?.ToString()})" );
 		}
 		public static void TriggerMultiViewerIndexChanged ( object obj, IndexChangedArgs e )
 		{
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
 			MultiViewerIndexChanged?.Invoke ( obj, e );
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj? . ToString ( )})" );
 		}
 		// DATA CHANGE EVENTS
 		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
-			ViewerDataUpdated?.Invoke ( obj, e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
+			ViewerDataUpdated?.Invoke ( obj, e );
 		}
 		public static void TriggerEditDbDataUpdated ( object obj, LoadedEventArgs e )
 		{
-			EditDbDataUpdated?.Invoke ( obj, e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  EditDbDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
+			EditDbDataUpdated?.Invoke ( obj, e );
 		}
 		public static void TriggerMultiViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
-			MultiViewerDataUpdated?.Invoke ( obj, e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
+			MultiViewerDataUpdated?.Invoke ( obj, e );
 		}
 		public static void TriggerBankDataLoaded ( object obj , LoadedEventArgs e )
 		{
-			BankDataLoaded?.Invoke ( obj , e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  BankDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
+			BankDataLoaded?.Invoke ( obj, e );
 		}
 		public static void TriggerCustDataLoaded ( object obj , LoadedEventArgs e )
 		{
-			CustDataLoaded?.Invoke ( obj , e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  CustDataLoaded EVENT trigger (from{obj ?. ToString ( )})" );
+			CustDataLoaded?.Invoke ( obj, e );
 		}
 		public static void TriggerDetDataLoaded ( object obj , LoadedEventArgs e )
 		{
-			DetDataLoaded?.Invoke ( obj , e );
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
+			DetDataLoaded?.Invoke ( obj, e );
 		}
 		//public static void TriggerViewerDataChanged ( int EditDbChangeType , int row , string CurentDb )
 		//{

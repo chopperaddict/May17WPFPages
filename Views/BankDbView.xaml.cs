@@ -59,43 +59,41 @@ namespace WPFPages . Views
 
 			if ( BankViewercollection . Count == 0 )
 				BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, true);
-			this . BankGrid . ItemsSource = BankViewercollection;
-			this . BankGrid . Refresh ( );
-			// now subscribe to various Events
-			this . MouseDown += delegate { DoDragMove ( ); };
+			else
+			{
+				this . BankGrid . ItemsSource = BankViewercollection;
+				this . BankGrid . SelectedIndex = 0;
+				this . BankGrid . SelectedItem = 0;
+				DataFields . DataContext = this . BankGrid . SelectedItem;
+				Utils . SetUpGridSelection ( this . BankGrid, 0 );
+				Count . Text = this . BankGrid . Items . Count . ToString ( );
+			}
 
+			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index 
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index 
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
-			// Another SqlDbviewer has changed the current index 
+			// Another viewer has changed the current index 
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main update notification handler
-			EventControl . DataUpdated += EventControl_DataUpdated;
+			// Main Database updated notification handler
+			//			EventControl . DataUpdated += EventControl_DataUpdated;
+			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 
-			// Set up the Data Context for the data fields
-			DataFields . DataContext = this . BankGrid . SelectedItem;
-
+			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
 			bool tmp = Flags . LinkviewerRecords;
-			Flags . LinkviewerRecords = false;
+			if(Flags . LinkviewerRecords )
+				LinkRecords . IsChecked = true;
+			Flags . BankDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
-			if ( Flags . LinkviewerRecords )
-				LinkRecords . IsChecked = true;
-			Flags . BankDbEditor = this;
-
-			SaveBttn . IsEnabled = false;
-			Startup = false;
-			Count . Text = this . BankGrid . Items . Count . ToString ( );
-			this . BankGrid . SelectedIndex = 0;
-			this . BankGrid . SelectedItem = 0;
-			Utils . SetUpGridSelection ( this . BankGrid, 0 );
 			this . Focus ( );
 			this . BankGrid . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			Startup = false;
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -110,8 +108,8 @@ namespace WPFPages . Views
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
-			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			int currsel = this . BankGrid . SelectedIndex;
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, true);
@@ -147,7 +145,8 @@ namespace WPFPages . Views
 
 			this . BankGrid . SelectedIndex = currow;
 			this . BankGrid . SelectedItem = currow;
-			this . BankGrid . ScrollIntoView ( currow );
+			Utils . SetUpGridSelection ( this . BankGrid, currow);
+			//			this . BankGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "BANKACCOUNT" );
@@ -172,6 +171,8 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = null;
 			BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 2, false );
 			this . BankGrid . ItemsSource = BankViewercollection;
+			this . BankGrid . SelectedIndex = 0;
+			this . BankGrid . SelectedItem= 0;
 			this . BankGrid . Refresh ( );
 		}
 
@@ -206,8 +207,9 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index 
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main update notification handler
-			EventControl . DataUpdated -= EventControl_DataUpdated;
+			// Main update notification handler
+			//			EventControl . DataUpdated -= EventControl_DataUpdated;
+			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 
 		}
@@ -229,7 +231,8 @@ namespace WPFPages . Views
 			}
 			if ( this . BankGrid . SelectedItem == null )
 				return;
-			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedItem );
+			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid .SelectedIndex);
+//			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedItem );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 			if ( Flags . LinkviewerRecords && Triggered == false )

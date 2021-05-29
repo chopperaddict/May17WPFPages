@@ -1,314 +1,316 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:WPFPages.Dicts">
-	
-	
 
-	<!-- AVAILABLE GRADIENTS
-	"V_txtWhiteBlueGradientBackgroundStyle" 
-	"V_txtWhiteRedGradientBackgroundStyle" 
-	"V_txtWhiteGreenGradientBackgroundStyle"
-	"V_txtWhiteOrangeGradientBackgroundStyle
-	"V_txtWhiteGrayGradientBackgroundStyle" 
-	"V_txtWhiteBlackGradientBackgroundStyle"	
-	 V
-	 V
-	"V_btnBlueWhiteGradientBackgroundStyle" 
-	"V_btnRedWhiteGradientBackgroundStyle" 
-	"V_btnGreenWhiteGradientBackgroundStyle"
-	"V_btnOrangeWhiteGradientBackgroundStyle
-	"V_btnGrayWhiteGradientBackgroundStyle" 
-	"V_btnBlackWhiteGradientBackgroundStyle"	
+
+
+	<!--
+		AVAILABLE GRADIENTS
+		"V_txtWhiteBlueGradientBackgroundStyle"
+		"V_txtWhiteRedGradientBackgroundStyle"
+		"V_txtWhiteGreenGradientBackgroundStyle"
+		"V_txtWhiteOrangeGradientBackgroundStyle
+		"V_txtWhiteGrayGradientBackgroundStyle"
+		"V_txtWhiteBlackGradientBackgroundStyle"
+		V
+		V
+		"V_btnBlueWhiteGradientBackgroundStyle"
+		"V_btnRedWhiteGradientBackgroundStyle"
+		"V_btnGreenWhiteGradientBackgroundStyle"
+		"V_btnOrangeWhiteGradientBackgroundStyle
+		"V_btnGrayWhiteGradientBackgroundStyle"
+		"V_btnBlackWhiteGradientBackgroundStyle"
 	-->
 
 	<Style x:Key="V_txtWhiteBlueGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Blue" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Blue" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_txtWhiteRedGradientBackgroundStyle" TargetType="TextBlock" >
+	<Style x:Key="V_txtWhiteRedGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="White" Offset=".1" />
-					<GradientStop Color="Red" Offset="1" />
+					<GradientStop Offset=".1" Color="White" />
+					<GradientStop Offset="1" Color="Red" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_txtWhiteGreenGradientBackgroundStyle" TargetType="TextBlock" >
+	<Style x:Key="V_txtWhiteGreenGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint=".3,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Green" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Green" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_txtWhiteOrangeGradientBackgroundStyle"  TargetType="TextBlock" >
+	<Style x:Key="V_txtWhiteOrangeGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Orange" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Orange" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	
-		
-	<Style x:Key="V_txtWhiteBlackGradientBackgroundStyle"  TargetType="TextBlock" >
+
+
+	<Style x:Key="V_txtWhiteBlackGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Black" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Black" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_txtWhiteGrayGradientBackgroundStyle"  TargetType="TextBlock" >
+	<Style x:Key="V_txtWhiteGrayGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="DarkGray" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="DarkGray" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<!--**************************-->
-	<!--Control - TEXTBLOCK       -->
-	<!--Color - White             -->
-	<!--**************************-->
-	<Style x:Key="V_txtBlueWhiteGradientBackgroundStyle"  TargetType="TextBlock" >
+	<!--  **************************  -->
+	<!--  Control - TEXTBLOCK  -->
+	<!--  Color - White  -->
+	<!--  **************************  -->
+	<Style x:Key="V_txtBlueWhiteGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Blue" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Blue" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_txtRedWhiteGradientBackgroundStyle"  TargetType="TextBlock" >
+	<Style x:Key="V_txtRedWhiteGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="White" Offset=".1" />
-					<GradientStop Color="Red" Offset="1" />
+					<GradientStop Offset=".1" Color="White" />
+					<GradientStop Offset="1" Color="Red" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_txtGreenWhiteGradientBackgroundStyle" TargetType="TextBlock" >
+	<Style x:Key="V_txtGreenWhiteGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Green" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Green" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_txtOrangeWhiteGradientBackgroundStyle"  TargetType="TextBlock" >
+	<Style x:Key="V_txtOrangeWhiteGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Orange" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Orange" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_txtBlackWhiteGradientBackgroundStyle"  TargetType="TextBlock" >
+	<Style x:Key="V_txtBlackWhiteGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Black" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Black" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_txtGrayWhiteGradientBackgroundStyle"  TargetType="TextBlock" >
+	<Style x:Key="V_txtGrayWhiteGradientBackgroundStyle" TargetType="TextBlock">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="DarkGray" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="DarkGray" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<!--**************************-->
-	<!--Control - BUTTONS         -->
-	<!--White  - Color            -->
-	<!--**************************-->
+	<!--  **************************  -->
+	<!--  Control - BUTTONS  -->
+	<!--  White  - Color  -->
+	<!--  **************************  -->
 	<Style x:Key="V_btnWhiteBlueGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Blue" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Blue" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_btnWhiteRedGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnWhiteRedGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="White" Offset=".1" />
-					<GradientStop Color="Red" Offset="1" />
+					<GradientStop Offset=".1" Color="White" />
+					<GradientStop Offset="1" Color="Red" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_btnWhiteGreenGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnWhiteGreenGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint=".3,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Green" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Green" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_btnWhiteOrangeGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnWhiteOrangeGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Orange" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Orange" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_btnWhiteBlackGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnWhiteBlackGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Black" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Black" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_btnWhiteGrayGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnWhiteGrayGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="DarkGray" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="DarkGray" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<!--**************************-->
-	<!--Control - BUTTONS         -->
-	<!--Color  - White            -->
-	<!--**************************-->
-	<Style x:Key="V_btnBlueWhiteGradientBackgroundStyle" TargetType="Button" >
+	<!--  **************************  -->
+	<!--  Control - BUTTONS  -->
+	<!--  Color  - White  -->
+	<!--  **************************  -->
+	<Style x:Key="V_btnBlueWhiteGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Blue" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Blue" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_btnRedWhiteGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnRedWhiteGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="White" Offset=".1" />
-					<GradientStop Color="Red" Offset="1" />
+					<GradientStop Offset=".1" Color="White" />
+					<GradientStop Offset="1" Color="Red" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_btnGreenWhiteGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnGreenWhiteGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Green" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Green" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
 
-	<Style x:Key="V_btnOrangeWhiteGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnOrangeWhiteGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Orange" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Orange" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_btnBlackWhiteGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnBlackWhiteGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="Black" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="Black" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
 		<Setter Property="FontSize" Value="12" />
 	</Style>
-	<Style x:Key="V_btnGrayWhiteGradientBackgroundStyle" TargetType="Button" >
+	<Style x:Key="V_btnGrayWhiteGradientBackgroundStyle" TargetType="Button">
 		<Setter Property="Background">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
-					<GradientStop Color="AliceBlue" Offset=".1" />
-					<GradientStop Color="DarkGray" Offset="1" />
+					<GradientStop Offset=".1" Color="AliceBlue" />
+					<GradientStop Offset="1" Color="DarkGray" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
