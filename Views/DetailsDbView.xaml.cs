@@ -33,6 +33,9 @@ namespace WPFPages . Views
 		private string _odate = "";
 		private string _cdate = "";
 		private SqlDbViewer ParentViewer;
+
+		public DataChangeArgs dca = new DataChangeArgs ( );
+
 		public DetailsDbView ( )
 		{
 			Startup = true;
@@ -54,6 +57,9 @@ namespace WPFPages . Views
 			this . Show ( );
 			this . Refresh ( ); 
 			Startup = true;
+
+			dca . SenderName = sender . ToString ( );
+//			dca . DbName = dbName;
 			// Data source is handled in XAML !!!!
 			if ( this . DetGrid . Items . Count > 0 )
 				this . DetGrid . Items . Clear ( );
@@ -109,12 +115,14 @@ namespace WPFPages . Views
 					LinkToParent . IsEnabled = false;
 				}
 			}
+
+			this . DetGrid . SelectedIndex = 0;
 			Startup = false;
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
 		{
-			// Handle seelction change by other windows if linkage is ON
+			// Handle selection change by other windows if linkage is ON
 			Triggered = true;
 			this . DetGrid . SelectedIndex = e . Row;
 			this . DetGrid . Refresh ( );
@@ -123,7 +131,7 @@ namespace WPFPages . Views
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
-			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
+			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			int currsel = this . DetGrid . SelectedIndex;
 
@@ -137,7 +145,7 @@ namespace WPFPages . Views
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
 		{
-			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
+			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
@@ -159,7 +167,6 @@ namespace WPFPages . Views
 			int currow = 0;
 			currow = this . DetGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
-			//			Flags . SqlDetCurrentIndex = currow;
 			DetailsViewModel ss = new DetailsViewModel ( );
 			ss = this . DetGrid . SelectedItem as DetailsViewModel;
 			// This is the NEW DATA from the current row
@@ -169,13 +176,12 @@ namespace WPFPages . Views
 			this . DetGrid . SelectedIndex = currow;
 			this . DetGrid . SelectedItem = currow;
 			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-//			this . DetGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "DETAILS" );
 
 			// ***********  DEFINITE WIN  **********
-			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
+			// This DOES trigger a notification to SQLDBVIEWER for sure !!!   14/5/21
 			EventControl . TriggerDetDataLoaded ( DetViewerDbcollection,
 				new LoadedEventArgs
 				{
@@ -256,14 +262,6 @@ namespace WPFPages . Views
 			{
 				//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . DetGrid );
-				//EventControl . TriggerEditDbIndexChanged ( this,
-				//	new IndexChangedArgs
-				//	{
-				//		dGrid = this . DetGrid,
-				//		Row = this . DetGrid . SelectedIndex,
-				//		SenderId = "DETAILS",
-				//		Sender = "DETDBVIEW"
-				//	} );
 			}
 			if ( LinktoParent )
 			{
@@ -280,11 +278,6 @@ namespace WPFPages . Views
 
 		private async Task<bool> SaveButton ( object sender = null, RoutedEventArgs e = null )
 		{
-			//inprogress = true;
-			//bindex = this . BankGrid . SelectedIndex;
-			//cindex = this . CustomerGrid . SelectedIndex;
-			//dindex = this . DetailsGrid . SelectedIndex;
-
 			// Get the current rows data
 			IsDirty = false;
 			int CurrentSelection = this . DetGrid . SelectedIndex;
@@ -417,7 +410,6 @@ namespace WPFPages . Views
 				else
 					this . DetGrid . SelectedIndex = 0;
 				Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-				//				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 			}
 			else
 			{
@@ -448,7 +440,6 @@ namespace WPFPages . Views
 				else
 					this . DetGrid . SelectedIndex = 0;
 				Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-				//				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 			}
 		}
 		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )

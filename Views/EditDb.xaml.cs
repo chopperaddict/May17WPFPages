@@ -23,7 +23,7 @@ namespace WPFPages . Views
 	{
 		#region CLASS DECLARATIONS
 
-		public static event DbUpdated NotifyOfDataChange;
+//		public static event DbUpdated NotifyOfDataChange;
 
 		public BankCollection EditDbBankcollection = BankCollection . EditDbBankcollection;
 		public CustCollection EditDbCustcollection = CustCollection . EditDbCustcollection;
@@ -620,7 +620,7 @@ namespace WPFPages . Views
 			EventControl . ForceEditDbIndexChanged += EventControl_ForceEditDbIndexChanged;
 
 
-			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
+//			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
 								//			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
 
 			// Main update notification handler
@@ -877,7 +877,7 @@ namespace WPFPages . Views
 		}
 
 
-		private void OnDeletion ( string Source, string bankno, string custno, int CurrrentRow )
+		private void OnDeletion ( object sender, LoadedEventArgs e)
 		{
 			//Handle record deletion notification
 
@@ -925,8 +925,8 @@ namespace WPFPages . Views
 		private void Window_Closed ( object sender, EventArgs e )
 		{
 			// Unsubscribe form Events as needed
-			if ( NotifyOfDataChange != null )
-				NotifyOfDataChange -= DbChangedHandler;
+			//if ( NotifyOfDataChange != null )
+			//	NotifyOfDataChange -= DbChangedHandler;
 
 			if ( CurrentDb == "BANKACCOUNT" )
 				EventControl . BankDataLoaded -= EventControl_DataLoaded;
@@ -938,8 +938,8 @@ namespace WPFPages . Views
 
 			//			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
 
-			if ( NotifyOfDataChange != null )
-				NotifyOfDataChange -= DbChangedHandler;
+			//if ( NotifyOfDataChange != null )
+			//	NotifyOfDataChange -= DbChangedHandler;
 
 			// We no longer need to listen out for these as we rely on SqlDbViewer to sned our special
 			// Delegate based parameter function to tell us to update our current index
@@ -1246,7 +1246,6 @@ namespace WPFPages . Views
 
 			//// This ONLY called when a cell is edited
 			var sqlh = new SQLHandlers ( );
-			Flags . EditDbDataChanged = true;
 			// Set Form wide flags to see what  actions we need to take ?  (Edited value or not)
 			ViewerChangeType = 0;        // Change made in Viewer
 						     //Sort out the data as this Fn is called with null,null as arguments when a/c is "Closed"
@@ -1281,7 +1280,6 @@ namespace WPFPages . Views
 
 			}
 			//			Debug . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
-			Flags . EditDbDataChanged = false;
 		}
 
 		//Customer grid
@@ -1289,7 +1287,6 @@ namespace WPFPages . Views
 		{
 			//// This ONLY called when a cell is edited
 			var sqlh = new SQLHandlers ( );
-			Flags . EditDbDataChanged = true;
 			// Set Form wide flags to see what  actions we need to take ?  (Edited value or not)
 			ViewerChangeType = 0;        // Change made in Viewer
 						     //Sort out the data as this Fn is called with null,null as arguments when a/c is "Closed"
@@ -1323,7 +1320,6 @@ namespace WPFPages . Views
 				this . DataGrid2 . SelectedIndex = currsel;
 			}
 			//			Debug . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
-			Flags . EditDbDataChanged = false;
 		}
 
 		//Details Grid
@@ -1331,7 +1327,6 @@ namespace WPFPages . Views
 		{
 			//// This ONLY called when a cell is edited
 			var sqlh = new SQLHandlers ( );
-			Flags . EditDbDataChanged = true;
 			//Sort out the data as this Fn is called with null,null as arguments when a row is DELETED
 			if ( e == null )
 			{
@@ -1830,7 +1825,6 @@ namespace WPFPages . Views
 			//Type t = re.HandlerType;
 
 			//			int currsel = dGrid . SelectedIndex;
-			Flags . EditDbDataChanged = true;
 			// NB the Grid on here now shows the New Data content, as does the grid's SelectedItem
 			//So we ought to call a method to save the change made....
 			//Now update   the Db via Sql - WORKS FINE 3/5/21
@@ -1895,7 +1889,6 @@ namespace WPFPages . Views
 				dGrid . SelectedIndex = currsel;
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
-			Flags . EditDbDataChanged = false;
 			EditStart = false;
 			ViewerButton . IsEnabled = false;
 			CloseButton . Content = "Close Editor";
@@ -1996,6 +1989,37 @@ namespace WPFPages . Views
 					} );
 			}
 		}
+		/// <summary>
+		/// We are being notified of a data change, so we can update our own grid.
+		/// Created 10 May 2021
+		/// </summary>
+		/// <param name="currentDb"></param>
+		public void UpdateGrid ( string currentDb )
+		{
+			int currsel = 0;
+			if ( currentDb == "BANKACCOUNT" )
+			{
+				currsel = this . DataGrid1 . SelectedIndex;
+				this . DataGrid1 . ItemsSource = null;
+				this . DataGrid1 . ItemsSource = EditDbBankcollection;
+				this . DataGrid1 . SelectedIndex = Flags . SqlBankCurrentIndex;
+			}
+			if ( currentDb == "CUSTOMER" )
+			{
+				currsel = this . DataGrid2 . SelectedIndex;
+				this . DataGrid2 . ItemsSource = null;
+				this . DataGrid2 . ItemsSource = EditDbCustcollection;
+				this . DataGrid2 . SelectedIndex = currsel;
+			}
+			if ( currentDb == "DETAILS" )
+			{
+				currsel = this . DetailsGrid . SelectedIndex;
+				this . DetailsGrid . ItemsSource = null;
+				this . DetailsGrid . ItemsSource = EditDbDetcollection;
+				this . DetailsGrid . SelectedIndex = currsel;
+			}
+		}
+
 
 		#region UNUSED CODE
 		//public static Delegate [ ] GetEventCount10 ( )
@@ -2010,7 +2034,6 @@ namespace WPFPages . Views
 		{
 			////// Set our pointer so Viewer Click can work
 			//int currsel = Grid . SelectedIndex;
-			//Flags . EditDbDataChanged = true;
 			//// NB the Grid on here now shows the New Data content, as does the grid's SelectedItem
 			////So we ought to call a method to save the change made....
 			////Now update   the Db via Sql - WORKS FINE 3/5/21
@@ -2059,7 +2082,6 @@ namespace WPFPages . Views
 			//	Mouse . OverrideCursor = Cursors . Arrow;
 			//}
 			//// now we need to tell anny other viewers about the changes
-			//Flags . EditDbDataChanged = false;
 			//IsDirty = false;
 			//EditStart = false;
 		}
@@ -2167,51 +2189,6 @@ namespace WPFPages . Views
 		//}
 
 		/// <summary>
-		/// We trigger this to tell Sql Viewer to update its grid data after we have changed it.
-		/// Created 10 May 2021
-		/// </summary>
-		/// <param name="selectedindex"></param>
-		/// <param name="currentDb"></param>
-		/// <param name="selecteditem"></param>
-		private void NotifyviewerOfDataChange ( int selectedindex, string currentDb, object selecteditem )
-		{
-			dca . DbName = CurrentDb;
-			dca . SenderName = null;
-			Flags . SqlDetViewer . UpdateDetailsOnEditDbChange ( currentDb, selectedindex, selecteditem );
-		}
-
-		/// <summary>
-		/// We are being notified of a data change, so we can update our own grid.
-		/// Created 10 May 2021
-		/// </summary>
-		/// <param name="currentDb"></param>
-		public void UpdateGrid ( string currentDb )
-		{
-			int currsel = 0;
-			if ( currentDb == "BANKACCOUNT" )
-			{
-				currsel = this . DataGrid1 . SelectedIndex;
-				this . DataGrid1 . ItemsSource = null;
-				this . DataGrid1 . ItemsSource = EditDbBankcollection;
-				this . DataGrid1 . SelectedIndex = Flags . SqlBankCurrentIndex;
-			}
-			if ( currentDb == "CUSTOMER" )
-			{
-				currsel = this . DataGrid2 . SelectedIndex;
-				this . DataGrid2 . ItemsSource = null;
-				this . DataGrid2 . ItemsSource = EditDbCustcollection;
-				this . DataGrid2 . SelectedIndex = currsel;
-			}
-			if ( currentDb == "DETAILS" )
-			{
-				currsel = this . DetailsGrid . SelectedIndex;
-				this . DetailsGrid . ItemsSource = null;
-				this . DetailsGrid . ItemsSource = EditDbDetcollection;
-				this . DetailsGrid . SelectedIndex = currsel;
-			}
-		}
-
-		/// <summary>
 		/// SqlViewerGridChanged
 		///  A CallBack that RECEIVES notifications from SqlDbViewer on SelectIndex changes or data updates
 		///  so that we can update our row position to match. It sends 1  for index or 2  for data change in (int DbChangeTpe)
@@ -2281,6 +2258,20 @@ namespace WPFPages . Views
 			ViewerChangeType = 0;
 		}
 
+
+		/// <summary>
+		/// We trigger this to tell Sql Viewer to update its grid data after we have changed it.
+		/// Created 10 May 2021
+		/// </summary>
+		/// <param name="selectedindex"></param>
+		/// <param name="currentDb"></param>
+		/// <param name="selecteditem"></param>
+		private void NotifyviewerOfDataChange ( int selectedindex, string currentDb, object selecteditem )
+		{
+			//dca . DbName = CurrentDb;
+			//dca . SenderName = null;
+			//Flags . SqlDetViewer . UpdateDetailsOnEditDbChange ( currentDb, selectedindex, selecteditem );
+		}
 
 		#endregion UNUSED CODE
 

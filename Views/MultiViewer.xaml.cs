@@ -837,7 +837,16 @@ namespace WPFPages . Views
 					key1 = false;
 
 					// Call the method to update any other Viewers that may be open
-					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
+					{
+						Bankno = bank,
+						Custno = cust,
+						CallerDb = "BANKACCOUNT",
+						CurrSelection = CurrentRow,
+						DataSource = MultiBankcollection,
+						RowCount = CurrentRow
+					} );
 					// Keep our focus in originating window for now
 					Thisviewer . Activate ( );
 					Thisviewer . Focus ( );
@@ -856,7 +865,16 @@ namespace WPFPages . Views
 					e . Handled = true;
 					key1 = false;
 					// Call the method to update any other Viewers that may be open
-					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
+					{
+						Bankno = bank,
+						Custno = cust,
+						CallerDb = "CUSTOMER",
+						CurrSelection = CurrentRow,
+						DataSource = MultiCustcollection,
+						RowCount = CurrentRow
+					} );
 					// Keep our focus in originating window for now
 					Thisviewer . Activate ( );
 					Thisviewer . Focus ( );
@@ -876,7 +894,16 @@ namespace WPFPages . Views
 					key1 = false;
 
 					// Call the method to update any other Viewers that may be open
-					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
+					{
+						Bankno = bank,
+						Custno = cust,
+						CallerDb = "DETAILS",
+						CurrSelection = CurrentRow,
+						DataSource = MultiDetcollection,
+						RowCount = CurrentRow
+					} );
 					// Keep our focus in originating window for now
 					Thisviewer . Activate ( );
 					Thisviewer . Focus ( );

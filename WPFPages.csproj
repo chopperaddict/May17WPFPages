@@ -132,9 +132,7 @@
     <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="Views\DataGridControl.cs" />
     <Compile Include="ViewModels\DetailsViewModel.cs" />
-    <Compile Include="Views\LinqResults.xaml.cs">
-      <DependentUpon>LinqResults.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Views\LinqResults.cs" />
     <Compile Include="Views\MainWindowViewModel.cs" />
     <Compile Include="Views\RowPopup.xaml.cs">
       <DependentUpon>RowPopup.xaml</DependentUpon>
@@ -215,10 +213,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EditDb.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LinqResults.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

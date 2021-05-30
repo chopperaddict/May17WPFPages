@@ -107,6 +107,7 @@ namespace WPFPages . Views
 					LinkToParent . IsEnabled = false;
 				}
 			}
+			this . BankGrid . SelectedIndex = 0; 
 			Startup = false;
 		}
 

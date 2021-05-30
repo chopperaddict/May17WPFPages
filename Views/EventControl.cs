@@ -10,24 +10,21 @@ namespace WPFPages . Views
 {
 	#region KNOWN DELEGATES IN USE
 
-	public delegate bool DbReloaded ( object sender , DataLoadedArgs args );
+//	public delegate bool DbReloaded ( object sender , DataLoadedArgs args );
 
-	public delegate void DbUpdated ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args );
+//	public delegate void EditDbGridSelectionChanged ( int ChangeType , int value , string caller );
 
-	public delegate void EditDbGridSelectionChanged ( int ChangeType , int value , string caller );
+//	public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
 
-	public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
+//	public delegate void NotifyViewer ( int status , string info , SqlDbViewer NewSqlViewer );
 
-	public delegate void NotifyViewer ( int status , string info , SqlDbViewer NewSqlViewer );
+//	public delegate void SQLViewerSelectionChanged ( int ChangeType , int row , string CurrentDb );
 
-	public delegate void SQLViewerSelectionChanged ( int ChangeType , int row , string CurrentDb );
+//	public delegate void SqlSelectedRowChanged ( int ChangeType , int row , string CurentDb );
 
-	public delegate void SqlSelectedRowChanged ( int ChangeType , int row , string CurentDb );
+//	public delegate void SqlViewerNotify ( int status , string info , SqlDbViewer NewSqlViewer );
 
-	public delegate void SqlViewerNotify ( int status , string info , SqlDbViewer NewSqlViewer );
-
-	public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
-
+//	public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
 
 	#endregion KNOWN DELEGATES IN USE
 
@@ -55,17 +52,18 @@ namespace WPFPages . Views
 		public static event EventHandler<LoadedEventArgs> MultiViewerDataUpdated;
 
 		public static event EventHandler<LoadedEventArgs> DataUpdated;
+		public static event EventHandler<LoadedEventArgs> RecordDeleted;
 		// Event we TRIGGER to notify SqlViewer of  a selectedindex change
 		// uses delegate : public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
-//		public static event EditDbDataChanged ViewerDataHasBeenChanged;
+		//		public static event EditDbDataChanged ViewerDataHasBeenChanged;
 
 		// Uses Delegate : public delegate void DbUpdated ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args );
-		public static event DbUpdated NotifyOfDataChange;
+		//		public static event DbUpdated NotifyOfDataChange;
 
 		//	create a record deletion delegate handle to use through the code
 		// to assing methods to dynamically
 		// used delegate : public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
-		public static event DeletionHandler RecordDeleted;
+		//		public static event DeletionHandler RecordDeleted;
 
 
 
@@ -141,18 +139,15 @@ namespace WPFPages . Views
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
 			DetDataLoaded?.Invoke ( obj, e );
 		}
-		//public static void TriggerViewerDataChanged ( int EditDbChangeType , int row , string CurentDb )
-		//{
-		//	ViewerDataHasBeenChanged?.Invoke ( EditDbChangeType , row , CurentDb );
-		//}
-		public static void TriggerNotifyOfDataChange ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
-		{
-			NotifyOfDataChange?.Invoke ( sender , Grid , args );
-		}
 
-		public static void TriggerRecordDeleted ( string Source , string bankno , string custno , int CurrrentRow )
+		//public static void TriggerRecordDeleted ( string Source , string bankno , string custno , int CurrrentRow )
+		//{
+		public static void TriggerRecordDeleted ( object obj, LoadedEventArgs e )
 		{
-			RecordDeleted?. Invoke ( Source , bankno , custno , CurrrentRow );
+			RecordDeleted?.Invoke ( obj, e );
+				Console . WriteLine ( $"DEBUG : In EventControl : Sending  RecordDeleted  EVENT trigger" );
+
+//			RecordDeleted?. Invoke ( Source , bankno , custno , CurrrentRow );
 		}
 
 		#region DEBUG utilities

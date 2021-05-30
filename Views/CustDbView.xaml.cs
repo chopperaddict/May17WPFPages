@@ -112,6 +112,7 @@ namespace WPFPages . Views
 					LinkToParent . IsEnabled = false;
 				}
 			}
+			this . CustGrid . SelectedIndex = 0;
 			Startup = false;
 		}
 

@@ -23,11 +23,12 @@ namespace WPFPages
 		public static SqlDbViewer SqlBankViewer;// = null;
 		public static DataGrid CurrentEditDbViewerBankGrid;// = null;
 
-		// Pointers to our data colections
+		// Pointers to our data collections
 		public static DetCollection DetCollection = null;
 		public static CustCollection CustCollection = null;
 		public static BankCollection BankCollection = null;
 
+		private record Myrecord;
 		private struct AllFlags
 		{
 
