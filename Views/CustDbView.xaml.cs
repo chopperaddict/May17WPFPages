@@ -2,18 +2,11 @@
 using System . Collections . Generic;
 using System . Diagnostics;
 using System . Linq;
-using System . Text;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
-using System . Windows . Data;
-using System . Windows . Documents;
-using System . Windows . Forms;
 using System . Windows . Input;
 using System . Windows . Media;
-using System . Windows . Media . Imaging;
-using System . Windows . Shapes;
-using WPFPages . ViewModels;
 
 namespace WPFPages . Views
 {
@@ -22,7 +15,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class CustDbView : Window
 	{
-		public static CustCollection CustViewerDbcollection = CustCollection . CustViewerDbcollection;
+		public static CustCollection CustViewerDbcollection = new CustCollection ( );//. CustViewerDbcollection;
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool Triggered = false;
@@ -34,7 +27,8 @@ namespace WPFPages . Views
 		private string _balance = "";
 		private string _odate = "";
 		private string _cdate = "";
-		private SqlDbViewer ParentViewer;
+		private SqlDbViewer SqlParentViewer;
+		private MultiViewer MultiParentViewer;
 
 		public CustDbView ( )
 		{
@@ -57,22 +51,6 @@ namespace WPFPages . Views
 			this . Show ( );
 			this . Refresh ( );
 			Startup = true;
-			// Data source is handled in XAML !!!!
-			if ( this . CustGrid . Items . Count > 0 )
-				this . CustGrid . Items . Clear ( );
-			this . CustGrid . ItemsSource = CustViewerDbcollection;
-
-			if ( CustViewerDbcollection . Count == 0 )
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
-			else
-			{
-				this . CustGrid . ItemsSource = CustViewerDbcollection;
-				this . CustGrid . SelectedIndex = 0;
-				this . CustGrid . SelectedItem = 0;
-				DataFields . DataContext = this . CustGrid . SelectedItem;
-				Utils . SetUpGridSelection ( this . CustGrid, 0 );
-				Count . Text = this . CustGrid . Items . Count . ToString ( );
-			}
 
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index
@@ -81,9 +59,10 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another viewer has changed the current index
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-			 // Main Database updated notification handler
-//			EventControl . DataUpdated += EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
+			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
+
+			await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -95,20 +74,76 @@ namespace WPFPages . Views
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			this . Focus ( );
-			this . CustGrid . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			LinktoParent = false;
 			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
 			{
-				ParentViewer = sender as SqlDbViewer;
+				MultiParentViewer = null;
+				if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
+				{
+					SqlParentViewer = sender as SqlDbViewer;
+				}
+				else
+				{
+					if ( Flags . SqlCustViewer != null )
+						SqlParentViewer = Flags . SqlCustViewer;
+					else
+					{
+						LinktoParent = false;
+						LinkToParent . IsEnabled = false;
+					}
+				}
+			}
+			else if ( sender . GetType ( ) == typeof ( MultiViewer ) )
+			{
+				SqlParentViewer = null;
+				if ( sender . GetType ( ) == typeof ( MultiViewer ) )
+				{
+
+					MultiParentViewer = sender as MultiViewer;
+					//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+				}
+				else
+				{
+					if ( Flags . MultiViewer != null )
+					{
+						MultiParentViewer = Flags . MultiViewer;
+						//						LinktoParent = true;
+						LinkToParent . IsEnabled = true;
+					}
+					else
+					{
+						//						LinktoParent = false;
+						LinkToParent . IsEnabled = false;
+					}
+				}
 			}
 			else
 			{
+				MultiParentViewer = null;
+				SqlParentViewer = null;
+				LinktoParent = false;
+				LinkToParent . IsEnabled = false;
+
 				if ( Flags . SqlCustViewer != null )
-					ParentViewer = Flags . SqlCustViewer;
+				{
+					SqlParentViewer = Flags . SqlCustViewer;
+					//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+					LinkToParent . Content = "Link to \nSqlViewer";
+				}
+				else if ( Flags . MultiViewer != null )
+				{
+					MultiParentViewer = Flags . MultiViewer;
+					//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+					LinkToParent . Content = "Link to \nMultiViewer";
+				}
 				else
 				{
-					LinktoParent = false;
+					//					LinktoParent = false;
 					LinkToParent . IsEnabled = false;
 				}
 			}
@@ -127,12 +162,11 @@ namespace WPFPages . Views
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
-			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
 			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
 			int currsel = this . CustGrid . SelectedIndex;
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
-			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true );
+			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . SelectedIndex = currsel;
 			this . CustGrid . SelectedItem = currsel; this . CustGrid . Refresh ( );
@@ -149,12 +183,7 @@ namespace WPFPages . Views
 		}
 		#endregion Startup/ Closedown
 
-		private void Where ( bool v )
-		{
-			throw new NotImplementedException ( );
-		}
-
-		private void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
+		private async void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
 		{
 			// Save changes and tell other viewers about the change
 			int currow = 0;
@@ -165,11 +194,11 @@ namespace WPFPages . Views
 			ss = this . CustGrid . SelectedItem as CustomerViewModel;
 			// This is the NEW DATA from the current row
 			SQLHandlers sqlh = new SQLHandlers ( );
-			sqlh . UpdateDbRowAsync ( "CUSTOMER", ss, this . CustGrid . SelectedIndex );
+			await sqlh . UpdateDbRowAsync ( "CUSTOMER", ss, this . CustGrid . SelectedIndex );
 
 			this . CustGrid . SelectedIndex = currow;
+			this . CustGrid . SelectedItem = currow;
 			Utils . SetUpGridSelection ( this . CustGrid, currow );
-//			this . CustGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "CUSTOMER" );
@@ -183,23 +212,18 @@ namespace WPFPages . Views
 					DataSource = CustViewerDbcollection,
 					RowCount = this . CustGrid . SelectedIndex
 				} );
-			//EventControl . TriggerDetDataLoaded ( CustViewerDbcollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerDb = "CUSTOMER",
-			//		DataSource = CustViewerDbcollection,
-			//		RowCount = this . CustGrid . SelectedIndex
-			//	} );
-
-
 		}
 
 		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for CustDataLoaded
 			this . CustGrid . ItemsSource = null;
-			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true );
+			this . CustGrid . Items . Clear (  );
+			if ( e . DataSource == null ) return;
+			CustViewerDbcollection = e . DataSource as CustCollection;
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
+			this . CustGrid . SelectedIndex = 0;
+			this . CustGrid . SelectedItem = 0;
 			this . CustGrid . Refresh ( );
 		}
 
@@ -221,9 +245,9 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main update notification handler
-												 //			EventControl . DataUpdated -= EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
+			EventControl . CustDataLoaded -= EventControl_CustDataLoaded;
+
 
 		}
 
@@ -237,40 +261,41 @@ namespace WPFPages . Views
 				{
 					SaveButton ( );
 				}
-				// Do not want ot save it, so disable  save button again
+				// Do not want to save it, so disable  save button again
 				SaveBttn . IsEnabled = false;
 				IsDirty = false;
 			}
 			IsDirty = false;
 			if ( this . CustGrid . SelectedItem == null )
 				return;
-			Utils . SetUpGridSelection ( this . CustGrid, this . CustGrid . SelectedIndex);
-//			this . CustGrid . ScrollIntoView ( this . CustGrid . SelectedItem );
-			//Startup = true;
+			Utils . SetUpGridSelection ( this . CustGrid, this . CustGrid . SelectedIndex );
+			Startup = true;
 			DataFields . DataContext = this . CustGrid . SelectedItem;
-			Startup = false;
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				//				Debug . WriteLine ( $" 7-1 *** TRACE *** CUSTDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . CustGrid );
-				//EventControl . TriggerEditDbIndexChanged ( this,
-				//new IndexChangedArgs
-				//{
-				//	dGrid = this . CustGrid,
-				//	Row = this . CustGrid . SelectedIndex,
-				//	SenderId = "CUSTOMER",
-				//	Sender = "CUSTDBVIEW"
-				//} );
 			}
+			// Only  do this if global link is OFF
 			if ( LinktoParent )
 			{
 				// update parents row selection
 				string bankno = "";
 				string custno = "";
 				var dvm = this . CustGrid . SelectedItem as CustomerViewModel;
-				int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, ParentViewer . CustomerGrid, "CUSTOMER" );
-				ParentViewer . CustomerGrid . SelectedIndex = rec;
-				Utils . SetUpGridSelection ( ParentViewer . CustomerGrid, rec );
+
+				if ( SqlParentViewer != null )
+				{
+					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, SqlParentViewer . CustomerGrid, "CUSTOMER" );
+					SqlParentViewer . CustomerGrid . SelectedIndex = rec;
+					Utils . SetUpGridSelection ( SqlParentViewer . CustomerGrid, rec );
+				}
+				else if ( MultiParentViewer != null )
+				{
+					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, MultiParentViewer . CustomerGrid, "CUSTOMER" );
+					MultiParentViewer . CustomerGrid . SelectedIndex = rec;
+					Utils . SetUpGridSelection ( MultiParentViewer . CustomerGrid, rec );
+				}
 			}
 
 			IsDirty = false;
@@ -395,7 +420,7 @@ namespace WPFPages . Views
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
 				Flags . IsMultiMode = true;
 
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3 ,true);
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
 				this . CustGrid . ItemsSource = null;
 				this . CustGrid . ItemsSource = CustViewerDbcollection;
 				this . CustGrid . Refresh ( );
@@ -421,7 +446,7 @@ namespace WPFPages . Views
 			{
 				Flags . IsMultiMode = false;
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection ,3, true );
+				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
 
 				// Just reset our iremssource to man Db
 				this . CustGrid . ItemsSource = null;
@@ -449,9 +474,6 @@ namespace WPFPages . Views
 		{
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
-
-			//dca . SenderName = o . ToString ( );
-			//dca . DbName = dbName;
 
 			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
 			new LoadedEventArgs
@@ -490,12 +512,38 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				if ( ParentViewer != null )
+				if ( SqlParentViewer != null )
 					LinkToParent . IsEnabled = true;
 				else
 					LinkToParent . IsEnabled = false;
 			}
 		}
+
+		/// <summary>
+		/// Generic method to send Index changed Event trigger so that
+		/// other viewers can update thier own grids as relevant
+		/// </summary>
+		/// <param name="grid"></param>
+		//*************************************************************************************************************//
+		public void TriggerViewerIndexChanged ( System . Windows . Controls . DataGrid grid )
+		{
+			string SearchCustNo = "";
+			string SearchBankNo = "";
+			CustomerViewModel CurrentCustSelectedRecord = this . CustGrid . SelectedItem as CustomerViewModel;
+			SearchCustNo = CurrentCustSelectedRecord . CustNo;
+			SearchBankNo = CurrentCustSelectedRecord . BankNo;
+			EventControl . TriggerViewerIndexChanged ( this,
+			new IndexChangedArgs
+			{
+				Senderviewer = null,
+				Bankno = SearchBankNo,
+				Custno = SearchCustNo,
+				dGrid = this . CustGrid,
+				Sender = "CUSTOMER",
+				Row = this . CustGrid . SelectedIndex
+			} );
+		}
+
 		#region Menu items
 
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
@@ -590,31 +638,7 @@ namespace WPFPages . Views
 			this . WindowState = WindowState . Normal;
 		}
 
-		/// <summary>
-		/// Generic method to send Index changed Event trigger so that
-		/// other viewers can update thier own grids as relevant
-		/// </summary>
-		/// <param name="grid"></param>
-		//*************************************************************************************************************//
-		public void TriggerViewerIndexChanged ( System . Windows . Controls . DataGrid grid )
-		{
-			string SearchCustNo = "";
-			string SearchBankNo = "";
-			CustomerViewModel CurrentCustSelectedRecord = this . CustGrid . SelectedItem as CustomerViewModel;
-			SearchCustNo = CurrentCustSelectedRecord . CustNo;
-			SearchBankNo = CurrentCustSelectedRecord . BankNo;
-			EventControl . TriggerViewerIndexChanged ( this,
-			new IndexChangedArgs
-			{
-				Senderviewer = null,
-				Bankno = SearchBankNo,
-				Custno = SearchCustNo,
-				dGrid = this . CustGrid,
-				Sender = "CUSTOMER",
-				Row = this . CustGrid . SelectedIndex
-			} );
-		}
-		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
+			private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
 		{
 
 		}

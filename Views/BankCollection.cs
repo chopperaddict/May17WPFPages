@@ -7,8 +7,6 @@ using System . Diagnostics;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
-using System . Windows . Input;
-using System . Windows . Threading;
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 
@@ -55,7 +53,6 @@ namespace WPFPages . Views
 		{
 		}
 		public async static Task<BankCollection> LoadBank ( BankCollection cc, int ViewerType = 1, bool NotifyAll = false )
-		//public async static Task<BankCollection> LoadBank ( int ViewerType, bool NotifyAll = false , BankCollection bankdata = null)
 		{
 			Notify = NotifyAll;
 			try
@@ -64,24 +61,14 @@ namespace WPFPages . Views
 				if ( dtBank . Rows . Count > 0 )
 					dtBank . Clear ( );
 
-				if ( cc != null )
-					Bankinternalcollection = cc;
-				else
-				{
-					Bankinternalcollection = new BankCollection ( );
-					Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
-				}
-				//				Debug . WriteLine ( $"\n ***** Loading Bank Data from disk *****\n" );
-
+				Bankinternalcollection = new BankCollection ( );
+				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
 				{
-					//Bankinternalcollection = null;
-					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using FULL Task Control system)*****\n" );
-					BankCollection db = new BankCollection ( );
-					await db . LoadBankTaskInSortOrderasync ( );
-					if ( cc != null )
-						cc = Bankinternalcollection;
-					return Bankinternalcollection;
+//					BankCollection db = new BankCollection ( );
+					await Bankinternalcollection . LoadBankTaskInSortOrderasync ( );
+					return ( BankCollection ) null;
+
 				}
 				else
 				{
@@ -93,28 +80,14 @@ namespace WPFPages . Views
 					// We now have the pointer to the the Bank data in variable Bankinternalcollection
 					if ( Flags . IsMultiMode == false )
 					{
-						//						Debug . WriteLine ( "Returning Bank Data via Debug output...." );
-						// Finally fill and return The global Dataset
 						BankCollection db = new BankCollection ( );
-						SelectViewer ( ViewerType, Bankinternalcollection, out db );
-						if ( ViewerType == 1 )
-							return SqlViewerBankcollection;
-						if ( ViewerType == 2 )
-							return EditDbBankcollection;
-						if ( ViewerType == 3 )
-						{
-							cc = MultiBankcollection;
-							return MultiBankcollection;
-						}
-						if ( ViewerType == 4 )
-							return BankViewerDbcollection;
-						else
-							return ( BankCollection ) db;
+						SelectViewer ( ViewerType, Bankinternalcollection );
+						return db;
 					}
 					else
 					{
 						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
-						return Bankinternalcollection;
+						return null;
 					}
 				}
 			}
@@ -124,6 +97,7 @@ namespace WPFPages . Views
 				return null;
 			}
 		}
+
 		private static async Task ProcessRequest ( )
 		{
 			// Load data fro SQL into dtBank Datatable
@@ -131,27 +105,116 @@ namespace WPFPages . Views
 			// this returns "Bankinternalcollection" as a pointer to the correct viewer
 			Bankinternalcollection = await LoadBankCollection ( ) . ConfigureAwait ( false );
 		}
-		public static BankCollection SelectViewer ( int ViewerType, BankCollection tmp, out BankCollection db )
+
+		public async Task<BankCollection> LoadBankTaskInSortOrderasync ( bool Notify = false, int i = -1 )
+		// No longer used
 		{
-			db = null;
+			if ( dtBank . Rows . Count > 0 )
+				dtBank . Clear ( );
+
+			if ( Bankinternalcollection . Items . Count > 0 )
+				Bankinternalcollection . ClearItems ( );
+
+			#region process code to load data
+
+			Task t1 = Task . Run (
+					async ( ) =>
+					{
+						LoadBankData ( );
+					}
+				);
+			#region Continuations
+			t1 . ContinueWith
+			(
+				async ( Bankinternalcollection ) =>
+				{
+					LoadBankCollection ( Notify );
+					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+				}, TaskScheduler . FromCurrentSynchronizationContext ( )
+			 );
+			#endregion process code to load data
+
+			#region Success//Error reporting/handling
+
+			//			// Now handle "post processing of errors etc"
+			//			//This will ONLY run if there were No Exceptions  and it ALL ran successfully!!
+			//			t1 . ContinueWith (
+			//			( Bankinternalcollection ) =>
+			//				{
+			//					//					Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
+			//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
+			//			);
+			//			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
+			//			// but ONLY if there were any Exceptions !!
+			//			t1 . ContinueWith (
+			//				( Bankinternalcollection ) =>
+			//				{
+			//					AggregateException ae = t1 . Exception . Flatten ( );
+			//					Debug . WriteLine ( $"Exception in BankCollection data processing \n" );
+			//					MessageBox . Show ( $"Exception in BankCollection data processing \n" );
+			//					foreach ( var item in ae . InnerExceptions )
+			//					{
+			//						Debug . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
+			//					}
+			//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnFaulted, TaskScheduler . FromCurrentSynchronizationContext ( )
+			//			);
+
+			//			// Now handle "post processing of errors etc"
+			//			//This will ONLY run if there were No Exceptions  and it ALL ran successfully!!
+			//			t1 . ContinueWith (
+			//				( Bankinternalcollection ) =>
+			//				{
+			//					//					Debug . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
+			////					Console . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status} ]." );
+			//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
+			//			);
+			//			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
+			//			// but ONLY if there were any Exceptions !!
+			//			t1 . ContinueWith (
+			//				( Bankinternalcollection ) =>
+			//				{
+			//					AggregateException ae = t1 . Exception . Flatten ( );
+			//					Debug . WriteLine ( $"Exception in BankCollection data processing \n" );
+			//					MessageBox . Show ( $"Exception in BankCollection data processing \n" );
+			//					foreach ( var item in ae . InnerExceptions )
+			//					{
+			//						Debug . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
+			//					}
+			//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnFaulted, TaskScheduler . FromCurrentSynchronizationContext ( )
+			//			);
+
+			#endregion Continuations
+
+			//			Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankinternalcollection . Count} ***\n\n" );
+
+			#endregion Success//Error reporting/handling
+			// Finally fill and return The global Dataset
+			Flags . BankCollection = Bankinternalcollection;
+			//			MasterBankcollection = Bankinternalcollection;
+			//			Bankcollection = Bankinternalcollection;
+			return null;
+		}
+
+		public static bool  SelectViewer ( int ViewerType, BankCollection tmp )
+		{
+			bool result = false;
 			switch ( ViewerType )
 			{
 				case 1:
 					SqlViewerBankcollection = tmp;
-					db = SqlViewerBankcollection;
+					result = true;
 					break;
 				case 2:
 					EditDbBankcollection = tmp;
-					db =
-					db = EditDbBankcollection;
+					result = true;
 					break;
 				case 3:
 					MultiBankcollection = tmp;
-					db = MultiBankcollection;
+					result = true;
 					break;
 				case 4:
 					BankViewerDbcollection = tmp;
-					db = BankViewerDbcollection;
+					result = true;
 					break;
 				//case 5:
 				//	CustViewerDbcollection = tmp;
@@ -171,9 +234,10 @@ namespace WPFPages . Views
 				//	break;
 				case 9:
 					//					= tmp;
+					result = true;
 					break;
 			}
-			return db;
+			return result;
 		}
 		#endregion CONSTRUCTOR
 
@@ -285,10 +349,10 @@ namespace WPFPages . Views
 			int count = 0;
 			try
 			{
-				BankCollection bptr = new BankCollection ( );
+//				BankCollection bptr = new BankCollection ( );
 				//lock ( bptr . LockBankLoadData )
 				//{
-					BankCollection bc = new BankCollection ( );
+//					BankCollection bc = new BankCollection ( );
 					for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
 					{
 						Bankinternalcollection . Add ( new BankAccountViewModel
@@ -372,98 +436,6 @@ namespace WPFPages . Views
 		{
 			// Run a specified delegate sent by SqlDbViewer
 			KeyBoardDelegate ( 1 );
-		}
-		public async Task<BankCollection> LoadBankTaskInSortOrderasync ( bool Notify = false, int i = -1 )
-		// No longer used
-		{
-			if ( dtBank . Rows . Count > 0 )
-				dtBank . Clear ( );
-
-			if ( Bankinternalcollection . Items . Count > 0 )
-				Bankinternalcollection . ClearItems ( );
-
-			// This all woks just fine, and DOES switch back to UI thread that is MANDATORY before doing the Collection load processing
-			// thanks to the use of TaskScheduler.FromCurrentSynchronizationContext() that oerforms the magic switch back to the UI thread
-			//			Debug . WriteLine ( $"BANK : Entering Method to call Task.Run in BankCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
-
-			#region process code to load data
-
-			Task t1 = Task . Run (
-					async ( ) =>
-					{
-						LoadBankData ( );
-					}
-				);
-			#region Continuations
-			t1 . ContinueWith
-			(
-				async ( Bankinternalcollection ) =>
-				{
-					LoadBankCollection ( Notify );
-					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
-				}, TaskScheduler . FromCurrentSynchronizationContext ( )
-			 );
-			#endregion process code to load data
-
-			#region Success//Error reporting/handling
-
-//			// Now handle "post processing of errors etc"
-//			//This will ONLY run if there were No Exceptions  and it ALL ran successfully!!
-//			t1 . ContinueWith (
-//			( Bankinternalcollection ) =>
-//				{
-//					//					Debug . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status}" );
-//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
-//			);
-//			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
-//			// but ONLY if there were any Exceptions !!
-//			t1 . ContinueWith (
-//				( Bankinternalcollection ) =>
-//				{
-//					AggregateException ae = t1 . Exception . Flatten ( );
-//					Debug . WriteLine ( $"Exception in BankCollection data processing \n" );
-//					MessageBox . Show ( $"Exception in BankCollection data processing \n" );
-//					foreach ( var item in ae . InnerExceptions )
-//					{
-//						Debug . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
-//					}
-//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnFaulted, TaskScheduler . FromCurrentSynchronizationContext ( )
-//			);
-
-//			// Now handle "post processing of errors etc"
-//			//This will ONLY run if there were No Exceptions  and it ALL ran successfully!!
-//			t1 . ContinueWith (
-//				( Bankinternalcollection ) =>
-//				{
-//					//					Debug . WriteLine ( $"BankCollection : Task.Run() processes all succeeded. \nBankcollection Status was [ {Bankinternalcollection . Status} ]." );
-////					Console . WriteLine ( $"BANKACCOUNT : Task.Run() Completed : Status was [ {Bankinternalcollection . Status} ]." );
-//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
-//			);
-//			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
-//			// but ONLY if there were any Exceptions !!
-//			t1 . ContinueWith (
-//				( Bankinternalcollection ) =>
-//				{
-//					AggregateException ae = t1 . Exception . Flatten ( );
-//					Debug . WriteLine ( $"Exception in BankCollection data processing \n" );
-//					MessageBox . Show ( $"Exception in BankCollection data processing \n" );
-//					foreach ( var item in ae . InnerExceptions )
-//					{
-//						Debug . WriteLine ( $"BankCollection : Exception : {item . Message}, : {item . Data}" );
-//					}
-//				}, CancellationToken . None, TaskContinuationOptions . OnlyOnFaulted, TaskScheduler . FromCurrentSynchronizationContext ( )
-//			);
-
-			#endregion Continuations
-
-			//			Debug . WriteLine ( $"BANKACCOUNT : END OF PROCESSING & Error checking functionality\nBANKACCOUNT : *** Bankcollection total = {Bankinternalcollection . Count} ***\n\n" );
-
-			#endregion Success//Error reporting/handling
-			// Finally fill and return The global Dataset
-			Flags . BankCollection = Bankinternalcollection;
-			//			MasterBankcollection = Bankinternalcollection;
-			//			Bankcollection = Bankinternalcollection;
-			return null;
 		}
 		public static bool UpdateBankDb ( BankAccountViewModel NewData )
 		{

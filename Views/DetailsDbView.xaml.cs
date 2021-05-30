@@ -21,7 +21,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class DetailsDbView : Window
 	{
-		public DetCollection DetViewerDbcollection = DetCollection . DetViewerDbcollection;
+		public DetCollection DetViewerDbcollection = new DetCollection ( );//. DetViewerDbcollection;
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool LinktoParent = false;
@@ -32,8 +32,8 @@ namespace WPFPages . Views
 		private string _balance = "";
 		private string _odate = "";
 		private string _cdate = "";
-		private SqlDbViewer ParentViewer;
-
+		private SqlDbViewer SqlParentViewer;
+		private MultiViewer MultiParentViewer;
 		public DataChangeArgs dca = new DataChangeArgs ( );
 
 		public DetailsDbView ( )
@@ -59,24 +59,6 @@ namespace WPFPages . Views
 			Startup = true;
 
 			dca . SenderName = sender . ToString ( );
-//			dca . DbName = dbName;
-			// Data source is handled in XAML !!!!
-			if ( this . DetGrid . Items . Count > 0 )
-				this . DetGrid . Items . Clear ( );
-			this . DetGrid . ItemsSource = DetViewerDbcollection;
-
-			if ( DetViewerDbcollection . Count == 0 )
-				DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection ,2, true);
-			else
-			{
-				this . DetGrid . ItemsSource = DetViewerDbcollection;
-				this . DetGrid . SelectedIndex = 0;
-				this . DetGrid . SelectedItem = 0;
-				DataFields . DataContext = this . DetGrid . SelectedItem;
-				Utils . SetUpGridSelection ( this . DetGrid, 0 );
-				Count . Text = this . DetGrid . Items . Count . ToString ( );
-			}
-
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index 
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
@@ -84,9 +66,10 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another viewer has changed the current index 
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main Database updated notification handler
-												 //			EventControl . DataUpdated += EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
+			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
+
+			await DetCollection . LoadDet ( DetViewerDbcollection ,2, true);
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -98,20 +81,76 @@ namespace WPFPages . Views
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			this . Focus ( );
-			this . DetGrid . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			LinktoParent = false;
 			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
 			{
-				ParentViewer = sender as SqlDbViewer;
+				MultiParentViewer = null;
+				if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
+				{
+					SqlParentViewer = sender as SqlDbViewer;
+				}
+				else
+				{
+					if ( Flags . SqlCustViewer != null )
+						SqlParentViewer = Flags . SqlCustViewer;
+					else
+					{
+						LinktoParent = false;
+						LinkToParent . IsEnabled = false;
+					}
+				}
+			}
+			else if ( sender . GetType ( ) == typeof ( MultiViewer ) )
+			{
+				SqlParentViewer = null;
+				if ( sender . GetType ( ) == typeof ( MultiViewer ) )
+				{
+
+					MultiParentViewer = sender as MultiViewer;
+					//LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+				}
+				else
+				{
+					if ( Flags . MultiViewer != null )
+					{
+						MultiParentViewer = Flags . MultiViewer;
+						//LinktoParent = true;
+						LinkToParent . IsEnabled = true;
+					}
+					else
+					{
+						//LinktoParent = false;
+						LinkToParent . IsEnabled = false;
+					}
+				}
 			}
 			else
 			{
+				MultiParentViewer = null;
+				SqlParentViewer = null;
+				LinktoParent = false;
+				LinkToParent . IsEnabled = false;
+
 				if ( Flags . SqlDetViewer != null )
-					ParentViewer = Flags . SqlDetViewer;
+				{
+					SqlParentViewer = Flags . SqlDetViewer;
+//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+					LinkToParent . Content = "Link to \nSqlViewer";
+				}
+				else if ( Flags . MultiViewer != null )
+				{
+					MultiParentViewer = Flags . MultiViewer;
+//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+					LinkToParent . Content = "Link to \nMultiViewer";
+				}
 				else
 				{
-					LinktoParent = false;
+//					LinktoParent = false;
 					LinkToParent . IsEnabled = false;
 				}
 			}
@@ -193,12 +232,14 @@ namespace WPFPages . Views
 
 		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
-			// Event handler for DetDataLoaded
+			// Event handler for BankDataLoaded
+			if ( e . DataSource == null ) return;
 			this . DetGrid . ItemsSource = null;
-			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
+			this . DetGrid . Items . Clear ( );
+			DetViewerDbcollection = e . DataSource as DetCollection;
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . SelectedIndex = 0;
-			this . DetGrid . SelectedItem= 0;
+			this . DetGrid . SelectedItem = 0;
 			this . DetGrid . Refresh ( );
 		}
 
@@ -226,6 +267,8 @@ namespace WPFPages . Views
 			 // Main update notification handler
 //			EventControl . DataUpdated -= EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
+			EventControl . DetDataLoaded -= EventControl_DetDataLoaded;
+
 
 		}
 
@@ -245,33 +288,36 @@ namespace WPFPages . Views
 			}
 			if ( this . DetGrid . SelectedItem == null )
 				return;
-
-			// Find matching record ?? - Whew
-			//			DetailsViewModel dvm = e. SelectedItem as DetailsViewModel;
-			//			MultiViewer mv = new MultiViewer ( );
-			//			int rec = Utils. FindMatchingRecord  ( dvm. CustNo, dvm. BankNo, this . DetGrid, "DETAILS" );
-			//			this . DetGrid . SelectedItem = rec;
 			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-
-			//this . DetGrid . ScrollIntoView ( rec);
 			Startup = true;
 			DataFields . DataContext = this . DetGrid . SelectedItem;
-			Startup = false;
+
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . DetGrid );
 			}
-			if ( LinktoParent )
+			// Only  do this if global link is OFF
+			if ( LinktoParent  )
 			{
 				// update parents row selection
 				string bankno = "";
 				string custno = "";
 				var dvm = this . DetGrid . SelectedItem as DetailsViewModel;
-				int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, ParentViewer . DetailsGrid, "DETAILS" );
-				ParentViewer . DetailsGrid . SelectedIndex = rec;
-				Utils . SetUpGridSelection ( ParentViewer . DetailsGrid, rec );
+
+				if ( SqlParentViewer != null )
+				{
+					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, SqlParentViewer . DetailsGrid, "DETAILS" );
+					SqlParentViewer . DetailsGrid . SelectedIndex = rec;
+					Utils . SetUpGridSelection ( SqlParentViewer . DetailsGrid, rec );
+				}
+				else if ( MultiParentViewer != null )
+				{
+					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, MultiParentViewer . DetailsGrid, "DETAILS" );
+					MultiParentViewer . DetailsGrid . SelectedIndex = rec;
+					Utils . SetUpGridSelection ( MultiParentViewer . DetailsGrid, rec );
+				}
 			}
 			Triggered = false;
 		}
@@ -447,9 +493,6 @@ namespace WPFPages . Views
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-			//dca . SenderName = o . ToString ( );
-			//dca . DbName = dbName;
-
 			EventControl . TriggerDetDataLoaded ( DetViewerDbcollection,
 			new LoadedEventArgs
 			{
@@ -487,10 +530,12 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				if ( ParentViewer != null )
+				if ( SqlParentViewer != null )
 					LinkToParent . IsEnabled = true;
 				else
 					LinkToParent . IsEnabled = false;
+				LinktoParent = false;
+
 			}
 		}
 
@@ -501,7 +546,7 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
-			LinktoParent = !LinktoParent;
+			LinktoParent = ! LinktoParent;
 		}
 
 		#region Menu items

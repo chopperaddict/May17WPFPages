@@ -256,6 +256,7 @@ namespace WPFPages
 
 			sqldbForm = this;
 			ThisViewer = this;
+			SubscribeToEvents ( );
 			WaitMessage . Visibility = Visibility . Visible;
 			WaitMessage . Refresh ( );
 
@@ -265,12 +266,11 @@ namespace WPFPages
 
 			// just used for Tower Test of events
 			// assign handler to delegate
-//			NotifyViewer SendCommand = DbSelector . MyNotification;
+			//			NotifyViewer SendCommand = DbSelector . MyNotification;
 			//			Utils . GetWindowHandles ( );
 			// Handle window dragging
 			this . MouseDown += delegate { DoDragMove ( ); };
 			this . Show ( );
-			SubscribeToEvents ( );
 		}
 
 
@@ -315,7 +315,7 @@ namespace WPFPages
 			// just used for Tower Test of events
 			//Setup our delegate receive function to get messages from DbSelector
 #pragma TODO  NOT USED ????
-//			NotifyViewer SendCommand = DbSelector . MyNotification;
+			//			NotifyViewer SendCommand = DbSelector . MyNotification;
 			// Handle window dragging
 			this . MouseDown += delegate { DoDragMove ( ); };
 			RefreshBtn . IsEnabled = true;
@@ -340,10 +340,10 @@ namespace WPFPages
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				CurrentInstanceDb = "BANKACCOUNT";
-				WaitMessage . Visibility = Visibility . Collapsed;
-				BankGrid . Visibility = Visibility . Visible;
-				this . Refresh ( );
-				this . UpdateLayout ( );
+//				WaitMessage . Visibility = Visibility . Collapsed;
+//				BankGrid . Visibility = Visibility . Visible;
+//				this . Refresh ( );
+//				this . UpdateLayout ( );
 				// Set up the various globalflags we use to control activity
 				Flags . SqlBankGrid = this . BankGrid;
 				Flags . SqlBankViewer = this;
@@ -352,16 +352,16 @@ namespace WPFPages
 				MainWindow . gv . SqlBankViewer = ( SqlDbViewer ) this;
 				Flags . SetGridviewControlFlags ( this, this . BankGrid );
 
-				if ( this . BankGrid . Items . Count > 0 )
-				{
-					Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-					//					Utils . ScrollRecordIntoView ( this . BankGrid, this . BankGrid . SelectedIndex );
-					Utils . GridInitialSetup ( BankGrid, 0 );
-					SetScrollVariables ( BankGrid );
-					Count . Text = this . BankGrid . Items . Count . ToString ( );
-				}
-				SetButtonColor ( RefreshBtn, "BLUE" );
-				ParseButtonText ( true );
+				//if ( this . BankGrid . Items . Count > 0 )
+				//{
+				//	Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
+				//	//					Utils . ScrollRecordIntoView ( this . BankGrid, this . BankGrid . SelectedIndex );
+				//	Utils . GridInitialSetup ( BankGrid, 0 );
+				//	SetScrollVariables ( BankGrid );
+				//	Count . Text = this . BankGrid . Items . Count . ToString ( );
+				//}
+				//SetButtonColor ( RefreshBtn, "BLUE" );
+				//ParseButtonText ( true );
 				CurrentActiveGrid = this . BankGrid;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
@@ -375,16 +375,16 @@ namespace WPFPages
 				MainWindow . gv . SqlCustViewer = ( SqlDbViewer ) this;
 				Flags . SetGridviewControlFlags ( this, this . CustomerGrid );
 
-				if ( this . CustomerGrid . Items . Count > 0 )
-				{
-					Utils . SetUpGridSelection ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
-					//					Utils . ScrollRecordIntoView ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
-					Utils . GridInitialSetup ( CustomerGrid, 0 );
-					SetScrollVariables ( CustomerGrid );
-					Count . Text = this . CustomerGrid . Items . Count . ToString ( );
-				}
-				SetButtonColor ( RefreshBtn, "YELLOW" );
-				ParseButtonText ( true );
+				//if ( this . CustomerGrid . Items . Count > 0 )
+				//{
+				//	Utils . SetUpGridSelection ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
+				//	//					Utils . ScrollRecordIntoView ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
+				//	Utils . GridInitialSetup ( CustomerGrid, 0 );
+				//	SetScrollVariables ( CustomerGrid );
+				//	Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+				//}
+				//SetButtonColor ( RefreshBtn, "YELLOW" );
+				//ParseButtonText ( true );
 				CurrentActiveGrid = this . CustomerGrid;
 
 			}
@@ -399,16 +399,16 @@ namespace WPFPages
 				MainWindow . gv . SqlDetViewer = ( SqlDbViewer ) this;
 				Flags . SetGridviewControlFlags ( this, this . DetailsGrid );
 
-				if ( this . DetailsGrid . Items . Count > 0 )
-				{
-					Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
-					//					Utils . ScrollRecordIntoView ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
-					Utils . GridInitialSetup ( DetailsGrid, 0 );
-					SetScrollVariables ( DetailsGrid );
-					Count . Text = this . DetailsGrid . Items . Count . ToString ( );
-				}
-				SetButtonColor ( RefreshBtn, "GREEN" );
-				ParseButtonText ( true );
+				//if ( this . DetailsGrid . Items . Count > 0 )
+				//{
+				//	Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
+				//	//					Utils . ScrollRecordIntoView ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
+				//	Utils . GridInitialSetup ( DetailsGrid, 0 );
+				//	SetScrollVariables ( DetailsGrid );
+				//	Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+				//}
+				//SetButtonColor ( RefreshBtn, "GREEN" );
+				//ParseButtonText ( true );
 				CurrentActiveGrid = this . DetailsGrid;
 
 			}
@@ -422,7 +422,7 @@ namespace WPFPages
 			Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 			MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 			IsViewerLoaded = true;
-			ParseButtonText ( true );
+//			ParseButtonText ( true );
 			// clear global "loading new window" flag
 			Flags . SqlViewerIsLoading = false;
 			if ( Flags . LinkviewerRecords )
@@ -438,62 +438,65 @@ namespace WPFPages
 		private async Task LoadData ( string caller )
 		{
 
+
 			switch ( caller )
 			{
 				case "BANKACCOUNT":
 					CurrentDb = "BANKACCOUNT";
 					//					new EventHandlers ( BankGrid, "BANKACOUNT", out EventHandler );
+					//subscribing to data  loading and changed event !!!
+					SubscribeToEvents ( );
 					Flags . ActiveSqlViewer = this;
 					Mouse . OverrideCursor = Cursors . Wait;
 					Debug . WriteLine ( "About to load Data" );
-					SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );//.ConfigureAwait(false);
-					this . BankGrid . ItemsSource = SqlViewerBankcollection;
-					Count . Text = BankCollection . SqlViewerBankcollection . Count . ToString ( );
-					WaitMessage . Visibility = Visibility . Collapsed;
-					BankGrid . Visibility = Visibility . Visible;
-					BankGrid . UpdateLayout ( );
-					BankGrid . Refresh ( );
+					await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );//.ConfigureAwait(false);
+													     //this . BankGrid . ItemsSource = SqlViewerBankcollection;
+													     //Count . Text = BankCollection . SqlViewerBankcollection . Count . ToString ( );
+//					WaitMessage . Visibility = Visibility . Collapsed;
+					//					BankGrid . Visibility = Visibility . Visible;
+					//					BankGrid . UpdateLayout ( );
+					//					BankGrid . Refresh ( );
 					//					ParseButtonText ( false );
-					ParseButtonText ( true );
-					Count . Text = this . BankGrid . Items . Count . ToString ( );
-					Debug . WriteLine ( "Data fully loaded" );
+					//					ParseButtonText ( true );
+					//					Count . Text = this . BankGrid . Items . Count . ToString ( );
+					//					Debug . WriteLine ( "Data fully loaded" );
 					break;
 
 				case "CUSTOMER":
 					CurrentDb = "CUSTOMER";
 					//					new EventHandlers ( CustomerGrid, "CUSTOMER", out EventHandler );
-					Flags . ActiveSqlViewer = this;
+					//subscribing to data  loading and changed event !!!
+					SubscribeToEvents ( ); Flags . ActiveSqlViewer = this;
 					Mouse . OverrideCursor = Cursors . Wait;
-					SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
-					this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
-					Count . Text = SqlViewerCustcollection . Count . ToString ( );
-					CustomerGrid . Visibility = Visibility . Visible;
+					await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
+//					this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
+///					Count . Text = SqlViewerCustcollection? . Count . ToString ( );
+					//CustomerGrid . Visibility = Visibility . Visible;
 					//					this . CustomerGrid . Refresh ( );
 					//					ParseButtonText ( false );
-					ParseButtonText ( true );
-					Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+//					ParseButtonText ( true );
+//					Count . Text = this . CustomerGrid . Items . Count . ToString ( );
 					break;
 
 				case "DETAILS":
 					CurrentDb = "DETAILS";
 					//					new EventHandlers ( DetailsGrid, "DETAILS", out EventHandler );
-					Flags . ActiveSqlViewer = this;
+					//subscribing to data  loading and changed event !!!
+					SubscribeToEvents ( ); Flags . ActiveSqlViewer = this;
 					Mouse . OverrideCursor = Cursors . Wait;
-					SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
-					this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
-					Count . Text = SqlViewerDetcollection . Count . ToString ( );
-					DetailsGrid . Visibility = Visibility . Visible;
+					await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
+//					this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
+//					Count . Text = SqlViewerDetcollection . Count . ToString ( );
+					//DetailsGrid . Visibility = Visibility . Visible;
 					//					this . DetailsGrid . Refresh ( );
 					//					ParseButtonText ( false );
-					ParseButtonText ( true );
-					Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+//					ParseButtonText ( true );
+//					Count . Text = this . DetailsGrid . Items . Count . ToString ( );
 					break;
 
 				default:
 					break;
 			}
-			//subscribing viewmodels to data changed event !!!
-			SubscribeToEvents ( );
 			ThisWindow = this;
 			EditArgs = new EditEventArgs ( );
 			this . UpdateLayout ( );
@@ -522,11 +525,12 @@ namespace WPFPages
 		{
 			//Subscribe to our clever Collections data system
 			if ( CurrentDb == "BANKACCOUNT" )
-				EventControl . BankDataLoaded += SqlDbViewer_BankDataLoaded;
+				EventControl . BankDataLoaded += EventControl_BankDataLoaded;
 			else if ( CurrentDb == "CUSTOMER" )
-				EventControl . CustDataLoaded += SqlDbViewer_BankDataLoaded;
+				EventControl . CustDataLoaded += EventControl_CustDataLoaded;
 			else if ( CurrentDb == "DETAILS" )
-				EventControl . DetDataLoaded += SqlDbViewer_BankDataLoaded;
+				EventControl . DetDataLoaded += EventControl_DetDataLoaded;
+
 
 			// An EditDb Viewer has updated a record  notification handler
 			EventControl . EditDbDataUpdated += EventControl_EditDbDataUpdated;
@@ -536,9 +540,9 @@ namespace WPFPages
 			EventControl . MultiViewerDataUpdated += EventControl_EditDbDataUpdated;
 
 			// Event triggers when a Specific Db viewer (BankDbViewer etc) updates the data
-			EventControl . BankDataLoaded += EventControl_EditDbDataUpdated;
-			EventControl . CustDataLoaded += EventControl_EditDbDataUpdated;
-			EventControl . DetDataLoaded += EventControl_EditDbDataUpdated;
+			//EventControl . BankDataLoaded += EventControl_EditDbDataUpdated;
+			//EventControl . CustDataLoaded += EventControl_EditDbDataUpdated;
+			//EventControl . DetDataLoaded += EventControl_EditDbDataUpdated;
 
 			// An EditDb has changed the current index
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
@@ -569,7 +573,7 @@ namespace WPFPages
 				if ( e . CallerDb == "BANKACCOUNT" )
 				{
 					this . BankGrid . ItemsSource = null;
-					this . BankGrid . ItemsSource = SqlViewerBankcollection;
+					this . BankGrid . ItemsSource = e . DataSource as BankCollection;
 					Console . WriteLine ( $"\nDEBUG RELOADING : Entered SqlDbviewer_BankDataLoaded : Bank data triggered by BankCollection\nData should be loaded by here ? {BankGrid . Items . Count}" );
 					ParseButtonText ( true );
 					Count . Text = this . BankGrid . Items . Count . ToString ( );
@@ -1005,6 +1009,69 @@ namespace WPFPages
 				Console . WriteLine ( $"\nDEBUG RELOADING : Entered SQLDBVIEWER EventControl_SqlDataUpdated : Details data triggered by BankCollection\nData is being loaded here ?\n " );
 			}
 		}
+		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			// Event handler for BankDataLoaded
+			SqlViewerBankcollection = e . DataSource as BankCollection;
+			if ( SqlViewerBankcollection == null ) return;
+			if ( SqlViewerBankcollection . Count > 0 )
+			{
+				this . BankGrid . ItemsSource = SqlViewerBankcollection;
+				this . BankGrid . SelectedIndex = 0;
+				this . BankGrid . SelectedItem = 0;
+				BankGrid . UpdateLayout ( );
+				this . BankGrid . Refresh ( );
+				WaitMessage . Visibility = Visibility . Collapsed;
+				BankGrid . Visibility = Visibility . Visible;
+				BankGrid . Refresh ( );
+				ParseButtonText ( false );
+				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				Debug . WriteLine ( "Data fully loaded" );
+			}
+		}
+		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			// Event handler for BankDataLoaded
+			SqlViewerCustcollection = e . DataSource as CustCollection;
+			if ( SqlViewerCustcollection == null ) return;
+				if ( SqlViewerCustcollection . Count > 0 )
+			{
+				this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
+				this . CustomerGrid . SelectedIndex = 0;
+				this . CustomerGrid . SelectedItem = 0;
+				this . CustomerGrid . UpdateLayout ( );
+				this . CustomerGrid . Refresh ( );
+				WaitMessage . Visibility = Visibility . Collapsed;
+				this . CustomerGrid . Visibility = Visibility . Visible;
+				this . CustomerGrid . Refresh ( );
+				ParseButtonText ( false );
+				ParseButtonText ( true );
+				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+				Debug . WriteLine ( "Data fully loaded" );
+			}
+		}
+		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			// Event handler for BankDataLoaded
+			SqlViewerDetcollection = e . DataSource as DetCollection;
+			if ( SqlViewerDetcollection == null ) return;
+			if ( SqlViewerDetcollection . Count > 0 )
+			{
+				this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
+				this . DetailsGrid . SelectedIndex = 0;
+				this .DetailsGrid . SelectedItem = 0;
+				this . DetailsGrid . UpdateLayout ( );
+				this . DetailsGrid . Refresh ( );
+				WaitMessage . Visibility = Visibility . Collapsed;
+				this . DetailsGrid . Visibility = Visibility . Visible;
+				this . DetailsGrid . Refresh ( );
+				ParseButtonText ( false );
+				ParseButtonText ( true );
+				Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+				Debug . WriteLine ( "Data fully loaded" );
+			}
+		}
+
 		/// <summary>
 		/// Method to handle callback of DATAUPDATED when another viewer Updates a row of data
 		/// NB = The data is already reloaded when we get here
@@ -1182,7 +1249,7 @@ namespace WPFPages
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		//*************************************************************************************************************//
-//		private async void OnDeletion ( string sender, string bank, string cust, int CurrentRow )
+		//		private async void OnDeletion ( string sender, string bank, string cust, int CurrentRow )
 		private async void OnDeletion ( object sender, LoadedEventArgs e )
 		{
 			//Process the deletion for this grid here....
@@ -1200,13 +1267,13 @@ namespace WPFPages
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
-				this . BankGrid . ItemsSource = SqlViewerBankcollection;
-				this . BankGrid . SelectedIndex = currsel;
-				Utils . ScrollRecordInGrid ( this . BankGrid, currsel );
-				this . BankGrid . Refresh ( );
-				ParseButtonText ( true );
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
+				//this . BankGrid . ItemsSource = SqlViewerBankcollection;
+				//this . BankGrid . SelectedIndex = currsel;
+				//Utils . ScrollRecordInGrid ( this . BankGrid, currsel );
+				//this . BankGrid . Refresh ( );
+				//ParseButtonText ( true );
+				//Count . Text = this . BankGrid . Items . Count . ToString ( );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
@@ -1219,15 +1286,15 @@ namespace WPFPages
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
+				await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
 				//CustCollection b  =new CustCollection();
 				//Task . Run ( async ( ) => b . LoadCustomerTaskInSortOrderAsync ( false , 0 ) );
-				this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
-				this . CustomerGrid . SelectedIndex = currsel;
-				Utils . ScrollRecordInGrid ( this . CustomerGrid, currsel );
-				this . CustomerGrid . Refresh ( );
-				ParseButtonText ( true );
-				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+				//this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
+				//this . CustomerGrid . SelectedIndex = currsel;
+				//Utils . ScrollRecordInGrid ( this . CustomerGrid, currsel );
+				//this . CustomerGrid . Refresh ( );
+				//ParseButtonText ( true );
+				//Count . Text = this . CustomerGrid . Items . Count . ToString ( );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -1243,13 +1310,13 @@ namespace WPFPages
 				//DetCollection b  =new DetCollection();
 				//Task . Run ( async ( ) => b . LoadDetailsTaskInSortOrderAsync ( false , currsel ) );
 				Mouse . OverrideCursor = Cursors . Wait;
-				SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
-				this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
-				this . DetailsGrid . SelectedIndex = currsel;
-				Utils . ScrollRecordInGrid ( this . DetailsGrid, currsel );
-				this . DetailsGrid . Refresh ( );
-				ParseButtonText ( true );
-				Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+				await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
+				//this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
+				//this . DetailsGrid . SelectedIndex = currsel;
+				//Utils . ScrollRecordInGrid ( this . DetailsGrid, currsel );
+				//this . DetailsGrid . Refresh ( );
+				//ParseButtonText ( true );
+				//Count . Text = this . DetailsGrid . Items . Count . ToString ( );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 		}
@@ -1336,7 +1403,7 @@ namespace WPFPages
 				Flags . CurrentEditDbViewerCustomerGrid = null;
 				Flags . CurrentCustomerViewer = null;
 				// Tidy up our Db pointers
-				SqlViewerCustcollection . Clear ( );
+				SqlViewerCustcollection? . Clear ( );
 				SqlViewerCustcollection = null;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -1348,7 +1415,7 @@ namespace WPFPages
 				Flags . CurrentEditDbViewerDetailsGrid = null;
 				Flags . CurrentDetailsViewer = null;
 				// Tidy up our Db pointers
-				SqlViewerDetcollection . Clear ( );
+				SqlViewerDetcollection? . Clear ( );
 				SqlViewerDetcollection = null;
 			}
 
@@ -1369,14 +1436,15 @@ namespace WPFPages
 			EventControl . ViewerDataUpdated -= EventControl_SqlDataUpdated;
 
 			// clear our callback function subscription - DbDataLoadedHandler(object, DataLoadedArgs)
-			EventControl . BankDataLoaded -= SqlDbViewer_BankDataLoaded;
-			EventControl . CustDataLoaded -= SqlDbViewer_BankDataLoaded;
-			EventControl . DetDataLoaded -= SqlDbViewer_BankDataLoaded;
+			//EventControl . BankDataLoaded -= SqlDbViewer_BankDataLoaded;
+			EventControl . BankDataLoaded -= EventControl_BankDataLoaded;
+			EventControl . CustDataLoaded -= EventControl_CustDataLoaded;
+			EventControl . DetDataLoaded -= EventControl_DetDataLoaded; ;
 
 			// Event triggers when a Specific Db viewer (BankDbViewer etc) updates the data
-			EventControl . BankDataLoaded -= EventControl_EditDbDataUpdated;
-			EventControl . CustDataLoaded -= EventControl_EditDbDataUpdated;
-			EventControl . DetDataLoaded -= EventControl_EditDbDataUpdated;
+			//EventControl . BankDataLoaded -= EventControl_EditDbDataUpdated;
+			//EventControl . CustDataLoaded -= EventControl_EditDbDataUpdated;
+			//EventControl . DetDataLoaded -= EventControl_EditDbDataUpdated;
 
 
 			EventControl . RecordDeleted -= OnDeletion;
@@ -1600,6 +1668,11 @@ namespace WPFPages
 			if ( Flags . CurrentSqlViewer != null )
 				Mouse . OverrideCursor = Cursors . Wait;
 
+			// Now we can subscribe to data loaded event (for the new Bank window)
+			CurrentDb = "BANKACCOUNT";
+			// We MUST subscribe to EVENTS before calling the load  data functiuonality
+			SubscribeToEvents ( );
+
 			// We have to sort out the control structures BEFORE loading Customer Db Data and showing it
 			CleanViewerGridData ( );
 
@@ -1619,26 +1692,16 @@ namespace WPFPages
 			}
 			// We have to Unsubscribe from previous Db Types Evet handlers BEFORE loading Bank Db Data and showing it
 			ClearCurrentFlags ( );
-			// Now we can subscribe to data loaded event (for the new Bank window)
-			CurrentDb = "BANKACCOUNT";
-
-			//Reset our Datgrid pointer
 			CurrentDataGrid = BankGrid;
 			Flags . SqlBankGrid = BankGrid;
-
-			//Delegate pointer
 			CurrentActiveGrid = this . BankGrid;
-
-			//Reset the MultiMode flag as user has requested a FULL reload
 			Flags . IsMultiMode = false;
 			this . BankGrid . Visibility = Visibility . Visible;
 			this . CustomerGrid . Visibility = Visibility . Hidden;
 			this . DetailsGrid . Visibility = Visibility . Hidden;
 
-			// We MUST subscribe to EVENTS before calling the load  data functiuonality
-			SubscribeToEvents ( );
 
-			// Important call - it sets up global flags for all/any of the allowed viiewer windows
+			// Important call - it sets up global flags for all/any of the allowed viewer windows
 			if ( !SetFlagsForViewerGridChange ( this, BankGrid ) ) return;
 
 			SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
@@ -1708,50 +1771,45 @@ namespace WPFPages
 			ClearCurrentFlags ( );
 
 			CurrentDb = "CUSTOMER";
-			//Reset our Datgrid pointer
+			// We MUST subscribe to EVENTS before calling the load  data functiuonality
+			SubscribeToEvents ( );
 			CurrentDataGrid = this . CustomerGrid;
 			Flags . SqlCustGrid = this . CustomerGrid;
-
-			//Delegate pointer
 			CurrentActiveGrid = this . CustomerGrid;
-
-			//Reset the MultiMode flag as user has requested a FULL reload
 			Flags . IsMultiMode = false;
 			this . BankGrid . Visibility = Visibility . Hidden;
 			this . CustomerGrid . Visibility = Visibility . Visible;
 			this . DetailsGrid . Visibility = Visibility . Hidden;
 			this . CustomerGrid . ItemsSource = null;
-			// We MUST subscribe to EVENTS before calling the load  data functiuonality
-			SubscribeToEvents ( );
 			// LOAD THE NEW DATA
 			// Important call - it sets up global flags for all/any of the allowed viiewer windows
 			if ( !SetFlagsForViewerGridChange ( this, CustomerGrid ) )
 				return;
 			//This calls  LoadCustomerTask for us after sorting out the command line sort order requested
 			///and it clears down any  existing data in DataTable or Collection
-			SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
-			Debug . WriteLine ( $"Db count = {SqlViewerCustcollection . Count}" );
-			Thread . Sleep ( 250 );
-			this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
-			this . CustomerGrid . SelectedIndex = 0;
-			this . CustomerGrid . SelectedItem = 0;
-			Debug . WriteLine ( $"DataGrid count = {this . CustomerGrid . Items . Count}, selected : {this . CustomerGrid . SelectedIndex}" );
+			await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
+			//Debug . WriteLine ( $"Db count = {SqlViewerCustcollection . Count}" );
+			//Thread . Sleep ( 250 );
+			//this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
+			//this . CustomerGrid . SelectedIndex = 0;
+			//this . CustomerGrid . SelectedItem = 0;
+			//Debug . WriteLine ( $"DataGrid count = {this . CustomerGrid . Items . Count}, selected : {this . CustomerGrid . SelectedIndex}" );
 			// create GV[] variables for this new viewer grid
 			DbSelector . UpdateControlFlags ( Flags . CurrentSqlViewer, CurrentDb, "" );
 
 			//// UPDATE DbSelector ViewersList entry
-			if ( this . CustomerGrid . SelectedItem != null )
-			{
-				CustomerViewModel c = this . CustomerGrid . SelectedItem as CustomerViewModel;
-				string str = $"Customer - # {c . CustNo}, Bank #@{c . BankNo}, {c . LName}, {c . Town}, {c . County} {c . PCode}";
-				UpdateDbSelectorItem ( str );
-			}
-			SetScrollVariables ( CustomerGrid );
-			ParseButtonText ( true );
-			Count . Text = this . CustomerGrid . Items . Count . ToString ( );
-			this . Focus ( );
-			this . Refresh ( );
-			Utils . SetUpGridSelection ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
+			//if ( this . CustomerGrid . SelectedItem != null )
+			//{
+			//	CustomerViewModel c = this . CustomerGrid . SelectedItem as CustomerViewModel;
+			//	string str = $"Customer - # {c . CustNo}, Bank #@{c . BankNo}, {c . LName}, {c . Town}, {c . County} {c . PCode}";
+			//	UpdateDbSelectorItem ( str );
+			//}
+			//SetScrollVariables ( CustomerGrid );
+			//ParseButtonText ( true );
+			//Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+			//this . Focus ( );
+			//this . Refresh ( );
+			//Utils . SetUpGridSelection ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
 			//			Utils . ScrollRecordIntoView ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
 			IsFiltered = "";
 			SetButtonColor ( RefreshBtn, "YELLOW" );
@@ -1793,6 +1851,8 @@ namespace WPFPages
 			CurrentDataGrid = DetailsGrid;
 			Flags . SqlDetGrid = DetailsGrid;
 
+			// We MUST subscribe to EVENTS before calling the load  data functionality
+			SubscribeToEvents ( );
 			Mouse . OverrideCursor = Cursors . Wait;
 			// Make sure this window has it's pointer "Registered" cos we can
 			// Click the button before the window has had focus set
@@ -1818,8 +1878,8 @@ namespace WPFPages
 				return;
 
 			Mouse . OverrideCursor = Cursors . Wait;
-			SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
-			this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
+			await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
+			//this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
 
 			//Delegate pointer
 			CurrentActiveGrid = this . DetailsGrid;
@@ -1828,17 +1888,17 @@ namespace WPFPages
 			DbSelector . UpdateControlFlags ( Flags . CurrentSqlViewer, CurrentDb, "" );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			// UPDATE DbSelector ViewersList entry
-			this . DetailsGrid . SelectedIndex = 0;
-			if ( this . DetailsGrid . SelectedItem != null )
-			{
-				DetailsViewModel c = this . DetailsGrid . SelectedItem as DetailsViewModel;
-				string str = $"Bank - # {c . CustNo}, Bank #{c . BankNo}, Customer # {c . CustNo}, £{c . Balance}, {c . IntRate}%,  {c . ODate}";
-				UpdateDbSelectorItem ( str );
-			}
-			Flags . CurrentDetailsViewer = this;
+			//this . DetailsGrid . SelectedIndex = 0;
+			//if ( this . DetailsGrid . SelectedItem != null )
+			//{
+			//	DetailsViewModel c = this . DetailsGrid . SelectedItem as DetailsViewModel;
+			//	string str = $"Bank - # {c . CustNo}, Bank #{c . BankNo}, Customer # {c . CustNo}, £{c . Balance}, {c . IntRate}%,  {c . ODate}";
+			//	UpdateDbSelectorItem ( str );
+			//}
+			//Flags . CurrentDetailsViewer = this;
 			SetScrollVariables ( DetailsGrid );
-			ParseButtonText ( true );
-			Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+			//ParseButtonText ( true );
+			//Count . Text = this . DetailsGrid . Items . Count . ToString ( );
 			this . Focus ( );
 			IsFiltered = "";
 			//			}
@@ -1923,24 +1983,24 @@ namespace WPFPages
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
 				dtBank . Clear ( );
-				SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
-				this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerBankcollection );
-				//				ExtensionMethods . Refresh ( this . BankGrid );
-				this . BankGrid . Refresh ( );
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
-				ParseButtonText ( true );
+				 await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
+				//this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerBankcollection );
+				////				ExtensionMethods . Refresh ( this . BankGrid );
+				//this . BankGrid . Refresh ( );
+				//Count . Text = this . BankGrid . Items . Count . ToString ( );
+				//ParseButtonText ( true );
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
 				dtCust . Clear ( );
-				SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
-				this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerCustcollection );
-				this . CustomerGrid . Refresh ( );
-				//				ExtensionMethods . Refresh ( this . CustomerGrid );
-				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
-				ParseButtonText ( true );
+				await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
+				//this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerCustcollection );
+				//this . CustomerGrid . Refresh ( );
+				////				ExtensionMethods . Refresh ( this . CustomerGrid );
+				//Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+				//ParseButtonText ( true );
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
@@ -1948,12 +2008,12 @@ namespace WPFPages
 				this . DetailsGrid . Items . Clear ( );
 				dtDetails . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
-				this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerDetcollection );
-				this . DetailsGrid . Refresh ( );
-				//				ExtensionMethods . Refresh ( this . DetailsGrid );
-				Count . Text = this . DetailsGrid . Items . Count . ToString ( );
-				ParseButtonText ( true );
+				await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
+				//this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerDetcollection );
+				//this . DetailsGrid . Refresh ( );
+				////				ExtensionMethods . Refresh ( this . DetailsGrid );
+				//Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+				//ParseButtonText ( true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			// Set the gradient background
@@ -3186,6 +3246,48 @@ namespace WPFPages
 			// Click the button before the window has been fully closed
 			Flags . CurrentSqlViewer = this;
 
+			if ( CurrentDb== "BANKACCOUNT" )
+			{
+				if ( Flags . BankDbEditor != null )
+				{
+					MessageBoxResult result = MessageBox . Show ( $"There is a Bank Account Edit Window open that will also be \nclosed if you continue to close this Window ?\n\nAre you sure you want to continue and close this window ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Warning, MessageBoxResult . No );
+					if ( result == MessageBoxResult . Yes )
+					{
+						// close the editor window as well
+						Flags . BankDbEditor . Close ( );
+					}
+					else
+						return;
+				}
+			}
+			if ( CurrentDb == "CUSTOMER" )
+			{
+				if ( Flags . CustDbEditor != null )
+				{
+					MessageBoxResult result = MessageBox . Show ( $"There is a Customer Account Edit Window open that will also be \nclosed if you continue to close this Window ?\n\nAre you sure you want to continue and close this window ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Warning, MessageBoxResult . No );
+					if ( result == MessageBoxResult . Yes )
+					{
+						// close the editor window as well
+						Flags . CustDbEditor . Close ( );
+					}
+					else
+						return;
+				}
+			}
+			if ( CurrentDb == "DETAILS" )
+			{
+				if ( Flags . DetDbEditor != null )
+				{
+					MessageBoxResult result = MessageBox . Show ( $"There is a Bank Details A/c  Edit Window open that will also be \nclosed if you continue to close this Window ?\n\nAre you sure you want to continue and close this window ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Warning, MessageBoxResult . No );
+					if ( result == MessageBoxResult . Yes )
+					{
+						// close the editor window as well
+						Flags . DetDbEditor . Close ( );
+					}
+					else
+						return;
+				}
+			}
 			//Close current (THIS) Viewer Window
 			//clear flags in GV[] & Flags Structures
 			RemoveFromViewerList ( 99 );
@@ -3697,7 +3799,7 @@ namespace WPFPages
 			// Reset ucilliary Buttons
 			ResetauxilliaryButtons ( );
 #pragma NOT NEEDED ????
-			WaitMessage . Visibility = Visibility . Collapsed;
+//			WaitMessage . Visibility = Visibility . Collapsed;
 		}
 
 		//*******************************************************************************************************//
@@ -3991,20 +4093,20 @@ namespace WPFPages
 				{
 					this . CustomerGrid . ItemsSource = null;
 					this . CustomerGrid . Items . Clear ( );
-					SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
-					this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
-					StatusBar . Text = "Current Record Updated Successfully...";
-					// Notify everyone else of the data change
-					EventControl . TriggerDataUpdated ( SqlViewerCustcollection,
-						new LoadedEventArgs
-						{
-							CallerDb = "CUSTOMER",
-							DataSource = SqlViewerCustcollection,
-							RowCount = this . CustomerGrid . SelectedIndex
-						} );
+					await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
+					//this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
+					//StatusBar . Text = "Current Record Updated Successfully...";
+					//// Notify everyone else of the data change
+					//EventControl . TriggerDataUpdated ( SqlViewerCustcollection,
+					//	new LoadedEventArgs
+					//	{
+					//		CallerDb = "CUSTOMER",
+					//		DataSource = SqlViewerCustcollection,
+					//		RowCount = this . CustomerGrid . SelectedIndex
+					//	} );
 				}
-				else
-					this . CustomerGrid . SelectedItem = RowData . Item;
+				//else
+				//	this . CustomerGrid . SelectedItem = RowData . Item;
 
 				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 				Utils . SetUpGridSelection ( this . BankGrid, row );
@@ -4043,27 +4145,27 @@ namespace WPFPages
 					{
 						this . DetailsGrid . ItemsSource = null;
 						this . DetailsGrid . Items . Clear ( );
-						SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
-						this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
-						StatusBar . Text = "Current Record Updated Successfully...";
-						// Notify everyone else of the data change
-						EventControl . TriggerDataUpdated ( SqlViewerDetcollection,
-							new LoadedEventArgs
-							{
-								CallerDb = "DETAILS",
-								DataSource = SqlViewerDetcollection,
-								RowCount = this . DetailsGrid . SelectedIndex
-							} );
+						await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
+						//this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
+						//StatusBar . Text = "Current Record Updated Successfully...";
+						//// Notify everyone else of the data change
+						//EventControl . TriggerDataUpdated ( SqlViewerDetcollection,
+						//	new LoadedEventArgs
+						//	{
+						//		CallerDb = "DETAILS",
+						//		DataSource = SqlViewerDetcollection,
+						//		RowCount = this . DetailsGrid . SelectedIndex
+						//	} );
 					}
-					else
-						this . DetailsGrid . SelectedIndex = row;
+					//else
+					//	this . DetailsGrid . SelectedIndex = row;
 
 					// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
-					Utils . GridInitialSetup ( DetailsGrid, row );
-					ParseButtonText ( true );
-					Count . Text = this . DetailsGrid . Items . Count . ToString ( );
-					// This is essential to get selection activated again
-					this . DetailsGrid . Focus ( );
+					//Utils . GridInitialSetup ( DetailsGrid, row );
+					//ParseButtonText ( true );
+					//Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+					//// This is essential to get selection activated again
+					//this . DetailsGrid . Focus ( );
 				}
 				else
 				{
@@ -4124,13 +4226,13 @@ namespace WPFPages
 					this . BankGrid . Items . Clear ( );
 					SqlViewerBankcollection = null;
 
-					SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
-					this . BankGrid . ItemsSource = SqlViewerBankcollection;
-					bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . BankGrid, "BANKACCOUNT" );
-					Utils . SetUpGridSelection ( this . BankGrid, bbindex );
-					ParseButtonText ( true );
-					Count . Text = this . BankGrid . Items . Count . ToString ( );
-					this . BankGrid . Focus ( );
+					await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
+					//this . BankGrid . ItemsSource = SqlViewerBankcollection;
+					//bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . BankGrid, "BANKACCOUNT" );
+					//Utils . SetUpGridSelection ( this . BankGrid, bbindex );
+					//ParseButtonText ( true );
+					//Count . Text = this . BankGrid . Items . Count . ToString ( );
+					//this . BankGrid . Focus ( );
 				}
 				else if ( CurrentDb == "CUSTOMER" )
 				{
@@ -4144,13 +4246,13 @@ namespace WPFPages
 					this . CustomerGrid . Items . Clear ( );
 					SqlViewerCustcollection = null;
 
-					SqlViewerCustcollection = await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
-					this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
-					bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . CustomerGrid, "CUSTOMER" );
-					Utils . SetUpGridSelection ( this . CustomerGrid, bbindex );
-					ParseButtonText ( true );
-					Count . Text = this . CustomerGrid . Items . Count . ToString ( );
-					this . CustomerGrid . Focus ( );
+					await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
+					//this . CustomerGrid . ItemsSource = SqlViewerCustcollection;
+					//bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . CustomerGrid, "CUSTOMER" );
+					//Utils . SetUpGridSelection ( this . CustomerGrid, bbindex );
+					//ParseButtonText ( true );
+					//Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+					//this . CustomerGrid . Focus ( );
 				}
 				else if ( CurrentDb == "DETAILS" )
 				{
@@ -4164,13 +4266,13 @@ namespace WPFPages
 					this . DetailsGrid . Items . Clear ( );
 					SqlViewerDetcollection = null;
 
-					SqlViewerDetcollection = await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
-					this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
-					bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . BankGrid, "BANKACCOUNT" );
-					Utils . SetUpGridSelection ( this . BankGrid, bbindex );
-					ParseButtonText ( true );
-					Count . Text = this . DetailsGrid . Items . Count . ToString ( );
-					this . DetailsGrid . Focus ( );
+					await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
+					//this . DetailsGrid . ItemsSource = SqlViewerDetcollection;
+					//bbindex = Utils . FindMatchingRecord ( bvm . CustNo, bvm . BankNo, this . BankGrid, "BANKACCOUNT" );
+					//Utils . SetUpGridSelection ( this . BankGrid, bbindex );
+					//ParseButtonText ( true );
+					//Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+					//this . DetailsGrid . Focus ( );
 				}
 				DGrid . SelectedIndex = current;
 				Debug . WriteLine ( $"End of ReloadGrid() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
@@ -5058,7 +5160,7 @@ namespace WPFPages
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
 			LinqResults lq = new LinqResults ( );
-//			lq . Link1_Query ( this, CurrentDb, BankGrid);
+			//			lq . Link1_Query ( this, CurrentDb, BankGrid);
 			//select items;
 			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
 			{

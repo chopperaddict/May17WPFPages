@@ -13,12 +13,11 @@
 		Height="450" 
 		MinHeight="400"
 		MinWidth="770"
-		Width="800" 
-	
+		Width="800" 	
 		Loaded="Window_Loaded">
 	<Window.Resources>
 
-		<!--This is how to "point" at data to automatically conect 
+		<!--This is how to "point" at data to automatically connect 
 		fields to the data itself with no other actions needed-->
 
 		<!--This one is used in here-->
@@ -284,7 +283,7 @@
 		</DataGrid>
 
 		<Grid
-			DataContext="BankGrid"
+			DataContext=""
 			Grid.Row="2"
 			Grid.Column="1"
 			VerticalAlignment="Stretch"
@@ -557,7 +556,7 @@
 						Grid.Column="2" 
 					    Grid.Row="2"
 					    Foreground="Red" 
-					Margin="0,35,0,79" 
+					Margin="0,35,0,59" 
 					     />
 
 	</Grid>

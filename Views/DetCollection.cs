@@ -3,11 +3,9 @@ using System . Collections . ObjectModel;
 using System . Data;
 using System . Data . SqlClient;
 using System . Diagnostics;
-using System . Runtime . CompilerServices;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
-using System . Windows . Threading;
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 
@@ -26,7 +24,7 @@ namespace WPFPages . Views
 		public static DataTable dtDetails = new DataTable ( );
 		public Stopwatch st;
 		public static bool USEFULLTASK = true;
-		public  static bool Notify = false;
+		public static bool Notify = false;
 
 		private readonly object LockDetReadData = new object ( );
 		private readonly object LockDetLoadData = new object ( );
@@ -46,22 +44,24 @@ namespace WPFPages . Views
 			Notify = NotifyAll;
 			try
 			{
-				// Called to Load/reload the One & Only Bankcollection data source
+				// Called to Load/reload the One & Only Details collection data source
 				if ( dtDetails . Rows . Count > 0 )
 					dtDetails . Clear ( );
 
-				if ( dc != null )
-					Detinternalcollection = dc;
+				Debug . WriteLine ( $"\n ***** Loading Details Data from disk *****\n" );
+				await ProcessRequest ( ViewerType );
+
+				if ( Flags . IsMultiMode == false )
+				{
+					DetCollection db = new DetCollection ( );
+					SelectViewer ( ViewerType, Detcollection );
+					return db;
+				}
 				else
-					Detinternalcollection = new DetCollection ( );
-
-				if ( Detinternalcollection . Count > 0 )
-					Detinternalcollection . ClearItems ( );
-//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk *****\n" );
-
-				Detinternalcollection = await ProcessRequest ( ViewerType );
-				dc = Detinternalcollection;
-				return Detinternalcollection;
+				{
+					// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+					return null;
+				}
 			}
 			catch ( Exception ex )
 			{
@@ -79,15 +79,13 @@ namespace WPFPages . Views
 		{
 			if ( USEFULLTASK )
 			{
-				//This branch uses the full TASK and await system to loadBank Data
-//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using FULL Task Control system)*****\n" );
-				DetCollection d = new DetCollection ( );
-				await d . LoadDetailsTaskInSortOrderAsync ( );
-				return Detinternalcollection;
+				DetCollection Detinternalcollection = new DetCollection ( );
+				await Detinternalcollection . LoadDetailsTaskInSortOrderAsync ( );
+				return null;// Detinternalcollection;
 			}
 			else
 			{
-//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using Abbreviated AWAIT Control system)*****\n" );
+				//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using Abbreviated AWAIT Control system)*****\n" );
 				DetCollection d = new DetCollection ( );
 				await d . LoadDetailsDataSql ( ) . ConfigureAwait ( false );
 				if ( dtDetails . Rows . Count > 0 )
@@ -99,12 +97,12 @@ namespace WPFPages . Views
 				{
 					// Finally fill and return The global Dataset
 					SelectViewer ( ViewerType, Detinternalcollection );
-					return Detinternalcollection;
+					return null;// Detinternalcollection;
 				}
 				else
 				{
 					// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
-					return Detinternalcollection;
+					return null; // Detinternalcollection;
 				}
 			}
 		}
@@ -115,7 +113,7 @@ namespace WPFPages . Views
 		CancellationTokenSource cts = new CancellationTokenSource ( );
 
 		//**************************************************************************************************************************************************************//
-		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false, int row = 0 , bool NotifyAll = false)
+		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false, int row = 0, bool NotifyAll = false )
 		{
 			NotifyAll = NotifyAll;
 
@@ -124,10 +122,6 @@ namespace WPFPages . Views
 
 			if ( Detinternalcollection . Items . Count > 0 )
 				Detinternalcollection . ClearItems ( );
-
-			// This all woks just fine, and DOES switch back to UI thread that is MANDATORY before doing the Collection load processing
-			// thanks to the use of TaskScheduler.FromCurrentSynchronizationContext() that performs the magic switch back to the UI thread
-			//			Debug . WriteLine ( $"DETAILS : Entering Method to call Task.Run in DetCollection  : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 
 			#region process code to load data
 
@@ -143,11 +137,9 @@ namespace WPFPages . Views
 			(
 				async ( Detinternalcollection ) =>
 				{
-//					Debug . WriteLine ( $"Before starting second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 					await LoadDetCollection ( row, b );
 				}, TaskScheduler . FromCurrentSynchronizationContext ( )
 			 );
-			//			Debug . WriteLine ( $"After second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 
 			#endregion process code to load data
 
@@ -223,10 +215,10 @@ namespace WPFPages . Views
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 
 					DetCollection bptr = new DetCollection ( );
-//					lock ( bptr . LockDetReadData )
-//					{
-						sda . Fill ( dtDetails );
-//					}
+					//					lock ( bptr . LockDetReadData )
+					//					{
+					sda . Fill ( dtDetails );
+					//					}
 					st . Stop ( );
 					//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 				}
@@ -244,48 +236,51 @@ namespace WPFPages . Views
 		public static async Task<DetCollection> LoadDetCollection ( int row, bool DoNotify = true )
 		{
 			int count = 0;
-			DetCollection bptr = new DetCollection ( );
-//			lock ( bptr . LockDetLoadData )
-//			{
-				try
+//			DetCollection bptr = new DetCollection ( );
+			//			lock ( bptr . LockDetLoadData )
+			//			{
+			try
+			{
+				for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
 				{
-					for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
+					Detinternalcollection . Add ( new DetailsViewModel
 					{
-						Detinternalcollection . Add ( new DetailsViewModel
+						Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
+						BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
+						CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
+						Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
+						IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
+						ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
+						CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
+					} );
+					count = i;
+				}
+				//				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"Detinternalcollection\" [{count}] ...." );
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+				MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+				return null;
+			}
+			finally
+			{
+				if ( Notify )
+				{
+					//					OnDetDataLoaded ( Detcollection , row );
+					EventControl . TriggerDetDataLoaded ( null,
+						new LoadedEventArgs
 						{
-							Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
-							BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
-							CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
-							AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
-							Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
-							IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
-							ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
-							CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
+							CallerDb = "DETAILS",
+							DataSource = Detinternalcollection,
+							RowCount = Detinternalcollection . Count
 						} );
-						count = i;
-					}
-					//				Debug . WriteLine ( $"DETAILS : Sql data loaded into Details ObservableCollection \"Detinternalcollection\" [{count}] ...." );
-					if ( Notify )
-					{
-						//					OnDetDataLoaded ( Detcollection , row );
-						EventControl . TriggerDetDataLoaded ( null,
-							new LoadedEventArgs
-							{
-								CallerDb = "DETAILS",
-								DataSource = Detinternalcollection,
-								RowCount = Detinternalcollection . Count
-							} );
-					}
-					Flags . DetCollection = Detinternalcollection;
-					return Detinternalcollection;
 				}
-				catch ( Exception ex )
-				{
-					Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
-					MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
-					return null;
-				}
-//			}
+				///					Flags . DetCollection = Detinternalcollection;
+			}
+			return Detinternalcollection;
+			//			}
 		}
 
 		public static async Task<DetCollection> LoadDetTest ( DetCollection Detinternalcollection )

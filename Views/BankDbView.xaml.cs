@@ -16,7 +16,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class BankDbView : Window
 	{
-		public BankCollection BankViewercollection = BankCollection . EditDbBankcollection;
+		public BankCollection BankViewcollection = new BankCollection ( );//. EditDbBankcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
 		private bool LinktoParent = false;
@@ -27,7 +27,8 @@ namespace WPFPages . Views
 		private string _balance = "";
 		private string _odate = "";
 		private string _cdate = "";
-		private SqlDbViewer ParentViewer;
+		private SqlDbViewer SqlParentViewer;
+		private MultiViewer MultiParentViewer;
 
 		public BankDbView ( )
 		{
@@ -52,22 +53,6 @@ namespace WPFPages . Views
 			this . Show ( );
 			this . Refresh ( );
 			Startup = true;
-			// Data source is handled in XAML !!!!
-			if ( this . BankGrid . Items . Count > 0 )
-				this . BankGrid . Items . Clear ( );
-			this . BankGrid . ItemsSource = BankViewercollection;
-
-			if ( BankViewercollection . Count == 0 )
-				BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, true );
-			else
-			{
-				this . BankGrid . ItemsSource = BankViewercollection;
-				this . BankGrid . SelectedIndex = 0;
-				this . BankGrid . SelectedItem = 0;
-				DataFields . DataContext = this . BankGrid . SelectedItem;
-				Utils . SetUpGridSelection ( this . BankGrid, 0 );
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
-			}
 
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index 
@@ -76,9 +61,10 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another viewer has changed the current index 
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main Database updated notification handler
-												 //			EventControl . DataUpdated += EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
+			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
+
+			await BankCollection . LoadBank ( BankViewcollection, 3, true );
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -90,24 +76,80 @@ namespace WPFPages . Views
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			this . Focus ( );
-			this . BankGrid . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			LinktoParent = false;
 			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
 			{
-				ParentViewer = sender as SqlDbViewer;
+				MultiParentViewer = null;
+				if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
+				{
+					SqlParentViewer = sender as SqlDbViewer;
+				}
+				else
+				{
+					if ( Flags . SqlCustViewer != null )
+						SqlParentViewer = Flags . SqlCustViewer;
+					else
+					{
+						LinktoParent = false;
+						LinkToParent . IsEnabled = false;
+					}
+				}
+			}
+			else if ( sender . GetType ( ) == typeof ( MultiViewer ) )
+			{
+				SqlParentViewer = null;
+				if ( sender . GetType ( ) == typeof ( MultiViewer ) )
+				{
+
+					MultiParentViewer = sender as MultiViewer;
+					//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+				}
+				else
+				{
+					if ( Flags . MultiViewer != null )
+					{
+						MultiParentViewer = Flags . MultiViewer;
+						//						LinktoParent = true;
+						LinkToParent . IsEnabled = true;
+					}
+					else
+					{
+						//						LinktoParent = false;
+						LinkToParent . IsEnabled = false;
+					}
+				}
 			}
 			else
 			{
+				MultiParentViewer = null;
+				SqlParentViewer = null;
+				//				LinktoParent = false;
+				LinkToParent . IsEnabled = false;
+
 				if ( Flags . SqlBankViewer != null )
-					ParentViewer = Flags . SqlBankViewer;
+				{
+					SqlParentViewer = Flags . SqlBankViewer;
+					//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+					LinkToParent . Content = "Link to \nSqlViewer";
+				}
+				else if ( Flags . MultiViewer != null )
+				{
+					MultiParentViewer = Flags . MultiViewer;
+					//					LinktoParent = true;
+					LinkToParent . IsEnabled = true;
+					LinkToParent . Content = "Link to \nMultiViewer";
+				}
 				else
 				{
-					LinktoParent = false;
+					//					LinktoParent = false;
 					LinkToParent . IsEnabled = false;
 				}
 			}
-			this . BankGrid . SelectedIndex = 0; 
+			this . BankGrid . SelectedIndex = 0;
 			Startup = false;
 		}
 
@@ -120,15 +162,14 @@ namespace WPFPages . Views
 			Triggered = false;
 		}
 
-
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			int currsel = this . BankGrid . SelectedIndex;
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-			BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 4, true );
-			this . BankGrid . ItemsSource = BankViewercollection;
+			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection, 3, true );
+			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
 			this . BankGrid . SelectedIndex = currsel;
 		}
@@ -139,11 +180,10 @@ namespace WPFPages . Views
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-			this . BankGrid . ItemsSource = BankViewercollection;
+			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
 		}
 		#endregion Startup/ Closedown
-
 
 		private async void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
 		{
@@ -161,36 +201,35 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedIndex = currow;
 			this . BankGrid . SelectedItem = currow;
 			Utils . SetUpGridSelection ( this . BankGrid, currow );
-			//			this . BankGrid . ScrollIntoView ( currow );
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "BANKACCOUNT" );
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notification to SQLDBVIEWER AND OTHERS for sure !!!   14/5/21
-			//			Debug . WriteLine ( $" 4-2 *** TRACE *** BANKDBVIEW : ViewerGrid_RowEndingEdit BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
-			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
-
-			//EventControl . TriggerBankDataLoaded ( BankViewercollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerDb = "BANKACCOUNT",
-			//		DataSource = BankViewercollection,
-			//		RowCount = this . BankGrid . SelectedIndex
-			//	} );
+			EventControl . TriggerBankDataLoaded ( BankViewcollection,
+				new LoadedEventArgs
+				{
+					CallerDb = "DETAILS",
+					DataSource = BankViewcollection,
+					RowCount = this . BankGrid . SelectedIndex
+				} );
 		}
 
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for BankDataLoaded
+			if ( e . DataSource == null ) return;
 			this . BankGrid . ItemsSource = null;
-			BankViewercollection = await BankCollection . LoadBank ( BankViewercollection, 2, false );
-			this . BankGrid . ItemsSource = BankViewercollection;
+			this . BankGrid . Items . Clear ( );
+			BankViewcollection = e . DataSource as BankCollection;
+			this . BankGrid . ItemsSource = BankViewcollection;// e . DataSource as BankCollection; 
 			this . BankGrid . SelectedIndex = 0;
 			this . BankGrid . SelectedItem = 0;
 			this . BankGrid . Refresh ( );
 		}
 
+		
 		private void ShowBank_KeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
 		{
 
@@ -225,7 +264,9 @@ namespace WPFPages . Views
 												 // Main update notification handler
 												 //			EventControl . DataUpdated -= EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
+			EventControl . BankDataLoaded -= EventControl_BankDataLoaded;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
+			BankViewcollection = null;
 
 		}
 
@@ -244,37 +285,36 @@ namespace WPFPages . Views
 				SaveBttn . IsEnabled = false;
 				IsDirty = false;
 			}
-			if ( this . BankGrid . SelectedItem == null )
-				return;
+			//if ( this . BankGrid . SelectedItem == null )
+			//	return;
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-			//			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedItem );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				//				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . BankGrid );
-				//EventControl . TriggerEditDbIndexChanged ( this,
-				//new IndexChangedArgs
-				//{
-				//	dGrid = this .
-				//	BankGrid,
-				//	Row = this .
-				//	BankGrid . SelectedIndex,
-				//	SenderId = "BANKACCOUNT",
-				//	Sender = "BANKDBVIEW"
-				//} );
 			}
 			// Only  do this if global link is OFF
-			if ( LinktoParent && LinkRecords . IsChecked == false )
+			if ( LinktoParent )// && LinkRecords . IsChecked == false )
 			{
 				// update parents row selection
 				string bankno = "";
 				string custno = "";
 				var dvm = this . BankGrid . SelectedItem as BankAccountViewModel;
-				int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, ParentViewer . BankGrid, "BANKACCOUNT" );
-				ParentViewer . BankGrid . SelectedIndex = rec;
-				Utils . SetUpGridSelection ( ParentViewer . BankGrid, rec );
+
+				if ( SqlParentViewer != null )
+				{
+					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, SqlParentViewer . BankGrid, "BANKACCOUNT" );
+					SqlParentViewer . BankGrid . SelectedIndex = rec;
+					Utils . SetUpGridSelection ( SqlParentViewer . BankGrid, rec );
+				}
+				else if ( MultiParentViewer != null )
+				{
+					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, MultiParentViewer . BankGrid, "BANKACCOUNT" );
+					MultiParentViewer . BankGrid . SelectedIndex = rec;
+					Utils . SetUpGridSelection ( MultiParentViewer . BankGrid, rec );
+				}
 			}
 
 			Triggered = false;
@@ -311,9 +351,9 @@ namespace WPFPages . Views
 			await sqlh . UpdateDbRow ( "BANKACCOUNT", bvm );
 
 			BankCollection bank = new BankCollection ( );
-			BankViewercollection = await bank . ReLoadBankData ( );
+			BankViewcollection = await bank . ReLoadBankData ( );
 			this . BankGrid . ItemsSource = null;
-			this . BankGrid . ItemsSource = BankViewercollection;
+			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
 
 			//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
@@ -442,7 +482,7 @@ namespace WPFPages . Views
 				BankCollection bank = new BankCollection ( );
 				bank = await bank . ReLoadBankData ( );
 				this . BankGrid . ItemsSource = null;
-				this . BankGrid . ItemsSource = BankViewercollection;
+				this . BankGrid . ItemsSource = BankViewcollection;
 				this . BankGrid . Refresh ( );
 
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateBlue" );
@@ -471,12 +511,11 @@ namespace WPFPages . Views
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-			//			Debug . WriteLine ( $" 4-4 *** TRACE *** BANKDBVIEW : SendDataChanged BANKDBVIEW - Sending TriggerBankDataLoaded Event trigger" );
-			EventControl . TriggerBankDataLoaded ( BankViewercollection,
+			EventControl . TriggerBankDataLoaded ( BankViewcollection,
 			new LoadedEventArgs
 			{
 				CallerDb = "BANKACCOUNT",
-				DataSource = BankViewercollection,
+				DataSource = BankViewcollection,
 				RowCount = this . BankGrid . SelectedIndex
 			} );
 			Mouse . OverrideCursor = Cursors . Arrow;
@@ -509,7 +548,7 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				if ( ParentViewer != null )
+				if ( SqlParentViewer != null )
 					LinkToParent . IsEnabled = true;
 				else
 					LinkToParent . IsEnabled = false;
@@ -545,7 +584,7 @@ namespace WPFPages . Views
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in BankViewercollection
+			var bankaccounts = from items in BankViewcollection
 					   where ( items . AcType == 1 )
 					   orderby items . CustNo
 					   select items;
@@ -554,7 +593,7 @@ namespace WPFPages . Views
 		private void Linq2_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in BankViewercollection
+			var bankaccounts = from items in BankViewcollection
 					   where ( items . AcType == 2 )
 					   orderby items . CustNo
 					   select items;
@@ -563,7 +602,7 @@ namespace WPFPages . Views
 		private void Linq3_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in BankViewercollection
+			var bankaccounts = from items in BankViewcollection
 					   where ( items . AcType == 3 )
 					   orderby items . CustNo
 					   select items;
@@ -572,7 +611,7 @@ namespace WPFPages . Views
 		private void Linq4_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in BankViewercollection
+			var bankaccounts = from items in BankViewcollection
 					   where ( items . AcType == 4 )
 					   orderby items . CustNo
 					   select items;
@@ -581,7 +620,7 @@ namespace WPFPages . Views
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
 			//select All the items first;			
-			var bankaccounts = from items in BankViewercollection orderby items . CustNo, items . AcType select items;
+			var bankaccounts = from items in BankViewcollection orderby items . CustNo, items . AcType select items;
 			//Next Group BankAccountViewModel collection on Custno
 			var grouped = bankaccounts . GroupBy (
 				b => b . CustNo );
@@ -608,7 +647,7 @@ namespace WPFPages . Views
 		}
 		private void Linq6_Click ( object sender, RoutedEventArgs e )
 		{
-			var accounts = from items in BankViewercollection orderby items . CustNo, items . AcType select items;
+			var accounts = from items in BankViewcollection orderby items . CustNo, items . AcType select items;
 			this . BankGrid . ItemsSource = accounts;
 		}
 

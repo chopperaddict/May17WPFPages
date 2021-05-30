@@ -1,4 +1,7 @@
 ﻿using System;
+using System . Collections . Generic;
+using System . Diagnostics;
+using System . Linq;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
@@ -6,16 +9,8 @@ using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
-using System . Linq;
 using WPFPages . ViewModels;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . Status;
-using System . Runtime . Remoting . Channels;
-using System . Diagnostics;
-using static WPFPages . SqlDbViewer;
 using DataGrid = System . Windows . Controls . DataGrid;
-using System . Windows . Controls . Primitives;
-using System . Collections . Generic;
 
 namespace WPFPages . Views
 {
@@ -96,6 +91,16 @@ namespace WPFPages . Views
 			this . Topmost = true;
 			inprogress = false;
 			Mouse . OverrideCursor = Cursors . Arrow;
+			StartDataWatcher ( );
+		}
+		public void StartDataWatcher ( )
+		{
+			DateTime watcher = DateTime.Now;
+//			Thread t = Thread.Factory.St (watcher );
+			while ( true )
+			{
+
+			}
 		}
 		private void SubscribeToEvents ( )
 		{
@@ -201,39 +206,39 @@ namespace WPFPages . Views
 			// Sanity check, if we MADE the index change, so don't bother
 			//			if ( e . Senderviewer == null )
 			//				return;
-			if(true == false)
+			if ( true == false )
 			{
-			// Dont go in here if we have just triggered a data update
-			//			if ( e . SenderId == "MultiBank" || e . SenderId == "Multicust" || e . SenderId == "MultiDet" )
-			//				return;
-			//if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
-			//{
-			//	object RowTofind = null;
-			//	object gr = null;
-			//	int rec = 0;
-			//	inprogress = true;
-			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
-			//	this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-			//	bindex = rec;
-			//	Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
-			//	if ( rec == -1 )
-			//	{
-			//		this . CustomerGrid . SelectedIndex = -1;
-			//		this . CustomerGrid . SelectedItem = -1;
-			//	}
-			//	else
-			//	{
-			//		this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-			//		cindex = rec;
-			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
-			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
-			//		this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-			//		dindex = rec;
-			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-			//	}
-			//	return;
+				// Dont go in here if we have just triggered a data update
+				//			if ( e . SenderId == "MultiBank" || e . SenderId == "Multicust" || e . SenderId == "MultiDet" )
+				//				return;
+				//if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
+				//{
+				//	object RowTofind = null;
+				//	object gr = null;
+				//	int rec = 0;
+				//	inprogress = true;
+				//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+				//	this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+				//	bindex = rec;
+				//	Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+				//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+				//	if ( rec == -1 )
+				//	{
+				//		this . CustomerGrid . SelectedIndex = -1;
+				//		this . CustomerGrid . SelectedItem = -1;
+				//	}
+				//	else
+				//	{
+				//		this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+				//		cindex = rec;
+				//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+				//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+				//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+				//		this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+				//		dindex = rec;
+				//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+				//	}
+				//	return;
 			}
 			if ( Flags . LinkviewerRecords && Triggered == false ) //|| Flags.IsFiltered|| Flags.IsMultiMode	)
 			{
@@ -351,9 +356,9 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged -= EventControl_ViewerIndexChanged;
 
 			// Clear databases
-			MultiBankcollection . Clear ( );
-			MultiCustcollection . Clear ( );
-			MultiDetcollection . Clear ( );
+			MultiBankcollection?.Clear ( );
+			MultiCustcollection?.Clear ( );
+			MultiDetcollection?.Clear ( );
 
 			Flags . MultiViewer = null;
 		}
@@ -362,18 +367,21 @@ namespace WPFPages . Views
 		{
 			// load the data
 			Mouse . OverrideCursor = Cursors . Wait;
-			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
-				await BankCollection . LoadBank ( MultiBankcollection, 3, true );
-			BankGrid . ItemsSource = MultiBankcollection;
-			if ( MultiCustcollection == null || MultiCustcollection . Count == 0 )
-				await CustCollection . LoadCust ( MultiCustcollection, 3, true );
-			if ( MultiDetcollection == null || MultiDetcollection . Count == 0 )
-				await DetCollection . LoadDet ( MultiDetcollection, 3, true );
+			//			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
+			MultiBankcollection = null;
+			await BankCollection . LoadBank ( MultiBankcollection, 3, true );
+			//BankGrid . ItemsSource = MultiBankcollection;
+			//			if ( MultiCustcollection == null || MultiCustcollection . Count == 0 )
+			MultiCustcollection = null;
+			await CustCollection . LoadCust ( MultiCustcollection, 3, true );
+			//			if ( MultiDetcollection == null || MultiDetcollection . Count == 0 )
+			MultiDetcollection = null;
+			await DetCollection . LoadDet ( MultiDetcollection, 3, true );
 
 			Flags . MultiViewer = this;
-			this . BankGrid . ItemsSource = MultiBankcollection;
-			this . CustomerGrid . ItemsSource = MultiCustcollection;
-			this . DetailsGrid . ItemsSource = MultiDetcollection;
+			//this . BankGrid . ItemsSource = MultiBankcollection;
+			//this . CustomerGrid . ItemsSource = MultiCustcollection;
+			//this . DetailsGrid . ItemsSource = MultiDetcollection;
 			//			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 
@@ -503,8 +511,8 @@ namespace WPFPages . Views
 				this . BankGrid . SelectedIndex = bbindex;
 				this . BankGrid . SelectedItem = bbindex;
 				this . BankGrid . Refresh ( );
-				Utils . SetUpGridSelection ( this . BankGrid, bbindex);
-//				this . BankGrid . ScrollIntoView ( bbindex );
+				Utils . SetUpGridSelection ( this . BankGrid, bbindex );
+				//				this . BankGrid . ScrollIntoView ( bbindex );
 			}
 
 
@@ -529,7 +537,7 @@ namespace WPFPages . Views
 				this . DetailsGrid . SelectedItem = ddindex;
 				this . DetailsGrid . Refresh ( );
 				Utils . SetUpGridSelection ( this . DetailsGrid, ddindex );
-//				this . DetailsGrid . ScrollIntoView ( ddindex );
+				//				this . DetailsGrid . ScrollIntoView ( ddindex );
 			}
 
 			//inprogress = false;;
@@ -585,349 +593,6 @@ namespace WPFPages . Views
 		}
 
 
-		private void Window_PreviewKeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
-		{
-			DataGrid dg = null;
-			int CurrentRow = 0;
-			bool showdebug = false;
-
-			if ( showdebug ) Debug . WriteLine ( $"key1 = {key1},  Key = : {e . Key}" );
-
-			if ( e . Key == Key . LeftCtrl )
-			{
-				key1 = true;
-				if ( showdebug ) Debug . WriteLine ( $"key1 = set to TRUE" );
-				return;
-			}
-			if ( key1 )
-			{
-				Utils . HandleCtrlFnKeys ( key1, e );
-				key1 = false;
-			}
-			else if ( key1 && e . Key == Key . System )     // CTRL + F10
-			{
-				// Major  listof GV[] variables (Guids etc]
-				Debug . WriteLine ( "\nGridview GV[] Variables" );
-				Flags . ListGridviewControlFlags ( 1 );
-				key1 = false;
-				e . Handled = true;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F5 )
-			{
-				// list Flags in Console
-				Utils . GetWindowHandles ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F8 )  // CTRL + F8
-			{
-				// list various Flags in Console
-				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
-			{
-				// list various Flags in Console
-				Flags . PrintDbInfo ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
-			{
-				// list various Flags in Console
-				Flags . UseBeeps = !Flags . UseBeeps;
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
-			{
-				// lists all delegates & Events
-				Debug . WriteLine ( "\nEvent subscriptions " );
-				EventHandlers . ShowSubscribersCount ( );
-				e . Handled = true;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F11 )
-			{
-				Debug . WriteLine ( "\nAll Flag. variables" );
-				Flags . ShowAllFlags ( );
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . OemQuestion )
-			{
-				// list Flags in Console
-				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . RightAlt ) //|| e . Key == Key . LeftCtrl )
-			{       // list Flags in Console
-				Flags . ListGridviewControlFlags ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . Up )
-			{       // DataGrid keyboard navigation = UP
-				if ( CurrentDb == "BANKACCOUNT" )
-					dg = this . BankGrid;
-				else if ( CurrentDb == "CUSTOMER" )
-					dg = this . CustomerGrid;
-				else
-					dg = this . DetailsGrid;
-				if ( dg . SelectedIndex > 0 )
-				{
-					dg . SelectedIndex--;
-					dg . SelectedItem = dg . SelectedIndex;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				}
-				if ( dg . SelectedItem == null )
-					Utils . ScrollRecordInGrid ( dg, 0 );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . Down )
-			{       // DataGrid keyboard navigation = DOWN
-				if ( CurrentDb == "BANKACCOUNT" )
-					dg = this . BankGrid;
-				else if ( CurrentDb == "CUSTOMER" )
-					dg = this . CustomerGrid;
-				else if ( CurrentDb == "DETAILS" )
-					dg = this . DetailsGrid;
-				if ( dg . SelectedIndex < dg . Items . Count - 1 )
-				{
-					dg . SelectedIndex++;
-					dg . SelectedItem = dg . SelectedIndex;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				}
-				if ( dg . SelectedItem == null )
-					Utils . ScrollRecordInGrid ( dg, 0 );
-
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . PageUp )
-			{       // DataGrid keyboard navigation = PAGE UP
-				if ( CurrentDb == "BANKACCOUNT" )
-					dg = this . BankGrid;
-				else if ( CurrentDb == "CUSTOMER" )
-					dg = this . CustomerGrid;
-				else
-					dg = this . DetailsGrid;
-				if ( dg . SelectedIndex >= 10 )
-				{
-					dg . SelectedIndex -= 10;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				}
-				else
-				{
-					dg . SelectedIndex = 0;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				}
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . PageDown )
-			{       // DataGrid keyboard navigation = PAGE DOWN
-				if ( CurrentDb == "BANKACCOUNT" )
-					dg = this . BankGrid;
-				else if ( CurrentDb == "CUSTOMER" )
-					dg = this . CustomerGrid;
-				else
-					dg = this . DetailsGrid;
-				if ( dg . SelectedIndex < dg . Items . Count - 10 )
-				{
-					dg . SelectedIndex += 10;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				}
-				else
-				{
-					dg . SelectedIndex = dg . Items . Count - 1;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				}
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . Home )
-			{       // DataGrid keyboard navigation = HOME
-				if ( CurrentDb == "BANKACCOUNT" )
-					dg = this . BankGrid;
-				else if ( CurrentDb == "CUSTOMER" )
-					dg = this . CustomerGrid;
-				else
-					dg = this . DetailsGrid;
-				dg . SelectedIndex = 0;
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . End )
-			{       // DataGrid keyboard navigation = END
-				if ( CurrentDb == "BANKACCOUNT" )
-					dg = this . BankGrid;
-				else if ( CurrentDb == "CUSTOMER" )
-					dg = this . CustomerGrid;
-				else
-					dg = this . DetailsGrid;
-				dg . SelectedIndex = dg . Items . Count - 1;
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( e . Key == Key . Delete )
-			{       // DataGrid keyboard navigation = DELETE
-				// This is a ONE SHOT PASS, In here The selected Record will be deleted from the Db's on disk
-				// After this  the Event callback should handle the update of this viewer + all/any other open viewers
-				int currentindex = 0;
-				string bank = "";
-				string cust = "";
-				var v = e . OriginalSource . GetType ( );
-				MultiViewer Thisviewer = this;
-
-				// Check to see if Del was pressed while Editing a field (in ANY of our grids)
-				// if we have pressed it with just a Row selected, it will return "DataGridCell"  in v.Name
-				// else it will have cell info in it
-				if ( v . Name != "DataGridCell" )
-				{
-					e . Handled = false;
-					return;         //NOT a Row that is selected, so let OS handle it normally
-				}
-
-				// Just ONE of these will call the delete process
-				if ( CurrentDb == "BANKACCOUNT" )
-				{
-					dg = Flags . SqlBankGrid;
-					CurrentRow = dg . SelectedIndex;
-					// Get and save the data in the row so we have access to it once it has gone from interface
-					BankAccountViewModel BankRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
-					bank = BankRecord . BankNo;
-					cust = BankRecord . CustNo;
-					dg . ItemsSource = null;
-					e . Handled = true;
-					key1 = false;
-
-					// Call the method to update any other Viewers that may be open
-//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
-					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
-					{
-						Bankno = bank,
-						Custno = cust,
-						CallerDb = "BANKACCOUNT",
-						CurrSelection = CurrentRow,
-						DataSource = MultiBankcollection,
-						RowCount = CurrentRow
-					} );
-					// Keep our focus in originating window for now
-					Thisviewer . Activate ( );
-					Thisviewer . Focus ( );
-					return;
-				}
-				if ( CurrentDb == "CUSTOMER" )
-				{
-					dg = Flags . SqlCustGrid;
-					CurrentRow = dg . SelectedIndex;
-					// Get and save the data in the row so we have access to it once it has gone from interface
-					CustomerViewModel CustRecord = this . CustomerGrid . SelectedItem as CustomerViewModel;
-					bank = CustRecord . BankNo;
-					cust = CustRecord . CustNo;
-					dg . ItemsSource = null;
-					CustCollection . dtCust?.Clear ( );
-					e . Handled = true;
-					key1 = false;
-					// Call the method to update any other Viewers that may be open
-					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
-					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
-					{
-						Bankno = bank,
-						Custno = cust,
-						CallerDb = "CUSTOMER",
-						CurrSelection = CurrentRow,
-						DataSource = MultiCustcollection,
-						RowCount = CurrentRow
-					} );
-					// Keep our focus in originating window for now
-					Thisviewer . Activate ( );
-					Thisviewer . Focus ( );
-					return;
-				}
-				else if ( CurrentDb == "DETAILS" )
-				{
-					dg = Flags . SqlDetGrid;
-					// Get and save the data in the row so we have access to it once it has gone from interface
-					DetailsViewModel DetailsRecord = this . DetailsGrid . SelectedItem as DetailsViewModel;
-					bank = DetailsRecord . BankNo;
-					cust = DetailsRecord . CustNo;
-					CurrentRow = dg . SelectedIndex;
-					// Remove it form THIS DataGrid here
-					dg . ItemsSource = null;
-					e . Handled = true;
-					key1 = false;
-
-					// Call the method to update any other Viewers that may be open
-					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
-					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
-					{
-						Bankno = bank,
-						Custno = cust,
-						CallerDb = "DETAILS",
-						CurrSelection = CurrentRow,
-						DataSource = MultiDetcollection,
-						RowCount = CurrentRow
-					} );
-					// Keep our focus in originating window for now
-					Thisviewer . Activate ( );
-					Thisviewer . Focus ( );
-					return;
-				}
-				e . Handled = false;
-#pragma TESTING DATA LOAD CALLBACK
-
-				{
-					// Tidy up our own grid after ourselves
-					if ( dg . Items . Count > 0 && CurrentRow >= 0 )
-						dg . SelectedIndex = CurrentRow;
-					else if ( dg . Items . Count == 1 )
-						dg . SelectedIndex = 0;
-
-					//dg.SelectedIndex = Flags.
-					dg . SelectedItem = dg . SelectedIndex;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-
-				}
-			}
-			e . Handled = false;
-		}
 
 		#region DATAGRID  SELECTION CHANGE  HANDLING  (SelectedIndex matching across all 3 grids)
 		/// <summary>
@@ -950,7 +615,7 @@ namespace WPFPages . Views
 				return;
 
 			BankAccountViewModel CurrentSelectedRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
-			if ( CurrentSelectedRecord == null )	return;
+			if ( CurrentSelectedRecord == null ) return;
 
 			inprogress = true;
 
@@ -1006,8 +671,8 @@ namespace WPFPages . Views
 			if ( inprogress )
 				return;
 
-			CustomerViewModel CurrentSelectedRecord = this . CustomerGrid . SelectedItem  as CustomerViewModel;
-			if ( CurrentSelectedRecord == null )	return;
+			CustomerViewModel CurrentSelectedRecord = this . CustomerGrid . SelectedItem as CustomerViewModel;
+			if ( CurrentSelectedRecord == null ) return;
 
 			inprogress = true;
 
@@ -1018,7 +683,7 @@ namespace WPFPages . Views
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
-				{inprogress = false;	return;}
+				{ inprogress = false; return; }
 
 				// We have the link our own grids option checked
 				// so update all our grids position
@@ -1029,7 +694,7 @@ namespace WPFPages . Views
 				bindex = rec;
 				this . BankGrid . UnselectAll ( );
 				this . BankGrid . SelectedIndex = rec;
-				this . BankGrid . SelectedItem= rec;
+				this . BankGrid . SelectedItem = rec;
 				Utils . SetUpGridSelection ( this . BankGrid, rec );
 				//Utils . ScrollRecordIntoView ( this . BankGrid, rec );
 
@@ -1039,7 +704,7 @@ namespace WPFPages . Views
 				this . DetailsGrid . UnselectAll ( );
 				this . DetailsGrid . SelectedIndex = rec;
 				this . DetailsGrid . SelectedItem = rec;
-				Utils.SetUpGridSelection ( this . DetailsGrid, rec );
+				Utils . SetUpGridSelection ( this . DetailsGrid, rec );
 
 				// The global linkage is set, so
 				// we must notify any other windows that may need to update themselves
@@ -1051,7 +716,7 @@ namespace WPFPages . Views
 
 			inprogress = false;
 			try
-			{e . Handled = true;}
+			{ e . Handled = true; }
 			catch ( Exception ex ) { }
 			return;
 
@@ -1068,8 +733,8 @@ namespace WPFPages . Views
 			if ( inprogress )
 				return;
 
-			DetailsViewModel CurrentSelectedRecord = this . DetailsGrid . SelectedItem  as DetailsViewModel;
-			if ( CurrentSelectedRecord == null )	return;
+			DetailsViewModel CurrentSelectedRecord = this . DetailsGrid . SelectedItem as DetailsViewModel;
+			if ( CurrentSelectedRecord == null ) return;
 
 			inprogress = true;
 
@@ -1079,7 +744,7 @@ namespace WPFPages . Views
 				SearchCustNo = CurrentSelectedRecord?.CustNo;
 				SearchBankNo = CurrentSelectedRecord?.BankNo;
 				if ( SearchCustNo == null && SearchBankNo == null )
-				{inprogress = false;	return;}
+				{ inprogress = false; return; }
 
 				// update all grids position
 				Triggered = true;
@@ -1101,8 +766,8 @@ namespace WPFPages . Views
 				Utils . SetUpGridSelection ( this . CustomerGrid, rec );
 				// The global linkage is set, so
 				// we must notify any other windows that may need to update themselves
-				if(Flags.LinkviewerRecords)
-					TriggerMultiViewerIndexChanged ( this . DetailsGrid ); 
+				if ( Flags . LinkviewerRecords )
+					TriggerMultiViewerIndexChanged ( this . DetailsGrid );
 				Triggered = false;
 				BankData . DataContext = this . DetailsGrid . SelectedItem;
 				Triggered = false;
@@ -1110,7 +775,7 @@ namespace WPFPages . Views
 
 			inprogress = false;
 			try
-			{e . Handled = true;}
+			{ e . Handled = true; }
 			catch ( Exception ex ) { }
 			return;
 		}
@@ -1158,9 +823,9 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 			Utils . SetUpGridSelection ( this . CustomerGrid, this . BankGrid . SelectedIndex );
 			Utils . SetUpGridSelection ( this . DetailsGrid, this . BankGrid . SelectedIndex );
-//			this . BankGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
-//			this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
-//			this . DetailsGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
+			//			this . BankGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
+			//			this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
+			//			this . DetailsGrid . ScrollIntoView ( this . CustomerGrid . SelectedIndex );
 		}
 
 		private void DetGrid_ScrollChanged ( object sender, ScrollChangedEventArgs e )
@@ -1172,10 +837,10 @@ namespace WPFPages . Views
 			SetScrollVariables ( sender );
 			Utils . SetUpGridSelection ( this . BankGrid, this . DetailsGrid . SelectedIndex );
 			Utils . SetUpGridSelection ( this . CustomerGrid, this . DetailsGrid . SelectedIndex );
-			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex ); 
-//			this . CustomerGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
-//			this . BankGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
-//			this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
+			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
+			//			this . CustomerGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
+			//			this . BankGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
+			//			this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . SelectedIndex );
 		}
 		#endregion SCROLLBARS
 
@@ -1829,6 +1494,7 @@ namespace WPFPages . Views
 		{
 			if ( e . CallerDb == "BANKACCOUNT" )
 			{
+				if ( e . DataSource == null ) return;
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . ItemsSource = e . DataSource as BankCollection;
 				this . BankGrid . Refresh ( );
@@ -1848,10 +1514,10 @@ namespace WPFPages . Views
 		{
 			if ( e . CallerDb == "CUSTOMER" )
 			{
+				if ( e . DataSource == null ) return;
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . ItemsSource = e . DataSource as CustCollection;
 				this . CustomerGrid . Refresh ( );
-				//				Utils . SetUpGridSelection ( this . CustomerGrid, this . CustomerGrid . SelectedIndex );
 				CustomerGrid . SelectedIndex = cindex;
 				CustomerGrid . SelectedItem = cindex;
 				CustomerGrid . Refresh ( );
@@ -1861,7 +1527,7 @@ namespace WPFPages . Views
 			}
 		}
 		/// <summary>
-		/// Handles rsetting the index after Details data has been reoloaded
+		/// Handles resetting the index after Details data has been reloaded
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -1869,6 +1535,7 @@ namespace WPFPages . Views
 		{
 			if ( e . CallerDb == "DETAILS" )
 			{
+				if ( e . DataSource == null ) return;
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . ItemsSource = e . DataSource as DetCollection;
 				this . DetailsGrid . Refresh ( );
@@ -1883,7 +1550,7 @@ namespace WPFPages . Views
 
 
 		/// <summary>
-		/// Main Event handler for data changes made in this multiviewer
+		/// Main Event handler for data changes made in this Multi viewer
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -1997,6 +1664,350 @@ namespace WPFPages . Views
 					} );
 			}
 		}
+		private void Window_PreviewKeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
+		{
+			DataGrid dg = null;
+			int CurrentRow = 0;
+			bool showdebug = false;
+
+			if ( showdebug ) Debug . WriteLine ( $"key1 = {key1},  Key = : {e . Key}" );
+
+			if ( e . Key == Key . LeftCtrl )
+			{
+				key1 = true;
+				if ( showdebug ) Debug . WriteLine ( $"key1 = set to TRUE" );
+				return;
+			}
+			if ( key1 )
+			{
+				Utils . HandleCtrlFnKeys ( key1, e );
+				key1 = false;
+			}
+			else if ( key1 && e . Key == Key . System )     // CTRL + F10
+			{
+				// Major  listof GV[] variables (Guids etc]
+				Debug . WriteLine ( "\nGridview GV[] Variables" );
+				Flags . ListGridviewControlFlags ( 1 );
+				key1 = false;
+				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F5 )
+			{
+				// list Flags in Console
+				Utils . GetWindowHandles ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F8 )  // CTRL + F8
+			{
+				// list various Flags in Console
+				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
+			{
+				// list various Flags in Console
+				Flags . PrintDbInfo ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
+			{
+				// list various Flags in Console
+				Flags . UseBeeps = !Flags . UseBeeps;
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			if ( key1 && e . Key == Key . F9 )    // CTRL + F9
+			{
+				// lists all delegates & Events
+				Debug . WriteLine ( "\nEvent subscriptions " );
+				EventHandlers . ShowSubscribersCount ( );
+				e . Handled = true;
+				return;
+			}
+			else if ( key1 && e . Key == Key . F11 )
+			{
+				Debug . WriteLine ( "\nAll Flag. variables" );
+				Flags . ShowAllFlags ( );
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . OemQuestion )
+			{
+				// list Flags in Console
+				Flags . PrintSundryVariables ( "Window_PreviewKeyDown()" );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . RightAlt ) //|| e . Key == Key . LeftCtrl )
+			{       // list Flags in Console
+				Flags . ListGridviewControlFlags ( );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . Up )
+			{       // DataGrid keyboard navigation = UP
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex > 0 )
+				{
+					dg . SelectedIndex--;
+					dg . SelectedItem = dg . SelectedIndex;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				if ( dg . SelectedItem == null )
+					Utils . ScrollRecordInGrid ( dg, 0 );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . Down )
+			{       // DataGrid keyboard navigation = DOWN
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else if ( CurrentDb == "DETAILS" )
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex < dg . Items . Count - 1 )
+				{
+					dg . SelectedIndex++;
+					dg . SelectedItem = dg . SelectedIndex;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				if ( dg . SelectedItem == null )
+					Utils . ScrollRecordInGrid ( dg, 0 );
+
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . PageUp )
+			{       // DataGrid keyboard navigation = PAGE UP
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex >= 10 )
+				{
+					dg . SelectedIndex -= 10;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				else
+				{
+					dg . SelectedIndex = 0;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . PageDown )
+			{       // DataGrid keyboard navigation = PAGE DOWN
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				if ( dg . SelectedIndex < dg . Items . Count - 10 )
+				{
+					dg . SelectedIndex += 10;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				else
+				{
+					dg . SelectedIndex = dg . Items . Count - 1;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				}
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . Home )
+			{       // DataGrid keyboard navigation = HOME
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				dg . SelectedIndex = 0;
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . End )
+			{       // DataGrid keyboard navigation = END
+				if ( CurrentDb == "BANKACCOUNT" )
+					dg = this . BankGrid;
+				else if ( CurrentDb == "CUSTOMER" )
+					dg = this . CustomerGrid;
+				else
+					dg = this . DetailsGrid;
+				dg . SelectedIndex = dg . Items . Count - 1;
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+				e . Handled = true;
+				key1 = false;
+				return;
+			}
+			else if ( e . Key == Key . Delete )
+			{       // DataGrid keyboard navigation = DELETE
+				// This is a ONE SHOT PASS, In here The selected Record will be deleted from the Db's on disk
+				// After this  the Event callback should handle the update of this viewer + all/any other open viewers
+				int currentindex = 0;
+				string bank = "";
+				string cust = "";
+				var v = e . OriginalSource . GetType ( );
+				MultiViewer Thisviewer = this;
+
+				// Check to see if Del was pressed while Editing a field (in ANY of our grids)
+				// if we have pressed it with just a Row selected, it will return "DataGridCell"  in v.Name
+				// else it will have cell info in it
+				if ( v . Name != "DataGridCell" )
+				{
+					e . Handled = false;
+					return;         //NOT a Row that is selected, so let OS handle it normally
+				}
+
+				// Just ONE of these will call the delete process
+				if ( CurrentDb == "BANKACCOUNT" )
+				{
+					dg = Flags . SqlBankGrid;
+					CurrentRow = dg . SelectedIndex;
+					// Get and save the data in the row so we have access to it once it has gone from interface
+					BankAccountViewModel BankRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
+					bank = BankRecord . BankNo;
+					cust = BankRecord . CustNo;
+					dg . ItemsSource = null;
+					e . Handled = true;
+					key1 = false;
+
+					// Call the method to update any other Viewers that may be open
+					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
+					{
+						Bankno = bank,
+						Custno = cust,
+						CallerDb = "BANKACCOUNT",
+						CurrSelection = CurrentRow,
+						DataSource = MultiBankcollection,
+						RowCount = CurrentRow
+					} );
+					// Keep our focus in originating window for now
+					Thisviewer . Activate ( );
+					Thisviewer . Focus ( );
+					return;
+				}
+				if ( CurrentDb == "CUSTOMER" )
+				{
+					dg = Flags . SqlCustGrid;
+					CurrentRow = dg . SelectedIndex;
+					// Get and save the data in the row so we have access to it once it has gone from interface
+					CustomerViewModel CustRecord = this . CustomerGrid . SelectedItem as CustomerViewModel;
+					bank = CustRecord . BankNo;
+					cust = CustRecord . CustNo;
+					dg . ItemsSource = null;
+					CustCollection . dtCust?.Clear ( );
+					e . Handled = true;
+					key1 = false;
+					// Call the method to update any other Viewers that may be open
+					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
+					{
+						Bankno = bank,
+						Custno = cust,
+						CallerDb = "CUSTOMER",
+						CurrSelection = CurrentRow,
+						DataSource = MultiCustcollection,
+						RowCount = CurrentRow
+					} );
+					// Keep our focus in originating window for now
+					Thisviewer . Activate ( );
+					Thisviewer . Focus ( );
+					return;
+				}
+				else if ( CurrentDb == "DETAILS" )
+				{
+					dg = Flags . SqlDetGrid;
+					// Get and save the data in the row so we have access to it once it has gone from interface
+					DetailsViewModel DetailsRecord = this . DetailsGrid . SelectedItem as DetailsViewModel;
+					bank = DetailsRecord . BankNo;
+					cust = DetailsRecord . CustNo;
+					CurrentRow = dg . SelectedIndex;
+					// Remove it form THIS DataGrid here
+					dg . ItemsSource = null;
+					e . Handled = true;
+					key1 = false;
+
+					// Call the method to update any other Viewers that may be open
+					//					EventControl . TriggerRecordDeleted ( CurrentDb, bank, cust, CurrentRow );
+					EventControl . TriggerRecordDeleted ( this, new LoadedEventArgs
+					{
+						Bankno = bank,
+						Custno = cust,
+						CallerDb = "DETAILS",
+						CurrSelection = CurrentRow,
+						DataSource = MultiDetcollection,
+						RowCount = CurrentRow
+					} );
+					// Keep our focus in originating window for now
+					Thisviewer . Activate ( );
+					Thisviewer . Focus ( );
+					return;
+				}
+				e . Handled = false;
+#pragma TESTING DATA LOAD CALLBACK
+
+				{
+					// Tidy up our own grid after ourselves
+					if ( dg . Items . Count > 0 && CurrentRow >= 0 )
+						dg . SelectedIndex = CurrentRow;
+					else if ( dg . Items . Count == 1 )
+						dg . SelectedIndex = 0;
+
+					//dg.SelectedIndex = Flags.
+					dg . SelectedItem = dg . SelectedIndex;
+					if ( dg . SelectedItem != null )
+						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+
+				}
+			}
+			e . Handled = false;
+		}
+
 	}
 	/* UNUSED METHODS
 
