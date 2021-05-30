@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataClasses1">
+  <DataContextMoniker Name="/DataClasses1DataContext" />
+  <nestedChildShapes>
+    <classShape Id="ec81238f-e32c-4eb8-8a47-fd117e0ad7ae" absoluteBounds="1.75, 0.75, 2, 2.3478011067708335">
+      <DataClassMoniker Name="/DataClasses1DataContext/BANKACCOUNT" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e1a936da-41c9-4ca6-8d23-9d0146e00d0d" absoluteBounds="1.7649999999999997, 1.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="5cc0d448-52d5-4dab-baa9-a2efc18dc50a" absoluteBounds="6.75, 3.125, 2, 3.8862125651041666">
+      <DataClassMoniker Name="/DataClasses1DataContext/CUSTOMER" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2e24005a-f4a3-48c9-abbe-beda699d03ab" absoluteBounds="6.765, 3.585, 1.9700000000000002, 3.3262125651041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="32c95cd7-dbf7-4eb1-9070-783ee502b68b" absoluteBounds="4.25, 4.625, 2, 2.3478011067708335">
+      <DataClassMoniker Name="/DataClasses1DataContext/SECACCOUNT" />
+      <nestedChildShapes>
+        <elementListCompartment Id="4f69d803-055b-47f6-a02b-e21851da7417" absoluteBounds="4.265, 5.085, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

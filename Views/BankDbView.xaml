@@ -518,14 +518,13 @@
 				Foreground="Black"
 				FontWeight="Medium"
 				Grid.Row="2" 
-				Grid.ColumnSpan="1" 
-				Grid.Column="2" 
+				Grid.Column="3" 
 				Height="25"
 				HorizontalAlignment="Left"
 				IsChecked="true"
-				Margin="10,2,0,0"
+				Margin="15,10,0,0"
 				VerticalAlignment="Top"
-				Width="100"  
+				Width="90"  
 			     />
 		<Button x:Name="MultiAccounts"
 					Background="{StaticResource HeaderBrushBlue}"
@@ -544,10 +543,22 @@
 					/>
 		<CheckBox x:Name="LinkRecords"				    
 					Click="LinkRecords_Click"
-					Content="Link All Viewers " 
+					Content="Link ALL Viewers " 
 					Foreground="Red"
 					Height="25"
-					HorizontalAlignment="Right"
-					VerticalAlignment="Top"				   Grid.ColumnSpan="2" Grid.Column="2" Margin="0,30,104,0" Grid.Row="2" RenderTransformOrigin="0.28,0.52"				   />
+						Margin="0,9,100,101" 
+					Grid.Column="2" 
+					Grid.Row="2" 			  
+					Grid.ColumnSpan="2"
+					/>
+		<CheckBox x:Name="LinkToParent"				    
+					    Click="LinkToParent_Click"
+						Content="Link =>Parent" 
+						Grid.Column="2" 
+					    Grid.Row="2"
+					    Foreground="Red" 
+					Margin="0,35,0,79" 
+					     />
+
 	</Grid>
 </Window>

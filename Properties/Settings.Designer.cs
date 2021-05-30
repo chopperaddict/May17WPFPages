@@ -103,5 +103,18 @@ namespace WPFPages.Properties {
                 this["Previousconnstring"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\IANCH\\APPDATA\\LOCAL\\" +
+            "MICROSOFT\\MICROSOFT SQL SERVER LOCAL DB\\INSTANCES\\MSSQLLOCALDB\\IAN1.MDF\";Integra" +
+            "ted Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False")]
+        public string C__USERS_IANCH_APPDATA_LOCAL_MICROSOFT_MICROSOFT_SQL_SERVER_LOCAL_DB_INSTANCES_MSSQLLOCALDB_IAN1_MDFConnectionString {
+            get {
+                return ((string)(this["C__USERS_IANCH_APPDATA_LOCAL_MICROSOFT_MICROSOFT_SQL_SERVER_LOCAL_DB_INSTANCES_MS" +
+                    "SQLLOCALDB_IAN1_MDFConnectionString"]));
+            }
+        }
     }
 }

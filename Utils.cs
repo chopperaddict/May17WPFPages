@@ -430,8 +430,6 @@ namespace WPFPages
 			// Works well 26/5/21
 			double currentTop = 0;
 			double currentBottom = 0;
-			double currsel = 0;
-			double offset = 0;
 			if ( CurrentRecord == -1 ) return;
 			if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
 			{
@@ -451,8 +449,6 @@ namespace WPFPages
 
 			if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null ) return;
 
-			//			if ( Dgrid . SelectedItem == null ) return;
-			//			Dgrid . SelectedIndex = Dgrid.SelectedIndex + (int)offset;
 			//update and scroll to bottom first
 			Dgrid . SelectedIndex = ( int ) CurrentRecord;
 			Dgrid . SelectedItem = ( int ) CurrentRecord;
@@ -461,12 +457,7 @@ namespace WPFPages
 			Dgrid . UpdateLayout ( );
 			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
 			Dgrid . UpdateLayout ( );
-//			Dgrid . SelectedIndex = ( int ) CurrentRecord;
-			//			if ( caller == 0 )
 			Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
-
-			//			Flags . TopVisibleDetGridRow = currentTop;
-			//			Flags . BottomVisibleDetGridRow = currentBottom;
 		}
 
 		//		public NewFlags Flags = new NewFlags();

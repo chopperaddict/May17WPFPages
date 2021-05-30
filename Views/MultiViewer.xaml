@@ -253,7 +253,7 @@
 					/>
 			<CheckBox x:Name="LinkRecords" 
 				    Click="LinkRecords_Click"
-				    Content="Link-External Viewers " 
+				    Content="Link ALL Viewers " 
 				   FontWeight="SemiBold"
 				    Foreground="Red"
 				Grid.Column="6"

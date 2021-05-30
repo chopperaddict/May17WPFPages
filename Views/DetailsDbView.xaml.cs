@@ -24,6 +24,7 @@ namespace WPFPages . Views
 		public DetCollection DetViewerDbcollection = DetCollection . DetViewerDbcollection;
 		private bool IsDirty = false;
 		private bool Startup = true;
+		private bool LinktoParent = false;
 		public static bool Triggered = false;
 		private string _bankno = "";
 		private string _custno = "";
@@ -31,6 +32,7 @@ namespace WPFPages . Views
 		private string _balance = "";
 		private string _odate = "";
 		private string _cdate = "";
+		private SqlDbViewer ParentViewer;
 		public DetailsDbView ( )
 		{
 			Startup = true;
@@ -93,6 +95,20 @@ namespace WPFPages . Views
 			this . DetGrid . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
+			{
+				ParentViewer = sender as SqlDbViewer;
+			}
+			else
+			{
+				if ( Flags . SqlDetViewer != null )
+					ParentViewer = Flags . SqlDetViewer;
+				else
+				{
+					LinktoParent = false;
+					LinkToParent . IsEnabled = false;
+				}
+			}
 			Startup = false;
 		}
 
@@ -249,6 +265,16 @@ namespace WPFPages . Views
 				//		Sender = "DETDBVIEW"
 				//	} );
 			}
+			if ( LinktoParent )
+			{
+				// update parents row selection
+				string bankno = "";
+				string custno = "";
+				var dvm = this . DetGrid . SelectedItem as DetailsViewModel;
+				int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, ParentViewer . DetailsGrid, "DETAILS" );
+				ParentViewer . DetailsGrid . SelectedIndex = rec;
+				Utils . SetUpGridSelection ( ParentViewer . DetailsGrid, rec );
+			}
 			Triggered = false;
 		}
 
@@ -390,7 +416,8 @@ namespace WPFPages . Views
 					this . DetGrid . SelectedIndex = rec;
 				else
 					this . DetGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
+				Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
+				//				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 			}
 			else
 			{
@@ -420,7 +447,8 @@ namespace WPFPages . Views
 					this . DetGrid . SelectedIndex = rec;
 				else
 					this . DetGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
+				Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
+				//				Utils . ScrollRecordIntoView ( this . DetGrid, this . DetGrid . SelectedIndex );
 			}
 		}
 		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
@@ -460,6 +488,29 @@ namespace WPFPages . Views
 			if ( Flags . BankDbEditor != null )
 				Flags . BankDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			LinkRecords . Refresh ( );
+			if ( Flags . LinkviewerRecords == true )
+			{
+				LinktoParent = false;
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+			}
+			else
+			{
+				if ( ParentViewer != null )
+					LinkToParent . IsEnabled = true;
+				else
+					LinkToParent . IsEnabled = false;
+			}
+		}
+
+		/// <summary>
+		/// Link record selection to parent SQL viewer window only
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
+		{
+			LinktoParent = !LinktoParent;
 		}
 
 		#region Menu items
@@ -574,6 +625,7 @@ namespace WPFPages . Views
 		{
 
 		}
+
 	}
 }
 

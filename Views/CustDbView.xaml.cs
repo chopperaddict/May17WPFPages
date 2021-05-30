@@ -26,12 +26,16 @@ namespace WPFPages . Views
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool Triggered = false;
+		private bool LinktoParent = false;
+
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
 		private string _balance = "";
 		private string _odate = "";
 		private string _cdate = "";
+		private SqlDbViewer ParentViewer;
+
 		public CustDbView ( )
 		{
 			Startup = true;
@@ -94,6 +98,20 @@ namespace WPFPages . Views
 			this . CustGrid . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
+			{
+				ParentViewer = sender as SqlDbViewer;
+			}
+			else
+			{
+				if ( Flags . SqlCustViewer != null )
+					ParentViewer = Flags . SqlCustViewer;
+				else
+				{
+					LinktoParent = false;
+					LinkToParent . IsEnabled = false;
+				}
+			}
 			Startup = false;
 		}
 
@@ -243,6 +261,17 @@ namespace WPFPages . Views
 				//	Sender = "CUSTDBVIEW"
 				//} );
 			}
+			if ( LinktoParent )
+			{
+				// update parents row selection
+				string bankno = "";
+				string custno = "";
+				var dvm = this . CustGrid . SelectedItem as CustomerViewModel;
+				int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, ParentViewer . CustomerGrid, "CUSTOMER" );
+				ParentViewer . CustomerGrid . SelectedIndex = rec;
+				Utils . SetUpGridSelection ( ParentViewer . CustomerGrid, rec );
+			}
+
 			IsDirty = false;
 			Triggered = false;
 		}
@@ -452,6 +481,19 @@ namespace WPFPages . Views
 			if ( Flags . DetDbEditor != null )
 				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			LinkRecords . Refresh ( );
+			if ( Flags . LinkviewerRecords == true )
+			{
+				LinktoParent = false;
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+			}
+			else
+			{
+				if ( ParentViewer != null )
+					LinkToParent . IsEnabled = true;
+				else
+					LinkToParent . IsEnabled = false;
+			}
 		}
 		#region Menu items
 
@@ -574,6 +616,16 @@ namespace WPFPages . Views
 		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
 		{
 
+		}
+
+		/// <summary>
+		/// Link record selection to parent SQL viewer window only
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
+		{
+			LinktoParent = !LinktoParent;
 		}
 	}
 }

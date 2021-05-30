@@ -589,7 +589,7 @@
 				Click="Default_option_Click" />-->
 			<CheckBox
 				x:Name="LinkRecords"
-				Content="Link Viewers"
+				Content="Link ALL Viewers"
 				FontWeight="Bold"
 				Foreground="{StaticResource White3}"
 				IsChecked="False"
