@@ -531,10 +531,10 @@ namespace WPFPages
 			$"\nCurrentThread								: {Thread . CurrentThread . ManagedThreadId}\n" +
 			$"\nSQL Database pointers\n" +
 			$"Bank : Bankinternalcollection				: { BankCollection . Bankinternalcollection . Count}\n" +
-			$"Bank : SqlViewerBankcollection				: { BankCollection . SqlViewerBankcollection . Count}\n" +
-			$"Bank : EditDbViewercollection 				: { BankCollection . EditDbBankcollection . Count}\n" +
-			$"Bank : MultiBankcollection					: { BankCollection . MultiBankcollection . Count}\n" +
-			$"Bank : BankViewerDbcollection				: { BankCollection . BankViewerDbcollection . Count}\n" +
+			//$"Bank : SqlViewerBankcollection				: { BankCollection . SqlViewerBankcollection . Count}\n" +
+			//$"Bank : EditDbViewercollection 				: { BankCollection . EditDbBankcollection . Count}\n" +
+			//$"Bank : MultiBankcollection					: { BankCollection . MultiBankcollection . Count}\n" +
+			//$"Bank : BankViewerDbcollection				: { BankCollection . BankViewerDbcollection . Count}\n" +
 
 			$"\nCustcollection								: { CustCollection . Custcollection . Count}\n" +
 			$"CustViewerDbcollection						: { CustCollection . CustViewerDbcollection . Count}\n" +

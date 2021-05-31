@@ -45,11 +45,39 @@ namespace WPFPages . Views
 			Notify = NotifyAll;
 			try
 			{
-				// Called to Load/reload the One & Only Bankcollection data source
-				if ( dtCust . Rows . Count > 0 )
-					dtCust . Clear ( );
-				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
-				await ProcessRequest ( ViewerType );
+
+				if ( USEFULLTASK )
+				{
+					Custinternalcollection = new CustCollection ( );
+					await Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
+					return ( CustCollection ) null;
+				}
+				else
+				{
+					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
+					//CustCollection c = new CustCollection();
+					//c . LoadCustDataSql ( );
+
+					//if ( dtCust . Rows . Count > 0 )
+					//	Custinternalcollection = LoadCustomerTest ( );
+					// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
+					Flags . CustCollection = Custinternalcollection;
+					if ( Flags . IsMultiMode == false )
+					{
+						// Finally fill and return The global Dataset
+						SelectViewer ( ViewerType, Custinternalcollection );
+						return null;// Custinternalcollection;
+					}
+					else
+					{
+						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+						return null;// Custinternalcollection;
+					}
+				}
+
+
+				//Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW Master Customer Collection ..................." );
+				//await ProcessRequest ( ViewerType );
 
 				if ( Flags . IsMultiMode == false )
 				{
@@ -227,7 +255,7 @@ namespace WPFPages . Views
 		}
 
 		//**************************************************************************************************************************************************************//
-		private static async Task<CustCollection> LoadCustomerCollection ( bool DoNotify = false )
+		private static async Task<CustCollection> LoadCustomerCollection (  )
 
 		{
 			int count = 0;
@@ -280,6 +308,7 @@ namespace WPFPages . Views
 				}
 			}
 			//			} // End Lock
+//			Custinternalcollection = null;
 			return Custinternalcollection;
 		}
 		public async static Task<CustCollection> LoadCustomerTest ( bool Notify = true )

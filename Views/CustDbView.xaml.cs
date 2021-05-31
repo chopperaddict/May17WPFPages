@@ -286,6 +286,7 @@ namespace WPFPages . Views
 				string bankno = "";
 				string custno = "";
 				var dvm = this . CustGrid . SelectedItem as CustomerViewModel;
+				if ( dvm== null ) return;
 
 				if ( SqlParentViewer != null )
 				{
@@ -421,6 +422,8 @@ namespace WPFPages . Views
 			{
 				int currsel = this . CustGrid . SelectedIndex;
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
+				if ( bgr == null ) return;
+				
 				Flags . IsMultiMode = true;
 
 				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );

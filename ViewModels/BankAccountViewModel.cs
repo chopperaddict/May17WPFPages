@@ -5,6 +5,7 @@
 
 using System;
 using System . Collections . Generic;
+using System . ComponentModel;
 using System . Windows . Controls;
 
 using WPFPages . Views;
@@ -14,7 +15,7 @@ using WPFPages . Views;
 /// </summary>
 namespace WPFPages . ViewModels
 {
-	public partial class BankAccountViewModel : Observable
+	public partial class BankAccountViewModel// : Observable
 	{
 
 		#region CONSTRUCTORS
@@ -37,11 +38,6 @@ namespace WPFPages . ViewModels
 		private decimal intrate;
 		private DateTime odate;
 		private DateTime cdate;
-		private int selectedItem;
-		private int selectedIndex;
-
-		//		private Timer timer = new Timer ();
-		//		public static DataTable dtBank = null;
 
 		public int Id
 		{
@@ -95,28 +91,9 @@ namespace WPFPages . ViewModels
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
-		//public int SelectedItem
-		//{
-		//	get { return selectedItem; }
-		//	set { selectedItem = value; OnPropertyChanged ( SelectedItem . ToString ( ) ); }
-		//}
-
-		public int SelectedIndex
-		{
-			get { return selectedIndex; }
-			set { selectedIndex = value; OnPropertyChanged ( SelectedIndex . ToString ( ) ); }
-		}
-
 		#endregion STANDARD CLASS PROPERTIES SETUP
 
 		#region SETUP/DECLARATIONS
-
-		//public flags
-		//**************************************************************************************************************************************************************//
-		public static bool EditDbEventInProcess = false;
-
-		//if true - shows subsribers to events in Output
-		public static bool ShowSubscribeData = true;
 
 		public static EditDb EditdbWndBank = null;
 		public static EditDb EditdbWndBankCust = null;
@@ -125,50 +102,27 @@ namespace WPFPages . ViewModels
 		//**********************
 		// dbEdit db viewer GLOBALS
 		//**********************
-		public static List<DataGrid> CurrentEditDbViewerBankGridList = new List<DataGrid> ( );
-
-		public static List<DataGrid> CurrentEditDbViewerCustomerGridList = new List<DataGrid> ( );
-		public static List<DataGrid> CurrentEditDbViewerDetailsGridList = new List<DataGrid> ( );
+		//public static List<DataGrid> CurrentEditDbViewerCustomerGridList = new List<DataGrid> ( );
+		//public static List<DataGrid> CurrentEditDbViewerDetailsGridList = new List<DataGrid> ( );
 		public static DataGrid ActiveEditDbViewer = null;
 
-		public static bool SqlUpdating = false;
-		public static int CurrentSelectedIndex = 0;
 
 		#endregion SETUP/DECLARATIONS
 
-		#region EVENT CALLBACKS
-
-		/// <summary>
-		/// Callback handler for db change notifications sent by another SqlDbViewer
-		/// We have to try to work out whether we have one or more other viewers open
-		/// and update their datagris as relevant
-		/// </summary>
-		/// <param name="sender"></param>
-		//**************************************************************************************************************************************************************//
-		//public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
-		//{
-		//	if ( Grid . Name == "BankGrid" )
-		//		return;         // Nothing to do, it was us that sent the broadcast
-
-		//	// Send it to the correct open viewer window
-		//	if ( Flags . SqlBankViewer != null )
-		//		Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
-		//	if ( Flags . SqlCustViewer != null )
-		//		Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
-		//	if ( Flags . SqlDetViewer != null )
-		//		Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
-
-		//	// See if we need to update EditDb window as well
-		//	//if ( Flags . CurrentEditDbViewer != null )
-		//	//	Flags . CurrentEditDbViewer . DbChangedHandler ( sender , Grid , args );
-		//	return;
-		//}
-
-		#endregion EVENT CALLBACKS
 
 		// MVVM TO DO STUFF/INFO
 		// How to configure a RelayCommand with lambda expressions:
-
+		#region PropertyChanged
+		public event PropertyChangedEventHandler PropertyChanged;
+		protected void OnPropertyChanged ( string PropertyName )
+		{
+			if ( null != PropertyChanged )
+			{
+				PropertyChanged ( this,
+					new PropertyChangedEventArgs ( PropertyName ) );
+			}
+		}
+		#endregion PropertyChanged
 		#region MVVMstuff
 
 		//**************************************************************************************************************************************************************//

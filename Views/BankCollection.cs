@@ -14,13 +14,13 @@ using static WPFPages . SqlDbViewer;
 
 namespace WPFPages . Views
 {
-	public class BankCollection : ObservableCollection<BankAccountViewModel>
+	public class BankCollection : ObservableCollection<BankAccountViewModel> 
 	{
 		//		//Declare a global pointer to Observable BankAccount Collection
-		public static BankCollection BankViewerDbcollection = new BankCollection ( );
-		public static BankCollection SqlViewerBankcollection = new BankCollection ( );
-		public static BankCollection EditDbBankcollection = new BankCollection ( );
-		public static BankCollection MultiBankcollection = new BankCollection ( );
+		//public static BankCollection BankViewerDbcollection = new BankCollection ( );
+		//public static BankCollection SqlViewerBankcollection = new BankCollection ( );
+		//public static BankCollection EditDbBankcollection = new BankCollection ( );
+		//public static BankCollection MultiBankcollection = new BankCollection ( );
 		public static BankCollection Bankinternalcollection = new BankCollection ( );
 		public static BankCollection temp = new BankCollection ( );
 
@@ -37,20 +37,20 @@ namespace WPFPages . Views
 		/// Allows us to get a listb of all Db collections ?
 		/// </summary>
 		/// <returns></returns>
-		public static List<BankCollection> GetDbInfo ( )
-		{
-			List<BankCollection> Banks = new List<BankCollection> ( );
-			Banks . Add ( BankViewerDbcollection );
-			Banks . Add ( SqlViewerBankcollection );
-			Banks . Add ( EditDbBankcollection );
-			Banks . Add ( MultiBankcollection );
-			Banks . Add ( Bankinternalcollection );
-			return Banks;
-		}
+		//public static List<BankCollection> GetDbInfo ( )
+		//{
+		//	List<BankCollection> Banks = new List<BankCollection> ( );
+		//	Banks . Add ( BankViewerDbcollection );
+		//	Banks . Add ( SqlViewerBankcollection );
+		//	Banks . Add ( EditDbBankcollection );
+		//	Banks . Add ( MultiBankcollection );
+		//	Banks . Add ( Bankinternalcollection );
+		//	return Banks;
+		//}
 
 		#region CONSTRUCTOR
 
-		public BankCollection ( )
+		public BankCollection ( ) : base()
 		{
 		}
 		public async static Task<BankCollection> LoadBank ( BankCollection cc, int ViewerType = 1, bool NotifyAll = false )
@@ -62,6 +62,7 @@ namespace WPFPages . Views
 				//if ( dtBank . Rows . Count > 0 )
 				//	dtBank . Clear ( );
 
+				Bankinternalcollection = null;
 				Bankinternalcollection = new BankCollection ( );
 				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
@@ -75,10 +76,10 @@ namespace WPFPages . Views
 				{
 					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
 					Bankinternalcollection . ClearItems ( );
-					// Abstract the mail data load call to a method that uses AWAITABLE  calles
+					// Abstract the main data load call to a method that uses AWAITABLE  calles
 					ProcessRequest ( ) . ConfigureAwait ( false );
 
-					// We now have the pointer to the the Bank data in variable Bankinternalcollection
+					// We now have the pointer to the Bank data in variable Bankinternalcollection
 					if ( Flags . IsMultiMode == false )
 					{
 						BankCollection db = new BankCollection ( );
@@ -133,7 +134,7 @@ namespace WPFPages . Views
 			(
 				async ( Bankinternalcollection ) =>
 				{
-					LoadBankCollection ( Notify );
+					LoadBankCollection (  );
 					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				}, TaskScheduler . FromCurrentSynchronizationContext ( )
 			 );
@@ -205,22 +206,24 @@ namespace WPFPages . Views
 			bool result = false;
 			switch ( ViewerType )
 			{
-				case 1:
-					SqlViewerBankcollection = tmp;
-					result = true;
-					break;
-				case 2:
-					EditDbBankcollection = tmp;
-					result = true;
-					break;
-				case 3:
-					MultiBankcollection = tmp;
-					result = true;
-					break;
-				case 4:
-					BankViewerDbcollection = tmp;
-					result = true;
-					break;
+				//case 1:
+				//	SqlViewerBankcollection = tmp;
+				//	result = true;
+				//	break;
+				//case 2:
+				//	EditDbBankcollection = tmp;
+				//	result = true;
+				//	break;
+				//case 3:
+				//	MultiBankcollection = tmp;
+				//	result = true;
+				//	break;
+				//case 4:
+				//	BankViewerDbcollection = tmp;
+				//	result = true;
+				//	break;
+				
+				
 				//case 5:
 				//	CustViewerDbcollection = tmp;
 				//	result = true;
@@ -349,7 +352,7 @@ namespace WPFPages . Views
 			return;
 		}
 
-		public static async Task<BankCollection> LoadBankCollection ( bool DoNotify = false )
+		public static async Task<BankCollection> LoadBankCollection (  )
 		{
 			int count = 0;
 			try
@@ -397,6 +400,7 @@ namespace WPFPages . Views
 				}
 			}
 			//			Flags . BankCollection = Bankcollection;
+//			Bankinternalcollection = null;
 			return Bankinternalcollection;
 		}
 

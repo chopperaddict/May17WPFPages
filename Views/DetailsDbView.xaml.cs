@@ -1,5 +1,6 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . ComponentModel;
 using System . Diagnostics;
 using System . Linq;
 using System . Text;
@@ -22,6 +23,18 @@ namespace WPFPages . Views
 	public partial class DetailsDbView : Window
 	{
 		public DetCollection DetViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
+		
+		// Get our personal Collection view of the Db
+		//private ICollectionView _DetviewerView;
+		//public  ICollectionView DetViewerView
+		//{
+		//	get { return _DetviewerView; }
+		//	set { _DetviewerView = value; }
+		//}
+		public ICollectionView DetviewerView { get; set; }
+
+		//		DetViewer.GetEnumerator();
+
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool LinktoParent = false;
@@ -40,6 +53,7 @@ namespace WPFPages . Views
 		{
 			Startup = true;
 			InitializeComponent ( );
+
 		}
 		#region Mouse support
 		private void DoDragMove ( )
@@ -70,7 +84,7 @@ namespace WPFPages . Views
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
 
-			await DetCollection . LoadDet ( DetViewerDbcollection ,2, true);
+			await DetailCollection . LoadDet ( DetViewerDbcollection ,2, true);
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -160,48 +174,6 @@ namespace WPFPages . Views
 			Startup = false;
 		}
 
-		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
-		{
-			// Handle selection change by other windows if linkage is ON
-			Triggered = true;
-			this . DetGrid . SelectedIndex = e . Row;
-			this . DetGrid . Refresh ( );
-			Triggered = false;
-		}
-
-		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
-		{
-			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
-			int currsel = this . DetGrid . SelectedIndex;
-
-			this . DetGrid . ItemsSource = null;
-			this . DetGrid . Items . Clear ( );
-			Mouse . OverrideCursor = Cursors . Wait;
-			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
-			this . DetGrid . ItemsSource = DetViewerDbcollection;
-			this . DetGrid . Refresh ( );
-			this . DetGrid . SelectedIndex = currsel;
-		}
-
-		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
-		{
-			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
-			DetGrid . ItemsSource = null;
-			this . DetGrid . Items . Clear ( );
-			this . DetGrid . ItemsSource = DetViewerDbcollection;
-			this . DetGrid . Refresh ( );
-		}
-		#endregion Startup/ Closedown
-
-
-
-		private void Where ( bool v )
-		{
-			throw new NotImplementedException ( );
-		}
-
 		private void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
 		{
 			// Save changes and tell other viewers about the change
@@ -232,19 +204,62 @@ namespace WPFPages . Views
 				} );
 		}
 
+		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
+		{
+			// Handle selection change by other windows if linkage is ON
+			Triggered = true;
+			this . DetGrid . SelectedIndex = e . Row;
+			this . DetGrid . Refresh ( );
+			Triggered = false;
+		}
+
+
 		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for BankDataLoaded
 			if ( e . DataSource == null ) return;
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
-			DetViewerDbcollection = e . DataSource as DetCollection;
-			this . DetGrid . ItemsSource = DetViewerDbcollection;
+			//			DetViewerDbcollection = e . DataSource as DetailCollection;
+
+			// Get our personal Collection view of the Db
+			IList<DetailsViewModel> SQLDetViewerView = e . DataSource as DetCollection;
+			DetviewerView = CollectionViewSource . GetDefaultView ( SQLDetViewerView );
+//			IList<DetailsViewModel> DetViewerView = e . DataSource as DetViewerView;
+
+			//	this . DetGrid . DataContext = DetViewerView;
+			this . DetGrid . ItemsSource = DetviewerView;
 			this . DetGrid . SelectedIndex = 0;
 			this . DetGrid . SelectedItem = 0;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . DetGrid . Refresh ( );
 		}
+		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
+		{
+			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			int currsel = this . DetGrid . SelectedIndex;
+
+			this . DetGrid . ItemsSource = null;
+			this . DetGrid . Items . Clear ( );
+			Mouse . OverrideCursor = Cursors . Wait;
+			await DetailCollection . LoadDet ( DetViewerDbcollection, 2, true );
+			//this . DetGrid . ItemsSource = DetViewerDbcollection;
+			//this . DetGrid . Refresh ( );
+			//this . DetGrid . SelectedIndex = currsel;
+		}
+
+		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
+		{
+			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
+			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
+			DetGrid . ItemsSource = null;
+			this . DetGrid . Items . Clear ( );
+			this . DetGrid . ItemsSource = DetViewerDbcollection;
+			this . DetGrid . Refresh ( );
+		}
+		#endregion Startup/ Closedown
+
 
 		private void ShowBank_KeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
 		{
@@ -437,11 +452,11 @@ namespace WPFPages . Views
 				int currsel = this . DetGrid . SelectedIndex;
 				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 				Flags . IsMultiMode = true;
-				DetCollection det = new DetCollection ( );
-				det = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
-				this . DetGrid . ItemsSource = null;
-				this . DetGrid . ItemsSource = det;
-				this . DetGrid . Refresh ( );
+				DetailCollection det = new DetailCollection ( );
+				await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
+				//this . DetGrid . ItemsSource = null;
+				//this . DetGrid . ItemsSource = det;
+				//this . DetGrid . Refresh ( );
 
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
 				MultiAccounts . Template = tmp;
@@ -466,8 +481,8 @@ namespace WPFPages . Views
 				int currsel = this . DetGrid . SelectedIndex;
 				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 
-				DetCollection det = new DetCollection ( );
-				det = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
+				DetailCollection det = new DetailCollection ( );
+				await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 				// Just reset our iremssource to man Db
 				this . DetGrid . ItemsSource = null;
 				this . DetGrid . ItemsSource = DetViewerDbcollection;

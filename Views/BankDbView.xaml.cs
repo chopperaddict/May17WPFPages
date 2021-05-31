@@ -306,6 +306,7 @@ namespace WPFPages . Views
 				string bankno = "";
 				string custno = "";
 				var dvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+				if ( dvm == null ) return;
 
 				if ( SqlParentViewer != null )
 				{
@@ -451,6 +452,8 @@ namespace WPFPages . Views
 			{
 				int currsel = this . BankGrid . SelectedIndex;
 				BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
+				if ( bgr == null ) return;
+
 				Flags . IsMultiMode = true;
 
 				BankCollection bank = new BankCollection ( );
@@ -482,6 +485,7 @@ namespace WPFPages . Views
 				Flags . IsMultiMode = false;
 				int currsel = this . BankGrid . SelectedIndex;
 				BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
+				if ( bgr == null ) return;
 
 				BankCollection bank = new BankCollection ( );
 				bank = await bank . ReLoadBankData ( );

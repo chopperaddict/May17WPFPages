@@ -57,17 +57,17 @@ namespace WPFPages . Views
 		/// ONLY CONSTRUCTOR (Specialised)
 		/// <param name="edb"> This is the Caller class</param>
 		/// <param name="dg"> This is the (Active) Datagrid in the above class</param>
-		public EventHandlers ( DataGrid dg , string CallerName , out EventHandlers thisWin )
-		{
-			thisWin = this;
-			if ( !BankAccountViewModel . ShowSubscribeData )
-				return;
-			//			int count = 0;
-			//			int count2 = 0;
-			//if ( Flags . EventHandlerDebug )
-			//{
-			Debug . WriteLine ( $"EventHandler.EventHandlers(51) : In Constructor - CallerName = {CallerName}." );
-		}
+		//public EventHandlers ( DataGrid dg , string CallerName , out EventHandlers thisWin )
+		//{
+		//	thisWin = this;
+		//	if ( !BankAccountViewModel . ShowSubscribeData )
+		//		return;
+		//	//			int count = 0;
+		//	//			int count2 = 0;
+		//	//if ( Flags . EventHandlerDebug )
+		//	//{
+		//	Debug . WriteLine ( $"EventHandler.EventHandlers(51) : In Constructor - CallerName = {CallerName}." );
+		//}
 
 		// Not used if DEBUG is UnDefined
 		[Conditional ( "DEBUG" )]
@@ -84,20 +84,7 @@ namespace WPFPages . Views
 			int count9 = -1;
 			int count10 =-1;
 			int count11 =-1;
-			if ( !BankAccountViewModel . ShowSubscribeData )
-				return;
-			//ViewerDataHasBeenChanged
-			//Delegate [ ] dg = EventControl . GetEventCount ( );
-			//if ( dg != null ) count = dg . Length;
-			// NotifyOfDataChange
-			//dg = EventControl . GetEventCount2 ( );
-			//if ( dg != null ) count2 = dg . Length;
-			
-			// ViewerDataHasBeenChanged
-			//Delegate [ ] dg = EventControl . GetEventCount3 ( );
-			//if ( dg != null ) count3 = dg . Length;
-			
-			//EditIndexChanged
+
 			Delegate[] dg = EventControl . GetEventCount4 ( );
 			if ( dg != null ) count4 = dg . Length;
 			
@@ -160,60 +147,7 @@ namespace WPFPages . Views
 				Debug . WriteLine ( $"RecordDeleted					= {count9}" );
 
 			bool first = true;
-			//Delegate [ ] dglist2 = EventControl . GetEventCount ( );
-			//if ( dglist2 != null )
-			//{
-			//	int cnt = 0;
-			//	if ( !first )
-			//	{
-			//		Debug . WriteLine ( $"=====================================================================================" ); first = false;
-			//	}
-			//	Debug . WriteLine ( $"=====================================================================================" );
-			//	first = true;
-			//	foreach ( var item in dglist2 )
-			//	{
-			//		if ( cnt > 0 ) Debug . WriteLine ("");
-			//		//item . CurrentDb;
-			//		Debug . WriteLine ( $"Event : VIEWERDATAHASBEENCHANGED :\n >>> {item . Target}\nMethod = {item . Method . Name . ToString ( )}" );
-			//		cnt++;
-			//	}
-			//}
-			//dglist2 = EventControl . GetEventCount2 ( );
-			//if ( dglist2 != null )
-			//{
-			//	int cnt = 0;
-			//	if ( !first )
-			//	{
-			//		Debug . WriteLine ( $"=====================================================================================" ); first = false;
-			//	}
-			//	first = true;
-			//	Debug . WriteLine ( $"=====================================================================================" );
-			//	foreach ( var item in dglist2 )
-			//	{
-			//		if ( cnt > 0 ) Debug . WriteLine ("");
-			//		Debug . WriteLine ( $"Event : NOTIFYOFDATACHANGE : \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-			//		cnt++;
-			//	}
-			//}
-			//Delegate [] dglist2 = EventControl . GetEventCount3 ( );
-			//if ( dglist2 != null )
-			//{
-			//	int cnt = 0;
-			//	if ( !first )
-			//	{
-			//		Debug . WriteLine ( $"=====================================================================================" ); first = false;
-			//	}
-			//	first = true;
-			//	Debug . WriteLine ( $"=====================================================================================" );
-			//	foreach ( var item in dglist2 )
-			//	{
-			//		if ( cnt > 0 ) Debug . WriteLine ("");
-			//		Debug . WriteLine ( $"Event : VIEWERDATAHASBEENCHANGED: \n >>> {item . Target . ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-			//		cnt++;
-			//	}
-			//}
-
-			Delegate[]  dglist2 = EventControl . GetEventCount4 ( );
+		Delegate[]  dglist2 = EventControl . GetEventCount4 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;

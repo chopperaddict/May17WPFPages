@@ -1,14 +1,18 @@
 ﻿using System;
+using System . Collections . Generic;
 using System . Collections . ObjectModel;
+using System . ComponentModel;
 using System . Data;
 using System . Data . SqlClient;
 using System . Diagnostics;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
+using System . Windows . Data;
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 
+// Used By SqlDbViewer
 namespace WPFPages . Views
 {
 	public class DetCollection : ObservableCollection<DetailsViewModel>
@@ -30,11 +34,20 @@ namespace WPFPages . Views
 		private readonly object LockDetLoadData = new object ( );
 
 
+
+
 		#region CONSTRUCTOR
+		/// <summary>
+		/// Get a View
+		/// </summary>
+		private ICollectionView _DetviewerView;
+		public ICollectionView DetViewerView
+		{
+			get { return _DetviewerView; }
+		}
 
 		public DetCollection ( )
 		{
-			//			Flags . DetCollection = this;
 		}
 
 		#endregion CONSTRUCTOR
@@ -42,14 +55,43 @@ namespace WPFPages . Views
 		public async static Task<DetCollection> LoadDet ( DetCollection dc, int ViewerType = 1, bool NotifyAll = false )
 		{
 			Notify = NotifyAll;
+			// Want to see if we ever get here
+			Debugger . Break ();
 			try
 			{
-				// Called to Load/reload the One & Only Details collection data source
-				if ( dtDetails . Rows . Count > 0 )
-					dtDetails . Clear ( );
 
-				Debug . WriteLine ( $"\n ***** Loading Details Data from disk *****\n" );
-				await ProcessRequest ( ViewerType );
+				if ( USEFULLTASK )
+				{
+					DetCollection Detinternalcollection = new DetCollection ( );
+					await Detinternalcollection . LoadDetailsTaskInSortOrderAsync ( );
+					return ( DetCollection ) null;// Detinternalcollection;
+				}
+				else
+				{
+					//				Debug . WriteLine ( $"\n ***** Loading Details Data from disk (using Abbreviated AWAIT Control system)*****\n" );
+					DetCollection d = new DetCollection ( );
+					await d . LoadDetailsDataSql ( ) . ConfigureAwait ( false );
+					if ( dtDetails . Rows . Count > 0 )
+						await LoadDetTest ( Detinternalcollection ) . ConfigureAwait ( false );
+
+					// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
+					Flags . DetCollection = Detinternalcollection;
+					if ( Flags . IsMultiMode == false )
+					{
+						// Finally fill and return The global Dataset
+						SelectViewer ( ViewerType, Detinternalcollection );
+						return null;// Detinternalcollection;
+					}
+					else
+					{
+						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+						return null; // Detinternalcollection;
+					}
+				}
+
+
+				//Debug . WriteLine ( $"\n ***** Loading Details Data from disk *****\n" );
+				//await ProcessRequest ( ViewerType );
 
 				if ( Flags . IsMultiMode == false )
 				{
@@ -81,7 +123,7 @@ namespace WPFPages . Views
 			{
 				DetCollection Detinternalcollection = new DetCollection ( );
 				await Detinternalcollection . LoadDetailsTaskInSortOrderAsync ( );
-				return null;// Detinternalcollection;
+				return (DetCollection)null;// Detinternalcollection;
 			}
 			else
 			{

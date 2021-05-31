@@ -23,11 +23,11 @@ namespace WPFPages . Views
 	{
 		#region CLASS DECLARATIONS
 
-//		public static event DbUpdated NotifyOfDataChange;
+		//		public static event DbUpdated NotifyOfDataChange;
 
-		public BankCollection EditDbBankcollection = BankCollection . EditDbBankcollection;
-		public CustCollection EditDbCustcollection = CustCollection . EditDbCustcollection;
-		public DetCollection EditDbDetcollection = DetCollection . EditDbDetcollection;
+		public BankCollection EditDbBankcollection = null;// BankCollection . EditDbBankcollection;
+		public CustCollection EditDbCustcollection = null;//= CustCollection . EditDbCustcollection;
+		public DetCollection EditDbDetcollection = null;//= DetCollection . EditDbDetcollection;
 
 		public BankAccountViewModel bvm = MainWindow . bvm;
 		public CustomerViewModel cvm = MainWindow . cvm;
@@ -62,7 +62,7 @@ namespace WPFPages . Views
 
 		//		private EditEventArgs EditArgs = null;
 		public Task mainTask = null;
-		public bool SqlUpdating = false;
+//		public bool SqlUpdating = false;
 		public bool EditStart = false;
 		public bool Startup = true;
 		public bool IsDirty = false;
@@ -714,7 +714,7 @@ namespace WPFPages . Views
 				CurrentGrid = this . DataGrid1;
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(546) Window just loaded : getting instance of EventHandlers class with this,DataGrid1,\"EDITDB\"	Db = {DataGrid1 . Items . Count}" );
-				new EventHandlers ( this . DataGrid1, "EDITDB", out EventHandler );
+//				new EventHandlers ( this . DataGrid1, "EDITDB", out EventHandler );
 
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				Flags . CurrentEditDbViewerBankGrid = this . DataGrid1;
@@ -775,7 +775,7 @@ namespace WPFPages . Views
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(602) Window just loaded :  getting instance of EventHandlers class with this,DataGrid2,\"EDITDB\"	Db = {DataGrid2 . Items . Count}" );
 				//				EventHandlers . SetWindowHandles ( this, null, null );
-				new EventHandlers ( this . DataGrid2, "EDITDB", out EventHandler );
+//				new EventHandlers ( this . DataGrid2, "EDITDB", out EventHandler );
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				Flags . CurrentEditDbViewerCustomerGrid = this . DataGrid2;
 				BankAccountViewModel . ActiveEditDbViewer = this . DataGrid2;
@@ -835,7 +835,7 @@ namespace WPFPages . Views
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(660) Window just loaded :  getting instance of EventHandlers class with this,DataGrid1,\"EDITDB\"	Db = {DetailsGrid . Items . Count}" );
 				//				EventHandlers . SetWindowHandles ( this, null, null );
-				new EventHandlers ( this . DetailsGrid, "DETAILS", out EventHandler );
+//				new EventHandlers ( this . DetailsGrid, "DETAILS", out EventHandler );
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				if ( Flags . CurrentEditDbViewer == null )
 					Flags . CurrentEditDbViewer = new EditDb ( );
@@ -925,9 +925,6 @@ namespace WPFPages . Views
 		private void Window_Closed ( object sender, EventArgs e )
 		{
 			// Unsubscribe form Events as needed
-			//if ( NotifyOfDataChange != null )
-			//	NotifyOfDataChange -= DbChangedHandler;
-
 			if ( CurrentDb == "BANKACCOUNT" )
 				EventControl . BankDataLoaded -= EventControl_DataLoaded;
 			else if ( CurrentDb == "CUSTOMER" )
@@ -935,25 +932,12 @@ namespace WPFPages . Views
 			else if ( CurrentDb == "DETAILS" )
 				EventControl . DetDataLoaded -= EventControl_DataLoaded;
 
-
-			//			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
-
-			//if ( NotifyOfDataChange != null )
-			//	NotifyOfDataChange -= DbChangedHandler;
-
-			// We no longer need to listen out for these as we rely on SqlDbViewer to sned our special
-			// Delegate based parameter function to tell us to update our current index
-
-			//			EventControl . ViewerDataHasBeenChanged -= EditDbHasChangedIndex;
-			//			EventControl . EditIndexChanged -= EventControl_ViewerIndexChanged;
-			//			EventControl . ViewerIndexChanged -= EventControl_ViewerIndexChanged;
-			//			EventControl . MultiViewerIndexChanged -= EventControl_ViewerIndexChanged;
-
 			// Changes made by SqlDbViewer window
 			EventControl . ViewerDataUpdated -= EventControl_ViewerDataUpdated;
 			// Changes made by Multi viewer window
 			EventControl . MultiViewerDataUpdated -= EventControl_ViewerDataUpdated;
 			EventControl . RecordDeleted -= OnDeletion;
+			EventControl . ForceEditDbIndexChanged -= EventControl_ForceEditDbIndexChanged;
 
 			MainWindow . gv . SqlCurrentEditViewer = null;
 
@@ -1253,7 +1237,7 @@ namespace WPFPages . Views
 			{
 
 				// Row Deleted ???
-				BankAccountViewModel . SqlUpdating = true;
+//				BankAccountViewModel . SqlUpdating = true;
 				Debug . WriteLine ( $"DataGrid1_RowEditEnding() Starting Db Update " );
 				sqlh . UpdateDbRowAsync ( CurrentDb, this . DataGrid1 . SelectedItem, this . DataGrid1 . SelectedIndex );
 				Debug . WriteLine ( $"DataGrid1_RowEditEnding() Db Update finished" );
@@ -1267,7 +1251,7 @@ namespace WPFPages . Views
 				currsel = this . DataGrid1 . SelectedIndex;
 				//				Debug . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Entering to trigger SendDataChanged" );
 				// Row has been changed
-				BankAccountViewModel . SqlUpdating = true;
+//				BankAccountViewModel . SqlUpdating = true;
 				//				Debug . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid1_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
 
@@ -1293,7 +1277,7 @@ namespace WPFPages . Views
 			if ( e == null )
 			{
 				// Row Deleted ???
-				CustomerViewModel . SqlUpdating = true;
+//				CustomerViewModel . SqlUpdating = true;
 				Debug . WriteLine ( $"DataGrid2_RowEditEnding({this . DataGrid2 . SelectedIndex}) Starting Db Update " );
 				sqlh . UpdateDbRowAsync ( CurrentDb, this . DataGrid2 . SelectedItem, this . DataGrid2 . SelectedIndex );
 				Debug . WriteLine ( $"DataGrid2_RowEditEnding({this . DataGrid2 . SelectedIndex}) Db Update finished" );
@@ -1307,7 +1291,7 @@ namespace WPFPages . Views
 				int currsel = this . DataGrid2 . SelectedIndex;
 				// Row has been changed
 				//				Debug . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Entering to trigger SendDataChanged" );
-				CustomerViewModel . SqlUpdating = true;
+//				CustomerViewModel . SqlUpdating = true;
 				//				Debug . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid2_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid2 . SelectedItem );
 
@@ -1331,7 +1315,7 @@ namespace WPFPages . Views
 			if ( e == null )
 			{
 				// Row Deleted ???
-				DetailsViewModel . SqlUpdating = true;
+//				DetailsViewModel . SqlUpdating = true;
 				sqlh . UpdateDbRowAsync ( CurrentDb, this . DetailsGrid . SelectedItem, this . DetailsGrid . SelectedIndex );
 				Flags . DataLoadIngInProgress = true;
 				SendDataChanged ( CurrentDb );
@@ -1340,7 +1324,7 @@ namespace WPFPages . Views
 			{
 				int currsel = this . DetailsGrid . SelectedIndex;
 				// Row data has been changed, update the Db's first, then notify other viewers
-				DetailsViewModel . SqlUpdating = true;
+//				DetailsViewModel . SqlUpdating = true;
 
 				sqlh . UpdateDbRow ( CurrentDb, this . DetailsGrid . SelectedItem );
 

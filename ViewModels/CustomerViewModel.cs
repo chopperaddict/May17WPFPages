@@ -1,5 +1,6 @@
 ﻿//#define PERSISTENTDATA
 using System;
+using System . ComponentModel;
 using System . Data;
 using System . Windows . Controls;
 
@@ -10,7 +11,7 @@ namespace WPFPages . Views
 	//===========================
 	//CUSTOMER VIEW MODEL CLASS
 	//===========================
-	public class CustomerViewModel : Observable
+	public partial class CustomerViewModel //:Observable
 	{
 		#region CONSTRUCTORS
 
@@ -22,33 +23,6 @@ namespace WPFPages . Views
 		}
 
 		#endregion CONSTRUCTORS
-
-		public void SubscribeToChangeEvents ( )
-		{
-			if ( loaded ) return;
-			loaded = true;
-		}
-
-		/// <summary>
-		/// We have received a Callback for db change notification from one or other of the GridViewers
-		/// so we need to update OURSELVES
-		/// </summary>
-		/// <param name="sender"></param>
-		//public void DbHasChangedHandler ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args )
-		//{
-		//	if ( Flags . SqlBankViewer != null )
-		//		Flags . SqlBankViewer . ReloadBankOnUpdateNotification ( sender , Grid , args );
-		//	if ( Flags . SqlCustViewer != null )
-		//		Flags . SqlCustViewer . ReloadCustomerOnUpdateNotification ( sender , Grid , args );
-		//	if ( Flags . SqlDetViewer != null )
-		//		Flags . SqlDetViewer . ReloadDetailsOnUpdateNotification ( sender , Grid , args );
-		//	return;
-		//}
-
-		public void CustomersObs_CollectionChanged ( object sender , System . Collections . Specialized . NotifyCollectionChangedEventArgs e )
-		{
-			OnPropertyChanged ( "CustomerViewModel.CustomerObs" );
-		}
 
 		#region PRIVATE Variables declarations
 
@@ -68,28 +42,11 @@ namespace WPFPages . Views
 		private DateTime dob;
 		private DateTime odate;
 		private DateTime cdate;
-		private int selectedItem;
-		private int selectedIndex;
-		private int selectedRow;
 
 		private static bool loaded = false;
 
-		//		private string columnToFilterOn = "";
-//		private string filtervalue1 = "";
-
-//		private string filtervalue2 = "";
-//		private string operand = "";
 		public bool FilterResult = false;
-//		private string IsFiltered = "";
-//		private string FilterCommand = "";
-
-		//		private string PrettyDetails = "";
 		public bool isMultiMode = false;
-
-//		private static bool IsSubscribedToObsNotifications = false;
-
-		// one and only dtCust instance
-		public static DataTable dtCust = new DataTable ( );
 
 		#endregion PRIVATE Variables declarations
 
@@ -191,39 +148,6 @@ namespace WPFPages . Views
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
-		//public int SelectedItem
-		//{
-		//	get { return selectedItem; }
-
-		//	set
-		//	{
-		//		selectedItem = value;
-		//		OnPropertyChanged ( SelectedItem . ToString ( ) );
-		//	}
-		//}
-
-		//public int SelectedIndex
-		//{
-		//	get { return selectedIndex; }
-
-		//	set
-		//	{
-		//		selectedIndex = value;
-		//		OnPropertyChanged ( SelectedIndex . ToString ( ) );
-		//	}
-		//}
-
-		public int SelectedRow
-		{
-			get { return selectedRow; }
-
-			set
-			{
-				selectedRow = value;
-				OnPropertyChanged ( selectedRow . ToString ( ) );
-			}
-		}
-
 		#endregion PROPERTY SETTERS
 
 		#region PUBLIC & STATIC DECLARATIONS
@@ -232,14 +156,18 @@ namespace WPFPages . Views
 		public static CustomerViewModel cvm = MainWindow . cvm;
 		public static DetailsViewModel dvm = MainWindow . dvm;
 
-		public static bool SqlUpdating = false;
-		public static int CurrentSelectedIndex = 0;
-
 		#endregion PUBLIC & STATIC DECLARATIONS
 
-		#region SQL data handling
-
-		
-		#endregion SQL data handling
+		#region PropertyChanged
+		public event PropertyChangedEventHandler PropertyChanged;
+		protected void OnPropertyChanged ( string PropertyName )
+		{
+			if ( null != PropertyChanged )
+			{
+				PropertyChanged ( this,
+					new PropertyChangedEventArgs ( PropertyName ) );
+			}
+		}
+		#endregion PropertyChanged	
 	}
 }
