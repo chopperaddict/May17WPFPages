@@ -31,6 +31,7 @@ namespace WPFPages . Views
 		// Object used to lock Data Load from Sql and load into collection
 		private readonly object LockBankReadData = new object ( );
 		private readonly object LockBankLoadData = new object ( );
+		// Lock object
 
 		/// <summary>
 		/// Allows us to get a listb of all Db collections ?
@@ -58,14 +59,14 @@ namespace WPFPages . Views
 			try
 			{
 				// Called to Load/reload the One & Only Bankcollection data source
-				if ( dtBank . Rows . Count > 0 )
-					dtBank . Clear ( );
+				//if ( dtBank . Rows . Count > 0 )
+				//	dtBank . Clear ( );
 
 				Bankinternalcollection = new BankCollection ( );
 				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
 				{
-//					BankCollection db = new BankCollection ( );
+					//					BankCollection db = new BankCollection ( );
 					await Bankinternalcollection . LoadBankTaskInSortOrderasync ( );
 					return ( BankCollection ) null;
 
@@ -109,12 +110,16 @@ namespace WPFPages . Views
 		public async Task<BankCollection> LoadBankTaskInSortOrderasync ( bool Notify = false, int i = -1 )
 		// No longer used
 		{
-			if ( dtBank . Rows . Count > 0 )
-				dtBank . Clear ( );
+			//object LockBankReadData = null;
+			//lock ( LockBankReadData )
+			//{
 
-			if ( Bankinternalcollection . Items . Count > 0 )
-				Bankinternalcollection . ClearItems ( );
+				if ( dtBank . Rows . Count > 0 )
+					dtBank . Clear ( );
 
+				if ( Bankinternalcollection . Items . Count > 0 )
+					Bankinternalcollection . ClearItems ( );
+			//}
 			#region process code to load data
 
 			Task t1 = Task . Run (
@@ -195,7 +200,7 @@ namespace WPFPages . Views
 			return null;
 		}
 
-		public static bool  SelectViewer ( int ViewerType, BankCollection tmp )
+		public static bool SelectViewer ( int ViewerType, BankCollection tmp )
 		{
 			bool result = false;
 			switch ( ViewerType )
@@ -332,7 +337,7 @@ namespace WPFPages . Views
 						dtBank = new DataTable ( );
 					//lock ( bptr . LockBankReadData )
 					//{
-						sda . Fill ( dtBank );
+					sda . Fill ( dtBank );
 					//}
 				}
 			}
@@ -349,27 +354,27 @@ namespace WPFPages . Views
 			int count = 0;
 			try
 			{
-//				BankCollection bptr = new BankCollection ( );
+				//				BankCollection bptr = new BankCollection ( );
 				//lock ( bptr . LockBankLoadData )
 				//{
-//					BankCollection bc = new BankCollection ( );
-					for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
+				//					BankCollection bc = new BankCollection ( );
+				for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
+				{
+					Bankinternalcollection . Add ( new BankAccountViewModel
 					{
-						Bankinternalcollection . Add ( new BankAccountViewModel
-						{
-							Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
-							BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
-							CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
-							AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
-							Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
-							IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
-							ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
-							CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
-						} );
-						count = i;
-					}
-					//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
-//				}
+						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
+						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
+						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
+						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
+					} );
+					count = i;
+				}
+				//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
+				//				}
 			}
 			catch ( Exception ex )
 			{

@@ -31,9 +31,9 @@ namespace WPFPages
 		public static Dispatcher UiThread = Dispatcher . CurrentDispatcher;
 
 		// Declare all 3 of the Db pointers
-		public BankCollection SqlViewerBankcollection = BankCollection . SqlViewerBankcollection;
-		public CustCollection SqlViewerCustcollection = CustCollection . SqlViewerCustcollection;
-		public DetCollection SqlViewerDetcollection = DetCollection . SqlViewerDetcollection;
+		public BankCollection  SqlViewerBankcollection = null;
+		public CustCollection SqlViewerCustcollection = null;//= CustCollection . SqlViewerCustcollection;
+		public DetCollection SqlViewerDetcollection = null;// = DetCollection . SqlViewerDetcollection;
 
 		#region Delegate/Event declarations
 
@@ -84,9 +84,9 @@ namespace WPFPages
 
 		//Get "Local" copies of our global DataTables
 
-		public DataTable dtBank = BankCollection . dtBank;
-		public DataTable dtCust = CustCollection . dtCust;
-		public DataTable dtDetails = DetCollection . dtDetails;
+//		public DataTable dtBank = BankCollection . dtBank;
+//		public DataTable dtCust = CustCollection . dtCust;
+//		public DataTable dtDetails = DetCollection . dtDetails;
 
 		//Variables for Edithasoccurred delegate
 		private EditEventArgs EditArgs = null;
@@ -969,19 +969,19 @@ namespace WPFPages
 		//*************************************************************************************************************//
 		private async void EventControl_SqlDataUpdated ( object sender, LoadedEventArgs e )
 		{
-			if ( CurrentDb == "BANKACCOUNT" && e . CallerDb == "BANKACCOUNT" )
+			if ( CurrentDb == "BANKACCOUNT" && e . CallerDb != "BANKACCOUNT" )
 			{
-				// its us, dont bother
+				// its not for us, so dont bother
 				return;
 			}
-			if ( CurrentDb == "CUSTOMER" && e . CallerDb == "CUSTOMER" )
+			if ( CurrentDb == "CUSTOMER" && e . CallerDb != "CUSTOMER" )
 			{
-				// its us, dont bother
+				// its not for us, so dont bother
 				return;
 			}
-			if ( CurrentDb == "DETAILS" && e . CallerDb == "DETAILS" )
+			if ( CurrentDb == "DETAILS" && e . CallerDb != "DETAILS" )
 			{
-				// its us, dont bother
+				// its not for us, so dont bother
 				return;
 			}
 
@@ -1386,37 +1386,37 @@ namespace WPFPages
 			{
 				this . BankGrid . ItemsSource = null;
 				BankGrid?.Items . Clear ( );
-				dtBank?.Rows . Clear ( );
+//				dtBank?.Rows . Clear ( );
 				Flags . BankEditDb = null;
 				Flags . CurrentEditDbViewerBankGrid = null;
 				Flags . CurrentBankViewer = null;
 				// Tidy up our Db pointers
-				SqlViewerBankcollection?.Clear ( );
-				SqlViewerBankcollection = null;
+//				SqlViewerBankcollection?.Clear ( );
+//				SqlViewerBankcollection = null;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
 				this . CustomerGrid . ItemsSource = null;
 				CustomerGrid?.Items . Clear ( );
-				dtCust?.Rows . Clear ( );
+//				dtCust?.Rows . Clear ( );
 				Flags . CustEditDb = null;
 				Flags . CurrentEditDbViewerCustomerGrid = null;
 				Flags . CurrentCustomerViewer = null;
 				// Tidy up our Db pointers
-				SqlViewerCustcollection? . Clear ( );
-				SqlViewerCustcollection = null;
+//				SqlViewerCustcollection? . Clear ( );
+//				SqlViewerCustcollection = null;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
 				this . DetailsGrid . ItemsSource = null;
 				DetailsGrid?.Items . Clear ( );
-				dtDetails?.Rows . Clear ( );
+//				dtDetails?.Rows . Clear ( );
 				Flags . DetEditDb = null;
 				Flags . CurrentEditDbViewerDetailsGrid = null;
 				Flags . CurrentDetailsViewer = null;
 				// Tidy up our Db pointers
-				SqlViewerDetcollection? . Clear ( );
-				SqlViewerDetcollection = null;
+//				SqlViewerDetcollection? . Clear ( );
+//				SqlViewerDetcollection = null;
 			}
 
 			// make sure we clear this as it is a global static, so new oiwndows will load thinking they are in multi mode !
@@ -1541,7 +1541,7 @@ namespace WPFPages
 				Flags . SqlBankGrid = null;
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
-				dtBank?.Clear ( );
+//				dtBank?.Clear ( );
 				SqlViewerBankcollection = null;
 				this . BankGrid . Visibility = Visibility . Hidden;
 			}
@@ -1554,7 +1554,7 @@ namespace WPFPages
 				Flags . SqlCustGrid = null;
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
-				dtCust?.Clear ( );
+//				dtCust?.Clear ( );
 				SqlViewerCustcollection = null;
 				this . CustomerGrid . Visibility = Visibility . Hidden;
 			}
@@ -1566,7 +1566,7 @@ namespace WPFPages
 				Flags . SqlDetGrid = null;
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . Items . Clear ( );
-				dtDetails?.Clear ( );
+//				dtDetails?.Clear ( );
 				SqlViewerDetcollection = null;
 				this . DetailsGrid . Visibility = Visibility . Hidden;
 			}
@@ -1982,7 +1982,7 @@ namespace WPFPages
 			{
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
-				dtBank . Clear ( );
+//				dtBank . Clear ( );
 				 await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
 				//this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerBankcollection );
 				////				ExtensionMethods . Refresh ( this . BankGrid );
@@ -1994,7 +1994,7 @@ namespace WPFPages
 			{
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
-				dtCust . Clear ( );
+//				dtCust . Clear ( );
 				await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
 				//this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerCustcollection );
 				//this . CustomerGrid . Refresh ( );
@@ -2006,7 +2006,7 @@ namespace WPFPages
 			{
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . Items . Clear ( );
-				dtDetails . Clear ( );
+//				dtDetails . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
 				await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
 				//this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerDetcollection );
@@ -2457,8 +2457,11 @@ namespace WPFPages
 				//If data has been changed, update everywhere
 				if ( rip . IsDirty )
 				{
-					BankAccountViewModel bvm = new BankAccountViewModel ( );
-					bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+					// This is done in RowPopup()
+					//BankAccountViewModel bvm = new BankAccountViewModel ( );
+					//bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+					//SQLHandlers sqlh = new SQLHandlers ( );
+					//sqlh . UpdateDbRowAsync ( "BANKACCOUNT",bvm );
 					this . BankGrid . ItemsSource = null;
 					this . BankGrid . Items . Clear ( );
 					SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
@@ -4091,6 +4094,11 @@ namespace WPFPages
 				// Update the row on return in case it has been changed
 				if ( rip . IsDirty )
 				{
+					// This is done in RowPopup()
+					//CustomerViewModel bvm = new CustomerViewModel ( );
+					//cvm = this . CustomerGrid . SelectedItem as CustomerViewModel;
+					//SQLHandlers sqlh = new SQLHandlers ( );
+					//sqlh . UpdateDbRowAsync ( "CUSTOMER", cvm );
 					this . CustomerGrid . ItemsSource = null;
 					this . CustomerGrid . Items . Clear ( );
 					await CustCollection . LoadCust ( SqlViewerCustcollection, 1, true );
@@ -4143,6 +4151,10 @@ namespace WPFPages
 					this . DetailsGrid . SelectedItem = RowData . Item;
 					if ( rip . IsDirty )
 					{
+						DetailsViewModel bvm = new DetailsViewModel ( );
+						dvm = this . DetailsGrid . SelectedItem as DetailsViewModel;
+						SQLHandlers sqlh = new SQLHandlers ( );
+						sqlh . UpdateDbRowAsync ( "DETAILS", dvm );
 						this . DetailsGrid . ItemsSource = null;
 						this . DetailsGrid . Items . Clear ( );
 						await DetCollection . LoadDet ( SqlViewerDetcollection, 1, true );
@@ -4948,7 +4960,7 @@ namespace WPFPages
 					cust = BankRecord . CustNo;
 					dg . ItemsSource = null;
 					SqlViewerBankcollection . Clear ( );
-					dtBank?.Clear ( );
+//					dtBank?.Clear ( );
 
 					//Remove it from SQL Db as well
 					DeleteRecord ( "BANKACCOUNT", BankRecord . BankNo, BankRecord . CustNo, CurrentRow );
@@ -5017,7 +5029,7 @@ namespace WPFPages
 					// Remove it form THIS DataGrid here
 					dg . ItemsSource = null;
 					SqlViewerDetcollection . Clear ( );
-					dtDetails?.Clear ( );
+//					dtDetails?.Clear ( );
 
 					//Remove it from SQL Db as well
 					DeleteRecord ( "DETAILS", DetailsRecord . BankNo, DetailsRecord . CustNo, CurrentRow );
@@ -5612,13 +5624,18 @@ namespace WPFPages
 				// Update the row on return in case it has been changed
 				if ( rip . IsDirty )
 				{
+					// This is done in RowPopup()
+					//BankAccountViewModel bvm = new BankAccountViewModel ( );
+					//bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+					//SQLHandlers sqlh = new SQLHandlers ( );
+					//sqlh . UpdateDbRowAsync ( "BANKACCOUNT", bvm );
 					this . BankGrid . ItemsSource = null;
 					this . BankGrid . Items . Clear ( );
 					SqlViewerBankcollection = await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
 					this . BankGrid . ItemsSource = SqlViewerBankcollection;
 					StatusBar . Text = "Current Record Updated Successfully...";
 					// Notify everyone else of the data change
-					EventControl . TriggerDataUpdated ( SqlViewerBankcollection,
+					EventControl . TriggerViewerDataUpdated ( SqlViewerBankcollection,
 						new LoadedEventArgs
 						{
 							CallerDb = "BANKACCOUNT",

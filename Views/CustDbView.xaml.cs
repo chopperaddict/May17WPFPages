@@ -15,7 +15,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class CustDbView : Window
 	{
-		public static CustCollection CustViewerDbcollection = new CustCollection ( );//. CustViewerDbcollection;
+		public static CustCollection CustViewerDbcollection = null;// = new CustCollection ( );//. CustViewerDbcollection;
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool Triggered = false;
@@ -48,6 +48,7 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			Mouse . OverrideCursor = Cursors . Wait;
 			this . Show ( );
 			this . Refresh ( );
 			Startup = true;
@@ -166,6 +167,7 @@ namespace WPFPages . Views
 			int currsel = this . CustGrid . SelectedIndex;
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
+			Mouse . OverrideCursor = Cursors . Wait;
 			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . SelectedIndex = currsel;
@@ -224,6 +226,7 @@ namespace WPFPages . Views
 			this . CustGrid . ItemsSource = CustViewerDbcollection;
 			this . CustGrid . SelectedIndex = 0;
 			this . CustGrid . SelectedItem = 0;
+			Mouse . OverrideCursor = Cursors . Arrow;
 			this . CustGrid . Refresh ( );
 		}
 

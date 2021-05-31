@@ -51,7 +51,7 @@ namespace WPFPages . Views
 		public static event EventHandler<LoadedEventArgs> EditDbDataUpdated;
 		public static event EventHandler<LoadedEventArgs> MultiViewerDataUpdated;
 
-		public static event EventHandler<LoadedEventArgs> DataUpdated;
+//		public static event EventHandler<LoadedEventArgs> DataUpdated;
 		public static event EventHandler<LoadedEventArgs> RecordDeleted;
 		// Event we TRIGGER to notify SqlViewer of  a selectedindex change
 		// uses delegate : public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
@@ -81,13 +81,15 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 
 //dummy to stop error only
-		public static void TriggerDataUpdated ( object obj, LoadedEventArgs e )
-		{
-			DataUpdated?.Invoke ( obj, e );
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DataUpdated EVENT trigger" );
-		}
+		//public static void TriggerDataUpdated ( object obj, LoadedEventArgs e )
+		//{
+		//	DataUpdated?.Invoke ( obj, e );
+		//	Console . WriteLine ( $"DEBUG : In EventControl : Sending  DataUpdated EVENT trigger" );
+		//}
 
+		//------------------------------//
 		// INDEX CHANGE EVENTS
+		//------------------------------//
 		public static void TriggerForceEditDbIndexChanged ( object obj, IndexChangedArgs e )
 		{
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ForceEditDbIndexChanged EVENT trigger" );
@@ -108,7 +110,9 @@ namespace WPFPages . Views
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
 			MultiViewerIndexChanged?.Invoke ( obj, e );
 		}
+		//------------------------------//
 		// DATA CHANGE EVENTS
+		//------------------------------//
 		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
@@ -124,6 +128,9 @@ namespace WPFPages . Views
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
 			MultiViewerDataUpdated?.Invoke ( obj, e );
 		}
+		//------------------------------//
+		// DATA LOADED EVENTS
+		//------------------------------//		
 		public static void TriggerBankDataLoaded ( object obj , LoadedEventArgs e )
 		{
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  BankDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
@@ -139,41 +146,16 @@ namespace WPFPages . Views
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
 			DetDataLoaded?.Invoke ( obj, e );
 		}
-
-		//public static void TriggerRecordDeleted ( string Source , string bankno , string custno , int CurrrentRow )
-		//{
+		//------------------------------//
+		// DATA DELETION EVENTS
+		//------------------------------//
 		public static void TriggerRecordDeleted ( object obj, LoadedEventArgs e )
 		{
 			RecordDeleted?.Invoke ( obj, e );
 				Console . WriteLine ( $"DEBUG : In EventControl : Sending  RecordDeleted  EVENT trigger" );
-
-//			RecordDeleted?. Invoke ( Source , bankno , custno , CurrrentRow );
 		}
 
 		#region DEBUG utilities
-		//public static Delegate [ ] GetEventCount ( )
-		//{
-		//	Delegate [ ] dglist2 = null;
-		//	if ( ViewerDataHasBeenChanged != null )
-		//		dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
-		//	return dglist2;
-		//}
-
-		//public static Delegate [ ] GetEventCount2 ( )
-		//{
-		//	Delegate [ ] dglist2 = null;
-		//	if ( NotifyOfDataChange != null )
-		//		dglist2 = NotifyOfDataChange?.GetInvocationList ( );
-		//	return dglist2;
-		//}
-
-		//public static Delegate [ ] GetEventCount3 ( )
-		//{
-		//	Delegate [ ] dglist2 = null;
-		//	if ( ViewerDataHasBeenChanged != null )
-		//		dglist2 = ViewerDataHasBeenChanged?.GetInvocationList ( );
-		//	return dglist2;
-		//}
 
 		public static Delegate [ ] GetEventCount4 ( )
 		{
@@ -229,13 +211,13 @@ namespace WPFPages . Views
 				dglist2 = ViewerIndexChanged?.GetInvocationList ( );
 			return dglist2;
 		}
-		public static Delegate [ ] GetEventCount11 ( )
-		{
-			Delegate [ ] dglist2 = null;
-			if ( DataUpdated != null )
-				dglist2 = DataUpdated?.GetInvocationList ( );
-			return dglist2;
-		}
+		//public static Delegate [ ] GetEventCount11 ( )
+		//{
+		//	Delegate [ ] dglist2 = null;
+		//	if ( DataUpdated != null )
+		//		dglist2 = DataUpdated?.GetInvocationList ( );
+		//	return dglist2;
+		//}
 
 		#endregion DEBUG utilities
 

@@ -21,7 +21,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class DetailsDbView : Window
 	{
-		public DetCollection DetViewerDbcollection = new DetCollection ( );//. DetViewerDbcollection;
+		public DetCollection DetViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool LinktoParent = false;
@@ -54,6 +54,7 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			Mouse . OverrideCursor = Cursors . Wait;
 			this . Show ( );
 			this . Refresh ( ); 
 			Startup = true;
@@ -176,6 +177,7 @@ namespace WPFPages . Views
 
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
+			Mouse . OverrideCursor = Cursors . Wait;
 			DetViewerDbcollection = await DetCollection . LoadDet ( DetViewerDbcollection, 2, true );
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . Refresh ( );
@@ -240,6 +242,7 @@ namespace WPFPages . Views
 			this . DetGrid . ItemsSource = DetViewerDbcollection;
 			this . DetGrid . SelectedIndex = 0;
 			this . DetGrid . SelectedItem = 0;
+			Mouse . OverrideCursor = Cursors . Arrow;
 			this . DetGrid . Refresh ( );
 		}
 

@@ -19,13 +19,13 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class MultiViewer : Window
 	{
-		public static BankCollection MultiBankcollection = BankCollection . MultiBankcollection;
-		public static CustCollection MultiCustcollection = CustCollection . MultiCustcollection;
-		public static DetCollection MultiDetcollection = DetCollection . MultiDetcollection;
+		public static BankCollection MultiBankcollection = null;// = BankCollection . MultiBankcollection;
+		public static CustCollection MultiCustcollection = null;// = CustCollection . MultiCustcollection;
+		public static DetCollection MultiDetcollection = null;// = DetCollection . MultiDetcollection;
 
-		dynamic bindex = 0;
-		dynamic cindex = 0;
-		dynamic dindex = 0;
+		public static int bindex = 0;
+		public static int cindex = 0;
+		public static int dindex = 0;
 		dynamic CurrentSelection = 0;
 		dynamic key1 = false;
 		dynamic GridsLinked = true;
@@ -36,6 +36,7 @@ namespace WPFPages . Views
 		private bool inprogress = false;
 		private bool Triggered = false;
 		private bool ReloadingData = false;
+		public bool isLoading = true;
 		#endregion DECLARATIONS
 
 		public struct scrollData
@@ -71,14 +72,19 @@ namespace WPFPages . Views
 			this . CustomerGrid . ItemsSource = MultiCustcollection;
 			this . DetailsGrid . ItemsSource = MultiDetcollection;
 
-			//Select first record in all grids using an Action declared in SqlDbViewer
-			Utils . GridInitialSetup ( BankGrid, 0 );
-			Utils . GridInitialSetup ( CustomerGrid, 0 );
-			Utils . GridInitialSetup ( DetailsGrid, 0 );
+			// Setup global pointers to our data grids
+			Flags . SqlBankGrid = this . BankGrid;
+			Flags . SqlCustGrid = this . CustomerGrid;
+			Flags . SqlDetGrid = this . DetailsGrid;
 
-			Utils . SetUpGridSelection ( this . BankGrid, 0 );
-			Utils . SetUpGridSelection ( this . CustomerGrid, 0 );
-			Utils . SetUpGridSelection ( this . DetailsGrid, 0 );
+			////Select first record in all grids using an Action declared in SqlDbViewer
+			//Utils . GridInitialSetup ( BankGrid, 0 );
+			//Utils . GridInitialSetup ( CustomerGrid, 0 );
+			//Utils . GridInitialSetup ( DetailsGrid, 0 );
+
+			//Utils . SetUpGridSelection ( this . BankGrid, 0 );
+			//Utils . SetUpGridSelection ( this . CustomerGrid, 0 );
+			//Utils . SetUpGridSelection ( this . DetailsGrid, 0 );
 
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
@@ -91,17 +97,156 @@ namespace WPFPages . Views
 			this . Topmost = true;
 			inprogress = false;
 			Mouse . OverrideCursor = Cursors . Arrow;
-			StartDataWatcher ( );
+			//			StartDataWatcher ( );
+			isLoading = false;
 		}
-		public void StartDataWatcher ( )
+
+		#region WATCH FOR Db CLOSURE - not used right now, but works well' ish
+		public async void StartDataWatcher ( )
 		{
-			DateTime watcher = DateTime.Now;
-//			Thread t = Thread.Factory.St (watcher );
+			Task t1 = Task . Run ( WatchForDbLoss );
+		}
+		public async void WatchForDbLoss ( )
+		{
 			while ( true )
 			{
+				Thread . Sleep ( 1500 );
 
+				if ( isLoading )
+					continue;
+				if ( this . BankGrid . Items . Count == 0 )
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						Mouse . OverrideCursor = Cursors . Wait;
+						ReloadBankDb ( );
+					} );
+					Thread . Sleep ( 5000 );
+				}
+				else if ( this . CustomerGrid . Items . Count == 0 )
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						Mouse . OverrideCursor = Cursors . Wait;
+						ReloadCustDb ( );
+					} );
+					Thread . Sleep ( 5000 );
+				}
+				else if ( this . DetailsGrid . Items . Count == 0 )
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						Mouse . OverrideCursor = Cursors . Wait;
+						ReloadDetDb ( );
+					} );
+					Thread . Sleep ( 5000 );
+				}
 			}
+			return;
 		}
+		private Task ReloadBankDb ( )
+		{
+			Task t1 = null;
+			isLoading = true;
+			Mouse . OverrideCursor = Cursors . Wait;
+			Application . Current . Dispatcher . Invoke ( ( ) =>
+			{
+				BankCollection . LoadBank ( MultiBankcollection, 3, true );
+			} );
+
+			Thread . Sleep ( 5000 );
+			return t1;
+		}
+		private Task ReloadCustDb ( )
+		{
+			Task t1 = null;
+			Application . Current . Dispatcher . Invoke ( ( ) =>
+			{
+				Mouse . OverrideCursor = Cursors . Wait;
+				CustCollection . LoadCust ( MultiCustcollection, 3, true );
+			} );
+			Thread . Sleep ( 5000 );
+			return t1;
+		}
+		private Task ReloadDetDb ( )
+		{
+			Task t1 = null;
+			Application . Current . Dispatcher . Invoke ( ( ) =>
+			{
+				Mouse . OverrideCursor = Cursors . Wait;
+				DetCollection . LoadDet ( MultiDetcollection, 3, true );
+			} );
+			Thread . Sleep ( 5000 );
+			return t1;
+		}
+
+		#endregion WATCH FOR Db CLOSURE
+		#region Post Data Reloaded event handlers - ALL WORKING WELL 26/5/21
+
+		/// <summary>
+		/// Handles rsetting the index after Bank data has been reoloaded
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			if ( e . DataSource == null ) return;
+			this . BankGrid . ItemsSource = null;
+			this . BankGrid . ItemsSource = e . DataSource as BankCollection;
+			this . BankGrid . Refresh ( );
+			BankGrid . SelectedIndex = bindex;
+			BankGrid . SelectedItem = bindex;
+			BankGrid . Refresh ( );
+			BankGrid . UpdateLayout ( );
+			//				Utils . ScrollRecordIntoView ( BankGrid, bindex );
+			Debug . WriteLine ( $"Resetting BankGrid Index to {bindex}" );
+
+			Utils . SetUpGridSelection ( this . BankGrid, bindex );
+			Mouse . OverrideCursor = Cursors . Arrow;
+			isLoading = false;
+		}
+		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
+		/// <summary>
+		/// Handles rsetting the index after Customer data has been reoloaded
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		{
+			if ( e . DataSource == null ) return;
+			this . CustomerGrid . ItemsSource = null;
+			this . CustomerGrid . ItemsSource = e . DataSource as CustCollection;
+			this . CustomerGrid . Refresh ( );
+			CustomerGrid . SelectedIndex = cindex;
+			CustomerGrid . SelectedItem = cindex;
+			CustomerGrid . Refresh ( );
+			CustomerGrid . UpdateLayout ( );
+			//				Utils . ScrollRecordIntoView ( CustomerGrid, cindex );
+			Utils . SetUpGridSelection ( this . CustomerGrid, cindex );
+			Mouse . OverrideCursor = Cursors . Arrow;
+			isLoading = false;
+		}
+		/// <summary>
+		/// Handles resetting the index after Details data has been reloaded
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
+		{
+			if ( e . DataSource == null ) return;
+			this . DetailsGrid . ItemsSource = null;
+			this . DetailsGrid . ItemsSource = e . DataSource as DetCollection;
+			this . DetailsGrid . Refresh ( );
+			DetailsGrid . SelectedIndex = dindex;
+			DetailsGrid . SelectedItem = dindex;
+			DetailsGrid . Refresh ( );
+			DetailsGrid . UpdateLayout ( );
+			//				Utils . ScrollRecordIntoView ( DetailsGrid, dindex );
+			Utils . SetUpGridSelection ( this . DetailsGrid, dindex );
+			Mouse . OverrideCursor = Cursors . Arrow;
+			isLoading = false;
+		}
+		#endregion Post Data Reloaded event handlers
+
 		private void SubscribeToEvents ( )
 		{
 			this . MouseDown += delegate { DoDragMove ( ); };
@@ -653,6 +798,8 @@ namespace WPFPages . Views
 				BankData . DataContext = this . BankGrid . SelectedItem;
 				Triggered = false;
 			}
+			bindex = this . BankGrid . SelectedIndex;
+			Debug . WriteLine ( $"BankGrid Index = {bindex}" );
 			inprogress = false;
 			try
 			{ e . Handled = true; }
@@ -715,6 +862,8 @@ namespace WPFPages . Views
 			}
 
 			inprogress = false;
+			cindex = this . CustomerGrid . SelectedIndex;
+
 			try
 			{ e . Handled = true; }
 			catch ( Exception ex ) { }
@@ -774,6 +923,8 @@ namespace WPFPages . Views
 			}
 
 			inprogress = false;
+			dindex = this . DetailsGrid . SelectedIndex;
+
 			try
 			{ e . Handled = true; }
 			catch ( Exception ex ) { }
@@ -1483,70 +1634,6 @@ namespace WPFPages . Views
 		}
 		#endregion Data Edited event creators
 
-		#region Post Data Reloaded event handlers - ALL WORKING WELL 26/5/21
-
-		/// <summary>
-		/// Handles rsetting the index after Bank data has been reoloaded
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
-		{
-			if ( e . CallerDb == "BANKACCOUNT" )
-			{
-				if ( e . DataSource == null ) return;
-				this . BankGrid . ItemsSource = null;
-				this . BankGrid . ItemsSource = e . DataSource as BankCollection;
-				this . BankGrid . Refresh ( );
-				BankGrid . SelectedIndex = bindex;
-				BankGrid . SelectedItem = bindex;
-				BankGrid . Refresh ( );
-				BankGrid . UpdateLayout ( );
-				Utils . ScrollRecordIntoView ( BankGrid, bindex );
-			}
-		}
-		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
-		/// <summary>
-		/// Handles rsetting the index after Customer data has been reoloaded
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		{
-			if ( e . CallerDb == "CUSTOMER" )
-			{
-				if ( e . DataSource == null ) return;
-				this . CustomerGrid . ItemsSource = null;
-				this . CustomerGrid . ItemsSource = e . DataSource as CustCollection;
-				this . CustomerGrid . Refresh ( );
-				CustomerGrid . SelectedIndex = cindex;
-				CustomerGrid . SelectedItem = cindex;
-				CustomerGrid . Refresh ( );
-				CustomerGrid . UpdateLayout ( );
-				Utils . ScrollRecordIntoView ( CustomerGrid, cindex );
-
-			}
-		}
-		/// <summary>
-		/// Handles resetting the index after Details data has been reloaded
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
-		{
-			if ( e . CallerDb == "DETAILS" )
-			{
-				if ( e . DataSource == null ) return;
-				this . DetailsGrid . ItemsSource = null;
-				this . DetailsGrid . ItemsSource = e . DataSource as DetCollection;
-				this . DetailsGrid . Refresh ( );
-				DetailsGrid . SelectedIndex = dindex;
-				DetailsGrid . SelectedItem = dindex;
-				DetailsGrid . Refresh ( );
-				DetailsGrid . UpdateLayout ( );
-				Utils . ScrollRecordIntoView ( DetailsGrid, dindex );
-			}
-		}
-		#endregion Post Data Reloaded event handlers
 
 
 		/// <summary>
@@ -1989,25 +2076,146 @@ namespace WPFPages . Views
 					return;
 				}
 				e . Handled = false;
-#pragma TESTING DATA LOAD CALLBACK
+				// Tidy up our own grid after ourselves
+				if ( dg . Items . Count > 0 && CurrentRow >= 0 )
+					dg . SelectedIndex = CurrentRow;
+				else if ( dg . Items . Count == 1 )
+					dg . SelectedIndex = 0;
 
-				{
-					// Tidy up our own grid after ourselves
-					if ( dg . Items . Count > 0 && CurrentRow >= 0 )
-						dg . SelectedIndex = CurrentRow;
-					else if ( dg . Items . Count == 1 )
-						dg . SelectedIndex = 0;
+				//dg.SelectedIndex = Flags.
+				dg . SelectedItem = dg . SelectedIndex;
+				if ( dg . SelectedItem != null )
+					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 
-					//dg.SelectedIndex = Flags.
-					dg . SelectedItem = dg . SelectedIndex;
-					if ( dg . SelectedItem != null )
-						Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
-
-				}
 			}
 			e . Handled = false;
 		}
 
+		private async void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			if ( e . ChangedButton == MouseButton . Right )
+			{
+				DataGridRow RowData = new DataGridRow ( );
+				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
+				if ( row == -1 ) row = 0;
+				RowInfoPopup rip = new RowInfoPopup ( "BANKACCOUNT", BankGrid, RowData );
+				rip . Topmost = true;
+				rip . DataContext = RowData;
+				rip . BringIntoView ( );
+				rip . Focus ( );
+				rip . ShowDialog ( );
+
+				//If data has been changed, update everywhere
+				// Update the row on return in case it has been changed
+				if ( rip . IsDirty )
+				{
+					this . BankGrid . ItemsSource = null;
+					this . BankGrid . Items . Clear ( );
+					MultiBankcollection = await BankCollection . LoadBank ( MultiBankcollection, 1, true );
+//					this . BankGrid . ItemsSource = MultiBankcollection;
+					//					StatusBar . Text = "Current Record Updated Successfully...";
+					// Notify everyone else of the data change
+					EventControl . TriggerViewerDataUpdated ( MultiBankcollection,
+						new LoadedEventArgs
+						{
+							CallerDb = "BANKACCOUNT",
+							DataSource = MultiBankcollection,
+							RowCount = this . BankGrid . SelectedIndex
+						} );
+				}
+				else
+					this . BankGrid . SelectedItem = RowData . Item;
+
+				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+				//Utils . SetUpGridSelection ( this . BankGrid, row );
+				//// This is essential to get selection activated again
+				this . BankGrid . Focus ( );
+			}
+		}
+
+		private async void CustGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			if ( e . ChangedButton == MouseButton . Right )
+			{
+				DataGridRow RowData = new DataGridRow ( );
+				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
+				if ( row == -1 ) row = 0;
+				RowInfoPopup rip = new RowInfoPopup ( "CUSTOMER", CustomerGrid, RowData );
+				rip . Topmost = true;
+				rip . DataContext = RowData;
+				rip . BringIntoView ( );
+				rip . Focus ( );
+				rip . ShowDialog ( );
+
+				//If data has been changed, update everywhere
+				// Update the row on return in case it has been changed
+				if ( rip . IsDirty )
+				{
+					this . CustomerGrid . ItemsSource = null;
+					this . CustomerGrid . Items . Clear ( );
+					MultiCustcollection = await CustCollection . LoadCust ( MultiCustcollection, 1, true );
+//					this . CustomerGrid . ItemsSource = MultiCustcollection;
+					//					StatusBar . Text = "Current Record Updated Successfully...";
+					// Notify everyone else of the data change
+					EventControl . TriggerViewerDataUpdated ( MultiCustcollection,
+						new LoadedEventArgs
+						{
+							CallerDb = "CUSTOMER",
+							DataSource = MultiCustcollection,
+							RowCount = this . CustomerGrid . SelectedIndex
+						} );
+				}
+				else
+					this . CustomerGrid . SelectedItem = RowData . Item;
+
+				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+//				Utils . SetUpGridSelection ( this . CustomerGrid, row );
+				// This is essential to get selection activated again
+				this . CustomerGrid . Focus ( );
+			}
+		}
+
+		private async void DetGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			if ( e . ChangedButton == MouseButton . Right )
+			{
+				DataGridRow RowData = new DataGridRow ( );
+				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
+				if ( row == -1 ) row = 0;
+				RowInfoPopup rip = new RowInfoPopup ( "DETAILS", DetailsGrid, RowData );
+				rip . Topmost = true;
+				rip . DataContext = RowData;
+				rip . BringIntoView ( );
+				rip . Focus ( );
+				rip . ShowDialog ( );
+
+				//If data has been changed, update everywhere
+				// Update the row on return in case it has been changed
+				if ( rip . IsDirty )
+				{
+					this . DetailsGrid . ItemsSource = null;
+					this . DetailsGrid . Items . Clear ( );
+					MultiDetcollection = await DetCollection . LoadDet ( MultiDetcollection, 1, true );
+//					this . DetailsGrid . ItemsSource = MultiDetcollection;
+					//					StatusBar . Text = "Current Record Updated Successfully...";
+					// Notify everyone else of the data change
+					EventControl . TriggerViewerDataUpdated ( MultiDetcollection,
+						new LoadedEventArgs
+						{
+							CallerDb = "DETAILS",
+							DataSource = MultiDetcollection,
+							RowCount = this . DetailsGrid . SelectedIndex
+						} );
+				}
+				else
+					this . DetailsGrid . SelectedItem = RowData . Item;
+
+				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+//				Utils . SetUpGridSelection ( this . DetailsGrid, row );
+				// This is essential to get selection activated again
+				this . DetailsGrid . Focus ( );
+			}
+		}
 	}
 	/* UNUSED METHODS
 

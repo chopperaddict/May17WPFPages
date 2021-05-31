@@ -16,7 +16,7 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class BankDbView : Window
 	{
-		public BankCollection BankViewcollection = new BankCollection ( );//. EditDbBankcollection;
+		public BankCollection BankViewcollection = null;// = new BankCollection ( );//. EditDbBankcollection;
 		private bool IsDirty = false;
 		static bool Startup = true;
 		private bool LinktoParent = false;
@@ -50,6 +50,7 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			Mouse . OverrideCursor = Cursors . Wait;
 			this . Show ( );
 			this . Refresh ( );
 			Startup = true;
@@ -168,6 +169,7 @@ namespace WPFPages . Views
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
+			Mouse . OverrideCursor = Cursors . Wait;
 			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection, 3, true );
 			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
@@ -227,9 +229,11 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedIndex = 0;
 			this . BankGrid . SelectedItem = 0;
 			this . BankGrid . Refresh ( );
+			Mouse . OverrideCursor = Cursors . Arrow;
+
 		}
 
-		
+
 		private void ShowBank_KeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
 		{
 
