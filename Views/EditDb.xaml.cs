@@ -29,6 +29,11 @@ namespace WPFPages . Views
 		public CustCollection EditDbCustcollection = null;//= CustCollection . EditDbCustcollection;
 		public DetCollection EditDbDetcollection = null;//= DetCollection . EditDbDetcollection;
 
+		// Get our personal Collection view of the Db
+		public ICollectionView EditBankviewerView { get; set; }
+		public ICollectionView EditCustviewerView { get; set; }
+		public ICollectionView EditDetviewerView { get; set; }
+
 		public BankAccountViewModel bvm = MainWindow . bvm;
 		public CustomerViewModel cvm = MainWindow . cvm;
 		public DetailsViewModel dvm = MainWindow . dvm;
@@ -62,7 +67,7 @@ namespace WPFPages . Views
 
 		//		private EditEventArgs EditArgs = null;
 		public Task mainTask = null;
-//		public bool SqlUpdating = false;
+		//		public bool SqlUpdating = false;
 		public bool EditStart = false;
 		public bool Startup = true;
 		public bool IsDirty = false;
@@ -96,11 +101,11 @@ namespace WPFPages . Views
 		/// <param name="Custno"></param>
 		public void resetEditDbIndex ( int currselection, int bankno, int custno, DataGrid Grid )
 		{
-			EventControl . TriggerEditDbIndexChanged( this, new IndexChangedArgs
+			EventControl . TriggerEditDbIndexChanged ( this, new IndexChangedArgs
 			{
 				dGrid = Grid,
 				Row = currselection,
-				Senderviewer = null,
+				Senderviewer = this,
 				Bankno = bankno . ToString ( ),
 				Custno = custno . ToString ( ),
 			} );
@@ -222,8 +227,8 @@ namespace WPFPages . Views
 					// force the current selection to be removed
 					this . DataGrid1 . UnselectAll ( );
 					this . DataGrid1 . SelectedIndex = currsel;
-					this . DataGrid1 . SelectedItem= currsel;
-					Utils . SetUpGridSelection ( this . DataGrid1, currsel);
+					this . DataGrid1 . SelectedItem = currsel;
+					Utils . SetUpGridSelection ( this . DataGrid1, currsel );
 				}
 				else if ( e . SenderId == "CUSTOMER" )
 				{
@@ -258,6 +263,7 @@ namespace WPFPages . Views
 		private async void EventControl_ViewerDataUpdated ( object sender, LoadedEventArgs e )
 		{
 			int currsel = 0;
+			if ( e . CallerType == "EDITDB" ) return;
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				//				if ( e . DataSource == EditDbBankcollection ) return;
@@ -274,7 +280,7 @@ namespace WPFPages . Views
 				this . DataGrid1 . ItemsSource = null;
 				this . DataGrid1 . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, 2, true );
+				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 				//this . DataGrid1 . ItemsSource = EditDbBankcollection;
 				//this . DataGrid1 . SelectedIndex = currsel;
 				//this . DataGrid1 . Refresh ( );
@@ -298,7 +304,7 @@ namespace WPFPages . Views
 				this . DataGrid2 . ItemsSource = null;
 				this . DataGrid2 . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection );
+				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB" );
 				//this . DataGrid2 . ItemsSource = EditDbCustcollection;
 				//this . DataGrid2 . SelectedIndex = currsel;
 				//this . DataGrid2 . Refresh ( );
@@ -412,14 +418,14 @@ namespace WPFPages . Views
 		{
 			if ( EditDbDetcollection == null || EditDbDetcollection . Count == 0 )
 				Mouse . OverrideCursor = Cursors . Wait;
-			EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection, 2 );
+			await DetailCollection . LoadDet ( EditDbDetcollection, "EDITDB", 2, true );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			//this  . DetailsGrid . ItemsSource = EditDbDetcollection;
 			return EditDbDetcollection;
 		}
 		private async static Task<BankCollection> LoadBankData ( BankCollection EditDbBankcollection )
 		{
-			EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, 2, true );
+			EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 			return EditDbBankcollection;
 		}
 
@@ -620,8 +626,8 @@ namespace WPFPages . Views
 			EventControl . ForceEditDbIndexChanged += EventControl_ForceEditDbIndexChanged;
 
 
-//			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
-								//			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
+			//			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
+			//			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
 
 			// Main update notification handler
 			EventControl . ViewerDataUpdated += EventControl_ViewerDataUpdated;
@@ -659,7 +665,7 @@ namespace WPFPages . Views
 				this . MinHeight = 640;
 				ThisDataGrid = this . DetailsGrid;
 				if ( EditDbCustcollection == null || EditDbCustcollection . Count == 0 )
-					await CustCollection . LoadCust ( EditDbCustcollection );
+					await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB" );
 				this . DataGrid2 . ItemsSource = EditDbDetcollection;
 			}
 			ViewerButton . IsEnabled = false;
@@ -714,7 +720,7 @@ namespace WPFPages . Views
 				CurrentGrid = this . DataGrid1;
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(546) Window just loaded : getting instance of EventHandlers class with this,DataGrid1,\"EDITDB\"	Db = {DataGrid1 . Items . Count}" );
-//				new EventHandlers ( this . DataGrid1, "EDITDB", out EventHandler );
+				//				new EventHandlers ( this . DataGrid1, "EDITDB", out EventHandler );
 
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				Flags . CurrentEditDbViewerBankGrid = this . DataGrid1;
@@ -775,7 +781,7 @@ namespace WPFPages . Views
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(602) Window just loaded :  getting instance of EventHandlers class with this,DataGrid2,\"EDITDB\"	Db = {DataGrid2 . Items . Count}" );
 				//				EventHandlers . SetWindowHandles ( this, null, null );
-//				new EventHandlers ( this . DataGrid2, "EDITDB", out EventHandler );
+				//				new EventHandlers ( this . DataGrid2, "EDITDB", out EventHandler );
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				Flags . CurrentEditDbViewerCustomerGrid = this . DataGrid2;
 				BankAccountViewModel . ActiveEditDbViewer = this . DataGrid2;
@@ -835,7 +841,7 @@ namespace WPFPages . Views
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(660) Window just loaded :  getting instance of EventHandlers class with this,DataGrid1,\"EDITDB\"	Db = {DetailsGrid . Items . Count}" );
 				//				EventHandlers . SetWindowHandles ( this, null, null );
-//				new EventHandlers ( this . DetailsGrid, "DETAILS", out EventHandler );
+				//				new EventHandlers ( this . DetailsGrid, "DETAILS", out EventHandler );
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				if ( Flags . CurrentEditDbViewer == null )
 					Flags . CurrentEditDbViewer = new EditDb ( );
@@ -877,7 +883,7 @@ namespace WPFPages . Views
 		}
 
 
-		private void OnDeletion ( object sender, LoadedEventArgs e)
+		private void OnDeletion ( object sender, LoadedEventArgs e )
 		{
 			//Handle record deletion notification
 
@@ -891,12 +897,34 @@ namespace WPFPages . Views
 		private void EventControl_DataLoaded ( object sender, LoadedEventArgs e )
 		{
 			Debug . WriteLine ( "Data Loadeded ?" );
+			// ONLY proceeed if we triggered the new data request
+			if ( e . CallerDb != "EDITDB" ) return;
+			if ( e . CallerType == "SQLDBVIEWER" ) return;
+
 			if ( CurrentDb == "BANKACCOUNT" )
-				this . DataGrid1 . ItemsSource = EditDbBankcollection;
+			{
+				EditDbBankcollection = e . DataSource as BankCollection;
+				EditBankviewerView = CollectionViewSource . GetDefaultView ( EditDbBankcollection );
+				EditBankviewerView . Refresh ( );
+				this . DataGrid1 . ItemsSource = EditBankviewerView;
+				Debug . WriteLine ( "EDITDB : Bank Data fully loaded" );
+			}
 			else if ( CurrentDb == "CUSTOMER" )
-				this . DataGrid2 . ItemsSource = EditDbCustcollection;
+			{
+				EditDbCustcollection = e . DataSource as CustCollection;
+				EditCustviewerView = CollectionViewSource . GetDefaultView ( EditDbCustcollection);
+				EditCustviewerView . Refresh ( );
+				this . DataGrid2 . ItemsSource = EditCustviewerView;
+				Debug . WriteLine ( "EDITDB : Customer Data fully loaded" );
+			}
 			else if ( CurrentDb == "DETAILS" )
-				this . DetailsGrid . ItemsSource = EditDbDetcollection;
+			{
+				EditDbDetcollection = e . DataSource as DetCollection;
+				EditDetviewerView = CollectionViewSource . GetDefaultView ( EditDbDetcollection);
+				EditDetviewerView . Refresh ( );
+				this . DetailsGrid . ItemsSource = EditDetviewerView;
+				Debug . WriteLine ( "EDITDB : Details Data fully loaded" );
+			}
 		}
 
 		private void Window_Closing ( object sender, CancelEventArgs e )
@@ -1237,7 +1265,7 @@ namespace WPFPages . Views
 			{
 
 				// Row Deleted ???
-//				BankAccountViewModel . SqlUpdating = true;
+				//				BankAccountViewModel . SqlUpdating = true;
 				Debug . WriteLine ( $"DataGrid1_RowEditEnding() Starting Db Update " );
 				sqlh . UpdateDbRowAsync ( CurrentDb, this . DataGrid1 . SelectedItem, this . DataGrid1 . SelectedIndex );
 				Debug . WriteLine ( $"DataGrid1_RowEditEnding() Db Update finished" );
@@ -1251,7 +1279,7 @@ namespace WPFPages . Views
 				currsel = this . DataGrid1 . SelectedIndex;
 				//				Debug . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid1_RowEditEnding - Entering to trigger SendDataChanged" );
 				// Row has been changed
-//				BankAccountViewModel . SqlUpdating = true;
+				//				BankAccountViewModel . SqlUpdating = true;
 				//				Debug . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid1_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
 
@@ -1277,7 +1305,7 @@ namespace WPFPages . Views
 			if ( e == null )
 			{
 				// Row Deleted ???
-//				CustomerViewModel . SqlUpdating = true;
+				//				CustomerViewModel . SqlUpdating = true;
 				Debug . WriteLine ( $"DataGrid2_RowEditEnding({this . DataGrid2 . SelectedIndex}) Starting Db Update " );
 				sqlh . UpdateDbRowAsync ( CurrentDb, this . DataGrid2 . SelectedItem, this . DataGrid2 . SelectedIndex );
 				Debug . WriteLine ( $"DataGrid2_RowEditEnding({this . DataGrid2 . SelectedIndex}) Db Update finished" );
@@ -1291,7 +1319,7 @@ namespace WPFPages . Views
 				int currsel = this . DataGrid2 . SelectedIndex;
 				// Row has been changed
 				//				Debug . WriteLine ( $" 2-1 *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Entering to trigger SendDataChanged" );
-//				CustomerViewModel . SqlUpdating = true;
+				//				CustomerViewModel . SqlUpdating = true;
 				//				Debug . WriteLine ( $" 2-2 *** TRACE *** EDITDB : DataGrid2_RowEditEnding() Updating Db Row ({this . DataGrid1 . SelectedIndex})" );
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid2 . SelectedItem );
 
@@ -1300,7 +1328,7 @@ namespace WPFPages . Views
 				this . DataGrid2 . ItemsSource = null;
 
 				this . DataGrid2 . ItemsSource = EditDbCustcollection;
-				await CustCollection . LoadCust ( EditDbCustcollection, 2, true );
+				await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB", 2, true );
 				this . DataGrid2 . SelectedIndex = currsel;
 			}
 			//			Debug . WriteLine ( $" 2-5-END *** TRACE *** EDITDB : DataGrid2_RowEditEnding - Exiting\n*** Should *** be Processing completed...\n" );
@@ -1315,7 +1343,7 @@ namespace WPFPages . Views
 			if ( e == null )
 			{
 				// Row Deleted ???
-//				DetailsViewModel . SqlUpdating = true;
+				//				DetailsViewModel . SqlUpdating = true;
 				sqlh . UpdateDbRowAsync ( CurrentDb, this . DetailsGrid . SelectedItem, this . DetailsGrid . SelectedIndex );
 				Flags . DataLoadIngInProgress = true;
 				SendDataChanged ( CurrentDb );
@@ -1324,7 +1352,7 @@ namespace WPFPages . Views
 			{
 				int currsel = this . DetailsGrid . SelectedIndex;
 				// Row data has been changed, update the Db's first, then notify other viewers
-//				DetailsViewModel . SqlUpdating = true;
+				//				DetailsViewModel . SqlUpdating = true;
 
 				sqlh . UpdateDbRow ( CurrentDb, this . DetailsGrid . SelectedItem );
 
@@ -1332,7 +1360,7 @@ namespace WPFPages . Views
 
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . ItemsSource = EditDbDetcollection;
-				await DetCollection . LoadDet ( EditDbDetcollection, 2, true );
+				await DetailCollection . LoadDet ( EditDbDetcollection, "EDITDB", 2, true );
 				this . DetailsGrid . SelectedIndex = currsel;
 			}
 		}
@@ -1348,6 +1376,7 @@ namespace WPFPages . Views
 				EventControl . TriggerViewerDataUpdated ( EditDbBankcollection,
 					new LoadedEventArgs
 					{
+						CallerType = "EDITDB",
 						Custno = bvm . CustNo,
 						Bankno = bvm . BankNo,
 						CallerDb = "BANKACCOUNT",
@@ -1362,6 +1391,7 @@ namespace WPFPages . Views
 				EventControl . TriggerViewerDataUpdated ( EditDbCustcollection,
 					new LoadedEventArgs
 					{
+						CallerType = "EDITDB",
 						Custno = bvm . CustNo,
 						Bankno = bvm . BankNo,
 						CallerDb = "CUSTOMER",
@@ -1377,6 +1407,7 @@ namespace WPFPages . Views
 				EventControl . TriggerViewerDataUpdated ( EditDbDetcollection,
 					new LoadedEventArgs
 					{
+						CallerType = "EDITDB",
 						Custno = bvm . CustNo,
 						Bankno = bvm . BankNo,
 						CallerDb = "DETAILS",
@@ -1550,7 +1581,7 @@ namespace WPFPages . Views
 				return;
 			}
 			SelectDone = true;
-//			if ( UpdateInProgress ) return;
+			//			if ( UpdateInProgress ) return;
 			if ( this . DetailsGrid . SelectedIndex == -1 ) return;
 			//			if ( SqlParent == null ) return;
 			IsDirty = false;
@@ -1563,15 +1594,16 @@ namespace WPFPages . Views
 				else
 					this . Status . Content = $"Total Records = {this . DetailsGrid . Items . Count}, Current Record = {this . DetailsGrid . SelectedIndex}";
 			}
-			catch(Exception ex) {
-				Debug . WriteLine ($"Failed to set status bar text {ex.Message}, {ex.Data}");
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"Failed to set status bar text {ex . Message}, {ex . Data}" );
 			}
 			IsDirty = false;
 			DetailsEditFields . DataContext = this . DetailsGrid . SelectedItem;
-//			Utils . ScrollRecordIntoView ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
+			//			Utils . ScrollRecordIntoView ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
 			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
 			//************************************************************************************//
-			if ( RemoteChangeActive == false  && UpdateInProgress  == false)
+			if ( RemoteChangeActive == false && UpdateInProgress == false )
 			{
 				// Tell SqlDbViewer to update its index
 				DetailsViewModel bvm = this . DetailsGrid . SelectedItem as DetailsViewModel;
@@ -1589,7 +1621,7 @@ namespace WPFPages . Views
 
 			Flags . EditDbIndexIsChanging = true;
 			// do NOT trigger this if Viewer has triggered the index change
-			if ( Flags . SqlViewerIndexIsChanging == false && SelectDone == false)
+			if ( Flags . SqlViewerIndexIsChanging == false && SelectDone == false )
 			{
 				Debug . WriteLine ( $" 4-2 *** TRACE *** EDITDB : DetailsGrid_SelectionChanged DETAILS - Sending TriggerEditDbIndexChanged" );
 				TriggerEditDbIndexChanged ( DetailsGrid );
@@ -1822,7 +1854,7 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
 				IsDirty = false;
-				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, 2, true );
+				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 				dGrid . ItemsSource = null;
 				dGrid . ItemsSource = EditDbBankcollection;
 				dGrid . SelectedIndex = currsel;
@@ -1842,7 +1874,7 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid2 . SelectedItem );
 				IsDirty = false;
-				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection );
+				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB" );
 				dGrid . ItemsSource = null;
 				dGrid . ItemsSource = EditDbCustcollection;
 				dGrid . SelectedIndex = currsel;
@@ -1920,7 +1952,7 @@ namespace WPFPages . Views
 			string SearchCustNo = "";
 			string SearchBankNo = "";
 			if ( LoadIndex != -1 ) return;
-			Debug . WriteLine ($"EDITDB : Sending TriggerEditDbIndexChanged Event" );
+			Debug . WriteLine ( $"EDITDB : Sending TriggerEditDbIndexChanged Event" );
 			if ( grid == this . DataGrid1 )
 			{
 				BankAccountViewModel CurrentBankSelectedRecord = this . DataGrid1 . SelectedItem as BankAccountViewModel;
@@ -1930,10 +1962,11 @@ namespace WPFPages . Views
 				EventControl . TriggerViewerIndexChanged ( this,
 					new IndexChangedArgs
 					{
-						Senderviewer = null,
+						Senderviewer = this,
 						Bankno = SearchBankNo,
 						Custno = SearchCustNo,
 						dGrid = this . DataGrid1,
+						SenderId = "EDITDB",
 						Sender = "BANKACCOUNT",
 						Row = this . DataGrid1 . SelectedIndex
 					} );
@@ -1947,10 +1980,11 @@ namespace WPFPages . Views
 				EventControl . TriggerViewerIndexChanged ( this,
 				new IndexChangedArgs
 				{
-					Senderviewer = null,
+					Senderviewer = this,
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					dGrid = this . DataGrid2,
+					SenderId = "EDITDB",
 					Sender = "CUSTOMER",
 					Row = this . DataGrid2 . SelectedIndex
 				} );
@@ -1964,10 +1998,11 @@ namespace WPFPages . Views
 				EventControl . TriggerViewerIndexChanged ( this,
 					new IndexChangedArgs
 					{
-						Senderviewer = null,
+						Senderviewer = this,
 						Bankno = SearchBankNo,
 						Custno = SearchCustNo,
 						dGrid = this . DetailsGrid,
+						SenderId = "EDITDB",
 						Sender = "DETAILS",
 						Row = this . DetailsGrid . SelectedIndex
 					} );

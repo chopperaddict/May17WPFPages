@@ -14,6 +14,7 @@ namespace WPFPages . Views
 	public class DetailCollection
 	{
 		public static  bool Notify = false;
+		public static string Caller="";
 
 		public DetailCollection ( )
 		{
@@ -26,10 +27,11 @@ namespace WPFPages . Views
 
 		public static DataTable dtDetails = new DataTable ( );
 
-		public static async  Task<bool> LoadDet ( DetCollection dc, int ViewerType = 1, bool NotifyAll = false )
+		public static async  Task<bool> LoadDet ( DetCollection dc, string caller, int ViewerType = 1, bool NotifyAll = false )
 		{
 			bool result = false;
 			Notify = NotifyAll;
+			Caller = caller;
 			try
 			{
 				DetCollection internalcollection = new DetCollection ( );
@@ -106,14 +108,19 @@ namespace WPFPages . Views
 		{
 			Stopwatch st = new Stopwatch ( );
 
-			try
-			{
 				st . Start ( );
 				SqlConnection con;
 				string ConString = "";
 				string commandline = "";
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 				con = new SqlConnection ( ConString );
+			//if ( con== null )
+			//{
+			//	Debug . WriteLine ( $"DETAILCOLLECTION : No SQL Connection, reconnecting ..." );
+			//	con= new SqlConnection ( ConString );
+			//}
+			try
+			{
 				using ( con )
 				{
 					if ( Flags . IsMultiMode )
@@ -147,6 +154,10 @@ namespace WPFPages . Views
 			{
 				Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
 				MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+			}
+			finally
+			{
+				con . Close ( );
 			}
 			return dtDetails;
 		}
@@ -188,7 +199,8 @@ namespace WPFPages . Views
 					EventControl . TriggerDetDataLoaded ( null,
 						new LoadedEventArgs
 						{
-							CallerDb = "DETAILS",
+							CallerType = "SQLSERVER",
+							CallerDb = Caller,
 							DataSource = internalcollection,
 							RowCount = internalcollection . Count
 						} );

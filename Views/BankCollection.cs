@@ -1,5 +1,4 @@
 ﻿using System;
-using System . Collections . Generic;
 using System . Collections . ObjectModel;
 using System . Data;
 using System . Data . SqlClient;
@@ -14,7 +13,7 @@ using static WPFPages . SqlDbViewer;
 
 namespace WPFPages . Views
 {
-	public class BankCollection : ObservableCollection<BankAccountViewModel> 
+	public class BankCollection : ObservableCollection<BankAccountViewModel>
 	{
 		//		//Declare a global pointer to Observable BankAccount Collection
 		//public static BankCollection BankViewerDbcollection = new BankCollection ( );
@@ -27,6 +26,7 @@ namespace WPFPages . Views
 		public static DataTable dtBank = new DataTable ( "BankDataTable" );
 		public static bool USEFULLTASK = true;
 		public static bool Notify = false;
+		public static string Caller = "";
 
 		// Object used to lock Data Load from Sql and load into collection
 		private readonly object LockBankReadData = new object ( );
@@ -50,12 +50,13 @@ namespace WPFPages . Views
 
 		#region CONSTRUCTOR
 
-		public BankCollection ( ) : base()
+		public BankCollection ( ) : base ( )
 		{
 		}
-		public async static Task<BankCollection> LoadBank ( BankCollection cc, int ViewerType = 1, bool NotifyAll = false )
+		public async static Task<BankCollection> LoadBank ( BankCollection cc, string caller, int ViewerType = 1, bool NotifyAll = false )
 		{
 			Notify = NotifyAll;
+			Caller = caller;
 			try
 			{
 				// Called to Load/reload the One & Only Bankcollection data source
@@ -64,7 +65,7 @@ namespace WPFPages . Views
 
 				Bankinternalcollection = null;
 				Bankinternalcollection = new BankCollection ( );
-				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
+				//				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
 				{
 					//					BankCollection db = new BankCollection ( );
@@ -115,11 +116,11 @@ namespace WPFPages . Views
 			//lock ( LockBankReadData )
 			//{
 
-				if ( dtBank . Rows . Count > 0 )
-					dtBank . Clear ( );
+			if ( dtBank . Rows . Count > 0 )
+				dtBank . Clear ( );
 
-				if ( Bankinternalcollection . Items . Count > 0 )
-					Bankinternalcollection . ClearItems ( );
+			if ( Bankinternalcollection . Items . Count > 0 )
+				Bankinternalcollection . ClearItems ( );
 			//}
 			#region process code to load data
 
@@ -134,7 +135,7 @@ namespace WPFPages . Views
 			(
 				async ( Bankinternalcollection ) =>
 				{
-					LoadBankCollection (  );
+					LoadBankCollection ( );
 					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				}, TaskScheduler . FromCurrentSynchronizationContext ( )
 			 );
@@ -222,8 +223,8 @@ namespace WPFPages . Views
 				//	BankViewerDbcollection = tmp;
 				//	result = true;
 				//	break;
-				
-				
+
+
 				//case 5:
 				//	CustViewerDbcollection = tmp;
 				//	result = true;
@@ -300,17 +301,17 @@ namespace WPFPages . Views
 		/// <returns></returns>
 		public static void LoadBankData ( int mode = -1, bool isMultiMode = false )
 		{
-			BankCollection bptr = new BankCollection ( );
+			//			BankCollection bptr = new BankCollection ( );
 			try
 			{
 				SqlConnection con;
 				string ConString = "";
 
-				//				ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
+				//ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 				//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
-
 				con = new SqlConnection ( ConString );
+
 				using ( con )
 				{
 					string commandline = "";
@@ -352,7 +353,7 @@ namespace WPFPages . Views
 			return;
 		}
 
-		public static async Task<BankCollection> LoadBankCollection (  )
+		public static async Task<BankCollection> LoadBankCollection ( )
 		{
 			int count = 0;
 			try
@@ -392,7 +393,8 @@ namespace WPFPages . Views
 					EventControl . TriggerBankDataLoaded ( null,
 						new LoadedEventArgs
 						{
-							CallerDb = "BANKACCOUNT",
+							CallerType = "SQLSERVER",
+							CallerDb = Caller,
 							DataSource = Bankinternalcollection,
 							RowCount = Bankinternalcollection . Count
 						} );
@@ -400,7 +402,7 @@ namespace WPFPages . Views
 				}
 			}
 			//			Flags . BankCollection = Bankcollection;
-//			Bankinternalcollection = null;
+			//			Bankinternalcollection = null;
 			return Bankinternalcollection;
 		}
 
@@ -461,7 +463,7 @@ namespace WPFPages . Views
 				{
 					con . Open ( );
 					SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
-						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo",  con );
 					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
 					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
 					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );
@@ -477,7 +479,9 @@ namespace WPFPages . Views
 			catch ( Exception ex )
 			{ Console . WriteLine ( $"BANKACCOUNT Update FAILED : {ex . Message}, {ex . Data}" ); }
 			finally
-			{ con . Close ( ); }
+			{
+				con . Close ( );
+			}
 			return true;
 		}
 	}

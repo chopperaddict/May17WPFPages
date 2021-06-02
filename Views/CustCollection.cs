@@ -18,7 +18,7 @@ namespace WPFPages . Views
 		//Declare a global pointer to Observable Customers Collection
 		public static CustCollection Custcollection = new CustCollection ( );
 		public static DataTable dtCust = new DataTable ( );
-		public static CustCollection CustViewerDbcollection = new CustCollection ( );
+		public static CustCollection CustViewDbcollection = new CustCollection ( );
 		public static CustCollection SqlViewerCustcollection = new CustCollection ( );
 		public static CustCollection EditDbCustcollection = new CustCollection ( );
 		public static CustCollection MultiCustcollection = new CustCollection ( );
@@ -29,8 +29,7 @@ namespace WPFPages . Views
 
 		private readonly object LockCustReadData = new object ( );
 		private readonly object LockCustLoadData = new object ( );
-
-
+		public static string Caller = "";
 		#region CONSTRUCTOR
 
 		public CustCollection ( ) : base ( )
@@ -40,9 +39,10 @@ namespace WPFPages . Views
 		#endregion CONSTRUCTOR
 
 		#region startup/load data / load collection (CustCollection)
-		public async static Task<CustCollection> LoadCust ( CustCollection cc, int ViewerType = 1, bool NotifyAll = false )
+		public async static Task<CustCollection> LoadCust ( CustCollection cc, string caller, int ViewerType = 1, bool NotifyAll = false )
 		{
 			Notify = NotifyAll;
+			Caller = caller;
 			try
 			{
 
@@ -206,13 +206,17 @@ namespace WPFPages . Views
 		//Load data from Sql Server
 		{
 
-			try
-			{
-				SqlConnection con;
+			SqlConnection con;
 				string ConString = "";
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 				con = new SqlConnection ( ConString );
-
+			//if ( con== null )
+			//{
+			//	Debug . WriteLine ( $"CUSTCOLLECTION : No SQL Connection, reconnecting ..." );
+			//	con= new SqlConnection ( ConString );
+			//}
+			try
+			{
 				using ( con )
 				{
 					string commandline = "";
@@ -236,7 +240,7 @@ namespace WPFPages . Views
 					}
 					SqlCommand cmd = new SqlCommand ( commandline, con );
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
-					CustCollection bptr = new CustCollection ( );
+					//CustCollection bptr = new CustCollection ( );
 					//					lock ( bptr . LockCustReadData )
 					//					{
 					sda . Fill ( dtCust );
@@ -249,6 +253,10 @@ namespace WPFPages . Views
 				Debug . WriteLine ( $"Failed to load Customer Details - {ex . Message}" );
 				MessageBox . Show ( $"Failed to load Customer Details - {ex . Message}" );
 				return false;
+			}
+			finally
+			{
+				con . Close ( );
 			}
 
 			return true;
@@ -301,7 +309,8 @@ namespace WPFPages . Views
 					EventControl . TriggerCustDataLoaded ( null,
 						new LoadedEventArgs
 						{
-							CallerDb = "CUSTOMER",
+							 CallerType = "SQLSERVER",
+							CallerDb = Caller,
 							DataSource = Custinternalcollection,
 							RowCount = Custinternalcollection . Count
 						} );
@@ -369,7 +378,7 @@ namespace WPFPages . Views
 					result = true;
 					break;
 				case 4:
-					CustViewerDbcollection = tmp;
+					CustViewDbcollection = tmp;
 					result = true;
 					break;
 				//case 5:
@@ -427,8 +436,6 @@ namespace WPFPages . Views
 			}
 			catch ( Exception ex )
 			{ Console . WriteLine ( $"CUSTOMER Update FAILED : {ex . Message}, {ex . Data}" ); }
-			finally
-			{ con . Close ( ); }
 			return true;
 		}
 	}

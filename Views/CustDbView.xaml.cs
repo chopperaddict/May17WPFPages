@@ -1,12 +1,15 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . ComponentModel;
 using System . Diagnostics;
 using System . Linq;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
+using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
+using WPFPages . ViewModels;
 
 namespace WPFPages . Views
 {
@@ -15,7 +18,10 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class CustDbView : Window
 	{
-		public static CustCollection CustViewerDbcollection = null;// = new CustCollection ( );//. CustViewerDbcollection;
+		public static CustCollection CustDbViewcollection = null;// = new CustCollection ( );//. CustViewerDbcollection;
+		// Get our personal Collection view of the Db
+		public ICollectionView CustviewerView { get; set; }
+
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool Triggered = false;
@@ -63,7 +69,7 @@ namespace WPFPages . Views
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
 
-			await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
+			await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -164,12 +170,13 @@ namespace WPFPages . Views
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
+			if ( e . CallerType == "CUSTDBVIEW" ) return;
 			int currsel = this . CustGrid . SelectedIndex;
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
-			CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
-			this . CustGrid . ItemsSource = CustViewerDbcollection;
+			CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
+			this . CustGrid . ItemsSource = CustDbViewcollection;
 			this . CustGrid . SelectedIndex = currsel;
 			this . CustGrid . SelectedItem = currsel; this . CustGrid . Refresh ( );
 		}
@@ -180,7 +187,7 @@ namespace WPFPages . Views
 			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
-			this . CustGrid . ItemsSource = CustViewerDbcollection;
+			this . CustGrid . ItemsSource = CustDbViewcollection;
 			this . CustGrid . Refresh ( );
 		}
 		#endregion Startup/ Closedown
@@ -207,11 +214,12 @@ namespace WPFPages . Views
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notidfication to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
+			EventControl . TriggerViewerDataUpdated ( CustDbViewcollection,
 				new LoadedEventArgs
 				{
+					CallerType = "CUSTDBVIEW",
 					CallerDb = "CUSTOMER",
-					DataSource = CustViewerDbcollection,
+					DataSource = CustDbViewcollection,
 					RowCount = this . CustGrid . SelectedIndex
 				} );
 		}
@@ -219,15 +227,22 @@ namespace WPFPages . Views
 		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for CustDataLoaded
+			// ONLY proceeed if we triggered the new data request
+			if ( e . CallerDb != "CUSTDBVIEW" ) return;
 			this . CustGrid . ItemsSource = null;
-			this . CustGrid . Items . Clear (  );
+			this . CustGrid . Items . Clear ( );
 			if ( e . DataSource == null ) return;
-			CustViewerDbcollection = e . DataSource as CustCollection;
-			this . CustGrid . ItemsSource = CustViewerDbcollection;
+
+			CustviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as CustCollection );
+			CustDbViewcollection = e . DataSource as CustCollection;
+			CustviewerView . Refresh ( );
+			this . CustGrid . ItemsSource = CustviewerView;
+
 			this . CustGrid . SelectedIndex = 0;
 			this . CustGrid . SelectedItem = 0;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . CustGrid . Refresh ( );
+			Debug . WriteLine ( "BANKDBVIEW : Customer Data fully loaded" );
 		}
 
 		private void ShowCust_KeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
@@ -256,18 +271,18 @@ namespace WPFPages . Views
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			if ( Flags . LinkviewerRecords == false && IsDirty )
-			{
-				MessageBoxResult result = System . Windows . MessageBox . Show
-					( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
-				if ( result == MessageBoxResult . Yes )
-				{
-					SaveButton ( );
-				}
-				// Do not want to save it, so disable  save button again
-				SaveBttn . IsEnabled = false;
-				IsDirty = false;
-			}
+			//if ( Flags . LinkviewerRecords == false && IsDirty )
+			//{
+			//	MessageBoxResult result = System . Windows . MessageBox . Show
+			//		( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
+			//	if ( result == MessageBoxResult . Yes )
+			//	{
+			//		SaveButton ( );
+			//	}
+			//	// Do not want to save it, so disable  save button again
+			//	SaveBttn . IsEnabled = false;
+			//	IsDirty = false;
+			//}
 			IsDirty = false;
 			if ( this . CustGrid . SelectedItem == null )
 				return;
@@ -279,6 +294,24 @@ namespace WPFPages . Views
 				//				Debug . WriteLine ( $" 7-1 *** TRACE *** CUSTDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . CustGrid );
 			}
+
+			// check to see if an SqlDbViewer has been opened that we can link to
+			if ( Flags . SqlCustViewer != null && LinkToParent . IsEnabled == false )
+			{
+				LinkToParent . IsEnabled = true;
+				SqlParentViewer = Flags . SqlCustViewer;
+			}
+			else if ( Flags . SqlCustViewer == null )
+			{
+				if ( LinkToParent . IsEnabled )
+				{
+					LinkToParent . IsEnabled = false;
+					LinkToParent . IsChecked = false;
+					LinktoParent = false;
+					SqlParentViewer = null;
+				}
+			}
+
 			// Only  do this if global link is OFF
 			if ( LinktoParent )
 			{
@@ -286,7 +319,7 @@ namespace WPFPages . Views
 				string bankno = "";
 				string custno = "";
 				var dvm = this . CustGrid . SelectedItem as CustomerViewModel;
-				if ( dvm== null ) return;
+				if ( dvm == null ) return;
 
 				if ( SqlParentViewer != null )
 				{
@@ -333,11 +366,12 @@ namespace WPFPages . Views
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "CUSTOMER", cvm );
 
-			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
+			EventControl . TriggerViewerDataUpdated ( CustDbViewcollection,
 				new LoadedEventArgs
 				{
+					CallerType = "CUSTDBVIEW",
 					CallerDb = "CUSTOMER",
-					DataSource = CustViewerDbcollection,
+					DataSource = CustDbViewcollection,
 					RowCount = this . CustGrid . SelectedIndex
 				} );
 
@@ -423,12 +457,12 @@ namespace WPFPages . Views
 				int currsel = this . CustGrid . SelectedIndex;
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
 				if ( bgr == null ) return;
-				
+
 				Flags . IsMultiMode = true;
 
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
+				CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
 				this . CustGrid . ItemsSource = null;
-				this . CustGrid . ItemsSource = CustViewerDbcollection;
+				this . CustGrid . ItemsSource = CustDbViewcollection;
 				this . CustGrid . Refresh ( );
 
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
@@ -452,11 +486,11 @@ namespace WPFPages . Views
 			{
 				Flags . IsMultiMode = false;
 				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
-				CustViewerDbcollection = await CustCollection . LoadCust ( CustViewerDbcollection, 3, true );
+				CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
 
 				// Just reset our iremssource to man Db
 				this . CustGrid . ItemsSource = null;
-				this . CustGrid . ItemsSource = CustViewerDbcollection;
+				this . CustGrid . ItemsSource = CustDbViewcollection;
 				this . CustGrid . Refresh ( );
 
 				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateYellow" );
@@ -475,20 +509,6 @@ namespace WPFPages . Views
 					this . CustGrid . SelectedIndex = 0;
 				Utils . ScrollRecordIntoView ( this . CustGrid, this . CustGrid . SelectedIndex );
 			}
-		}
-		public void SendDataChanged ( SqlDbViewer o, System . Windows . Controls . DataGrid Grid, string dbName )
-		{
-			// Databases have DEFINITELY been updated successfully after a change
-			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
-
-			EventControl . TriggerCustDataLoaded ( CustViewerDbcollection,
-			new LoadedEventArgs
-			{
-				CallerDb = "CUSTOMER",
-				DataSource = CustViewerDbcollection,
-				RowCount = this . CustGrid . SelectedIndex
-			} );
-			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 		}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
@@ -536,16 +556,18 @@ namespace WPFPages . Views
 			string SearchCustNo = "";
 			string SearchBankNo = "";
 			CustomerViewModel CurrentCustSelectedRecord = this . CustGrid . SelectedItem as CustomerViewModel;
+			if ( CurrentCustSelectedRecord == null ) return;
 			SearchCustNo = CurrentCustSelectedRecord . CustNo;
 			SearchBankNo = CurrentCustSelectedRecord . BankNo;
 			EventControl . TriggerViewerIndexChanged ( this,
 			new IndexChangedArgs
 			{
-				Senderviewer = null,
+				Senderviewer = this,
 				Bankno = SearchBankNo,
 				Custno = SearchCustNo,
 				dGrid = this . CustGrid,
 				Sender = "CUSTOMER",
+				SenderId = "CUSTDBVIEW",
 				Row = this . CustGrid . SelectedIndex
 			} );
 		}
@@ -555,7 +577,7 @@ namespace WPFPages . Views
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in CustViewerDbcollection
+			var bankaccounts = from items in CustDbViewcollection
 					   where ( items . AcType == 1 )
 					   orderby items . CustNo
 					   select items;
@@ -564,7 +586,7 @@ namespace WPFPages . Views
 		private void Linq2_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in CustViewerDbcollection
+			var bankaccounts = from items in CustDbViewcollection
 					   where ( items . AcType == 2 )
 					   orderby items . CustNo
 					   select items;
@@ -573,7 +595,7 @@ namespace WPFPages . Views
 		private void Linq3_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in CustViewerDbcollection
+			var bankaccounts = from items in CustDbViewcollection
 					   where ( items . AcType == 3 )
 					   orderby items . CustNo
 					   select items;
@@ -582,7 +604,7 @@ namespace WPFPages . Views
 		private void Linq4_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-			var bankaccounts = from items in CustViewerDbcollection
+			var bankaccounts = from items in CustDbViewcollection
 					   where ( items . AcType == 4 )
 					   orderby items . CustNo
 					   select items;
@@ -591,7 +613,7 @@ namespace WPFPages . Views
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
 			//select All the items first;
-			var bankaccounts = from items in CustViewerDbcollection orderby items . CustNo, items . AcType select items;
+			var bankaccounts = from items in CustDbViewcollection orderby items . CustNo, items . AcType select items;
 			//Next Group BankAccountViewModel collection on Custno
 			var grouped = bankaccounts . GroupBy (
 				b => b . CustNo );
@@ -618,7 +640,7 @@ namespace WPFPages . Views
 		}
 		private void Linq6_Click ( object sender, RoutedEventArgs e )
 		{
-			var accounts = from items in CustViewerDbcollection orderby items . CustNo, items . AcType select items;
+			var accounts = from items in CustDbViewcollection orderby items . CustNo, items . AcType select items;
 			this . CustGrid . ItemsSource = accounts;
 		}
 
@@ -644,7 +666,7 @@ namespace WPFPages . Views
 			this . WindowState = WindowState . Normal;
 		}
 
-			private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
+		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
 		{
 
 		}
@@ -657,6 +679,24 @@ namespace WPFPages . Views
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
 			LinktoParent = !LinktoParent;
+		}
+
+		private void CustGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			//// Data has been changed in one of our rows.
+			//CustomerViewModel cvm = sender as CustomerViewModel;
+			//cvm = e . Row . Item as CustomerViewModel;
+			//SQLHandlers sqlh = new SQLHandlers ( );
+			//sqlh . UpdateDbRowAsync ( "CUSTOMER", cvm );
+			//EventControl . TriggerViewerDataUpdated ( CustDbViewcollection,
+			//	new LoadedEventArgs
+			//	{
+			//		CallerType = "CUSTDBVIEW",
+			//		CallerDb = "CUSTOMER",
+			//		DataSource = CustDbViewcollection,
+			//		RowCount = this . CustGrid . SelectedIndex
+			//	} );
+			//Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 		}
 	}
 }

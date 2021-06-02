@@ -321,21 +321,49 @@ namespace WPFPages
 			return result;
 		}
 
+		public static void SetSelectedItemFirstRow ( object dataGrid, object selectedItem )
+		{
+			//If target datagrid Empty, throw exception
+			if ( dataGrid == null )
+			{
+				throw new ArgumentNullException ( "Target none" + dataGrid + "Cannot convert to DataGrid" );
+			}
+			//Get target DataGrid，If it is empty, an exception will be thrown
+			System . Windows . Controls . DataGrid dg = dataGrid as System . Windows . Controls . DataGrid;
+			if ( dg == null )
+			{
+				throw new ArgumentNullException ( "Target none" + dataGrid + "Cannot convert to DataGrid" );
+			}
+			//If the data source is empty, return
+			if ( dg . Items == null || dg . Items . Count < 1 )
+			{
+				return;
+			}
+
+			dg . SelectedItem = selectedItem;
+			dg . CurrentColumn = dg . Columns [ 0 ];
+			dg . ScrollIntoView ( dg . SelectedItem, dg . CurrentColumn );
+		}
 		/// <summary>
 		/// MASTER UPDATE METHOD
 		/// This handles repositioning of a selected item in any grid perfectly
 		/// </summary>
 		/// <param name="grid"></param>
 		/// <param name="row"></param>
-		public static void SetUpGridSelection ( DataGrid grid, int row = -1 )
+		public static void SetUpGridSelection ( DataGrid grid, int row = 0 )
 		{
+			//			bool inprogress = false;
+			int scrollrow = 0;
 			if ( row == -1 ) row = 0;
 			// This triggers the selection changed event
 			grid . SelectedIndex = row;
 			grid . SelectedItem = row;
-			grid . Refresh ( );
+			//			grid . SetDetailsVisibilityForItem ( grid . SelectedItem, Visibility . Visible );
+			grid . SelectedIndex = row;
+			grid . SelectedItem = row; 
+			Utils . ScrollRecordIntoView ( grid, row  + scrollrow );
 			grid . UpdateLayout ( );
-			Utils . ScrollRecordIntoView ( grid, row );
+//			var v = grid .VerticalAlignment;
 		}
 
 		/// <summary>

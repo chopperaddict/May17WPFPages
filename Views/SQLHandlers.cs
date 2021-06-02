@@ -361,7 +361,7 @@ namespace WPFPages . Views
 
 						SqlCommand cmd = new SqlCommand ( "UPDATE Customer SET CUSTNO=@custno, BANKNO=@bankno, ACTYPE=@actype, " +
 							"FNAME=@fname, LNAME=@lname, ADDR1=@addr1, ADDR2=@addr2, TOWN=@town, COUNTY=@county, PCODE=@pcode," +
-							"PHONE=@phone, MOBILE=@mobile, DOB=@dob,ODATE=@odate, CDATE=@cdate WHERE Id=@id", con );
+							"PHONE=@phone, MOBILE=@mobile, DOB=@dob,ODATE=@odate, CDATE=@cdate WHERE Id=@id", con);
 
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -382,7 +382,7 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 
-						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -392,7 +392,7 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
-						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -405,7 +405,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					con . Close ( );
+//					con . Close ( );
 					Debug . WriteLine ( $"SQL Error UpdateDbRow(255)- {ex . Message} Data = {ex . Data}" );
 				}
 				finally
@@ -528,7 +528,7 @@ namespace WPFPages . Views
 						con . Open ( );
 						if ( CurrentDb == "BANKACCOUNT" )//|| CurrentDb == "DETAILS" )
 						{
-							SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( ss . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", ss . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", ss . CustNo . ToString ( ) );
@@ -540,7 +540,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
-							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( ss . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", ss . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", ss . CustNo . ToString ( ) );
@@ -552,7 +552,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 
-							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( ss . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", ss . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", ss . CustNo . ToString ( ) );
@@ -564,7 +564,7 @@ namespace WPFPages . Views
 						}
 						else if ( CurrentDb == "DETAILS" )
 						{
-							SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -576,7 +576,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
-							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -588,7 +588,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update successful for Secondary Accounts Data..." );
 
-							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -657,7 +657,7 @@ namespace WPFPages . Views
 
 						SqlCommand cmd = new SqlCommand ( "UPDATE Customer SET CUSTNO=@custno, BANKNO=@bankno, ACTYPE=@actype, " +
 							"FNAME=@fname, LNAME=@lname, ADDR1=@addr1, ADDR2=@addr2, TOWN=@town, COUNTY=@county, PCODE=@pcode," +
-							"PHONE=@phone, MOBILE=@mobile, DOB=@dob,ODATE=@odate, CDATE=@cdate WHERE Id=@id", con );
+							"PHONE=@phone, MOBILE=@mobile, DOB=@dob,ODATE=@odate, CDATE=@cdate WHERE Id=@id", con);
 
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -678,7 +678,7 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 
-						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -688,7 +688,7 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
-						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -701,7 +701,7 @@ namespace WPFPages . Views
 				}
 				catch ( Exception ex )
 				{
-					con . Close ( );
+//					con . Close ( );
 					Debug . WriteLine ( $"SQL Error UpdateDbRow(255)- {ex . Message} Data = {ex . Data}" );
 				}
 				finally
@@ -835,7 +835,7 @@ namespace WPFPages . Views
 							//CustCollection . UpdateCustomerDb (  cs);
 							//// ss = BankAccountViewModel - yes, on purpose !
 							//DetCollection . UpdateDetailsDb (  sa);
-							cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( ss . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", ss . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", ss . CustNo . ToString ( ) );
@@ -847,7 +847,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
-							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -859,7 +859,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
-							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -871,7 +871,7 @@ namespace WPFPages . Views
 						}
 						else if ( CurrentDb == "DETAILS" )
 						{
-							cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -883,7 +883,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
-							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -895,7 +895,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
-							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -907,7 +907,7 @@ namespace WPFPages . Views
 						}
 						if ( CurrentDb == "SECACCOUNTS" )
 						{
-							cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( ss . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", ss . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", ss . CustNo . ToString ( ) );
@@ -919,7 +919,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
-							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -931,7 +931,7 @@ namespace WPFPages . Views
 							cmd . ExecuteNonQuery ( );
 							Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
-							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+							cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 							cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 							cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 							cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
@@ -1008,7 +1008,7 @@ namespace WPFPages . Views
 						con . Open ( );
 						SqlCommand cmd = new SqlCommand ( "UPDATE Customer SET CUSTNO=@custno, BANKNO=@bankno, ACTYPE=@actype, " +
 										"FNAME=@fname, LNAME=@lname, ADDR1=@addr1, ADDR2=@addr2, TOWN=@town, COUNTY=@county, PCODE=@pcode," +
-										"PHONE=@phone, MOBILE=@mobile, DOB=@dob,ODATE=@odate, CDATE=@cdate WHERE Id=@id", con );
+										"PHONE=@phone, MOBILE=@mobile, DOB=@dob,ODATE=@odate, CDATE=@cdate WHERE Id=@id", con);
 
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -1029,7 +1029,7 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update of Customers successful..." );
 
-						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype,  ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype,  ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -1039,7 +1039,7 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
-						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con);
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );

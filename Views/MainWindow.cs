@@ -9,6 +9,9 @@ using WPFPages . ViewModels;
 //using WpfUI;
 using static System . Windows . Forms . VisualStyles . VisualStyleElement . Window;
 using System;
+using System . Data . SqlClient;
+using System . Data;
+using System . Diagnostics;
 
 namespace WPFPages
 {
@@ -93,7 +96,13 @@ namespace WPFPages
 
 		private void OnClosing ( object sender, CancelEventArgs e )
 		{
-
+			// Close our Sql Server connection
+			//if ( con!= null )
+			//{
+			//	Debug . WriteLine ( $"MAINWINDOW : Closing SQL Connection..." );
+			//	con. Close ( );
+			//	Debug . WriteLine ( $"MAINWINDOW : SQL Connection Closed successfuly..." );
+			//}
 		}
 		private void Loaded_click ( object sender, RoutedEventArgs e )
 		{
@@ -204,6 +213,14 @@ namespace WPFPages
 		{
 			//_frame.NavigationService.Navigate(_Page1);
 			BaseDataText = "Hello World";
+			//if ( con== null ) {
+			//	string ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+			//	int time = DateTime . Now.Millisecond;
+			//	Debug . WriteLine ( $"MAINWINDOW : SQL Connection - Making initial connection ..." );
+			//	con= new SqlConnection ( ConString );
+			//	Debug . WriteLine ( $"MAINWINDOW : SQL Connection - Connection made successfully in {(DateTime.Now.Millisecond - time)} ms..." );
+			//}
+
 		}
 
 		private void Button1_Click ( object sender, RoutedEventArgs e )

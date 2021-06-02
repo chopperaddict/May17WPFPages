@@ -46,6 +46,9 @@ namespace WPFPages . Views
 			get { return _DetviewerView; }
 		}
 
+		//public int CurrentItem { get; internal set; }
+		//public Action CurrentChanged { get; internal set; }
+
 		public DetCollection ( )
 		{
 		}
@@ -314,6 +317,7 @@ namespace WPFPages . Views
 					EventControl . TriggerDetDataLoaded ( null,
 						new LoadedEventArgs
 						{
+							CallerType = "SQLDETAILSSERVER",
 							CallerDb = "DETAILS",
 							DataSource = Detinternalcollection,
 							RowCount = Detinternalcollection . Count
@@ -429,12 +433,14 @@ namespace WPFPages . Views
 					cmd . ExecuteNonQuery ( );
 					Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
-				}
+			}
 			}
 			catch ( Exception ex )
 			{ Console . WriteLine ( $"DETAILS Update FAILED : {ex . Message}, {ex . Data}" ); }
 			finally
-			{ con . Close ( ); }
+			{
+				con . Close ( );
+			}
 			return true;
 		}
 

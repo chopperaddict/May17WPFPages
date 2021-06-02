@@ -1,10 +1,12 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . ComponentModel;
 using System . Diagnostics;
 using System . Linq;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
+using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
 using WPFPages . ViewModels;
@@ -17,6 +19,9 @@ namespace WPFPages . Views
 	public partial class BankDbView : Window
 	{
 		public BankCollection BankViewcollection = null;// = new BankCollection ( );//. EditDbBankcollection;
+		// Get our personal Collection view of the Db
+		public ICollectionView BankviewerView { get; set; }
+	
 		private bool IsDirty = false;
 		static bool Startup = true;
 		private bool LinktoParent = false;
@@ -65,7 +70,7 @@ namespace WPFPages . Views
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
 
-			await BankCollection . LoadBank ( BankViewcollection, 3, true );
+			await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -165,15 +170,17 @@ namespace WPFPages . Views
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
+			if ( e . CallerDb != "BANKDBVIEW" ) return;
 			int currsel = this . BankGrid . SelectedIndex;
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
-			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection, 3, true );
+			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection,"BANKDBVIEW", 3, true );
 			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
 			this . BankGrid . SelectedIndex = currsel;
+			IsDirty = false;
 		}
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
@@ -191,6 +198,7 @@ namespace WPFPages . Views
 		{
 			// Save changes and tell other viewers about the change
 			int currow = 0;
+			
 			currow = this . BankGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
 			//			Flags . SqlBankCurrentIndex = currow;
@@ -203,34 +211,44 @@ namespace WPFPages . Views
 			this . BankGrid . SelectedIndex = currow;
 			this . BankGrid . SelectedItem = currow;
 			Utils . SetUpGridSelection ( this . BankGrid, currow );
+			IsDirty = false;
 			// Notify EditDb to upgrade its grid
 			if ( Flags . CurrentEditDbViewer != null )
 				Flags . CurrentEditDbViewer . UpdateGrid ( "BANKACCOUNT" );
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notification to SQLDBVIEWER AND OTHERS for sure !!!   14/5/21
-			EventControl . TriggerBankDataLoaded ( BankViewcollection,
+			EventControl . TriggerViewerDataUpdated ( BankViewcollection,
 				new LoadedEventArgs
 				{
-					CallerDb = "DETAILS",
+					CallerType = "BANKDBVIEW",
+					CallerDb = "BANKACCOUNT",
 					DataSource = BankViewcollection,
 					RowCount = this . BankGrid . SelectedIndex
 				} );
+
 		}
 
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for BankDataLoaded
 			if ( e . DataSource == null ) return;
+			// ONLY proceeed if we triggered the new data request
+			if ( e . CallerDb != "BANKDBVIEW" ) return;
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
+
+			BankviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as BankCollection );
 			BankViewcollection = e . DataSource as BankCollection;
-			this . BankGrid . ItemsSource = BankViewcollection;// e . DataSource as BankCollection; 
+			BankviewerView . Refresh ( );
+			this . BankGrid . ItemsSource = BankviewerView;
+
 			this . BankGrid . SelectedIndex = 0;
 			this . BankGrid . SelectedItem = 0;
 			this . BankGrid . Refresh ( );
 			Mouse . OverrideCursor = Cursors . Arrow;
-
+			IsDirty = false;
+			Debug . WriteLine ( "BANKDBVIEW : Bank Data fully loaded" );
 		}
 
 
@@ -250,7 +268,7 @@ namespace WPFPages . Views
 					|| SaveBttn . IsEnabled )
 			{
 				MessageBoxResult result = MessageBox . Show
-					( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
+					( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
 				if ( result == MessageBoxResult . Yes )
 				{
 					SaveButton ( );
@@ -276,19 +294,19 @@ namespace WPFPages . Views
 
 		private void BankGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			if ( ( Flags . LinkviewerRecords == false && IsDirty )
-					|| SaveBttn . IsEnabled )
-			{
-				MessageBoxResult result = MessageBox . Show
-					( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
-				if ( result == MessageBoxResult . Yes )
-				{
-					SaveButton ( );
-				}
-				// Do not want ot save it, so disable  save button again
-				SaveBttn . IsEnabled = false;
-				IsDirty = false;
-			}
+			//if ( ( Flags . LinkviewerRecords == false && IsDirty )
+			//		|| SaveBttn . IsEnabled )
+			//{
+			//	MessageBoxResult result = MessageBox . Show
+			//		( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
+			//	if ( result == MessageBoxResult . Yes )
+			//	{
+			//		SaveButton ( );
+			//	}
+			//	// Do not want ot save it, so disable  save button again
+			//	SaveBttn . IsEnabled = false;
+			//	IsDirty = false;
+			//}
 			//if ( this . BankGrid . SelectedItem == null )
 			//	return;
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
@@ -299,6 +317,24 @@ namespace WPFPages . Views
 				//				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . BankGrid );
 			}
+
+			// check to see if an SqlDbViewer has been opened that we can link to
+			if ( Flags . SqlBankViewer != null && LinkToParent . IsEnabled == false )
+			{
+				LinkToParent . IsEnabled = true;
+				SqlParentViewer = Flags . SqlBankViewer;
+			}
+			else if ( Flags . SqlBankViewer == null )
+			{
+				if ( LinkToParent . IsEnabled )
+				{
+					LinkToParent . IsEnabled = false;
+					LinkToParent . IsChecked = false;
+					LinktoParent = false;
+					SqlParentViewer = null;
+				}
+			}
+
 			// Only  do this if global link is OFF
 			if ( LinktoParent )// && LinkRecords . IsChecked == false )
 			{
@@ -362,15 +398,16 @@ namespace WPFPages . Views
 			this . BankGrid . Refresh ( );
 
 			//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
-			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
+//			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
 
-			//EventControl . TriggerBankDataLoaded ( BankViewercollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerDb = "BANKACCOUNT",
-			//		DataSource = BankViewercollection,
-			//		RowCount = this . BankGrid . SelectedIndex
-			//	} );
+			EventControl . TriggerViewerDataUpdated ( BankViewcollection,
+				new LoadedEventArgs
+				{
+					CallerType = "BANKDBVIEW",
+					CallerDb = "BANKACCOUNT",
+					DataSource = BankViewcollection,
+					RowCount = this . BankGrid . SelectedIndex
+				} );
 
 			//Gotta reload our data because the update clears it down totally to null
 			this . BankGrid . SelectedIndex = CurrentSelection;
@@ -378,6 +415,7 @@ namespace WPFPages . Views
 			this . BankGrid . Refresh ( );
 
 			SaveBttn . IsEnabled = false;
+			IsDirty = false;
 			return true;
 		}
 
@@ -399,7 +437,10 @@ namespace WPFPages . Views
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void TextChanged ( object sender, TextChangedEventArgs e )
-		{ if ( !Startup ) CompareFieldData ( ); }
+		{
+			return;
+			if ( !Startup ) CompareFieldData ( ); 
+		}
 
 		private void SaveFieldData ( )
 		{
@@ -513,21 +554,22 @@ namespace WPFPages . Views
 				//				Utils . ScrollRecordIntoView ( this . BankGrid, this . BankGrid . SelectedIndex );
 			}
 		}
-		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
-		{
-			// Called internally to broadcast data change event notification
-			// Databases have DEFINITELY been updated successfully after a change
-			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
+		//public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
+		//{
+		//	// Called internally to broadcast data change event notification
+		//	// Databases have DEFINITELY been updated successfully after a change
+		//	// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-			EventControl . TriggerBankDataLoaded ( BankViewcollection,
-			new LoadedEventArgs
-			{
-				CallerDb = "BANKACCOUNT",
-				DataSource = BankViewcollection,
-				RowCount = this . BankGrid . SelectedIndex
-			} );
-			Mouse . OverrideCursor = Cursors . Arrow;
-		}
+		//	EventControl . TriggerBankDataLoaded ( BankViewcollection,
+		//	new LoadedEventArgs
+		//	{
+		//		CallerType = "BANKDBVIEW",
+		//		CallerDb = "BANKACCOUNT",
+		//		DataSource = BankViewcollection,
+		//		RowCount = this . BankGrid . SelectedIndex
+		//	} );
+		//	Mouse . OverrideCursor = Cursors . Arrow;
+		//}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
 			// force viewers to change records in line with each other
@@ -578,11 +620,12 @@ namespace WPFPages . Views
 			EventControl . TriggerViewerIndexChanged ( this,
 				new IndexChangedArgs
 				{
-					Senderviewer = null,
+					Senderviewer = this,
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					dGrid = grid,
 					Sender = "BANKACCOUNT",
+					SenderId = "BANKDBVIEW",
 					Row = grid . SelectedIndex
 				} );
 		}
@@ -684,6 +727,26 @@ namespace WPFPages . Views
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
 			LinktoParent = !LinktoParent;
+		}
+
+		private void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			// Data has been changed in one of our rows.
+			//BankAccountViewModel bvm = sender as BankAccountViewModel;
+			//bvm = e . Row . Item as BankAccountViewModel;
+			//SQLHandlers sqlh = new SQLHandlers ( );
+			//sqlh . UpdateDbRowAsync ( "BANKACCOUNT", bvm );
+			////			SendDataChanged (null, this.BankGrid, "BANKACCOUNT" );
+			//EventControl . TriggerViewerDataUpdated ( BankViewcollection,
+			//	new LoadedEventArgs
+			//	{
+			//		CallerType = "BANKDBVIEW",
+			//		CallerDb = "BANKACCOUNT",
+			//		DataSource = BankViewcollection,
+			//		RowCount = this . BankGrid . SelectedIndex
+			//	} );
+
+
 		}
 
 

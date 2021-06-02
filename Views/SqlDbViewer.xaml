@@ -765,7 +765,7 @@
 					TextAlignment="Center"
 					VerticalAlignment="Top"
 					Margin="80,52,62,0"
-					Text="Please wait, Connected to SQL Server to Load Database data...."
+					Text="Please wait, Connecting to SQL Server to Load Database data...."
 					TextWrapping="Wrap"
 					Width="450"/>
 			</WrapPanel>
@@ -958,7 +958,7 @@
 				Grid.ColumnSpan="4"
 				HorizontalAlignment="Stretch"
 				IsEnabled="true"
-				IsSynchronizedWithCurrentItem="true"
+				IsSynchronizedWithCurrentItem="False"
 				MouseRightButtonDown="CustomerGrid_MouseRightButtonDown"
 				PreviewMouseDown="CustomerGrid_PreviewMouseDown"
 				RowEditEnding="ViewerGrid_RowEditEnding"
@@ -1082,7 +1082,7 @@
 				Grid.ColumnSpan="4"
 				HorizontalAlignment="Stretch"
 				IsEnabled="true"
-				IsSynchronizedWithCurrentItem="true"
+				IsSynchronizedWithCurrentItem="False"
 				MouseRightButtonDown="DetailsGrid_MouseRightButtonDown"
 				PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
 				RowEditEnding="ViewerGrid_RowEditEnding"

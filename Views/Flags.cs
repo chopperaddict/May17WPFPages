@@ -7,6 +7,7 @@
 //using System;
 using System;
 using System . Collections . Generic;
+using System . Data . SqlClient;
 using System . Diagnostics;
 using System . Threading;
 using System . Windows . Controls;
@@ -27,6 +28,9 @@ namespace WPFPages
 		public static DetCollection DetCollection = null;
 		public static CustCollection CustCollection = null;
 		public static BankCollection BankCollection = null;
+
+//		public static SqlConnection con = null;
+
 
 		private record Myrecord;
 		private struct AllFlags
@@ -537,7 +541,7 @@ namespace WPFPages
 			//$"Bank : BankViewerDbcollection				: { BankCollection . BankViewerDbcollection . Count}\n" +
 
 			$"\nCustcollection								: { CustCollection . Custcollection . Count}\n" +
-			$"CustViewerDbcollection						: { CustCollection . CustViewerDbcollection . Count}\n" +
+			$"CustViewerDbcollection						: { CustCollection . CustViewDbcollection . Count}\n" +
 			$"SqlViewerCustcollection	  					: { CustCollection . SqlViewerCustcollection . Count}\n" +
 			$"EditDbCustcollection 						: { CustCollection . EditDbCustcollection . Count}\n" +
 			$"MultiCustcollection							: { CustCollection . MultiCustcollection . Count}\n" +

@@ -41,6 +41,8 @@ namespace WPFPages . Views
 		private bool Triggered = false;
 		private bool ReloadingData = false;
 		public bool isLoading = true;
+		public bool IsDirty = false;
+
 		#endregion DECLARATIONS
 
 		public struct scrollData
@@ -155,7 +157,7 @@ namespace WPFPages . Views
 			Mouse . OverrideCursor = Cursors . Wait;
 			Application . Current . Dispatcher . Invoke ( ( ) =>
 			{
-				BankCollection . LoadBank ( MBankcollection, 3, true );
+				BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			} );
 
 			Thread . Sleep ( 5000 );
@@ -167,7 +169,7 @@ namespace WPFPages . Views
 			Application . Current . Dispatcher . Invoke ( ( ) =>
 			{
 				Mouse . OverrideCursor = Cursors . Wait;
-				CustCollection . LoadCust ( MCustcollection, 3, true );
+				CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			} );
 			Thread . Sleep ( 5000 );
 			return t1;
@@ -178,7 +180,7 @@ namespace WPFPages . Views
 			Application . Current . Dispatcher . Invoke ( ( ) =>
 			{
 				Mouse . OverrideCursor = Cursors . Wait;
-				DetCollection . LoadDet ( MDetcollection, 3, true );
+				DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 			} );
 			Thread . Sleep ( 5000 );
 			return t1;
@@ -194,13 +196,14 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
-			if ( e . DataSource == null || this . BankGrid . Items . Count > 0 ) return;
+			if ( e . DataSource == null ) return; //|| this . BankGrid . Items . Count > 0 ) return;
+			// ONLY proceed if we triggered the new data request
+			if ( e . CallerDb != "MULTIVIEWER" ) return;
 			this . BankGrid . ItemsSource = null;
 
 			// This is how to convert to  CollectionView
-			IList<BankAccountViewModel> BankMultiViewerDbcollection = e . DataSource as BankCollection;
-			this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( BankMultiViewerDbcollection );
-			//this . BankGrid . ItemsSource = e . DataSource as BankCollection;
+			MBankcollection = e . DataSource as BankCollection;
+			this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MBankcollection );
 			this . BankGrid . Refresh ( );
 			BankGrid . SelectedIndex = bindex;
 			BankGrid . SelectedItem = bindex;
@@ -212,6 +215,8 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . BankGrid, bindex );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			isLoading = false;
+			IsDirty = false;
+			Debug . WriteLine ( "MULTIVIEWER : Bank Data fully loaded" );
 		}
 		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		/// <summary>
@@ -220,13 +225,14 @@ namespace WPFPages . Views
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		{
-			if ( e . DataSource == null || this . CustomerGrid . Items . Count > 0 ) return;
+			if ( e . DataSource == null ) return; //|| this . CustomerGrid . Items . Count > 0 ) return;
+			// ONLY proceeed if we triggered the new data request
+			if ( e . CallerDb != "MULTIVIEWER" ) return;
 			this . CustomerGrid . ItemsSource = null;
 
 			// This is how to convert to  CollectionView
-			IList<CustomerViewModel> CustMultiViewerDbcollection = e . DataSource as CustCollection;
-			this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( CustMultiViewerDbcollection );
-			//this . BankGrid . ItemsSource = e . DataSource as BankCollection;
+			MCustcollection = e . DataSource as CustCollection;
+			this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MCustcollection );
 
 			this . CustomerGrid . ItemsSource = e . DataSource as CustCollection;
 			this . CustomerGrid . Refresh ( );
@@ -238,6 +244,8 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . CustomerGrid, cindex );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			isLoading = false;
+			IsDirty = false;
+			Debug . WriteLine ( "MULTIVIEWER : Customer Data fully loaded" );
 		}
 		/// <summary>
 		/// Handles resetting the index after Details data has been reloaded
@@ -246,14 +254,14 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
-			if ( e . DataSource == null || this.DetailsGrid.Items.Count > 0) return;
+			if ( e . DataSource == null ) return;//|| this.DetailsGrid.Items.Count > 0) return;
+			if ( e . CallerDb != "MULTIVIEWER"&& e.CallerType != "SQLSERVER" ) return;
 			this . DetailsGrid . ItemsSource = null;
 
 			// This is how to convert to  CollectionView
-			//DetMultiViewerDbcollection = e . DataSource as DetCollection;
-			IList<DetailsViewModel> DetMultiViewerDbcollection = e . DataSource as DetCollection;
-			this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( DetMultiViewerDbcollection );
-//			this . DetailsGrid . ItemsSource = e . DataSource as DetCollection;
+			//			IList<DetailsViewModel> DetMultiViewerDbcollection = e . DataSource as DetCollection;
+			MDetcollection = e . DataSource as DetCollection;
+			this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MDetcollection );
 
 			this . DetailsGrid . Refresh ( );
 			DetailsGrid . SelectedIndex = dindex;
@@ -264,6 +272,7 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . DetailsGrid, dindex );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			isLoading = false;
+			Debug . WriteLine ( "MULTIVIEWER : Details Data fully loaded" );
 		}
 		#endregion Post Data Reloaded event handlers
 
@@ -293,79 +302,6 @@ namespace WPFPages . Views
 			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
 		}
 
-		private async void EventControl_MultiViewerIndexChanged ( object sender, IndexChangedArgs e )
-		{
-			//object RowTofind = null;
-			//object gr = null;
-			//int rec = 0;
-			//inprogress = true;
-			//if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
-			//{
-			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
-			//	this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-			//	bindex = rec;
-			//	Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
-			//	if ( rec == -1 )
-			//	{
-			//		this . CustomerGrid . SelectedIndex = -1;
-			//		this . CustomerGrid . SelectedItem = -1;
-			//	}
-			//	else
-			//	{
-			//		this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-			//		cindex = rec;
-			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
-			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
-			//		this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
-			//		dindex = rec;
-			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-			//	}
-			//}
-
-			//// Now check to see if we need  to update the other grids in our own MultiViewer window here
-			//if ( GridsLinked )
-			//{                                       // Update all three grids
-			//	if ( e . Sender == "BANKACCOUNT" )
-			//	{
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
-			//		this . CustomerGrid . SelectedIndex = rec != -1 ? rec : 0;
-			//		cindex = rec;
-			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
-			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
-			//		this . DetailsGrid . SelectedIndex = rec != -1 ? rec : 0;
-			//		dindex = rec;
-			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-			//	}
-			//	else if ( e . Sender == "CUSTOMER" )
-			//	{
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
-			//		this . BankGrid . SelectedIndex = rec != -1 ? rec : 0;
-			//		bindex = rec;
-			//		Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
-			//		this . DetailsGrid . SelectedIndex = rec != -1 ? rec : 0;
-			//		dindex = rec;
-			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
-			//	}
-			//	else if ( e . Sender == "DETAILS" )
-			//	{
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
-			//		this . BankGrid . SelectedIndex = rec != -1 ? rec : 0;
-			//		bindex = rec;
-			//		Utils . ScrollRecordIntoView ( this . BankGrid, rec );
-			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
-			//		this . CustomerGrid . SelectedIndex = rec != -1 ? rec : 0;
-			//		cindex = rec;
-			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
-			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
-			//	}
-			//}
-
-			//return;
-		}
 		private async void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
 		{
 			// Sanity check, if we MADE the index change, so don't bother
@@ -535,16 +471,16 @@ namespace WPFPages . Views
 			Mouse . OverrideCursor = Cursors . Wait;
 			//			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
 			MBankcollection = null;
-			await BankCollection . LoadBank ( MBankcollection, 3, true );
+			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			//BankGrid . ItemsSource = MultiBankcollection;
 			//			if ( MultiCustcollection == null || MultiCustcollection . Count == 0 )
 			MCustcollection = null;
-			await CustCollection . LoadCust ( MCustcollection, 3, true );
+			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			//			if ( MultiDetcollection == null || MultiDetcollection . Count == 0 )
 			MDetcollection = null;
 
 			DetCollection det = new DetCollection ( );
-			await DetailCollection . LoadDet ( MDetcollection, 2, true );
+			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 2, true );
 
 			Flags . MultiViewer = this;
 			//this . BankGrid . ItemsSource = MultiBankcollection;
@@ -659,13 +595,13 @@ namespace WPFPages . Views
 			//MultiDetcollection = null;
 
 			/// Reoad the data into our Items Source collections
-			MBankcollection = await BankCollection . LoadBank ( MBankcollection, 3, true );
+			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			//			MultiBankcollection = BankCollection . MultiBankcollection;
 
-			MCustcollection = await CustCollection . LoadCust ( MCustcollection, 3, true );
+			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			//			MultiCustcollection = CustCollection . MultiCustcollection;
 
-			MDetcollection = await DetCollection . LoadDet ( MDetcollection, 3, true );
+			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 			//			MultiDetcollection = DetCollection . MultiDetcollection;
 
 			this . BankGrid . ItemsSource = MBankcollection;
@@ -958,11 +894,11 @@ namespace WPFPages . Views
 
 		#region focus events
 
-		private void CustomerGrid_GotFocus ( object sender, RoutedEventArgs e )
+		private void CustGrid_GotFocus ( object sender, RoutedEventArgs e )
 		{ CurrentDb = "CUSTOMER"; }
 		private void BankGrid_GotFocus ( object sender, RoutedEventArgs e )
 		{ CurrentDb = "BANKACCOUNT"; }
-		private void DetailsGrid_GotFocus ( object sender, RoutedEventArgs e )
+		private void DetGrid_GotFocus ( object sender, RoutedEventArgs e )
 		{ CurrentDb = "DETAILS"; }
 
 		#endregion focus events
@@ -1157,18 +1093,18 @@ namespace WPFPages . Views
 			}
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-			await BankCollection . LoadBank ( MBankcollection, 1, true );
+			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
 			this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MBankcollection );
 			this . BankGrid . Refresh ( );
 			this . CustomerGrid . ItemsSource = null;
 			this . CustomerGrid . Items . Clear ( );
-			await CustCollection . LoadCust ( MCustcollection, 3, true );
+			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MCustcollection );
 			this . CustomerGrid . Refresh ( );
 			//			ExtensionMethods . Refresh ( this . CustomerGrid );
 			this . DetailsGrid . ItemsSource = null;
 			this . DetailsGrid . Items . Clear ( );
-			await DetCollection . LoadDet ( MDetcollection, 3, true );
+			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 			this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MDetcollection );
 			this . DetailsGrid . Refresh ( );
 			//			ExtensionMethods . Refresh ( this . DetailsGrid );
@@ -1560,6 +1496,7 @@ namespace WPFPages . Views
 			EventControl . TriggerMultiViewerDataUpdated ( MBankcollection,
 				new LoadedEventArgs
 				{
+					CallerType = "MULTIVIEWER",
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					CallerDb = "BANKACCOUNT",
@@ -1577,7 +1514,7 @@ namespace WPFPages . Views
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void CustomerGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
+		private void CustGrid_RowEditEnding ( object sender, DataGridRowEditEndingEventArgs e )
 		{
 			string SearchCustNo = "";
 			string SearchBankNo = "";
@@ -1604,6 +1541,7 @@ namespace WPFPages . Views
 			EventControl . TriggerMultiViewerDataUpdated ( MCustcollection,
 				new LoadedEventArgs
 				{
+					CallerType = "MULTIVIEWER",
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					CallerDb = "CUSTOMER",
@@ -1646,6 +1584,7 @@ namespace WPFPages . Views
 			EventControl . TriggerMultiViewerDataUpdated ( MDetcollection,
 				new LoadedEventArgs
 				{
+					CallerType = "MULTIVIEWER",
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					CallerDb = "DETAILS",
@@ -1670,8 +1609,8 @@ namespace WPFPages . Views
 			if ( sender == MBankcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Bank updated a row, so just update Customer and Details
-				await CustCollection . LoadCust ( MCustcollection, 3, true );
-				await DetCollection . LoadDet ( MDetcollection, 3, true );
+				await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
+				await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
 				return;
@@ -1679,8 +1618,8 @@ namespace WPFPages . Views
 			else if ( sender == MCustcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Customer updated a row, so just update Bank and Details
-				await BankCollection . LoadBank ( MBankcollection, 3, true );
-				await DetCollection . LoadDet ( MDetcollection, 3, true );
+				await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+				await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
 				return;
@@ -1688,8 +1627,8 @@ namespace WPFPages . Views
 			else if ( sender == MDetcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Details updated a row, so just update Customer and Bank
-				await BankCollection . LoadBank ( MBankcollection, 3, true );
-				await CustCollection . LoadCust ( MCustcollection, 3, true );
+				await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+				await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
 				return;
@@ -1703,10 +1642,12 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private async void EventControl_SqlViewerDataUpdated ( object sender, LoadedEventArgs e )
 		{
-			// Update ALL datagrids - IF we didnt   truiigger the change
-			await BankCollection . LoadBank ( MBankcollection, 3, true );
-			await CustCollection . LoadCust ( MCustcollection, 3, true );
-			await DetCollection . LoadDet ( MDetcollection, 3, true );
+			// Update ALL datagrids - IF we didnt   triigger the change
+			if ( e . CallerDb == "MULTIVIEWER" ) return;
+
+			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
+			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			inprogress = false;
 			return;
@@ -1731,11 +1672,12 @@ namespace WPFPages . Views
 				EventControl . TriggerMultiViewerIndexChanged ( this,
 					new IndexChangedArgs
 					{
-						Senderviewer = null,
+						Senderviewer = this,
 						Bankno = SearchBankNo,
 						Custno = SearchCustNo,
 						dGrid = this . BankGrid,
 						Sender = "BANKACCOUNT",
+						SenderId = "MULTIVIEWER",
 						Row = this . BankGrid . SelectedIndex
 					} );
 			}
@@ -1748,11 +1690,12 @@ namespace WPFPages . Views
 				EventControl . TriggerMultiViewerIndexChanged ( this,
 				new IndexChangedArgs
 				{
-					Senderviewer = null,
+					Senderviewer = this,
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					dGrid = this . CustomerGrid,
 					Sender = "CUSTOMER",
+					SenderId ="MULTIVIEWER",
 					Row = this . CustomerGrid . SelectedIndex
 				} );
 			}
@@ -1765,11 +1708,12 @@ namespace WPFPages . Views
 				EventControl . TriggerMultiViewerIndexChanged ( this,
 					new IndexChangedArgs
 					{
-						Senderviewer = null,
+						Senderviewer = this,
 						Bankno = SearchBankNo,
 						Custno = SearchCustNo,
 						dGrid = this . DetailsGrid,
 						Sender = "DETAILS",
+						SenderId = "MULTIVIEWER",
 						Row = this . DetailsGrid . SelectedIndex
 					} );
 			}
@@ -2134,13 +2078,14 @@ namespace WPFPages . Views
 				{
 					this . BankGrid . ItemsSource = null;
 					this . BankGrid . Items . Clear ( );
-					MBankcollection = await BankCollection . LoadBank ( MBankcollection, 1, true );
+					MBankcollection = await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
 //					this . BankGrid . ItemsSource = MultiBankcollection;
 					//					StatusBar . Text = "Current Record Updated Successfully...";
 					// Notify everyone else of the data change
 					EventControl . TriggerViewerDataUpdated ( MBankcollection,
 						new LoadedEventArgs
 						{
+							CallerType = "MULTIVIEWER",
 							CallerDb = "BANKACCOUNT",
 							DataSource = MBankcollection,
 							RowCount = this . BankGrid . SelectedIndex
@@ -2176,13 +2121,14 @@ namespace WPFPages . Views
 				{
 					this . CustomerGrid . ItemsSource = null;
 					this . CustomerGrid . Items . Clear ( );
-					MCustcollection = await CustCollection . LoadCust ( MCustcollection, 1, true );
+					MCustcollection = await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 1, true );
 //					this . CustomerGrid . ItemsSource = MultiCustcollection;
 					//					StatusBar . Text = "Current Record Updated Successfully...";
 					// Notify everyone else of the data change
 					EventControl . TriggerViewerDataUpdated ( MCustcollection,
 						new LoadedEventArgs
 						{
+							CallerType = "MULTIVIEWER",
 							CallerDb = "CUSTOMER",
 							DataSource = MCustcollection,
 							RowCount = this . CustomerGrid . SelectedIndex
@@ -2225,6 +2171,7 @@ namespace WPFPages . Views
 					EventControl . TriggerViewerDataUpdated ( MDetcollection,
 						new LoadedEventArgs
 						{
+							CallerType = "MULTIVIEWER",
 							CallerDb = "DETAILS",
 							DataSource = MDetcollection,
 							RowCount = this . DetailsGrid . SelectedIndex
@@ -2487,6 +2434,80 @@ namespace WPFPages . Views
 				//inprogress = false;
 			}
 
+
+//		private async void EventControl_MultiViewerIndexChanged ( object sender, IndexChangedArgs e )
+//		{
+			//object RowTofind = null;
+			//object gr = null;
+			//int rec = 0;
+			//inprogress = true;
+			//if ( ( Flags . IsFiltered || Flags . IsMultiMode ) && GridsLinked )
+			//{
+			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//	this . BankGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//	bindex = rec;
+			//	Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//	rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//	if ( rec == -1 )
+			//	{
+			//		this . CustomerGrid . SelectedIndex = -1;
+			//		this . CustomerGrid . SelectedItem = -1;
+			//	}
+			//	else
+			//	{
+			//		this . CustomerGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec;// != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//}
+
+			//// Now check to see if we need  to update the other grids in our own MultiViewer window here
+			//if ( GridsLinked )
+			//{                                       // Update all three grids
+			//	if ( e . Sender == "BANKACCOUNT" )
+			//	{
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//		this . CustomerGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//	else if ( e . Sender == "CUSTOMER" )
+			//	{
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//		this . BankGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		bindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . DetailsGrid, "DETAILS" );
+			//		this . DetailsGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		dindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
+			//	}
+			//	else if ( e . Sender == "DETAILS" )
+			//	{
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . BankGrid, "BANKACCOUNT" );
+			//		this . BankGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		bindex = rec;
+			//		Utils . ScrollRecordIntoView ( this . BankGrid, rec );
+			//		rec = Utils . FindMatchingRecord ( e . Custno, e . Bankno, this . CustomerGrid, "CUSTOMER" );
+			//		this . CustomerGrid . SelectedIndex = rec != -1 ? rec : 0;
+			//		cindex = rec;
+			//		BankData . DataContext = this . CustomerGrid . SelectedItem;
+			//		Utils . ScrollRecordIntoView ( this . CustomerGrid, rec );
+			//	}
+			//}
+
+			//return;
+//		}
 			#endregion UNUSED CODE
 
 
