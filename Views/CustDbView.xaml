@@ -141,6 +141,7 @@
 			    CanUserAddRows="False"
 				Grid.RowSpan="1" 
 				HorizontalAlignment="Stretch" 
+				HorizontalContentAlignment="Center"
 				IsSynchronizedWithCurrentItem="False"
 				Margin="0,0,10,8"
 				Padding="-10"
@@ -196,9 +197,10 @@
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus}">
 				</DataGridTextColumn>
-				<DataGridTextColumn Header="A/c Type#" Binding="{Binding AcType,
-									Mode=TwoWay,
-									UpdateSourceTrigger=PropertyChanged}">
+				<DataGridTextColumn Header="Type" Binding="{Binding AcType,
+									Mode=TwoWay,					
+									UpdateSourceTrigger=PropertyChanged}"
+									Width="30">
 				</DataGridTextColumn>
 				<DataGridTextColumn Header="First Name" Binding="{Binding FName,
 									Mode=TwoWay,
@@ -344,6 +346,7 @@
 					    Text="{Binding CustNo, UpdateSourceTrigger=LostFocus, FallbackValue=Cust  #}" 
 					    VerticalAlignment="Center" 
 					    Height="24" 
+						LostFocus ="Edit_LostFocus"
 					   TabIndex="0"
 					    Width="90" 
 					    Canvas.Left="108" 
@@ -370,6 +373,7 @@
 					    VerticalAlignment="Center" 
 					    Height="24" 
 					    Width="90" 
+						LostFocus ="Edit_LostFocus"
 					   TabIndex="1"
 					   Canvas.Left="108" 
 					   Canvas.Top="48" RenderTransformOrigin="0.422,2.208"/>
@@ -392,6 +396,7 @@
 				HorizontalContentAlignment="Center"
 				Padding="5,3,0,0"
 				Text="{Binding AcType, FallbackValue=AcType, UpdateSourceTrigger=LostFocus}" 
+						LostFocus ="Edit_LostFocus"
 			     TextAlignment="Center"
 				VerticalAlignment="Center" 
 				Height="24" 
@@ -417,7 +422,8 @@
 				HorizontalContentAlignment="Center"
 				Padding="5,3,0,0"
 				Text="{Binding ODate, FallbackValue=ODate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}" 
-			     TextAlignment="Center" 
+			     	LostFocus ="Edit_LostFocus"
+				TextAlignment="Center" 
 				Height="24" 
 				Width="90" 
 				TabIndex="4"
@@ -441,6 +447,7 @@
 				HorizontalContentAlignment="Center"
 				Padding="5,3,0,0"
 				Text="{Binding CDate, FallbackValue=CDate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}" 
+				LostFocus ="Edit_LostFocus"
 			     TextAlignment="Center" 
 				Height="24" 
 				TabIndex="5"
@@ -467,7 +474,7 @@
 
 		</Grid>
 		<Button x:Name="SaveBttn"
-				Background="{StaticResource HeaderBrushYellow}"
+				Background="{StaticResource HeaderBrushRed}"
 				Click="SaveBtn"
 				Content="Save Changes"
 				Foreground="White"
@@ -480,7 +487,7 @@
 				VerticalAlignment="Top"
 				Margin="30,61,15,0"
 				Height="30"
-				Template="{StaticResource HorizontalGradientTemplateYellow}" 
+				Template="{StaticResource HorizontalGradientTemplateRed}" 
 				Width="100"
 			/>
 		<Button

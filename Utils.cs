@@ -9,6 +9,7 @@ using System . Windows . Controls;
 using System . Windows . Forms . VisualStyles;
 using System . Windows . Input;
 using System . Windows . Media;
+using Microsoft . Win32;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
@@ -171,6 +172,45 @@ namespace WPFPages
 			}
 			return t;
 		}
+
+		public static string GetImportFileName ( string filespec )
+		// opens  the common file open dialog
+		{
+			OpenFileDialog ofd = new OpenFileDialog ( );
+			ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
+			if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
+				ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
+			else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
+				ofd . Filter = "Comma seperated data (*.csv) | *.csv";
+			else if ( filespec . ToUpper ( ) . Contains ( "*.*" ) || filespec == "" )
+				ofd . Filter = "All Files (*.*) | *.*";
+			ofd . AddExtension = true;
+			//if ( filespec == "" )
+			//	ofd . DefaultExt = ".XLS*" ;
+			//else
+			//	ofd . DefaultExt = $".{filespec . ToUpper ( )}" ;
+			ofd . ShowDialog ( );
+			return ofd . FileName;
+		}
+
+		public static string ConvertInputDate ( string datein )
+		{
+			string YYYMMDD = "";
+			string [ ] datebits;
+			// This filter will strip off the "Time" section of an excel date
+			// and return us a valid YYYY/MM/DD string
+			char [ ] ch = { '/', ' ' };
+			datebits = datein . Split ( ch );
+			if ( datebits . Length < 3 ) return datein;
+
+			// check input to see if it needs reversing ?
+			if ( datebits [ 0 ] . Length == 4 )
+				YYYMMDD = datebits [ 0 ] + "/" + datebits [ 1 ] + "/" + datebits [ 2 ];
+			else
+				YYYMMDD = datebits [ 2 ] + "/" + datebits [ 1 ] + "/" + datebits [ 0 ];
+			return YYYMMDD;
+		}
+
 
 		public static void HandleCtrlFnKeys ( bool key1, KeyEventArgs e )
 		{
@@ -361,8 +401,9 @@ namespace WPFPages
 			//			grid . SetDetailsVisibilityForItem ( grid . SelectedItem, Visibility . Visible );
 			grid . SelectedIndex = row;
 			grid . SelectedItem = row; 
-			Utils . ScrollRecordIntoView ( grid, row  + scrollrow );
+			Utils . ScrollRecordIntoView ( grid, row );
 			grid . UpdateLayout ( );
+			grid . Refresh ( );
 //			var v = grid .VerticalAlignment;
 		}
 

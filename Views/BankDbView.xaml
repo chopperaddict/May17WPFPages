@@ -158,6 +158,7 @@
 			Margin="0,0,10,8"
 			Padding="-10"
 			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
 			VerticalAlignment="Stretch"
 			VerticalContentAlignment="Center"
 			AlternatingRowBackground="{StaticResource Blue4}"
@@ -216,17 +217,16 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
+				<DataGridTextColumn Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Customer #" />
+
 				<DataGridTextColumn
 					Width="80"
 					Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
 					Header="Bank #"
 					SortMemberPath="BankNo" />
 
-				<DataGridTextColumn Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Customer #" />
-
-
 				<DataGridTextColumn
-					Width="40"
+					Width="30"
 					Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
 					Header="Type"
 					SortMemberPath="AcType" />
@@ -238,7 +238,7 @@
 					SortMemberPath="Balance" />
 
 				<DataGridTextColumn
-					Width="60"
+					Width="50"
 					Binding="{Binding IntRate, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat='0.00'}"
 					Header="Interest"
 					SortMemberPath="IntRate" />
@@ -337,6 +337,7 @@
 					VerticalAlignment="Center"
 					HorizontalContentAlignment="Center"
 					FontSize="12"
+					LostFocus="Edit_LostFocus"
 					Foreground="Black"
 					TabIndex="0"
 					Text="{Binding CustNo, UpdateSourceTrigger=LostFocus, FallbackValue=Cust  #}" />
@@ -365,6 +366,7 @@
 					HorizontalContentAlignment="Center"
 					FontSize="12"
 					Foreground="Red"
+					LostFocus="Edit_LostFocus"
 					RenderTransformOrigin="0.422,2.208"
 					TabIndex="1"
 					Text="{Binding BankNo, UpdateSourceTrigger=LostFocus, FallbackValue=Bank A/c #}" />
@@ -393,6 +395,7 @@
 					HorizontalContentAlignment="Center"
 					FontSize="12"
 					Foreground="Black"
+					LostFocus="Edit_LostFocus"
 					SelectionChanged="SelectionChanged"
 					TabIndex="2"
 					Text="{Binding AcType, FallbackValue=AcType, UpdateSourceTrigger=LostFocus}"
@@ -425,6 +428,7 @@
 					FontSize="16"
 					FontWeight="DemiBold"
 					Foreground="Red"
+					LostFocus="Edit_LostFocus"
 					SelectionChanged="SelectionChanged"
 					TabIndex="3"
 					Text="{Binding Path=Balance, FallbackValue=Balance, UpdateSourceTrigger=LostFocus}"
@@ -453,6 +457,7 @@
 					HorizontalContentAlignment="Center"
 					FontSize="12"
 					SelectionChanged="SelectionChanged"
+					LostFocus="Edit_LostFocus"
 					TabIndex="4"
 					Text="{Binding ODate, FallbackValue=ODate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}"
 					TextAlignment="Center"
@@ -478,6 +483,7 @@
 					HorizontalContentAlignment="Center"
 					FontSize="12"
 					Foreground="Black"
+					LostFocus="Edit_LostFocus"
 					SelectionChanged="SelectionChanged"
 					TabIndex="5"
 					Text="{Binding CDate, FallbackValue=CDate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}"
@@ -511,13 +517,13 @@
 			Margin="10,61,0,0"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Top"
-			Background="{StaticResource HeaderBrushBlue}"
+			Background="{StaticResource HeaderBrushRed}"
 			Click="SaveBtn"
 			Content="Save Changes"
 			Foreground="White"
 			IsEnabled="False"
 			TabIndex="6"
-			Template="{StaticResource HorizontalGradientTemplateBlue}" />
+			Template="{StaticResource HorizontalGradientTemplateRed}" />
 		<Button
 			Grid.Row="2"
 			Grid.Column="3"

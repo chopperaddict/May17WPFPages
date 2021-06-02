@@ -5,6 +5,7 @@ using System . Text;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
+using System . Xml . Schema;
 
 namespace WPFPages . Views
 {
@@ -67,20 +68,65 @@ namespace WPFPages . Views
 
 
 
+
 		#endregion ALL NEW EVENTS
 
+		public Func<int, int, int, int> IntFuncsDelegate = CalcInts;
+		public Func<int, int, int> MathDelegate;
 
 		public EventControl ( )
 		{
+			//Func<int, int, int, int> IntFuncsDelegate;
+			IntFuncsDelegate = CalcInts;
+
 		}
 
+		public static Func<int, int, int> CalcAdd = ( x, y ) => x + y;
+		public static Func<int, int, int> CalcSub= ( x, y ) => x - y;
+		public static Func<int, int, int> CalcMult = ( x, y ) => x * y;
+		public static Func<int, int, int> CalcDiv = ( x, y ) => x / y;
+		public static Func<int, int, int> CalcMod = ( x, y ) => x % y;
+		public static Func<int, int, int> CalcRem = ( x, y ) => x + y == 0 ? 0 : 1;
+		public static int CalcInts ( int Calctype, int in1, int in2 )
+		{
+			int result = 0;
+			switch ( Calctype ) {
+				case 1:		//ADD
+					result = in1 + in2;
+					break;
+				case 2:		// SUBTRACT
+					result = in1 - in2;
+					break;
+				case 3:		//MULTIPLY
+					result = in1 * in2;
+					break;
+				case 4:		// DIVIDE
+					result = in1 / in2;
+					break;
+				case 5:         // RETURN MODULO
+					result = in1 % in2 == 0 ? 0 : 1;
+					break;
+				case 6:		// return remainder
+					int divisor = in1 / in2;
+					int divresult= in1 % in2;
+					if ( divresult == 0 )
+						result = 0;
+					else
+						result = in1 - ( in2 * divisor );
+					break;
+			}
+			return result;
+		}
+
+
+	
 		/// <summary>
 		/// Central point for TRIGGERING this event
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="e"></param>
 
-//dummy to stop error only
+		//dummy to stop error only
 		//public static void TriggerDataUpdated ( object obj, LoadedEventArgs e )
 		//{
 		//	DataUpdated?.Invoke ( obj, e );

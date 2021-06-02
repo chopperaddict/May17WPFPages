@@ -26,8 +26,9 @@ namespace WPFPages . Views
 		private bool Startup = true;
 		private bool Triggered = false;
 		private bool LinktoParent = false;
+		private bool LoadingDbData = false;
 
-		private string _bankno = "";
+	private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
 		private string _balance = "";
@@ -170,21 +171,19 @@ namespace WPFPages . Views
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
-			if ( e . CallerType == "CUSTDBVIEW" ) return;
+			if ( e . CallerType == "CUSTDBVIEW" || e . CallerDb == "CUSTOMER" ) return;
 			int currsel = this . CustGrid . SelectedIndex;
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
 			CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
-			this . CustGrid . ItemsSource = CustDbViewcollection;
-			this . CustGrid . SelectedIndex = currsel;
-			this . CustGrid . SelectedItem = currsel; this . CustGrid . Refresh ( );
+			IsDirty = false;
 		}
 
 		public void ExternalDataUpdate ( int DbEditChangeType, int row, string currentDb )
 		{
 			// Reciiving Notifiaction from a remote viewer that data has been changed, so we MUST now update our DataGrid
-			Debug . WriteLine ( $"CustDbView : Data changed event notification received successfully." );
+			Debug . WriteLine ( $"CUSTDBVIEW : Data changed event notification received successfully. in ExternalDataUpdate(187)" );
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
 			this . CustGrid . ItemsSource = CustDbViewcollection;
@@ -233,6 +232,8 @@ namespace WPFPages . Views
 			this . CustGrid . Items . Clear ( );
 			if ( e . DataSource == null ) return;
 
+			LoadingDbData = true;
+
 			CustviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as CustCollection );
 			CustDbViewcollection = e . DataSource as CustCollection;
 			CustviewerView . Refresh ( );
@@ -257,6 +258,19 @@ namespace WPFPages . Views
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
+			if ( ( Flags . LinkviewerRecords == false && IsDirty )
+					|| SaveBttn . IsEnabled )
+			{
+				MessageBoxResult result = MessageBox . Show
+					( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
+				if ( result == MessageBoxResult . Yes )
+				{
+					SaveButton ( );
+				}
+				// Do not want ot save it, so disable  save button again
+				SaveBttn . IsEnabled = false;
+				IsDirty = false;
+			}
 			Flags . CustDbEditor = null;
 			EventControl . EditIndexChanged -= EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index
@@ -271,18 +285,11 @@ namespace WPFPages . Views
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			//if ( Flags . LinkviewerRecords == false && IsDirty )
-			//{
-			//	MessageBoxResult result = System . Windows . MessageBox . Show
-			//		( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
-			//	if ( result == MessageBoxResult . Yes )
-			//	{
-			//		SaveButton ( );
-			//	}
-			//	// Do not want to save it, so disable  save button again
-			//	SaveBttn . IsEnabled = false;
-			//	IsDirty = false;
-			//}
+			if ( LoadingDbData )
+			{
+				LoadingDbData = false;
+				return;
+			}
 			IsDirty = false;
 			if ( this . CustGrid . SelectedItem == null )
 				return;
@@ -679,6 +686,10 @@ namespace WPFPages . Views
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
 			LinktoParent = !LinktoParent;
+		}
+		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
+		{
+			SaveBttn . IsEnabled = true;
 		}
 
 		private void CustGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )

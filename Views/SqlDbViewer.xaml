@@ -447,6 +447,11 @@
 				     FontWeight="Bold"
 					Width="80"
 				    Foreground="{StaticResource Black1}">
+				<MenuItem Header="Show All records"
+					Background="#35F6FB"
+					Click="Linq6_Click"
+					    IsCheckable="false"
+				Foreground="Black"/>
 				<MenuItem Header="A/c Type 1 Only"
 					    Background="#35F6FB"
 					    Click="Linq1_Click"
@@ -473,11 +478,6 @@
 					    IsCheckable="false"
 				Foreground="Black"/>
 				<Separator />
-				<MenuItem Header="Show All records"
-					Background="#35F6FB"
-					Click="Linq6_Click"
-					    IsCheckable="false"
-				Foreground="Black"/>
 			</MenuItem>
 
 			<MenuItem  Header="Filter"

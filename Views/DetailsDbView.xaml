@@ -196,6 +196,7 @@
 			Margin="0,0,10,8"
 			Padding="-10"
 			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
 			VerticalAlignment="Stretch"
 			VerticalContentAlignment="Center"
 			AlternatingRowBackground="{StaticResource Green4}"
@@ -265,7 +266,7 @@
 					SortMemberPath="BankNo" />
 
 				<DataGridTextColumn
-					Width="40"
+					Width="30"					
 					Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
 					Header="Type"
 					SortMemberPath="AcType" />
@@ -379,6 +380,7 @@
 					FontSize="12"
 					Foreground="Black"
 					TabIndex="0"
+					LostFocus ="Edit_LostFocus"
 					Text="{Binding CustNo, UpdateSourceTrigger=LostFocus, FallbackValue=Cust  #}" />
 
 				<TextBlock
@@ -408,6 +410,7 @@
 					Foreground="Red"
 					RenderTransformOrigin="0.422,2.208"
 					TabIndex="1"
+					LostFocus ="Edit_LostFocus"
 					Text="{Binding BankNo, UpdateSourceTrigger=LostFocus, FallbackValue=Bank A/c #}" />
 
 				<TextBlock
@@ -437,6 +440,7 @@
 					Foreground="Black"
 					SelectionChanged="SelectionChanged"
 					TabIndex="2"
+					LostFocus ="Edit_LostFocus"
 					Text="{Binding AcType, FallbackValue=AcType, UpdateSourceTrigger=LostFocus}"
 					TextAlignment="Center"
 					TextChanged="TextChanged" />
@@ -470,6 +474,7 @@
 					Foreground="Red"
 					SelectionChanged="SelectionChanged"
 					TabIndex="3"
+					LostFocus ="Edit_LostFocus"
 					Text="{Binding Path=Balance, FallbackValue=Balance, UpdateSourceTrigger=LostFocus}"
 					TextAlignment="Center"
 					TextChanged="TextChanged" />
@@ -498,6 +503,7 @@
 					FontSize="12"
 					SelectionChanged="SelectionChanged"
 					TabIndex="4"
+					LostFocus ="Edit_LostFocus"
 					Text="{Binding ODate, FallbackValue=ODate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}"
 					TextAlignment="Center"
 					TextChanged="TextChanged" />
@@ -525,6 +531,7 @@
 					Foreground="Black"
 					SelectionChanged="SelectionChanged"
 					TabIndex="5"
+					LostFocus ="Edit_LostFocus"
 					Text="{Binding CDate, FallbackValue=CDate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}"
 					TextAlignment="Center"
 					TextChanged="TextChanged" />
@@ -556,13 +563,13 @@
 			Margin="10,61,0,0"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Top"
-			Background="{StaticResource HeaderBrushGreen}"
+			Background="{StaticResource HeaderBrushRed}"
 			Click="SaveBtn"
 			Content="Save Changes"
 			Foreground="White"
 			IsEnabled="False"
 			TabIndex="6"
-			Template="{StaticResource HorizontalGradientTemplateGreen}" />
+			Template="{StaticResource HorizontalGradientTemplateRed}" />
 		<Button
 			Grid.Row="2"
 			Grid.Column="3"

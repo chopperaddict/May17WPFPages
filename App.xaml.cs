@@ -1,4 +1,5 @@
 ﻿using System . Windows;
+using System . Windows . Controls;
 
 namespace WPFPages
 {
@@ -20,8 +21,28 @@ namespace WPFPages
 #if USEDETAILEDEXCEPTIONHANDLER
 			_exceptionHandler = new WindowExceptionHandler ();
 #endif
+			// allows Datagrid to sense/handle datacontext changes
+			FrameworkElement . DataContextProperty . OverrideMetadata ( typeof ( DataGrid ),
+				new FrameworkPropertyMetadata(	null, 
+						FrameworkPropertyMetadataOptions . Inherits,new PropertyChangedCallback ( OnDataContextChanged ) ) );
 		}
 
+		public static void OnDataContextChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
+		{
+			DataGrid grid = d as DataGrid;
+			if ( grid != null )
+			{
+				foreach ( DataGridColumn col in grid . Columns )
+				{
+					col . SetValue ( FrameworkElement . DataContextProperty, e . NewValue );
+					var header = col . Header as FrameworkElement;
+					if ( header != null )
+					{
+						header . SetValue ( FrameworkElement . DataContextProperty, e . NewValue );
+					}
+				}
+			}
+		}
 #pragma MVVM TODO
 
 		#region MVVM STUFF

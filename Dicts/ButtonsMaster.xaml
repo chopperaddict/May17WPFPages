@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:WPFPages.Dicts">
+			  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			  xmlns:local="clr-namespace:WPFPages.Dicts">
 
 
 	<ControlTemplate x:Key="GradientButtonTemplateBlue" TargetType="{x:Type ButtonBase}">
@@ -303,7 +303,7 @@
 			</Trigger>
 			<Trigger Property="IsEnabled" Value="False">
 				<!--Handles disabled status-->
-				<Setter Property="Background" TargetName="border" Value="Gray"/>
+				<Setter Property="Background" TargetName="border" Value="LightGray"/>
 				<Setter Property="BorderBrush" TargetName="border" Value="Red"/>
 				<Setter Property="Foreground" Value="DarkGray"/>
 			</Trigger>

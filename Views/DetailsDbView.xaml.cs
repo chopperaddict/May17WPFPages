@@ -40,6 +40,8 @@ namespace WPFPages . Views
 		private bool IsFiltered = false;
 		public static bool Triggered = false;
 		private bool TriggeredDataUpdate = false;
+		private bool LoadingDbData = false;
+
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -238,6 +240,8 @@ namespace WPFPages . Views
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
 
+			LoadingDbData = true;
+
 			// Get our personal Collection view of the Db
 			// We even can create a seperate data source as a List <DetailsViewModel> as shown below
 			// but we do not need to do so
@@ -259,14 +263,13 @@ namespace WPFPages . Views
 		}
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
-			if ( e . CallerDb != "DETAILSDBVIEW" ) return;
+			if ( e . CallerDb == "DETAILSDBVIEW" || e . CallerDb == "DETAILS" ) return;
 			// Receiving Notification from a remote viewer that data has been changed, so we MUST now update our DataGrid
 			if ( TriggeredDataUpdate )
 			{
 				TriggeredDataUpdate = false;
 				return;
 			}
-
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			int currsel = this . DetGrid . SelectedIndex;
 
@@ -274,6 +277,7 @@ namespace WPFPages . Views
 			this . DetGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
 			await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+			IsDirty = false;
 		}
 		#endregion DATA BASED EVENT HANDLERS
 
@@ -310,6 +314,19 @@ namespace WPFPages . Views
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
 			//			EventControl . ViewerDataHasBeenChanged -= ExternalDataUpdate;      // Callback in THIS FILE
+			if ( ( Flags . LinkviewerRecords == false && IsDirty )
+					|| SaveBttn . IsEnabled )
+			{
+				MessageBoxResult result = MessageBox . Show
+					( "You have unsaved changes.  Do you want them saved now ?", "Possible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
+				if ( result == MessageBoxResult . Yes )
+				{
+					SaveButton ( );
+				}
+				// Do not want ot save it, so disable  save button again
+				SaveBttn . IsEnabled = false;
+				IsDirty = false;
+			}
 			//UnSubscribe from Bank Data Changed event declared in EventControl
 			Flags . DetDbEditor = null;
 			//Another viewer has changed selection
@@ -340,6 +357,12 @@ namespace WPFPages . Views
 			{
 				return Flags . SqlDetViewer != null && LinktoParent == false;
 			};
+
+			if ( LoadingDbData )
+			{
+				LoadingDbData = false;
+				return;
+			}
 
 			if ( IsDirty )
 			{
@@ -877,6 +900,10 @@ namespace WPFPages . Views
 				e . Accepted = true;
 			else
 				e . Accepted = false;
+		}
+		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
+		{
+			SaveBttn . IsEnabled = true;
 		}
 
 		private void DetGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )

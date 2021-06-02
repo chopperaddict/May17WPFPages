@@ -26,6 +26,7 @@ namespace WPFPages . Views
 		static bool Startup = true;
 		private bool LinktoParent = false;
 		private bool Triggered = false;
+		private bool LoadingDbData = false;
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -170,7 +171,7 @@ namespace WPFPages . Views
 
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
-			if ( e . CallerDb != "BANKDBVIEW" ) return;
+			if ( e . CallerDb == "BANKDBVIEW" || e . CallerDb == "BANKACCOUNT" ) return;
 			int currsel = this . BankGrid . SelectedIndex;
 			Debug . WriteLine ( $"BankDbView : Data changed event notification received successfully." );
 			this . BankGrid . ItemsSource = null;
@@ -179,7 +180,6 @@ namespace WPFPages . Views
 			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection,"BANKDBVIEW", 3, true );
 			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
-			this . BankGrid . SelectedIndex = currsel;
 			IsDirty = false;
 		}
 
@@ -237,7 +237,7 @@ namespace WPFPages . Views
 			if ( e . CallerDb != "BANKDBVIEW" ) return;
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-
+			LoadingDbData= true;
 			BankviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as BankCollection );
 			BankViewcollection = e . DataSource as BankCollection;
 			BankviewerView . Refresh ( );
@@ -294,21 +294,11 @@ namespace WPFPages . Views
 
 		private void BankGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
-			//if ( ( Flags . LinkviewerRecords == false && IsDirty )
-			//		|| SaveBttn . IsEnabled )
-			//{
-			//	MessageBoxResult result = MessageBox . Show
-			//		( "You have unsaved changes.  Do you want them saved now ?", "P:ossible Data Loss", MessageBoxButton . YesNo, MessageBoxImage . Question, MessageBoxResult . Yes );
-			//	if ( result == MessageBoxResult . Yes )
-			//	{
-			//		SaveButton ( );
-			//	}
-			//	// Do not want ot save it, so disable  save button again
-			//	SaveBttn . IsEnabled = false;
-			//	IsDirty = false;
-			//}
-			//if ( this . BankGrid . SelectedItem == null )
-			//	return;
+			if ( LoadingDbData )
+			{
+				LoadingDbData = false;
+				return;
+			}
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
@@ -747,6 +737,16 @@ namespace WPFPages . Views
 			//	} );
 
 
+		}
+
+		private void Custno_LostFocus ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
+		{
+			SaveBttn . IsEnabled = true;
 		}
 
 

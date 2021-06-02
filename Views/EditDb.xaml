@@ -224,6 +224,7 @@
 		<!--  Left Column 2ND ONLY  -->
 		<Grid
 			x:Name="BankEditFields"
+			DataContext="DataGrid1.CurrentItem "
 			Grid.Row="1"
 			Grid.RowSpan="1"
 			Grid.Column="2"
@@ -682,6 +683,7 @@
 
 		<Grid
 			x:Name="CustomerEditFields"
+			DataContext="DataGrid2.CurrentItem "
 			Grid.Row="1"
 			Grid.Column="2"
 			Grid.ColumnSpan="1"
@@ -1098,8 +1100,6 @@
 			Grid.Row="1"
 			Grid.RowSpan="1"
 			Grid.Column="4"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch"
 			AlternatingRowBackground="{StaticResource Green4}"
 			AutoGenerateColumns="False"
 			CanUserAddRows="False"
@@ -1111,7 +1111,7 @@
 			SelectionChanged="DetailsGrid_SelectionChanged"
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
-			Visibility="Visible">
+			Visibility="Visible" Margin="0,0,0,10">
 			<!--  VirtualizingPanel.ScrollUnit="Pixel"  -->
 			<!--  CellEditEnding="DetailsGrid_CellEditEnding"  -->
 			<!--  ItemsSource="{Binding Source={StaticResource DetData}}"  -->
@@ -1233,6 +1233,7 @@
 
 		<Grid
 			x:Name="DetailsEditFields"
+			DataContext="DetailsGrid.CurrentItem "
 			Grid.Row="1"
 			Grid.RowSpan="1"
 			Grid.Column="2"
@@ -1248,7 +1249,7 @@
 				<RowDefinition Height="35" />
 				<RowDefinition Height="35" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="15" />
+				<RowDefinition Height="25" />
 			</Grid.RowDefinitions>
 			<TextBox
 				Name="BanknoEdit3"
@@ -1399,7 +1400,7 @@
 				Click="SaveChanges_Click"
 				FontWeight="Bold"
 				IsEnabled="False"
-				Style="{StaticResource GreenGreenButton}">
+				Style="{StaticResource RedButton}">
 				<Border
 					Name="_Border1"
 					Padding="3"
@@ -1424,7 +1425,7 @@
 				HorizontalContentAlignment="Center"
 				Click="Button_Click"
 				FontWeight="Bold"
-				Style="{StaticResource RedButton}">
+				Style="{StaticResource GreenGreenButton}">
 				<Border
 					Name="_Border2"
 					Padding="3"
@@ -1453,13 +1454,19 @@
 			Grid.Row="2"
 			Grid.Column="3"
 			Grid.ColumnSpan="2"
-			Margin="0,0,0,0"
 			HorizontalAlignment="Center"
-			VerticalAlignment="Center">
+			VerticalAlignment="Center" Height="55">
+			<CheckBox x:Name="AllowParentChange"
+				FontWeight="Bold"
+				    Foreground="White"
+				Margin="15,2,0,5"
+				Height="15"
+				Content="Allow Parent to change our selection" Click="AllowParentChange_Checked"
+				/>
 			<Label
 				x:Name="Status"
 				Width="405"
-				Margin="15,5,0,5"
+				Margin="15,0,0,5"
 				HorizontalContentAlignment="Center"
 				Background="DarkSlateGray"
 				Content="Total Records = , Current Record = "

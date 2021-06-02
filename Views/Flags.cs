@@ -164,18 +164,6 @@ namespace WPFPages
 		public static bool ViewerDataChange = false;
 		public static bool UseBeeps = true;
 
-		/*
-		 *	Sorting Checkbox enumeration
-		 *	Default_option . IsChecked = true;		// 0
-			Id_option . IsChecked = false;			// 1
-			Bankno_option . IsChecked = false;		// 2
-			Custno_option . IsChecked = false;		// 3
-			actype_option . IsChecked   = false;		// 4
-			Dob_option . IsChecked = false;		// 5
-			Odate_option . IsChecked = false;		// 6
-			Flags . SortOrderRequested = 6;
-
-		*/
 
 		public static double TopVisibleBankGridRow = 0;
 		public static double BottomVisibleBankGridRow = 0;

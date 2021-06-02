@@ -2,6 +2,7 @@
 using System . ComponentModel;
 using System . Data;
 using System . Diagnostics;
+using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
@@ -72,6 +73,8 @@ namespace WPFPages . Views
 		public bool Startup = true;
 		public bool IsDirty = false;
 		public bool UpdateInProgress = false;
+		public bool LoadingDbData = false;
+		public bool allowParentChange = false;
 
 
 		// Flags to let me handle jupdates to/From SqlViewer
@@ -213,11 +216,13 @@ namespace WPFPages . Views
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void EventControl_ForceEditDbIndexChanged ( object sender, IndexChangedArgs e )
+		private void EventControl_EditDbIndexChanged ( object sender, IndexChangedArgs e )
 		{
 			int currsel = 0;
 
 			UpdateInProgress = true;
+			if ( allowParentChange == false )
+				return;
 
 			if ( e . Custno != null && e . Bankno != null )
 			{
@@ -623,13 +628,10 @@ namespace WPFPages . Views
 			else if ( CurrentDb == "DETAILS" )
 				EventControl . DetDataLoaded += EventControl_DataLoaded;
 
-			EventControl . ForceEditDbIndexChanged += EventControl_ForceEditDbIndexChanged;
+			allowParentChange = false;
+			// Only used to listen  for index changes from OUR OWN PARENT, and nothing else....
+			EventControl . ForceEditDbIndexChanged += EventControl_EditDbIndexChanged;
 
-
-			//			NotifyOfDataChange += DbChangedHandler; // Callback in THIS FILE
-			//			EventControl . ViewerDataHasBeenChanged += EditDbHasChangedIndex;      // Callback in THIS FILE
-
-			// Main update notification handler
 			EventControl . ViewerDataUpdated += EventControl_ViewerDataUpdated;
 			// changes made inMultiviewer
 			EventControl . MultiViewerDataUpdated += EventControl_ViewerDataUpdated;
@@ -646,17 +648,12 @@ namespace WPFPages . Views
 					ThisDataGrid = this . DataGrid1;
 					if ( EditDbBankcollection == null || EditDbBankcollection . Count == 0 )
 						EditDbBankcollection = await LoadBankData ( EditDbBankcollection );
-					//EditDbBankcollection = BankCollection . LoadBank ( 2, false );
-					//this . DataGrid1 . ItemsSource = EditDbDetcollection;
 				}
 				else
 				{
 					ThisDataGrid = this . DataGrid2;
 					EditDbDetcollection = await LoadDetailsAsync ( );
 					this . DetailsGrid . ItemsSource = EditDbDetcollection;
-					//if ( EditDbDetcollection == null || EditDbDetcollection . Count == 0 )
-					//	DetCollection . LoadDet ( EditDbDetcollection, 2 );
-					//this  . DetailsGrid . ItemsSource = EditDbDetcollection;
 				}
 			}
 			else
@@ -669,10 +666,7 @@ namespace WPFPages . Views
 				this . DataGrid2 . ItemsSource = EditDbDetcollection;
 			}
 			ViewerButton . IsEnabled = false;
-			// No flag on window - Yet !!
-			//			if ( Flags . LinkviewerRecords )
-			//				LinkRecords . IsChecked = true;
-
+	
 			//===============================================
 			// Now we can do the final setup processing
 			//===============================================
@@ -720,8 +714,6 @@ namespace WPFPages . Views
 				CurrentGrid = this . DataGrid1;
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(546) Window just loaded : getting instance of EventHandlers class with this,DataGrid1,\"EDITDB\"	Db = {DataGrid1 . Items . Count}" );
-				//				new EventHandlers ( this . DataGrid1, "EDITDB", out EventHandler );
-
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				Flags . CurrentEditDbViewerBankGrid = this . DataGrid1;
 				BankAccountViewModel . ActiveEditDbViewer = this . DataGrid1;
@@ -780,8 +772,6 @@ namespace WPFPages . Views
 				CurrentGrid = this . DataGrid2;
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(602) Window just loaded :  getting instance of EventHandlers class with this,DataGrid2,\"EDITDB\"	Db = {DataGrid2 . Items . Count}" );
-				//				EventHandlers . SetWindowHandles ( this, null, null );
-				//				new EventHandlers ( this . DataGrid2, "EDITDB", out EventHandler );
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				Flags . CurrentEditDbViewerCustomerGrid = this . DataGrid2;
 				BankAccountViewModel . ActiveEditDbViewer = this . DataGrid2;
@@ -840,8 +830,6 @@ namespace WPFPages . Views
 				CurrentGrid = this . DetailsGrid;
 				//Setup the Event handler to notify EditDb viewer of index changes
 				Debug . WriteLine ( $"EditDb(660) Window just loaded :  getting instance of EventHandlers class with this,DataGrid1,\"EDITDB\"	Db = {DetailsGrid . Items . Count}" );
-				//				EventHandlers . SetWindowHandles ( this, null, null );
-				//				new EventHandlers ( this . DetailsGrid, "DETAILS", out EventHandler );
 				//Store pointers to our DataGrid in BOTH ModelViews for access by Data row updating code
 				if ( Flags . CurrentEditDbViewer == null )
 					Flags . CurrentEditDbViewer = new EditDb ( );
@@ -866,13 +854,6 @@ namespace WPFPages . Views
 
 			// Set Form wide flags to see what  actions we need to take ?  (Edited value or not)
 			ViewerChangeType = 0;        // Change made in Viewer
-
-
-			// We no longer need to listen out for these as we rely on SqlDbViewer to send our special
-			// Delegate based parameter function to tell us to update our current index
-			//			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
-			//			EventControl . ViewerIndexChanged += EventControl_ViewerIndexChanged;
-			//			EventControl . MultiViewerIndexChanged += EventControl_ViewerIndexChanged;
 
 			EventControl . RecordDeleted += OnDeletion;
 
@@ -901,28 +882,55 @@ namespace WPFPages . Views
 			if ( e . CallerDb != "EDITDB" ) return;
 			if ( e . CallerType == "SQLDBVIEWER" ) return;
 
+			LoadingDbData = true;
+
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				EditDbBankcollection = e . DataSource as BankCollection;
 				EditBankviewerView = CollectionViewSource . GetDefaultView ( EditDbBankcollection );
 				EditBankviewerView . Refresh ( );
 				this . DataGrid1 . ItemsSource = EditBankviewerView;
+				this . DataGrid1 . SelectedIndex = 0;
+				this . DataGrid1 . SelectedItem= 0;
+				this . DataGrid1 . CurrentItem = 0;
+				this . DataGrid1 . UpdateLayout ( );
+				BankEditFields . DataContext = this . DataGrid1 . CurrentItem;
 				Debug . WriteLine ( "EDITDB : Bank Data fully loaded" );
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
 				EditDbCustcollection = e . DataSource as CustCollection;
-				EditCustviewerView = CollectionViewSource . GetDefaultView ( EditDbCustcollection);
+				EditCustviewerView = CollectionViewSource . GetDefaultView ( EditDbCustcollection );
 				EditCustviewerView . Refresh ( );
 				this . DataGrid2 . ItemsSource = EditCustviewerView;
+				this . DataGrid2 . SelectedIndex = 0;
+				this . DataGrid2 . SelectedItem = 0;
+				this . DataGrid2 . CurrentItem = 0;
+				this . DataGrid2 . UpdateLayout ( );
+				BankEditFields . DataContext = this . DataGrid2 . CurrentItem;
 				Debug . WriteLine ( "EDITDB : Customer Data fully loaded" );
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
 				EditDbDetcollection = e . DataSource as DetCollection;
-				EditDetviewerView = CollectionViewSource . GetDefaultView ( EditDbDetcollection);
+				EditDetviewerView = CollectionViewSource . GetDefaultView ( EditDbDetcollection );
 				EditDetviewerView . Refresh ( );
 				this . DetailsGrid . ItemsSource = EditDetviewerView;
+				this . DetailsGrid . SelectedIndex = 1;
+				this . DetailsGrid . SelectedItem = 1;
+				this . DetailsGrid . CurrentItem = 1;
+				this . DetailsGrid . UpdateLayout ( );
+				this . DetailsGrid . Refresh ();
+				Utils . SetUpGridSelection ( this . DetailsGrid, 1 );
+				Thread . Sleep ( 350);
+				this . DetailsGrid . SelectedIndex = 0;
+				this . DetailsGrid . SelectedItem = 0;
+				this . DetailsGrid . CurrentItem = 0;
+				this . DetailsGrid . UpdateLayout ( );
+				this . DetailsGrid . Refresh ( );
+				Utils . SetUpGridSelection ( this . DetailsGrid, 0 );
+
+				BankEditFields . DataContext = this . DetailsGrid . CurrentItem;
 				Debug . WriteLine ( "EDITDB : Details Data fully loaded" );
 			}
 		}
@@ -965,7 +973,8 @@ namespace WPFPages . Views
 			// Changes made by Multi viewer window
 			EventControl . MultiViewerDataUpdated -= EventControl_ViewerDataUpdated;
 			EventControl . RecordDeleted -= OnDeletion;
-			EventControl . ForceEditDbIndexChanged -= EventControl_ForceEditDbIndexChanged;
+			EventControl . ForceEditDbIndexChanged -= EventControl_EditDbIndexChanged;
+//			AllowParentChange . Checked -= AllowParentChange_Checked;
 
 			MainWindow . gv . SqlCurrentEditViewer = null;
 
@@ -1107,7 +1116,9 @@ namespace WPFPages . Views
 					dg . SelectedIndex++;
 
 				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
+					Utils . SetUpGridSelection( dg, dg.SelectedIndex );
+
+//				Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 				key1 = false;
 			}
 			else if ( e . Key == Key . Home )
@@ -1203,20 +1214,8 @@ namespace WPFPages . Views
 			{
 				Flags . CurrentSqlViewer . Window_PreviewKeyDown ( sender, e );
 			}
-			if ( dg != null )
-			{
-				// Now process it
-				if ( dg == this . DataGrid1 )
-					DataGrid1_SelectionChanged ( dg, null );
-				else if ( dg == this . DataGrid2 )
-					DataGrid2_SelectionChanged ( dg, null );
-				else if ( dg == this . DetailsGrid )
-					DetailsGrid_SelectionChanged ( dg, null );
-				if ( dg . SelectedItem != null )
-					Utils . ScrollRecordInGrid ( dg, dg . SelectedIndex );
 
-				e . Handled = true;
-			}
+			e . Handled = true;
 			key1 = false;
 		}
 
@@ -1440,6 +1439,12 @@ namespace WPFPages . Views
 				SelectDone = false;
 				return;
 			}
+			if ( LoadingDbData )
+			{
+				LoadingDbData = false;
+				return;
+			}
+
 			SelectDone = true;
 			if ( UpdateInProgress ) return;
 
@@ -1507,6 +1512,11 @@ namespace WPFPages . Views
 			//			if ( SqlParent == null ) return;
 			IsDirty = false;
 
+			if ( LoadingDbData )
+			{
+				LoadingDbData = false;
+				return;
+			}
 			try
 			{
 				if ( Flags . isMultiMode )
@@ -1575,9 +1585,21 @@ namespace WPFPages . Views
 		public void DetailsGrid_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
 			//			Debug . WriteLine ( $" 1-1 *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Entering\n" );
+			if ( e == null )
+			{
+				this . DetailsGrid . SelectedIndex = 0;
+				this . DetailsGrid . SelectedItem = 0;
+				this . DetailsGrid . CurrentItem= 0;
+				//return;
+			}
 			if ( SelectDone )
 			{
 				SelectDone = false;
+				return;
+			}
+			if ( LoadingDbData )
+			{
+				LoadingDbData = false;
 				return;
 			}
 			SelectDone = true;
@@ -1632,11 +1654,11 @@ namespace WPFPages . Views
 			IsDirty = false;
 			Flags . EditDbIndexIsChanging = false;
 			SelectDone = false;
-			try
-			{
-				e . Handled = true;
-			}
-			catch ( Exception ex ) { }
+			//try
+			//{
+			//	e . Handled = true;
+			//}
+			//catch ( Exception ex ) { }
 			Debug . WriteLine ( $" 1-3-END *** TRACE *** EDITDB : DataGrid1_SelectionChanged - Sent TriggerEditDbIndexChanged: Handled = true, Exiting...\n" );
 		}
 
@@ -1893,7 +1915,7 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DetailsGrid . SelectedItem );
 				IsDirty = false;
-				EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection, 2 );
+				 await DetailCollection . LoadDet ( EditDbDetcollection,"DETAILS", 2, true );
 				dGrid . ItemsSource = null;
 				dGrid . ItemsSource = EditDbDetcollection;
 				dGrid . SelectedIndex = currsel;
@@ -1935,7 +1957,7 @@ namespace WPFPages . Views
 				else if ( CurrentDb == "DETAILS" )
 					this . DetailsGrid . IsEnabled = false;
 
-				CloseButton . Content = "Ignore Changes";
+				CloseButton . Content = "Close Window";
 				CloseButton . FontSize = 12;
 				CloseButton . Foreground = Brushes . White;
 				IsDirty = true;
@@ -2294,5 +2316,20 @@ namespace WPFPages . Views
 
 		#endregion UNUSED CODE
 
+		private void AllowParentChange_Checked ( object sender, RoutedEventArgs e )
+		{
+			if ( AllowParentChange . IsChecked == true )
+				allowParentChange = true;
+			else
+				allowParentChange = false;
+		}
+
+		private void AllowParentChange_Checked_1 ( object sender, RoutedEventArgs e )
+		{
+			if ( AllowParentChange . IsChecked == true )
+				allowParentChange = true;
+			else
+				allowParentChange = false;
+		}
 	}
 }

@@ -116,6 +116,7 @@
     <Compile Include="Views\DetailsDbView.xaml.cs">
       <DependentUpon>DetailsDbView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ImportDbData.cs" />
     <Compile Include="Views\new_DetCollection.cs" />
     <Compile Include="DateOnlyConverter.cs" />
     <Compile Include="SalaryConvertor.cs" />

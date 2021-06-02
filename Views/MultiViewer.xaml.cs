@@ -42,6 +42,7 @@ namespace WPFPages . Views
 		private bool ReloadingData = false;
 		public bool isLoading = true;
 		public bool IsDirty = false;
+		public bool LoadingDbData = false;
 
 		#endregion DECLARATIONS
 
@@ -200,6 +201,7 @@ namespace WPFPages . Views
 			// ONLY proceed if we triggered the new data request
 			if ( e . CallerDb != "MULTIVIEWER" ) return;
 			this . BankGrid . ItemsSource = null;
+			LoadingDbData = true;
 
 			// This is how to convert to  CollectionView
 			MBankcollection = e . DataSource as BankCollection;
@@ -215,6 +217,7 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . BankGrid, bindex );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			isLoading = false;
+//			LoadingDbData = false;
 			IsDirty = false;
 			Debug . WriteLine ( "MULTIVIEWER : Bank Data fully loaded" );
 		}
@@ -229,12 +232,12 @@ namespace WPFPages . Views
 			// ONLY proceeed if we triggered the new data request
 			if ( e . CallerDb != "MULTIVIEWER" ) return;
 			this . CustomerGrid . ItemsSource = null;
+			LoadingDbData = true;
 
 			// This is how to convert to  CollectionView
 			MCustcollection = e . DataSource as CustCollection;
 			this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MCustcollection );
-
-			this . CustomerGrid . ItemsSource = e . DataSource as CustCollection;
+//			this . CustomerGrid . ItemsSource = e . DataSource as CustCollection;
 			this . CustomerGrid . Refresh ( );
 			CustomerGrid . SelectedIndex = cindex;
 			CustomerGrid . SelectedItem = cindex;
@@ -243,7 +246,8 @@ namespace WPFPages . Views
 			//				Utils . ScrollRecordIntoView ( CustomerGrid, cindex );
 			Utils . SetUpGridSelection ( this . CustomerGrid, cindex );
 			Mouse . OverrideCursor = Cursors . Arrow;
-			isLoading = false;
+			LoadingDbData = false;
+//			isLoading = false;
 			IsDirty = false;
 			Debug . WriteLine ( "MULTIVIEWER : Customer Data fully loaded" );
 		}
@@ -257,12 +261,12 @@ namespace WPFPages . Views
 			if ( e . DataSource == null ) return;//|| this.DetailsGrid.Items.Count > 0) return;
 			if ( e . CallerDb != "MULTIVIEWER"&& e.CallerType != "SQLSERVER" ) return;
 			this . DetailsGrid . ItemsSource = null;
+			LoadingDbData = true;
 
 			// This is how to convert to  CollectionView
 			//			IList<DetailsViewModel> DetMultiViewerDbcollection = e . DataSource as DetCollection;
 			MDetcollection = e . DataSource as DetCollection;
 			this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MDetcollection );
-
 			this . DetailsGrid . Refresh ( );
 			DetailsGrid . SelectedIndex = dindex;
 			DetailsGrid . SelectedItem = dindex;
@@ -271,7 +275,8 @@ namespace WPFPages . Views
 			//				Utils . ScrollRecordIntoView ( DetailsGrid, dindex );
 			Utils . SetUpGridSelection ( this . DetailsGrid, dindex );
 			Mouse . OverrideCursor = Cursors . Arrow;
-			isLoading = false;
+			LoadingDbData = false;
+//			isLoading = false;
 			Debug . WriteLine ( "MULTIVIEWER : Details Data fully loaded" );
 		}
 		#endregion Post Data Reloaded event handlers
@@ -400,6 +405,7 @@ namespace WPFPages . Views
 					dindex = rec;
 					Utils . ScrollRecordIntoView ( this . DetailsGrid, rec );
 
+
 					// Finally, tell other viewers about the index change
 					if ( e . Sender == "BANKACCOUNT" )
 					{
@@ -410,7 +416,8 @@ namespace WPFPages . Views
 							inprogress = false;
 							return;
 						}
-						TriggerMultiViewerIndexChanged ( this . BankGrid );
+						if(e.Sender == "MULTIVIEWER")
+							TriggerMultiViewerIndexChanged ( this . BankGrid );
 					}
 					else if ( e . Sender == "CUSTOMER" )
 					{
@@ -421,7 +428,8 @@ namespace WPFPages . Views
 							inprogress = false;
 							return;
 						}
-						TriggerMultiViewerIndexChanged ( this . CustomerGrid );
+						if ( e . Sender == "MULTIVIEWER" )
+							TriggerMultiViewerIndexChanged ( this . CustomerGrid );
 					}
 					else if ( e . Sender == "DETAILS" )
 					{
@@ -432,7 +440,8 @@ namespace WPFPages . Views
 							inprogress = false;
 							return;
 						}
-						TriggerMultiViewerIndexChanged ( this . DetailsGrid );
+						if ( e . Sender == "MULTIVIEWER" )
+							TriggerMultiViewerIndexChanged ( this . DetailsGrid );
 					}
 				}
 				inprogress = false;
@@ -713,8 +722,11 @@ namespace WPFPages . Views
 			string SearchCustNo = "";
 			string SearchBankNo = "";
 
-			if ( ReloadingData )
+			if ( LoadingDbData || ReloadingData )
+			{
+				LoadingDbData = false;
 				return;
+			}
 			if ( inprogress )
 				return;
 
@@ -772,8 +784,11 @@ namespace WPFPages . Views
 			string SearchCustNo = "";
 			string SearchBankNo = "";
 
-			if ( ReloadingData )
+			if ( LoadingDbData || ReloadingData )
+			{
+				LoadingDbData = false;
 				return;
+			}
 			if ( inprogress )
 				return;
 
@@ -836,8 +851,11 @@ namespace WPFPages . Views
 			string SearchCustNo = "";
 			string SearchBankNo = "";
 
-			if ( ReloadingData )
+			if ( LoadingDbData || ReloadingData )
+			{
+				LoadingDbData = false;
 				return;
+			}
 			if ( inprogress )
 				return;
 
@@ -1663,6 +1681,8 @@ namespace WPFPages . Views
 		{
 			string SearchCustNo = "";
 			string SearchBankNo = "";
+
+			if ( LoadingDbData ) return;
 			if ( grid == this . BankGrid )
 			{
 				BankAccountViewModel CurrentBankSelectedRecord = this . BankGrid . SelectedItem as BankAccountViewModel;
