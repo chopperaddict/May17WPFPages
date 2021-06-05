@@ -421,7 +421,8 @@ namespace WPFPages . Views
 				using ( con )
 				{
 					con . Open ( );
-					SqlCommand cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+					SqlCommand cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, " + 
+						"INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
 					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
 					cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
 					cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );

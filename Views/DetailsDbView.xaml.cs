@@ -4,6 +4,7 @@ using System . ComponentModel;
 using System . Data;
 using System . Diagnostics;
 using System . Linq;
+using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
@@ -41,6 +42,8 @@ namespace WPFPages . Views
 		public static bool Triggered = false;
 		private bool TriggeredDataUpdate = false;
 		private bool LoadingDbData = false;
+		private bool IsEditing { get; set; }
+		private bool keyshifted {get; set; }
 
 		private string _bankno = "";
 		private string _custno = "";
@@ -48,15 +51,19 @@ namespace WPFPages . Views
 		private string _balance = "";
 		private string _odate = "";
 		private string _cdate = "";
-		private SqlDbViewer SqlParentViewer;
-		private MultiViewer MultiParentViewer;
+		private SqlDbViewer SqlParentViewer = null;
+		private MultiViewer MultiParentViewer = null;
+		private DbSelector DbsParentViewer = null;
 		public DataChangeArgs dca = new DataChangeArgs ( );
 
-		public DetailsDbView ( )
+		public DetailsDbView (SqlDbViewer sqldbv = null, MultiViewer mv = null, DbSelector dbs=null)
 		{
 			Startup = true;
 			InitializeComponent ( );
-
+			//Type calltype = typeof ( callerWin );
+			MultiParentViewer = mv ;
+			SqlParentViewer = sqldbv;
+			DbsParentViewer = dbs;			
 		}
 		#region Mouse support
 		private void DoDragMove ( )
@@ -71,6 +78,7 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
+			Type callerType = null;
 			Mouse . OverrideCursor = Cursors . Wait;
 			this . Show ( );
 			this . Refresh ( );
@@ -102,77 +110,6 @@ namespace WPFPages . Views
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
 			LinktoParent = false;
-			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
-			{
-				MultiParentViewer = null;
-				if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
-				{
-					SqlParentViewer = sender as SqlDbViewer;
-				}
-				else
-				{
-					if ( Flags . SqlCustViewer != null )
-						SqlParentViewer = Flags . SqlCustViewer;
-					else
-					{
-						LinktoParent = false;
-						LinkToParent . IsEnabled = false;
-					}
-				}
-			}
-			else if ( sender . GetType ( ) == typeof ( MultiViewer ) )
-			{
-				SqlParentViewer = null;
-				if ( sender . GetType ( ) == typeof ( MultiViewer ) )
-				{
-
-					MultiParentViewer = sender as MultiViewer;
-					//LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-				}
-				else
-				{
-					if ( Flags . MultiViewer != null )
-					{
-						MultiParentViewer = Flags . MultiViewer;
-						//LinktoParent = true;
-						LinkToParent . IsEnabled = true;
-					}
-					else
-					{
-						//LinktoParent = false;
-						LinkToParent . IsEnabled = false;
-					}
-				}
-			}
-			else
-			{
-				MultiParentViewer = null;
-				SqlParentViewer = null;
-				LinktoParent = false;
-				LinkToParent . IsEnabled = false;
-
-				if ( Flags . SqlDetViewer != null )
-				{
-					SqlParentViewer = Flags . SqlDetViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-					LinkToParent . Content = "Link to \nSqlViewer";
-				}
-				else if ( Flags . MultiViewer != null )
-				{
-					MultiParentViewer = Flags . MultiViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-					LinkToParent . Content = "Link to \nMultiViewer";
-				}
-				else
-				{
-					//					LinktoParent = false;
-					LinkToParent . IsEnabled = false;
-				}
-			}
-
 			this . DetGrid . SelectedIndex = 0;
 			Startup = false;
 		}
@@ -213,6 +150,11 @@ namespace WPFPages . Views
 		{
 			// Handle selection change by other windows if linkage is ON
 			Triggered = true;
+			if ( IsEditing )
+			{
+				//IsEditing = false;
+				return;
+			}
 			this . DetGrid . SelectedIndex = e . Row;
 			Utils . SetSelectedItemFirstRow ( this . DetGrid, this . DetGrid . SelectedItem );
 			this . DetGrid . Refresh ( );
@@ -253,10 +195,15 @@ namespace WPFPages . Views
 			DetviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as DetCollection );
 			DetViewerDbcollection = e . DataSource as DetCollection;
 			DetviewerView . Refresh ( );
+			this . DetGrid . Focus ( );
 			this . DetGrid . ItemsSource = DetviewerView;
-
 			this . DetGrid . SelectedIndex = 0;
 			this . DetGrid . SelectedItem = 0;
+//			this . DetGrid . CurrentItem = 0;
+//			this . DetGrid . UpdateLayout ( );
+			Thread . Sleep ( 250 );
+			//			DataFields . Refresh ( );
+			Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . DetGrid . Refresh ( );
 			Debug . WriteLine ( "BANKDBVIEW : Details Data fully loaded" );
@@ -386,16 +333,16 @@ namespace WPFPages . Views
 				LinkToParent . IsEnabled = true;
 				SqlParentViewer = Flags . SqlDetViewer;
 			}
-			else if ( Flags . SqlDetViewer == null )
-			{
-				if ( LinkToParent . IsEnabled )
-				{
-					LinkToParent . IsEnabled = false;
-					LinkToParent . IsChecked = false;
-					LinktoParent = false;
-					SqlParentViewer = null;
-				}
-			}
+			//else if ( Flags . SqlDetViewer == null )
+			//{
+			//	if ( LinkToParent . IsEnabled )
+			//	{
+			//		LinkToParent . IsEnabled = false;
+			//		LinkToParent . IsChecked = false;
+			//		LinktoParent = false;
+			//		SqlParentViewer = null;
+			//	}
+			//}
 			//			Debug . WriteLine ( $"DetviewerView CurrentItem has changed = {DetviewerView .}" );
 			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
@@ -405,17 +352,8 @@ namespace WPFPages . Views
 			if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
-				//				TriggerViewerIndexChanged ( this . DetGrid );
-				EventControl . TriggerViewerDataUpdated ( DetViewerDbcollection,
-					new LoadedEventArgs
-					{
-						CallerType = "DETAILSDBVIEW",
-						CallerDb = "DETAILS",
-						DataSource = DetViewerDbcollection,
-						RowCount = this . DetGrid . SelectedIndex
-					} );
+				TriggerViewerIndexChanged ( DetGrid );    
 			}
-			//			this . Focus ( );
 
 			// Only  do this if global link is OFF
 			if ( LinktoParent )
@@ -439,7 +377,28 @@ namespace WPFPages . Views
 				}
 //				Utils . SetSelectedItemFirstRow ( this . DetGrid, this . DetGrid . SelectedItem );
 			}
+			Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 			Triggered = false;
+		}
+		public void TriggerViewerIndexChanged ( System . Windows . Controls . DataGrid grid )
+		{
+			string SearchCustNo = "";
+			string SearchBankNo = "";
+			DetailsViewModel CurrentDettSelectedRecord = this . DetGrid . SelectedItem as DetailsViewModel;
+			if ( CurrentDettSelectedRecord == null ) return;
+			SearchCustNo = CurrentDettSelectedRecord . CustNo;
+			SearchBankNo = CurrentDettSelectedRecord . BankNo;
+			EventControl . TriggerViewerIndexChanged ( this,
+			new IndexChangedArgs
+			{
+				Senderviewer = this,
+				Bankno = SearchBankNo,
+				Custno = SearchCustNo,
+				dGrid = this . DetGrid,
+				Sender = "DETAILS",
+				SenderId = "DETAILSDBVIEW",
+				Row = this . DetGrid . SelectedIndex
+			} );
 		}
 
 		private async Task<bool> SaveButton ( object sender = null, RoutedEventArgs e = null )
@@ -563,7 +522,7 @@ namespace WPFPages . Views
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Show All";
-				Count . Text = this . DetGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
@@ -593,7 +552,7 @@ namespace WPFPages . Views
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGreen" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Multi Accounts";
-				//				Count . Text = this . DetGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 
 				MultiViewer mv = new MultiViewer ( );
 				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
@@ -903,6 +862,7 @@ namespace WPFPages . Views
 		}
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
 		{
+			IsDirty = true;
 			SaveBttn . IsEnabled = true;
 		}
 
@@ -915,9 +875,84 @@ namespace WPFPages . Views
 			//SQLHandlers sqlh = new SQLHandlers ( );
 			//sqlh . UpdateDbRowAsync ( "DETAILS", dvm );
 			//SendDataChanged ( null, this . DetGrid, "DETAILS" );
+			IsEditing = false;
+
 
 		}
 
+		private void DetGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		{
+			IsEditing = true;
+		}
+
+		private void cdate_PreviewKeyUp ( object sender, KeyEventArgs e )
+		{
+
+		}
+
+
+		#region KEYHANDLER for EDIT fields
+		// These let us tab thtorugh the editfields back and forward correctly
+		private void Window_PreviewKeyUp ( object sender, KeyEventArgs e )
+		{
+			Debug . WriteLine ( $"  KEYUP key = {e . Key}, Shift = {keyshifted}" );
+
+			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
+			{
+				keyshifted = false;
+				return;
+			}
+
+			if ( keyshifted && ( e . Key == Key . RightShift || e . Key == Key . LeftShift ) )
+			{
+				keyshifted = false;
+				e . Handled = true;
+				return;
+			}
+
+		}
+
+
+		private void Window_PreviewKeyDown ( object sender, KeyEventArgs e )
+		{
+			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
+			{
+				keyshifted = true;
+				e . Handled = true;
+				return;
+			}
+
+			if ( keyshifted == false )
+			{
+				if ( e . Key == Key . Tab && e . Source == cdate )
+				{
+					e . Handled = true;
+					Custno . Focus ( );
+					return;
+				}
+				return;
+			}
+			else
+			{
+				// SHIFT KEY DOWN - KEY DOWN
+				// Handle  the tabs to make them cycle around the data entry fields
+				if ( e . Key == Key . Tab && e . Source == cdate )
+				{
+					e . Handled = true;
+					odate . Focus ( );
+					return;
+				}
+				if ( e . Key == Key . Tab && e . Source == Custno )
+				{
+					e . Handled = true;
+					cdate . Focus ( );
+//					Debug . WriteLine ( $"KEYDOWN Shift turned OFF" );
+					return;
+				}
+			}
+		}
+
+		#endregion KEYHANDLER for EDIT fields
 	}
 }
 

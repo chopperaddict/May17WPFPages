@@ -55,6 +55,7 @@ namespace WPFPages . Views
 		}
 		public async static Task<BankCollection> LoadBank ( BankCollection cc, string caller, int ViewerType = 1, bool NotifyAll = false )
 		{
+			object lockobject = new object ( );
 			Notify = NotifyAll;
 			Caller = caller;
 			try
@@ -63,13 +64,15 @@ namespace WPFPages . Views
 				//if ( dtBank . Rows . Count > 0 )
 				//	dtBank . Clear ( );
 
-				Bankinternalcollection = null;
-				Bankinternalcollection = new BankCollection ( );
 				//				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
 				{
-					//					BankCollection db = new BankCollection ( );
-					await Bankinternalcollection . LoadBankTaskInSortOrderasync ( );
+					lock ( lockobject )
+					{
+						Bankinternalcollection = null;
+						Bankinternalcollection = new BankCollection ( );
+						Bankinternalcollection . LoadBankTaskInSortOrderasync ( );
+					}
 					return ( BankCollection ) null;
 
 				}
@@ -136,7 +139,7 @@ namespace WPFPages . Views
 				async ( Bankinternalcollection ) =>
 				{
 					LoadBankCollection ( );
-					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+//					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				}, TaskScheduler . FromCurrentSynchronizationContext ( )
 			 );
 			#endregion process code to load data
@@ -310,10 +313,12 @@ namespace WPFPages . Views
 				//ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 				//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+				Debug . WriteLine ( $"Making new SQL connection in BANKCOLLECTION" );
 				con = new SqlConnection ( ConString );
 
 				using ( con )
 				{
+					Debug . WriteLine ( $"Using new SQL connection in BANKCOLLECTION" );
 					string commandline = "";
 
 					if ( Flags . IsMultiMode )
@@ -398,7 +403,7 @@ namespace WPFPages . Views
 							DataSource = Bankinternalcollection,
 							RowCount = Bankinternalcollection . Count
 						} );
-					Debug . WriteLine ( $"DEBUG : In BankCollection : Sending  BankDataLoaded EVENT trigger" );
+//					Debug . WriteLine ( $"DEBUG : In BankCollection : Sending  BankDataLoaded EVENT trigger" );
 				}
 			}
 			//			Flags . BankCollection = Bankcollection;
@@ -463,7 +468,7 @@ namespace WPFPages . Views
 				{
 					con . Open ( );
 					SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
-						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo",  con );
+						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno",  con );
 					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
 					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
 					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );

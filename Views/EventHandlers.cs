@@ -54,20 +54,6 @@ namespace WPFPages . Views
 
 		public MainWindow mw = null;
 
-		/// ONLY CONSTRUCTOR (Specialised)
-		/// <param name="edb"> This is the Caller class</param>
-		/// <param name="dg"> This is the (Active) Datagrid in the above class</param>
-		//public EventHandlers ( DataGrid dg , string CallerName , out EventHandlers thisWin )
-		//{
-		//	thisWin = this;
-		//	if ( !BankAccountViewModel . ShowSubscribeData )
-		//		return;
-		//	//			int count = 0;
-		//	//			int count2 = 0;
-		//	//if ( Flags . EventHandlerDebug )
-		//	//{
-		//	Debug . WriteLine ( $"EventHandler.EventHandlers(51) : In Constructor - CallerName = {CallerName}." );
-		//}
 
 		// Not used if DEBUG is UnDefined
 		[Conditional ( "DEBUG" )]
@@ -110,25 +96,27 @@ namespace WPFPages . Views
 			dg = EventControl . GetEventCount10 ( );
 			if ( dg != null ) count10 = dg . Length;
 
-			//			Output . Clear ( );
-			Debug . WriteLine ( $"\n *** Currently Subscribed Events  ***" );
+			/*
+			 *	Active Control Events
+				BankDataLoaded;
+				CustDataLoaded;
+				DetDataLoaded;
 
-			//if ( count3 < 0 )
-			//	Debug . WriteLine ( $"ViewerDataHasBeenChanged		= 0" );
-			//else
-			//	Debug . WriteLine ( $"ViewerDataHasBeenChanged		= {count3}" );
-			if ( count4 < 0 )
-				Debug . WriteLine ( $"EditIndexChanged				= 0" );
-			else
-				Debug . WriteLine ( $"EditIndexChanged				= {count4}" );
-			if ( count5 < 0 )
-				Debug . WriteLine ( $"ViewerIndexChanged				= 0" );
-			else
-				Debug . WriteLine ( $"ViewerIndexChanged				= {count5}" );
-			if ( count10 < 0 )
-				Debug . WriteLine ( $"MultiViewerIndexChanged			= 0" );
-			else
-				Debug . WriteLine ( $"MultiViewerIndexChanged			= {count10}" );
+				 ViewerIndexChanged;
+				 EditIndexChanged;
+				 MultiViewerIndexChanged;
+				 ForceEditDbIndexChanged;
+
+				ViewerDataUpdated;
+				EditDbDataUpdated;
+				MultiViewerDataUpdated;
+
+				DataUpdated;
+				RecordDeleted;
+			 */
+
+			Debug . WriteLine ( $"\n *** Currently Subscribed Events  ***\nDATA LOADED EVENTS" );
+
 			if ( count6 < 0 )
 				Debug . WriteLine ( $"BankCollection. BankDataLoaded	= 0" );
 			else
@@ -141,13 +129,91 @@ namespace WPFPages . Views
 				Debug . WriteLine ( $"DetCollection. DetDataLoaded	= 0" );
 			else
 				Debug . WriteLine ( $"DetCollection. DetDataLoaded	= {count8}" );
+
+			Debug . WriteLine ( $"\n INDEX CHANGED EVENTS" );
+			if ( count4 < 0 )
+				Debug . WriteLine ( $"EditIndexChanged				= 0" );
+			else
+				Debug . WriteLine ( $"EditIndexChanged				= {count4}" );
+			if ( count5 < 0 )
+				Debug . WriteLine ( $"ViewerIndexChanged				= 0" );
+			else
+				Debug . WriteLine ( $"ViewerIndexChanged				= {count5}" );
+			if ( count10 < 0 )
+				Debug . WriteLine ( $"MultiViewerIndexChanged			= 0" );
+			else
+				Debug . WriteLine ( $"MultiViewerIndexChanged			= {count10}" );
+
+			Debug . WriteLine ( $"\n RECORD DELETION EVENTS" );
 			if ( count9 < 0 )
 				Debug . WriteLine ( $"RecordDeleted					= 0" );
 			else
 				Debug . WriteLine ( $"RecordDeleted					= {count9}" );
 
 			bool first = true;
-		Delegate[]  dglist2 = EventControl . GetEventCount4 ( );
+
+			Delegate [ ] dglist2 = EventControl . GetEventCount6 ( );
+			if ( dglist2 != null )
+			{
+				int cnt = 0;
+				if ( !first )
+				{
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
+				}
+				Debug . WriteLine ( $"=====================================================================================" );
+				first = true;
+				foreach ( var item in dglist2 )
+				{
+					if ( cnt > 0 ) Debug . WriteLine ( "" );
+					if ( item . Target != null )
+						Debug . WriteLine ( $"Event : BANKDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					else
+						Debug . WriteLine ( $"Event : BANKDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+					cnt++;
+				}
+			}
+			dglist2 = EventControl . GetEventCount7 ( );
+			if ( dglist2 != null )
+			{
+				int cnt = 0;
+				if ( !first )
+				{
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
+				}
+				Debug . WriteLine ( $"=====================================================================================" );
+				first = true;
+				foreach ( var item in dglist2 )
+				{
+					if ( cnt > 0 ) Debug . WriteLine ( "" );
+					if ( item . Target != null )
+						Debug . WriteLine ( $"Event : CUSTDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					else
+						Debug . WriteLine ( $"Event : CUSTDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+					cnt++;
+				}
+			}
+			dglist2 = EventControl . GetEventCount8 ( );
+			if ( dglist2 != null )
+			{
+				int cnt = 0;
+				if ( !first )
+				{
+					Debug . WriteLine ( $"=====================================================================================" ); first = false;
+				}
+				Debug . WriteLine ( $"=====================================================================================" );
+				first = true;
+				foreach ( var item in dglist2 )
+				{
+					if ( cnt > 0 ) Debug . WriteLine ( "" );
+					if ( item . Target != null )
+						Debug . WriteLine ( $"Event : DETDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
+					else
+						Debug . WriteLine ( $"Event : DETDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
+					cnt++;
+				}
+			}
+
+			dglist2 = EventControl . GetEventCount4 ( );
 			if ( dglist2 != null )
 			{
 				int cnt = 0;
@@ -201,66 +267,6 @@ namespace WPFPages . Views
 						Debug . WriteLine ( $"Event : MULTIVIEWERINDEXCHANGED :\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
 					else
 						Debug . WriteLine ( $"Event : MULTIVIEWERINDEXCHANGED :\n >>> \nMethod = {item . Method . ToString ( )}" );
-					cnt++;
-				}
-			}
-			dglist2 = EventControl . GetEventCount6 ( );
-			if ( dglist2 != null )
-			{
-				int cnt = 0;
-				if ( !first )
-				{
-					Debug . WriteLine ( $"=====================================================================================" ); first = false;
-				}
-				Debug . WriteLine ( $"=====================================================================================" );
-				first = true;
-				foreach ( var item in dglist2 )
-				{
-					if ( cnt > 0 ) Debug . WriteLine ("");
-					if ( item . Target != null )
-						Debug . WriteLine ( $"Event : BANKDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-					else
-						Debug . WriteLine ( $"Event : BANKDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
-					cnt++;
-				}
-			}
-			dglist2 = EventControl . GetEventCount7 ( );
-			if ( dglist2 != null )
-			{
-				int cnt = 0;
-				if ( !first )
-				{
-					Debug . WriteLine ( $"=====================================================================================" ); first = false;
-				}
-				Debug . WriteLine ( $"=====================================================================================" );
-				first = true;
-				foreach ( var item in dglist2 )
-				{
-					if ( cnt > 0 ) Debug . WriteLine ("");
-					if ( item . Target != null )
-						Debug . WriteLine ( $"Event : CUSTDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-					else
-						Debug . WriteLine ( $"Event : CUSTDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
-					cnt++;
-				}
-			}
-			dglist2 = EventControl . GetEventCount8 ( );
-			if ( dglist2 != null )
-			{
-				int cnt = 0;
-				if ( !first )
-				{
-					Debug . WriteLine ( $"=====================================================================================" ); first = false;
-				}
-				Debug . WriteLine ( $"=====================================================================================" );
-				first = true;
-				foreach ( var item in dglist2 )
-				{
-					if ( cnt > 0 ) Debug . WriteLine ("");
-					if ( item . Target != null )
-						Debug . WriteLine ( $"Event : DETDATALOADED:\n >>> {item . Target?.ToString ( )}\nMethod = {item . Method . ToString ( )}" );
-					else
-						Debug . WriteLine ( $"Event : DETDATALOADED:\n >>> \nMethod = {item . Method . ToString ( )}" );
 					cnt++;
 				}
 			}

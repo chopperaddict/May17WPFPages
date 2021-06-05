@@ -220,5 +220,83 @@ namespace WPFPages . Views
 			SaveBtn . Visibility = Visibility . Visible;
 			return;
 		}
+
+		private void New_Click ( object sender, RoutedEventArgs e )
+		{
+			// Create and add as a new record
+			int x = 0;
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				BankAccountViewModel bvm = new BankAccountViewModel ( );
+				bvm . CustNo = custno1.Text;
+				bvm . BankNo = bankno1 . Text;
+				bvm . AcType= int.Parse(actype1 . Text);
+				bvm . IntRate = decimal . Parse ( intrate1 . Text);
+				bvm . Balance = decimal. Parse ( balance1 . Text);
+				bvm . ODate = DateTime. Parse ( odate1 . Text);
+				bvm . CDate = DateTime . Parse ( cdate1 . Text);
+				//MUST update BOTH bank style Db's'
+				SQLDbSupport . AddNewRecord ( CurrentDb, bvm );
+				SQLDbSupport . AddNewRecord ( "DETAILS", dvm );
+				EventControl . TriggerViewerDataUpdated ( null, new LoadedEventArgs
+				{
+					CallerDb = CurrentDb,
+					Custno = bvm.CustNo,
+					Bankno = bvm . BankNo,
+				});
+			}
+			else if ( CurrentDb == "CUSTOMER" )
+			{
+				CustomerViewModel cvm = new CustomerViewModel ( );
+				cvm . CustNo = custno . Text;
+				cvm . BankNo = bankno . Text;
+				cvm . AcType = int . Parse ( actype . Text );
+				cvm . FName = fname . Text;
+				cvm .LName = lname. Text;
+				cvm . Addr1= addr1. Text;
+				cvm . Addr2= addr2. Text;
+				cvm . Town= town. Text;
+				cvm . County=county . Text;
+				cvm . PCode= pcode. Text;
+				cvm . Phone= phone. Text;
+				cvm . Mobile= mobile. Text;
+				cvm . Dob= DateTime . Parse ( dob. Text );
+				cvm . ODate = DateTime . Parse ( odate . Text );
+				cvm . CDate = DateTime . Parse ( cdate . Text );
+				SQLDbSupport . AddNewRecord ( CurrentDb, cvm );
+				EventControl . TriggerViewerDataUpdated ( null, new LoadedEventArgs
+				{
+					CallerDb = CurrentDb,
+					Custno = cvm . CustNo,
+					Bankno = cvm . BankNo,
+				});
+			}
+			else if ( CurrentDb == "DETAILS" )
+			{
+				DetailsViewModel dvm = new DetailsViewModel ( );
+				dvm . CustNo = custno1 . Text;
+				dvm . BankNo = bankno1 . Text;
+				dvm . AcType = int . Parse ( actype1 . Text );
+				dvm . IntRate = decimal . Parse ( intrate1 . Text );
+				dvm . Balance = decimal . Parse ( balance1 . Text );
+				dvm . ODate = DateTime . Parse ( odate1 . Text );
+				dvm . CDate = DateTime . Parse ( cdate1 . Text );
+				//MUST update BOTH bank style Db's'
+				SQLDbSupport . AddNewRecord ( CurrentDb, dvm );
+				SQLDbSupport . AddNewRecord ( "BANKACCOUNT", dvm );
+				EventControl . TriggerViewerDataUpdated ( null, new LoadedEventArgs
+				{
+					CallerDb = CurrentDb,
+					Custno = dvm . CustNo,
+					Bankno = dvm.BankNo,				
+				});
+			}
+			Close ( );
+		}
+
+		private void Bankno_LostFocus ( object sender, RoutedEventArgs e )
+		{
+
+		}
 	}
 }

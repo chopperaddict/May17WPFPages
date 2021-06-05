@@ -7,6 +7,7 @@
 	  xmlns:local="clr-namespace:WPFPages.Views"
 	  mc:Ignorable="d"
 	Closing="Window_Closing"
+	
 	  Loaded="Window_Loaded"
 	MinHeight="600"
 	MinWidth="980"
@@ -74,11 +75,11 @@
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="28"/>
-			<RowDefinition Height="25"/>
 			<RowDefinition Height="35"/>
-			<RowDefinition Height=" *"/>
-			<RowDefinition Height=" *"/>
-			<RowDefinition Height=" *"/>
+			<RowDefinition Height="35"/>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="1*"/>
 			<RowDefinition Height=" 35"/>
 			<RowDefinition Height=" 5"/>
 		</Grid.RowDefinitions>
@@ -97,7 +98,7 @@
 		</Grid.Background>
 
 		<!--#endregion SETUP-->
-		
+
 		<!--#region Menu Bar-->
 		<Menu  			
 			Background="Transparent"
@@ -106,15 +107,6 @@
 			Height="30" 
 			HorizontalAlignment="Left"
 			Width="auto">
-			<!--<Menu.Background>
-				-->
-			<!--create an elegant left to right light-> Dark gradient as a background-->
-			<!--
-				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
-					<GradientStop Color="#333333" Offset="1" />
-					<GradientStop Color="#35F6FB" Offset="0" />
-				</LinearGradientBrush>
-			</Menu.Background>-->
 
 			<MenuItem  Header="_Linq Queries" 
 					Margin="5"
@@ -151,6 +143,11 @@
 					Click="Linq6_Click"
 					IsCheckable="False"
 					Foreground="Black"/>
+				<MenuItem Header="Create 'Join' of Bank and Details"
+					Background="#35F6FB"
+					Click="bankjoin_Click"
+					    IsCheckable="false"
+				Foreground="Black"/>
 			</MenuItem>
 
 			<MenuItem  Header="Filtering" 
@@ -181,124 +178,182 @@
 			</MenuItem>
 
 		</Menu>
+
 		<!--#endregion Menu Bar-->
 
-		<!--#region Top bar-->
+		<!--#region Top Left bar-->
 
 		<Grid	 x:Name="BankData"
 				 Grid.Row="1"
 				 Grid.Column="0"
-				 Grid.ColumnSpan="3"
+				 Grid.ColumnSpan="2"
 				 Grid.RowSpan="2"
 				HorizontalAlignment="Left"
-				DataContext="CustomerGrid"
+				DataContext="CustomerGrid" Width="346"
 				>
 			<!--#region DataFields Grid setup-->
 
 			<Grid.RowDefinitions>
 				<RowDefinition Height="23"/>
-				<RowDefinition Height="35"/>
+				<RowDefinition Height="23"/>
+				<RowDefinition Height="23"/>
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="70"/>
+				<ColumnDefinition Width="90"/>
 				<ColumnDefinition Width="80"/>
-				<ColumnDefinition Width="75"/>
-				<ColumnDefinition Width="100"/>
-				<ColumnDefinition Width="100"/>
-				<ColumnDefinition Width="7"/>
 				<ColumnDefinition Width="16"/>
+				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 			<!--#endregion DataFields Grid setup-->
 
 			<!--#region Data Fields-->
-			<TextBlock Text="Customer #  "	
-					     Foreground="White"
-					     Grid.Column="0"
-					     Grid.Row="1"
-					     HorizontalAlignment="Left"
-					     Margin="22,0,0,16"
-					     Height="20" Grid.ColumnSpan="2"
-					     />
-			<TextBlock Text="{Binding CustNo, FallbackValue=Cust #}"
-					     Grid.Column="1"
-					     Grid.Row="1"
-					     Foreground="Red"
-					     Height="18"
-					     HorizontalAlignment="Left"
-					     Margin="35,0,0,18"
-					     TextAlignment="Center"
-					     VerticalAlignment="Center"
-					     Width="70"
-					     Background="Beige" RenderTransformOrigin="0.924,0.407" Grid.ColumnSpan="2"
-					/>
 
 			<TextBlock Text="Bank A/C #  "
 					     Foreground="White"
-					     Grid.Column="2"
-					     Grid.Row="1"					    
-					     Margin="36,0,75,18"
+					     Grid.Column="0"
+						Grid.ColumnSpan="1" 
+						Grid.Row="0"
+					     Margin="20,0,0,0"
 					     Height="18"
-					     TextAlignment="Left" Grid.ColumnSpan="2"
+					     TextAlignment="Left"
 				     />
-			<TextBox Text="{Binding BankNo, FallbackValue=Bank A/c }"
-					     Grid.Column="3"
-					     Grid.Row="1"
+
+			<TextBlock Text="Customer #  "	
+					Foreground="White"
+					Grid.Column="0"
+					Grid.ColumnSpan="1"
+					Grid.Row="1" 
+					HorizontalAlignment="Left"
+					     Margin="20,0,0,0"
+					Height="18" 
+					     />
+
+			<TextBlock Text="Details A/C #  "
+					Foreground="White"
+					Grid.Column="0"
+					Grid.ColumnSpan="1" 
+					Grid.Row="2"					    
+					     Margin="20,0,0,0"
+					Height="18"
+					TextAlignment="Left"/>
+
+			<TextBlock x:Name="BankCount"
+					     Grid.Column="1"
+						Grid.ColumnSpan="1" 
+					     Grid.Row="0"					    
+					     Foreground="Red"
 					     Height="18"
-					     HorizontalAlignment="Left"		
-					    TextAlignment="Center"
-					     Margin="30,0,0,18"
-					     Width="70"
-					     VerticalAlignment="Center"
-					     Background="Beige"
+					     HorizontalAlignment="Center"
+					     Margin="20,3,0,0"
+					     TextAlignment="Center"
+					     VerticalAlignment="Top"
+					     Width="58"
+					     Background="Beige" RenderTransformOrigin="0.924,0.407"
 					/>
-			<CheckBox x:Name="LinkRecords" 
-				    Click="LinkRecords_Click"
-				    Content="Link ALL Viewers " 
-				   FontWeight="SemiBold"
-				    Foreground="Red"
-				Grid.Column="6"
-				    Height="25"
-				    HorizontalAlignment="Right" 
-					     Margin="-71,-19,-390,20"
-				    VerticalAlignment="Center"				    />
+
+			<TextBox x:Name="CustCount"
+					     Foreground="Red"
+					     Grid.Column="1"
+					     Grid.ColumnSpan="1" 
+						Grid.Row="1"
+					     Height="18"
+					     HorizontalAlignment="Center"		
+					    TextAlignment="Center"
+					     Margin="20,4,0,0"
+					     Width="58"
+					     VerticalAlignment="Top"
+					     Background="Beige" RenderTransformOrigin="-2.686,0.889"/>
+
+
+			<TextBox x:Name="DetCount"
+				     Foreground="Red"
+				   Grid.Column="1"
+				   Grid.Row="2"
+				   Height="18"
+				   HorizontalAlignment="Center"		
+				   TextAlignment="Center"
+				     Margin="20,5,0,0"
+				   Width="58"
+				   VerticalAlignment="Top"
+				   Background="Beige" RenderTransformOrigin="-2.686,0.889"/>
+
 
 			<CheckBox x:Name="LinkGrids" 
-				    Click="LinkGrid_Click"
-				    Content="Link Grids" 
-				   FontWeight="SemiBold"
-				    Foreground="Red"
+				Click="LinkGrid_Click"
+				Content="Link Grids" 
+				FontWeight="SemiBold"
+				Foreground="Red"
 				Grid.Column="6"
-				    Height="25"
-				    HorizontalAlignment="Right" 
-					     Margin="-71,-17,-240,20"
-				    VerticalAlignment="Center"				    />
+			    Grid.Row="0"
+			    Grid.RowSpan="2"				
+				Height="25"
+				HorizontalAlignment="Right" 
+				Margin="41,-13,-320,20"
+				VerticalAlignment="Center"				    />
+
+			<CheckBox x:Name="LinkRecords" 
+				Click="LinkRecords_Click"
+				Content="Link ALL Viewers " 
+				FontWeight="SemiBold"
+				Foreground="Red"
+				Grid.Column="6"
+			    Grid.Row="0"
+			    Grid.RowSpan="2"				
+				Height="25"
+				HorizontalAlignment="Right" 
+				Margin="0,-13,-470,20"
+				VerticalAlignment="Center"				    />
+
 
 			<CheckBox x:Name="OntopChkbox"
-				   Click="OntopChkbox_Click"
-				   Content="Keep on Top"
-				   Foreground="Red"
-				   FontWeight="SemiBold"
+				Click="OntopChkbox_Click"
+				Content="Keep on Top"
+				Foreground="Red"
+				FontWeight="SemiBold"
 				Grid.Column="6" 
-				   Height="25"
-				   HorizontalAlignment="Left"
-				   IsChecked="true"
-				   Margin="413,-19,-596,20"
-				   VerticalAlignment="Center"
-				   Width="129" 
-				    RenderTransformOrigin="-1.37,-5.06" 
-			     />
+			    Grid.ColumnSpan="2"
+			    Grid.Row="0"
+			    Grid.RowSpan="2"
+				Height="25"
+				HorizontalAlignment="Left"
+				IsChecked="true"
+				Margin="653,-13,-596,20"
+				VerticalAlignment="Center"
+				Width="129" 
+				RenderTransformOrigin="-1.37,-5.06" 
+				/>
+
+
+			<!--#endregion Data Fields-->
+
+		</Grid>
+
+		<StackPanel				
+			Grid.Row="0"
+			Grid.Column="1"
+			Grid.ColumnSpan="1"
+			Grid.RowSpan="2"			
+			Orientation="Horizontal"
+			Height="30"
+			HorizontalAlignment="Right" 			
+			Margin="30,0,-44,0" 
+			Width="750"
+			>
 			<TextBlock Text="****   Database      Editors   ****"
 				Background="Transparent"
 			     FontSize="12"
-			     Foreground="white"				
-				Grid.Column="4"
-				Grid.ColumnSpan="3"
-				Grid.Row="0"					    
-				Margin="67,-18,-138,24"
-				Height="18"
-				TextAlignment="Left">
-		<!--<TextBlock.Foreground>
-			--><!--create an elegant left to right light-> Dark gradient as a background--><!--
+			     Foreground="white"
+				Height="20"
+				     Margin="40,0,0,0"
+				TextAlignment="Left" Width="231"/>
+			<!--<TextBlock.Foreground>
+			-->
+
+
+			<!--create an elegant left to right light-> Dark gradient as a background-->
+
+
+			<!--
 			<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
 				<GradientStop Color="#888888" Offset="0" />
 				<GradientStop Color="#cccccc" Offset=".5" />
@@ -306,39 +361,37 @@
 			</LinearGradientBrush>
 		</TextBlock.Foreground>-->
 
-			</TextBlock>
 
+		</StackPanel>
 
-			<!--#endregion Data Fields-->
-
-		</Grid>
-
-		<StackPanel	
-			
+		<StackPanel				
 			Grid.Row="1"
 			Grid.Column="1"
 			Grid.RowSpan="2"			
 			Orientation="Horizontal"
-			HorizontalAlignment="Right"
+			Height="46"
+			HorizontalAlignment="Right" 			
+			Margin="0,25,0,0" 
+			Width="768"
 			
 			>
 			<!--#region BUTTON BAR -->
 
 			<!--Style="{StaticResource RedToBlackButton}"-->
 
-			<Button  
+			<!--<Button  
 				Height="40"
 				Width="8"
-				Margin="3,0,-12,0"
+				Margin="128,0,-12,0"
 				Background="{StaticResource HeaderBrushRed}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateRed}"
-				/>
+				/>-->
 			<Button  
 				x:Name="BankDbBtn_Copy"
 				Height="40"
-				Width="70"
-				Margin="18,0,0,0"
+				Width="100"
+				Margin="13,0,0,0"
 				Background="{StaticResource HeaderBrushBlue}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateBlue}" 
@@ -363,7 +416,7 @@
 			<Button  
 				x:Name="CustDbBtn_Copy"
 				Height="40"
-				Width="70"
+				Width="100"
 				Margin="9,0,7,0"
 				Background="{StaticResource HeaderBrushYellow}"
 				Foreground="White"
@@ -385,7 +438,7 @@
 			<Button  
 					x:Name="DetDbBtn"
 					Height="40"
-					Width="70"
+				Width="100"
 				Margin="3,0,7,0"
 				Background="{StaticResource HeaderBrushGreen}"
 				Foreground="White"
@@ -394,7 +447,8 @@
 					>
 				<StackPanel Orientation="Horizontal" 
 							HorizontalAlignment="Center"
-							VerticalAlignment="Center">
+							VerticalAlignment="Center"
+						>
 					<!--<TextBlock FontFamily="Wingdings" 
 								Text="ü"
 						     Height="20"
@@ -411,7 +465,7 @@
 			<Button  
 				Height="40"
 				Width="8"
-				Margin="1,0,-4,0"
+				Margin="13,0,-4,0"
 				Background="{StaticResource HeaderBrushRed}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateRed}"
@@ -421,7 +475,7 @@
 					x:Name="Multiaccounts"
 					Height="40"
 					Width="100"
-					Margin="10,0, 5,0"
+					Margin="37,0, 5,0"
 				Background="{StaticResource HeaderBrushGray}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateGray}"
@@ -477,19 +531,15 @@
 				Background="{StaticResource HeaderBrushGray}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateGray}"
-				Click="Refresh_Click"				
-					>
-				<StackPanel Orientation="Horizontal" 
-						
-							HorizontalAlignment="Center"
-							VerticalAlignment="Center">
-					<!--<TextBlock FontFamily="Wingdings" 
-								Text="ü"
-									Style="{StaticResource WingDingStyle}" />-->
+				Click="Refresh_Click">
+
+				<StackPanel Orientation="Horizontal" 						
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center">
 					<TextBlock Text="Refresh" 
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center" 
-									Style="{StaticResource WingDingStyle}"
+								Style="{StaticResource WingDingStyle}"
 								FontSize="12"/>
 				</StackPanel>
 			</Button>
@@ -527,12 +577,66 @@
 			<!--#endregion BUTTON BAR -->
 
 		</StackPanel>
+
 		<!--#endregion Top bar-->
 
+		<!--#region Bank Data Grid-->
+		<DataGrid x:Name="WaitMessage"
+				AutoGenerateColumns="False"
+				CanUserAddRows="False"
+				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
+				Grid.Row="3"
+				 Grid.RowSpan="3"
+				Grid.Column="1"
+				HorizontalAlignment="Stretch" 
+				Margin="0,10,0,0"
+				Padding="10"
+				RowHeight="35"
+				SelectionMode="Single"
+				SelectionUnit="FullRow"
+				VerticalAlignment="Stretch"
+				VerticalContentAlignment="Center"
+				VerticalGridLinesBrush="{StaticResource Blue2}"	   
+				Visibility="Visible"
+				    >
+			<!--AlternatingRowBackground="{StaticResource Blue4}"-->
+			
+			<DataGrid.Resources>
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#CCFAFB"/>
+				<Style TargetType="DataGridCell">
+					<Style.Triggers>
+						<Trigger Property="DataGridCell.IsSelected" Value="True">
+							<Setter Property="FontWeight" Value="SemiBold" />
+							<Setter Property="Foreground" Value="White" />
+							<Setter Property="Background" Value="#6578FD" />
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.Resources>
+
+			<!--#region bankfields-->
+			<DataGrid.Columns >
+				<DataGridTemplateColumn Header="Loading Information" Width="1000"
+									x:Name="Information">
+					<DataGridTemplateColumn.CellTemplate >
+						<DataTemplate >
+							<TextBlock 
+									Text="Please wait, Loading all three Grids with SQL Db data from Remote Data Server..."
+									HorizontalAlignment="Center"
+									/>
+						</DataTemplate >
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn >
+
+			</DataGrid.Columns>
+		</DataGrid>
+		
+		
 		<!--#region Bank Data Grid-->
 		<DataGrid x:Name="BankGrid"
 				AlternatingRowBackground="{StaticResource Blue4}"
 				AutoGenerateColumns="False"
+				BeginningEdit="BankGrid_BeginningEdit"
 				CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
 				DataGridCell.Selected="BankGrid_Selected"
@@ -545,6 +649,7 @@
 				Padding="10"
 				PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="BankGrid_RowEditEnding"
+				RowHeight="22"
 				ScrollViewer.ScrollChanged="BankGrid_ScrollChanged"
 				SelectionChanged="BankGrid_SelectionChanged"
 				SelectionMode="Single"
@@ -552,7 +657,7 @@
 				VerticalAlignment="Stretch"
 				VerticalContentAlignment="Center"
 				VerticalGridLinesBrush="{StaticResource Blue2}"	   
-				Visibility="Visible"
+				Visibility="Collapsed"
 				    >
 			<DataGrid.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#CCFAFB"/>
@@ -665,7 +770,8 @@
 		<DataGrid x:Name="CustomerGrid"
 				AlternatingRowBackground="{StaticResource Yellow2}"
 				AutoGenerateColumns="False"
-				CanUserAddRows="False"
+				BeginningEdit="CustomerGrid_BeginningEdit"
+			    CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
 				GotFocus="CustGrid_GotFocus"
 				Grid.Row="4"
@@ -675,6 +781,7 @@
 				Padding="10"
 				PreviewMouseRightButtonDown="CustGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="CustGrid_RowEditEnding"
+				RowHeight="22"
 				ScrollViewer.ScrollChanged="CustGrid_ScrollChanged"
 				SelectionChanged="CustGrid_SelectionChanged"
 				SelectionMode="Single"
@@ -683,7 +790,7 @@
 				HorizontalAlignment="Stretch"
 				VerticalContentAlignment="Center"
 				VerticalGridLinesBrush="{StaticResource Yellow0}"
-				Visibility="Visible"
+				Visibility="Collapsed"
 				    >
 			<DataGrid.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FACF8A"/>
@@ -712,7 +819,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn >
 
-					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
 									Mode=TwoWay, 
 									UpdateSourceTrigger=PropertyChanged}">
 				</DataGridTextColumn>
@@ -819,7 +926,8 @@
 		<DataGrid  x:Name="DetailsGrid"
 				AlternatingRowBackground="{StaticResource Green4}"
 				AutoGenerateColumns="False"
-				CanUserAddRows="False"
+				BeginningEdit="DetailsGrid_BeginningEdit"
+			     CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
 				GotFocus="DetGrid_GotFocus"
 				Grid.Row="5"
@@ -837,7 +945,7 @@
 				VerticalContentAlignment="Center"
 				VerticalAlignment="Stretch"
 				VerticalGridLinesBrush="{StaticResource Green2}"
-				Visibility="Visible"
+				Visibility="Hidden"
 			     >
 			<DataGrid.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#79FF59"/>
@@ -873,7 +981,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn >
 
-					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
+				<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo, 
 									Mode=TwoWay, 
 									UpdateSourceTrigger=PropertyChanged}">
 				</DataGridTextColumn>

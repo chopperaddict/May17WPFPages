@@ -308,9 +308,11 @@ namespace WPFPages
 					for ( int i = 0 ; i < 3 ; i++ )
 					{
 						if ( MainWindow . gv . CurrentDb [ i ] == currentDb )
-						{ x = i; break; }
+						{ 
+							x = i;
+							GridViewerArrayIndex = x;
+							break; }
 					}
-					GridViewerArrayIndex = x;
 					// we have got the index in "x"  of the viewer in the Mainindow.gv[] array
 					// so  get the Tag of that selected Entry in the ViewersList
 					for ( int i = 1 ; i < DbSelectorOpen . ViewersList . Items . Count ; i++ )

@@ -160,18 +160,16 @@ namespace WPFPages . Views
 			if ( Command == "NEW" )
 			{
 				selectedItem = listbox . SelectedItem . ToString ( );
-				BankCollection Bankcollection = new BankCollection    ();
+				BankCollection Bankcollection = new BankCollection ( );
 				CustCollection Custcollection = new CustCollection ( );
 				DetCollection Detcollection = new DetCollection ( );
 				if ( selectedItem . ToUpper ( ) . Contains ( "MULTI BANK ACCOUNTS" ) )
 				{
 					// DETAILS DATABASE
-					if (Flags.SqlDetViewer != null)
-//					if ( MainWindow . gv . Detviewer != Guid . Empty )
+					if ( Flags . SqlDetViewer != null )
 					{
 						Flags . SqlDetViewer . BringIntoView ( );
 						Flags . SqlDetViewer . Focus ( );
-//						SetFocusToExistingViewer ( MainWindow . gv . Detviewer );
 						return;
 					}
 					callertype = 2;
@@ -180,10 +178,6 @@ namespace WPFPages . Views
 					SqlDbViewer sqldbv = new SqlDbViewer ( "DETAILS", Detcollection );
 					Flags . CurrentSqlViewer = sqldbv;
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
-					//Window is visible & Data is loaded by here .....
-					//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == null)// || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-					//					{
 					Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 					MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 					// This is fine, new windows do NOT have their Guid when they arrive here
@@ -203,11 +197,8 @@ namespace WPFPages . Views
 					}
 					Flags . CurrentSqlViewer = new SqlDbViewer ( "BANKACCOUNT", Bankcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
 
 					//Data is loaded by here .....
-					//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-					//					{
 					Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 					MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 
@@ -229,11 +220,6 @@ namespace WPFPages . Views
 
 					Flags . CurrentSqlViewer = new SqlDbViewer ( "CUSTOMER", Custcollection );
 					Flags . CurrentSqlViewer . BringIntoView ( );
-					//					ExtensionMethods . Refresh ( Flags . CurrentSqlViewer );
-
-					//Data is loaded by here .....
-					//					if ( ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty || ( Guid ) Flags . CurrentSqlViewer . Tag == Guid . Empty )
-					//					{
 					Flags . CurrentSqlViewer . Tag = Guid . NewGuid ( );
 					MainWindow . gv . SqlViewerGuid = ( Guid ) Flags . CurrentSqlViewer . Tag;
 
@@ -906,15 +892,15 @@ namespace WPFPages . Views
 
 		private void MultiViewer_Click ( object sender, RoutedEventArgs e )
 		{
-			if( Flags . MultiViewer != null )
+			if ( Flags . MultiViewer != null )
 			{
 				Flags . MultiViewer . BringIntoView ( );
 				Flags . MultiViewer . Focus ( );
 				return;
 			}
 
-				MultiViewer mv = new MultiViewer ( );
-			mv . Show ( );
+			MultiViewer mv = new MultiViewer ( );
+//			mv . Show ( );
 		}
 
 		private void Window_KeyDown ( object sender, KeyEventArgs e )
@@ -1332,7 +1318,7 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				DetailsDbView cdbv = new DetailsDbView ( );
+				DetailsDbView cdbv = new DetailsDbView ( null, null, this);
 				cdbv . Show ( );
 			}
 		}

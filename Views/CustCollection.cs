@@ -101,10 +101,17 @@ namespace WPFPages . Views
 
 		private static async Task <CustCollection> ProcessRequest ( int ViewerType )
 		{
+			object lockobject = new object ( );
+
 			if ( USEFULLTASK )
 			{
-				Custinternalcollection = new CustCollection ( );
-				await Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
+				lock ( lockobject )
+				{
+					Custinternalcollection = null;
+					Custinternalcollection = new CustCollection ( );
+					CustCollection cc = new CustCollection ( );
+					cc.LoadCustomerTaskInSortOrderAsync ( );
+				}
 				return ( CustCollection ) null;
 			}
 			else
@@ -165,7 +172,7 @@ namespace WPFPages . Views
 			t1 . ContinueWith (
 				( Custinternalcollection ) =>
 				{
-					Debug . WriteLine ( $"CUSTOMERS : Task.Run() Completed : Status was [ {Custinternalcollection . Status} ]." );
+//					Debug . WriteLine ( $"CUSTOMERS : Task.Run() Completed : Status was [ {Custinternalcollection . Status} ]." );
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -209,7 +216,8 @@ namespace WPFPages . Views
 			SqlConnection con;
 				string ConString = "";
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
-				con = new SqlConnection ( ConString );
+			Debug . WriteLine ( $"Making new SQL connection in CUSTCOLLECTION" );
+			con = new SqlConnection ( ConString );
 			//if ( con== null )
 			//{
 			//	Debug . WriteLine ( $"CUSTCOLLECTION : No SQL Connection, reconnecting ..." );
@@ -219,6 +227,7 @@ namespace WPFPages . Views
 			{
 				using ( con )
 				{
+					Debug . WriteLine ( $"Using new SQL connection in CUSTCOLLECTION" );
 					string commandline = "";
 
 					if ( Flags . IsMultiMode )
@@ -423,7 +432,7 @@ namespace WPFPages . Views
 				using ( con )
 				{
 					con . Open ( );
-					SqlCommand cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate WHERE BankNo=@BankNo", con );
+					SqlCommand cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
 					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
 					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
 					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );

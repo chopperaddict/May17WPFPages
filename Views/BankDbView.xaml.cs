@@ -1,8 +1,10 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . Collections . ObjectModel;
 using System . ComponentModel;
 using System . Diagnostics;
 using System . Linq;
+using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
@@ -19,14 +21,17 @@ namespace WPFPages . Views
 	public partial class BankDbView : Window
 	{
 		public BankCollection BankViewcollection = null;// = new BankCollection ( );//. EditDbBankcollection;
-		// Get our personal Collection view of the Db
+								// Get our personal Collection view of the Db
 		public ICollectionView BankviewerView { get; set; }
-	
+
 		private bool IsDirty = false;
 		static bool Startup = true;
 		private bool LinktoParent = false;
 		private bool Triggered = false;
 		private bool LoadingDbData = false;
+		private bool RowHasBeenEdited { get; set; }
+		private bool keyshifted { get; set; }
+		private bool IsEditing { get; set; }
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -35,6 +40,11 @@ namespace WPFPages . Views
 		private string _cdate = "";
 		private SqlDbViewer SqlParentViewer;
 		private MultiViewer MultiParentViewer;
+
+
+		BankAccountViewModel bvmCurrent { get; set; }
+		CustomerViewModel cvmCurrent { get; set; }
+		DetailsViewModel dvmCurrent { get; set; }
 
 		public BankDbView ( )
 		{
@@ -164,6 +174,11 @@ namespace WPFPages . Views
 		{
 			Triggered = true;
 			// Handle Selection change in another windowif linkage is ON
+			if ( IsEditing )
+			{
+				//IsEditing = false;
+				return;
+			}
 			this . BankGrid . SelectedIndex = e . Row;
 			this . BankGrid . Refresh ( );
 			Triggered = false;
@@ -177,7 +192,7 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
-			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection,"BANKDBVIEW", 3, true );
+			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 			this . BankGrid . ItemsSource = BankViewcollection;
 			this . BankGrid . Refresh ( );
 			IsDirty = false;
@@ -196,9 +211,9 @@ namespace WPFPages . Views
 
 		private async void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
 		{
-			// Save changes and tell other viewers about the change
+			DataGridEditAction dgea;
 			int currow = 0;
-			
+
 			currow = this . BankGrid . SelectedIndex;
 			// Save current row so we can reposition correctly at end of the entire refresh process					
 			//			Flags . SqlBankCurrentIndex = currow;
@@ -237,16 +252,20 @@ namespace WPFPages . Views
 			if ( e . CallerDb != "BANKDBVIEW" ) return;
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-			LoadingDbData= true;
+			LoadingDbData = true;
 			BankviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as BankCollection );
 			BankViewcollection = e . DataSource as BankCollection;
 			BankviewerView . Refresh ( );
 			this . BankGrid . ItemsSource = BankviewerView;
-
 			this . BankGrid . SelectedIndex = 0;
 			this . BankGrid . SelectedItem = 0;
+			this . BankGrid . CurrentItem = 0;
+			this . BankGrid . UpdateLayout ( );
 			this . BankGrid . Refresh ( );
 			Mouse . OverrideCursor = Cursors . Arrow;
+			Thread . Sleep ( 250 );
+			DataFields . Refresh ( );
+			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 			IsDirty = false;
 			Debug . WriteLine ( "BANKDBVIEW : Bank Data fully loaded" );
 		}
@@ -314,16 +333,16 @@ namespace WPFPages . Views
 				LinkToParent . IsEnabled = true;
 				SqlParentViewer = Flags . SqlBankViewer;
 			}
-			else if ( Flags . SqlBankViewer == null )
-			{
-				if ( LinkToParent . IsEnabled )
-				{
-					LinkToParent . IsEnabled = false;
-					LinkToParent . IsChecked = false;
-					LinktoParent = false;
-					SqlParentViewer = null;
-				}
-			}
+			//else if ( Flags . SqlBankViewer == null )
+			//{
+			//	if ( LinkToParent . IsEnabled )
+			//	{
+			//		LinkToParent . IsEnabled = false;
+			//		LinkToParent . IsChecked = false;
+			//		LinktoParent = false;
+			//		SqlParentViewer = null;
+			//	}
+			//}
 
 			// Only  do this if global link is OFF
 			if ( LinktoParent )// && LinkRecords . IsChecked == false )
@@ -348,7 +367,8 @@ namespace WPFPages . Views
 				}
 			}
 
-			Triggered = false;
+			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+
 			IsDirty = false;
 			Startup = false;
 		}
@@ -388,7 +408,7 @@ namespace WPFPages . Views
 			this . BankGrid . Refresh ( );
 
 			//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
-//			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
+			//			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
 
 			EventControl . TriggerViewerDataUpdated ( BankViewcollection,
 				new LoadedEventArgs
@@ -429,7 +449,7 @@ namespace WPFPages . Views
 		private void TextChanged ( object sender, TextChangedEventArgs e )
 		{
 			return;
-			if ( !Startup ) CompareFieldData ( ); 
+			if ( !Startup ) CompareFieldData ( );
 		}
 
 		private void SaveFieldData ( )
@@ -498,7 +518,7 @@ namespace WPFPages . Views
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Show All";
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
@@ -529,7 +549,7 @@ namespace WPFPages . Views
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushBlue" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Multi Accounts";
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
@@ -604,6 +624,7 @@ namespace WPFPages . Views
 		{
 			string SearchCustNo = "";
 			string SearchBankNo = "";
+			if ( grid . ItemsSource == null ) return;
 			BankAccountViewModel CurrentBankSelectedRecord = grid . SelectedItem as BankAccountViewModel;
 			SearchCustNo = CurrentBankSelectedRecord . CustNo;
 			SearchBankNo = CurrentBankSelectedRecord . BankNo;
@@ -719,36 +740,171 @@ namespace WPFPages . Views
 			LinktoParent = !LinktoParent;
 		}
 
-		private void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		private async void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			// Data has been changed in one of our rows.
-			//BankAccountViewModel bvm = sender as BankAccountViewModel;
-			//bvm = e . Row . Item as BankAccountViewModel;
-			//SQLHandlers sqlh = new SQLHandlers ( );
-			//sqlh . UpdateDbRowAsync ( "BANKACCOUNT", bvm );
-			////			SendDataChanged (null, this.BankGrid, "BANKACCOUNT" );
-			//EventControl . TriggerViewerDataUpdated ( BankViewcollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerType = "BANKDBVIEW",
-			//		CallerDb = "BANKACCOUNT",
-			//		DataSource = BankViewcollection,
-			//		RowCount = this . BankGrid . SelectedIndex
-			//	} );
+			// handle flags to let us know WE have triggered the selectedIndex change
+			MainWindow . DgControl . SelectionChangeInitiator = 2; // tells us it is a EditDb initiated the record change
+			if ( e . ChangedButton == MouseButton . Right )
+			{
+				DataGridRow RowData = new DataGridRow ( );
+				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
+				if ( row == -1 ) row = 0;
+				RowInfoPopup rip = new RowInfoPopup ( "BANKACCOUNT", BankGrid, RowData );
+				rip . Topmost = true;
+				rip . DataContext = RowData;
+				rip . BringIntoView ( );
+				rip . Focus ( );
+				rip . ShowDialog ( );
 
+				//If data has been changed, update everywhere
+				// Update the row on return in case it has been changed
+				if ( rip . IsDirty )
+				{
+					this . BankGrid . ItemsSource = null;
+					this . BankGrid . Items . Clear ( );
+					await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
+					this . BankGrid . ItemsSource = BankviewerView;
+					// Notify everyone else of the data change
+					EventControl . TriggerViewerDataUpdated ( BankviewerView,
+						new LoadedEventArgs
+						{
+							CallerType = "BANKBVIEW",
+							CallerDb = "BANKACCOUNT",
+							DataSource = BankviewerView,
+							RowCount = this . BankGrid . SelectedIndex
+						} );
+				}
+				else
+					this . BankGrid . SelectedItem = RowData . Item;
 
-		}
-
-		private void Custno_LostFocus ( object sender, RoutedEventArgs e )
-		{
+				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+				Utils . SetUpGridSelection ( this . BankGrid, row );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				// This is essential to get selection activated again
+				this . BankGrid . Focus ( );
+			}
 
 		}
 
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
 		{
+			IsDirty = true;
 			SaveBttn . IsEnabled = true;
 		}
 
+		private void BankGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		{
+			IsEditing = true;
+			// Save  the curret data for checking later on when we exit editing
+			//			RowHasBeenEdited = true;
+			bvmCurrent = e . Row . Item as BankAccountViewModel;
+
+		}
+		private async void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			//bool updated = false;
+			//DataGridEditAction dgea;
+			//dgea = e . EditAction;
+			//// if NOT Commit (1) the exit here
+			//if ( dgea == 0 ) return;
+			//	// Data has been changed in one of our rows.
+			//BankAccountViewModel bvm = this.BankGrid.SelectedItem as BankAccountViewModel;
+			//bvm = e . Row . Item as BankAccountViewModel;
+
+			//if ( bvm . BankNo != bvmCurrent . BankNo )
+			//	updated = true;
+			//else if ( bvm . CustNo != bvmCurrent . CustNo )
+			//	updated = true;
+			//else if ( bvm . IntRate != bvmCurrent . IntRate )
+			//	updated = true;
+			//else if ( bvm . Balance!= bvmCurrent . Balance )
+			//	updated = true;
+			//else if ( bvm . ODate!= bvmCurrent . ODate)
+			//	updated = true;
+			//else if ( bvm . CDate!= bvmCurrent . CDate)
+			//	updated = true;
+
+			//// If no change,don't bother
+			//if ( updated  == false) return;
+			////RowHasBeenEdited = true;
+			////SQLHandlers sqlh = new SQLHandlers ( );
+			////await sqlh . UpdateDbRowAsync ( "BANKACCOUNT", bvm );
+
+			////// Notify other viewers
+			////EventControl . TriggerViewerDataUpdated ( BankViewcollection,
+			////	new LoadedEventArgs
+			////	{
+			////		CallerType = "BANKDBVIEW",
+			////		CallerDb = "BANKACCOUNT",
+			////		DataSource = BankViewcollection,
+			////		RowCount = this . BankGrid . SelectedIndex
+			////	} );
+			//IsEditing = false;
+
+		}
+
+		#region KEYHANDLER for EDIT fields
+		// These let us tab thtorugh the editfields back and forward correctly
+		private void Window_PreviewKeyUp ( object sender, KeyEventArgs e )
+		{
+			Debug . WriteLine ( $"  KEYUP key = {e . Key}, Shift = {keyshifted}" );
+
+			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
+			{
+				keyshifted = false;
+				return;
+			}
+
+			if ( keyshifted && ( e . Key == Key . RightShift || e . Key == Key . LeftShift ) )
+			{
+				keyshifted = false;
+				e . Handled = true;
+				return;
+			}
+
+		}
+
+
+		private void Window_PreviewKeyDown ( object sender, KeyEventArgs e )
+		{
+			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
+			{
+				keyshifted = true;
+				e . Handled = true;
+				return;
+			}
+
+			if ( keyshifted == false )
+			{
+				if ( e . Key == Key . Tab && e . Source == cdate )
+				{
+					e . Handled = true;
+					Custno . Focus ( );
+					return;
+				}
+				return;
+			}
+			else
+			{
+				// SHIFT KEY DOWN - KEY DOWN
+				// Handle  the tabs to make them cycle around the data entry fields
+				if ( e . Key == Key . Tab && e . Source == cdate )
+				{
+					e . Handled = true;
+					odate . Focus ( );
+					return;
+				}
+				if ( e . Key == Key . Tab && e . Source == Custno )
+				{
+					e . Handled = true;
+					cdate . Focus ( );
+					//					Debug . WriteLine ( $"KEYDOWN Shift turned OFF" );
+					return;
+				}
+			}
+		}
+
+		#endregion KEYHANDLER for EDIT fields
 
 		//			BankAccountViewModel bank = new BankAccountViewModel();
 		//			var filtered = from bank inBankViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;

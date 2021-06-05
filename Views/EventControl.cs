@@ -148,12 +148,12 @@ namespace WPFPages . Views
 		}
 		public static void TriggerViewerIndexChanged ( object obj, IndexChangedArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerIndexChanged EVENT trigger (from {obj?.ToString ( )})" );
+//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerIndexChanged EVENT trigger (from {obj?.ToString ( )})" );
 			ViewerIndexChanged?.Invoke ( obj, e );
 		}
 		public static void TriggerMultiViewerIndexChanged ( object obj, IndexChangedArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
+//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
 			MultiViewerIndexChanged?.Invoke ( obj, e );
 		}
 		//------------------------------//
@@ -179,17 +179,17 @@ namespace WPFPages . Views
 		//------------------------------//		
 		public static void TriggerBankDataLoaded ( object obj , LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  BankDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
+//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  BankDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
 			BankDataLoaded?.Invoke ( obj, e );
 		}
 		public static void TriggerCustDataLoaded ( object obj , LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  CustDataLoaded EVENT trigger (from{obj ?. ToString ( )})" );
+//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  CustDataLoaded EVENT trigger (from{obj ?. ToString ( )})" );
 			CustDataLoaded?.Invoke ( obj, e );
 		}
 		public static void TriggerDetDataLoaded ( object obj , LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
+//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
 			DetDataLoaded?.Invoke ( obj, e );
 		}
 		//------------------------------//

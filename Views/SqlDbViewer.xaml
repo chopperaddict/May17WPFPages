@@ -386,10 +386,10 @@
 			<RowDefinition Height="5" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="25" />
-			<RowDefinition Height="55" />
+			<RowDefinition Height="57" />
 			<RowDefinition Height="65" />
 			<RowDefinition Height="*" />
-			<RowDefinition Height="65" />
+			<RowDefinition Height="50" />
 			<RowDefinition Height="5" />
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -478,6 +478,17 @@
 					    IsCheckable="false"
 				Foreground="Black"/>
 				<Separator />
+				<MenuItem Header="Show (Faulty)Duplicated A/c's"
+					Background="#35F6FB"
+					Click="BadBank_Click"
+					    IsCheckable="false"
+				Foreground="Black"/>
+				<MenuItem Header="Create 'Join' of Bank and Details"
+					Background="#35F6FB"
+					Click="bankjoin_Click"
+					    IsCheckable="false"
+				Foreground="Black"/>
+				<Separator />
 			</MenuItem>
 
 			<MenuItem  Header="Filter"
@@ -522,6 +533,26 @@
 				HorizontalAlignment="Right"
 				Margin="10,10,0,-5"
 				Orientation="Horizontal">
+			<CheckBox
+				x:Name="TopMostOption"
+				Content="Keep on Top"
+				IsChecked="False"
+				FontWeight="Bold"
+				Foreground="{StaticResource White3}"
+				Margin="15,-3,45,0"
+				Width="121"
+				Height="35"
+				Click="TopMost_Click" />
+			<CheckBox
+				x:Name="LinkRecords"
+				Content="Link ALL Viewers"
+				FontWeight="Bold"
+				Foreground="{StaticResource White3}"
+				IsChecked="False"
+				Margin="-45,-3,48,0"
+				Width="121"
+				Height="35"
+				Click="LinkRecords_Click " />
 			<!--<CheckBox
 				x:Name="Id_option"
 				Content="A/c Id#"
@@ -587,16 +618,6 @@
 				Width="100"
 				Height="35"
 				Click="Default_option_Click" />-->
-			<CheckBox
-				x:Name="LinkRecords"
-				Content="Link ALL Viewers"
-				FontWeight="Bold"
-				Foreground="{StaticResource White3}"
-				IsChecked="False"
-				Margin="5,-3,39,0"
-				Width="100"
-				Height="35"
-				Click="LinkRecords_Click " />
 		</WrapPanel>
 		<!--#endregion Checkboxes-->
 
@@ -628,119 +649,160 @@
 				Visibility="Visible"
 				Width="20">
 		</Button>
-		<WrapPanel
-				Grid.Column="1"
-				Grid.ColumnSpan="3"
-				Grid.Row="3"
+
+		<Grid
+			Grid.Row="3"
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="300"/>
+				<ColumnDefinition Width="200"/>
+			</Grid.ColumnDefinitions>
+
+			<WrapPanel
+				Grid.Column="0"
+				Grid.ColumnSpan="1"
+				Grid.Row="1"
 				Grid.RowSpan="1"
-				HorizontalAlignment="Right"
-				Margin="10"
+				HorizontalAlignment="Left"
+				Margin="0,11,0,0"
 				Orientation="Horizontal">
-			<!--#region Buttons-->
+				<!--#region Buttons-->
 
-			<!--Open new Db viewer Button-->
-			<!--
-			<Button x:Name="Duplicate" Width="85" Height="35" Margin="1"
-				IsEnabled="true"
-				Click="LoadNewViewer_Click"
-				FontWeight="DemiBold"
-				Content="New Viewer"
-				Background="{StaticResource HeaderBrushGray}"
-				Foreground="White"
-				Template="{StaticResource HorizontalGradientTemplateGray}">
-			</Button>-->
-
-			<!--Filter to multi a/c Button-->
-			<Button x:Name="Edit" Width="65" Height="35" Margin="1"
+				<!--Open new Db viewer Button-->
+				<!--Filter to multi a/c Button-->
+				<Button x:Name="Edit" Width="75" Height="35" 
 				Background="{StaticResource HeaderBrushGray}"
 				Click="Edit_Click"
 				Content="Edit"
 				FontWeight="DemiBold"
 				Foreground="White"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"
 				IsEnabled="true"
+				  Margin="0,0,0,0"
 				MouseDown="Window_MouseDown"
 				Template="{StaticResource HorizontalGradientTemplateGray}"
  />
-			<Button
+				<Button
 				x:Name="Filters"
 				Background="{StaticResource HeaderBrushGray}"
 				Click="SetFilter_Click"
 				Content="Filtering"
 				FontWeight="DemiBold"
 				Foreground="White"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"
 				Height="35"
 				IsEnabled="true"
-				Margin="1"
+				  Margin="5,0,0,0"
 				MouseDown="Window_MouseDown"
 				Template="{StaticResource HorizontalGradientTemplateGray}"
-				Width="65" />
-			<!--Multi Account Button-->
-			<Button x:Name="Multiaccounts" Width="125" Height="35" Margin="1"
+				Width="75" />
+
+				<!--Multi Account Button-->
+				<Button x:Name="Multiaccounts" Width="125" Height="35" 
 				IsEnabled="true"
 				Focusable="True"
 				Click="Multiaccs_Click"
 				FontWeight="DemiBold"
 				Background="{StaticResource HeaderBrushGray}"
 				Foreground="White"
-				Template="{StaticResource HorizontalGradientTemplateGray}"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"				Template="{StaticResource HorizontalGradientTemplateGray}"
+				  Margin="5,0,0,0"
 				MouseDown="Window_MouseDown"
 				Content="Multiple A/c's Only">
-			</Button>
-			<Border x:Name="splitter" Width="5" Height="35" Margin="5,0,5,0"
+				</Button>
+
+			</WrapPanel>
+
+			<!--Right hand button group-->
+			<WrapPanel
+				Grid.Column="1"
+				Grid.ColumnSpan="1"
+				Grid.RowSpan="1"
+				HorizontalAlignment="Right"
+				Margin="0,-1,-347,0"
+				Orientation="Horizontal">
+
+				<Border 
+				Width="5" Height="35" 
 				IsEnabled="true"
 				Background="{StaticResource Orange1}"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"				
+				  Margin="-75,14,-40,0"
 				BorderBrush="Black"
 				BorderThickness="1" />
-
-			<!--Bank Account Button-->
-			<Button x:Name="ShowBank" Width="130" Height="35" Margin="1"
+				<!--Bank Account Button-->
+				<Button x:Name="ShowBank" Width="130" Height="35" 
 				IsEnabled="true"
 				Focusable="True"
 				   Tag="true;"
 				Click="ShowBank_Click"
 				Content="Bank A/c's (0)"
+				  Margin="-2,12,0,0"
 				MouseDown="Window_MouseDown"
 				Background="{StaticResource HeaderBrushBlue}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateBlue}" />
 
-			<!--Customer Account Button-->
-			<Button x:Name="ShowCust" Width="145" Height="35" Margin="1"
+				<!--Customer Account Button-->
+				<Button x:Name="ShowCust" Width="145" Height="35"
 				IsEnabled="true"
 				Focusable="True"
 				Click="ShowCust_Click"
-				Background="{StaticResource HeaderBrushYellow}"
+				  Background="{StaticResource HeaderBrushYellow}"
 				Foreground="White"
+				  Margin="10,12,0,0"
 				Template="{StaticResource HorizontalGradientTemplateYellow}"
 				MouseDown="Window_MouseDown"
 				Content="Customer A/c's (0)" />
 
-			<!--Details Account Button-->
-			<Button x:Name="ShowDetails" Width="125" Height="35" Margin="1"
+				<!--Details Account Button-->
+				<Button x:Name="ShowDetails" 
+				  Margin="6,12,0,0"
+				  Width="125" Height="35" 
 				IsEnabled="true"
 				Focusable="True"
 				Click="ShowDetails_Click"
 				MouseDown="Window_MouseDown"
-				Background="{StaticResource HeaderBrushGreen}"
+				  Background="{StaticResource HeaderBrushGreen}"
 				Foreground="White"
 				Template="{StaticResource HorizontalGradientTemplateGreen}"
 				Content="Details A/c's  (0)">
-			</Button>
-			<!--Close Window Button-->
-			<Button x:Name="CloseViewer"
-				Width="85" Height="35" Margin="1"
-				FontSize="11"
+				</Button>
+
+				<Border 
+				  Margin="6,12,0,0"
+				Width="5" Height="35" 
 				IsEnabled="true"
-				Focusable="True"
-				Content="Close Viewer"
-				MouseDown="Window_MouseDown"
-				Background="{StaticResource HeaderBrushRed}"
-				Foreground="White"
-				Template="{StaticResource HorizontalGradientTemplateRed}"
-				Click="CloseViewer_Click">
-			</Button>
-			<!--#endregion Buttons-->
-		</WrapPanel>
+				Background="{StaticResource Orange1}"
+				BorderBrush="Black"
+				BorderThickness="1" />
+
+				<Button
+					x:Name="RefreshBtn"
+				  Margin="10,12,15,0"
+					Background="{StaticResource HeaderBrushGray}"
+					Foreground="White"
+					Click="Refresh_Click"
+					Content="Refresh"
+				IsEnabled="True"
+					Height="35"
+					HorizontalAlignment="Center"
+					Template="{StaticResource HorizontalGradientTemplateGray}"
+					VerticalAlignment="Center"
+					Width="81"/>
+				<!--#endregion Buttons-->
+			</WrapPanel>
+		</Grid>
 		<!--#endregion  buttonbar-->
 
 		<Grid
@@ -782,12 +844,13 @@
 			<!--#region BankAccount data Grid-->
 			<DataGrid x:Name="BankGrid"
 				AlternatingRowBackground="{StaticResource Blue4}"
+				    
 				AutoGenerateColumns="False"
 				BeginningEdit="BankGrid_BeginningEdit"
 				BorderBrush="{StaticResource Blue3}"
 				BorderThickness="0"
 				CanUserAddRows="False"
-				CanUserSortColumns="False"
+				CanUserSortColumns="True"
 				CellEditEnding="BankGrid_CellEditEnding"
 				ColumnHeaderHeight="25"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
@@ -799,7 +862,7 @@
 				MouseRightButtonDown="BankGrid_MouseRightButtonDown"
 				PreviewMouseDown="BankGrid_PreviewMouseDown"
 				RowEditEnding="ViewerGrid_RowEditEnding"
-				RowHeight="27"
+				RowHeight="22"
 				ScrollBar.Scroll="BankGrid_Scroll"
 				ScrollViewer.ScrollChanged="BankGrid_ScrollChanged"
 				SelectedCellsChanged="BankGrid_SelectedCellsChanged"
@@ -950,7 +1013,7 @@
 				BorderBrush="{StaticResource Yellow3}"
 				BorderThickness="2"
 				CanUserAddRows="false"
-				CanUserSortColumns="False"
+				CanUserSortColumns="True"
 				CellEditEnding="CustomerGrid_CellEditEnding"
 				ColumnHeaderHeight="25"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
@@ -962,7 +1025,7 @@
 				MouseRightButtonDown="CustomerGrid_MouseRightButtonDown"
 				PreviewMouseDown="CustomerGrid_PreviewMouseDown"
 				RowEditEnding="ViewerGrid_RowEditEnding"
-				RowHeight="27"
+				RowHeight="22"
 				ScrollBar.Scroll="CustomerGrid_Scroll"
 				ScrollViewer.ScrollChanged="CustomerGrid_ScrollChanged"
 				SelectedCellsChanged="CustomerGrid_SelectedCellsChanged"
@@ -1074,7 +1137,7 @@
 				BorderBrush="{StaticResource Green3}"
 				BorderThickness="2"
 				CanUserAddRows="false"
-				CanUserSortColumns="False"
+				CanUserSortColumns="True"
 				CellEditEnding="DetailsGrid_CellEditEnding"
 				ColumnHeaderHeight="25"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
@@ -1086,7 +1149,7 @@
 				MouseRightButtonDown="DetailsGrid_MouseRightButtonDown"
 				PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
 				RowEditEnding="ViewerGrid_RowEditEnding"
-				RowHeight="27"
+				RowHeight="22"
 				ScrollBar.Scroll="DetailsGrid_Scroll"
 				ScrollViewer.ScrollChanged="DetailsGrid_ScrollChanged"
 				SelectedCellsChanged="DetailsGrid_SelectedCellsChanged"
@@ -1127,11 +1190,11 @@
 									Binding="{Binding Balance,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus,
-									StringFormat='£##,###,###.00'}" />
+									StringFormat='£ ##,###,###.00'}" />
 					<DataGridTextColumn Header="Interest" Width="60"
 									SortMemberPath="IntRate"
 									Binding="{Binding IntRate, Mode=TwoWay,
-									StringFormat='##.00 ',
+									StringFormat='0.00 ',
 									UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="A/c Opened"
 									Binding ="{Binding Path=ODate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
@@ -1167,40 +1230,40 @@
 
 			<TextBlock
 				x:Name="Count"
-				Background="DarkGray"
+				Background="DarkGray"				
 				FontSize="14"
 				FontWeight="DemiBold"
 				Foreground="Red"
 				Grid.Row="1"
 				Grid.Column="1"
-				Height="40"
-				HorizontalAlignment="Right"
-				Margin="5,5,5,5"
-				Padding="10"
+				Height="30"
+				Padding="5"
 				Text="Count"
 				TextAlignment="Center"
 				VerticalAlignment="Center"
 				Width="100"
 				/>
-			<Button
-					x:Name="RefreshBtn"
-					Background="{StaticResource HeaderBrushGray}"
+
+			<!--Close Window Button-->
+			<Button x:Name="CloseViewer"
+					Background="{StaticResource HeaderBrushRed}"
+					Click="CloseViewer_Click"
+					Content="Close Viewer"
+					Focusable="True"
+					FontSize="11"
 					Foreground="White"
-					Click="Refresh_Click"
-					Content="Refresh"
 					Grid.Row="1"
 					Grid.Column="2"
-					IsEnabled="True"
-					Height="40"
-					HorizontalAlignment="Center"
-					Margin="5,1,5,0"
-					Template="{StaticResource HorizontalGradientTemplateGray}"
-					VerticalAlignment="Center"
-					Width="150"
-		>
-			</Button>
+					Height="40" 
+					IsEnabled="true"
+					Margin="55,0,0,0"
+					MouseDown="Window_MouseDown"
+					Template="{StaticResource HorizontalGradientTemplateRed}"
+					Width="105" />
+
 		</Grid>
 		<TextBlock
+			
 				x:Name="StatusBar"
 				Background="Beige"
 				Foreground="Black"

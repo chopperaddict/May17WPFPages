@@ -3,6 +3,7 @@ using System . Collections . Generic;
 using System . ComponentModel;
 using System . Diagnostics;
 using System . Linq;
+using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
@@ -27,8 +28,10 @@ namespace WPFPages . Views
 		private bool Triggered = false;
 		private bool LinktoParent = false;
 		private bool LoadingDbData = false;
+		private bool IsEditing { get; set; }
+		private bool keyshifted { get; set; }
 
-	private string _bankno = "";
+		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
 		private string _balance = "";
@@ -156,6 +159,7 @@ namespace WPFPages . Views
 				}
 			}
 			this . CustGrid . SelectedIndex = 0;
+			Mouse . OverrideCursor = Cursors . Arrow;
 			Startup = false;
 		}
 
@@ -163,6 +167,12 @@ namespace WPFPages . Views
 		{
 			Triggered = true;
 			// Handle selecton change if linkage is ON
+
+			if ( IsEditing )
+			{
+				//IsEditing = false;
+				return;
+			}
 			this . CustGrid . SelectedIndex = e . Row;
 			this . CustGrid . Refresh ( );
 			Triggered = false;
@@ -238,10 +248,13 @@ namespace WPFPages . Views
 			CustDbViewcollection = e . DataSource as CustCollection;
 			CustviewerView . Refresh ( );
 			this . CustGrid . ItemsSource = CustviewerView;
-
 			this . CustGrid . SelectedIndex = 0;
 			this . CustGrid . SelectedItem = 0;
-			Mouse . OverrideCursor = Cursors . Arrow;
+			this . CustGrid . CurrentItem = 0;
+			this . CustGrid . UpdateLayout ( );
+			Thread . Sleep ( 250 );
+			DataFields . Refresh ( );
+			Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
 			this . CustGrid . Refresh ( );
 			Debug . WriteLine ( "BANKDBVIEW : Customer Data fully loaded" );
 		}
@@ -308,16 +321,16 @@ namespace WPFPages . Views
 				LinkToParent . IsEnabled = true;
 				SqlParentViewer = Flags . SqlCustViewer;
 			}
-			else if ( Flags . SqlCustViewer == null )
-			{
-				if ( LinkToParent . IsEnabled )
-				{
-					LinkToParent . IsEnabled = false;
-					LinkToParent . IsChecked = false;
-					LinktoParent = false;
-					SqlParentViewer = null;
-				}
-			}
+			//else if ( Flags . SqlCustViewer == null )
+			//{
+			//	if ( LinkToParent . IsEnabled )
+			//	{
+			//		LinkToParent . IsEnabled = false;
+			//		LinkToParent . IsChecked = false;
+			//		LinktoParent = false;
+			//		SqlParentViewer = null;
+			//	}
+			//}
 
 			// Only  do this if global link is OFF
 			if ( LinktoParent )
@@ -343,6 +356,7 @@ namespace WPFPages . Views
 			}
 
 			IsDirty = false;
+			Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
 			Triggered = false;
 		}
 
@@ -477,7 +491,7 @@ namespace WPFPages . Views
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Show All";
-				Count . Text = this . CustGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
 
 				// Get Custno from ACTIVE gridso we can find it in other grids
 				MultiViewer mv = new MultiViewer ( );
@@ -505,7 +519,7 @@ namespace WPFPages . Views
 				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushYellow" );
 				MultiAccounts . Background = br;
 				MultiAccounts . Content = "Multi Accounts";
-				Count . Text = this . CustGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
 
 				MultiViewer mv = new MultiViewer ( );
 				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
@@ -689,6 +703,7 @@ namespace WPFPages . Views
 		}
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
 		{
+			IsDirty = true;
 			SaveBttn . IsEnabled = true;
 		}
 
@@ -708,7 +723,89 @@ namespace WPFPages . Views
 			//		RowCount = this . CustGrid . SelectedIndex
 			//	} );
 			//Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
+			IsEditing = false;
+
 		}
+
+		private void CustGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		{
+			IsEditing = true;
+		}
+
+		#region KEYHANDLER for EDIT fields
+		// These let us tab thtorugh the editfields back and forward correctly
+		private void Window_PreviewKeyUp ( object sender, KeyEventArgs e )
+		{
+
+			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
+			{
+				keyshifted = false;
+				return;
+			}
+
+			if ( keyshifted && ( e . Key == Key . RightShift || e . Key == Key . LeftShift ) )
+			{
+				//keyshifted = false;
+				e . Handled = true;
+				return;
+			}
+
+		}
+
+		private void Window_PreviewKeyDown ( object sender, KeyEventArgs e )
+		{
+			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
+			{
+				keyshifted = true;
+				e . Handled = true;
+				return;
+			}
+			if ( keyshifted && ( e . Key == Key . RightShift || e . Key == Key . LeftShift ) )
+			{
+				keyshifted = false;
+				e . Handled = true;
+				return;
+			}
+
+			if ( keyshifted == false )
+			{
+				// NO SHIFT KEY - KEY DOWN
+				if ( e . Key == Key . Tab && e . Source == odate )
+				{
+					e . Handled = true;
+					cdate . Focus ( );
+					return;
+				}
+				if ( e . Key == Key . Tab && e . Source == cdate )
+				{
+					e . Handled = true;
+					Custno . Focus ( );
+					return;
+				}
+				return;
+			}
+			else
+			{
+				// SHIFT KEY DOWN - KEY DOWN
+				// Handle  the tabs to make them cycle around the data entry fields
+				if ( e . Key == Key . Tab && e . Source == cdate )
+				{
+					e . Handled = true;
+					odate . Focus ( );
+					//keyshifted = false;
+					return;
+				}
+				if ( e . Key == Key . Tab && e . Source == Custno )
+				{
+					e . Handled = true;
+					cdate . Focus ( );
+					return;
+				}
+			}
+		}
+
+		#endregion KEYHANDLER for EDIT fields
+
 	}
 }
 

@@ -67,7 +67,8 @@ namespace WPFPages . Views
 						adapter . InsertCommand . ExecuteNonQuery ( );
 						counter++;
 						Debug . WriteLine ($"Record {counter} from bulk data added to  Customer Db via SQL Insert command...");
-//									Console . WriteLine ( $"Added record {counter} from bulk data..." );
+						//									Console . WriteLine ( $"Added record {counter} from bulk data..." );
+						cnn . Close ( );
 						adapter . Dispose ( );
 					}
 					catch ( Exception ex )
@@ -80,10 +81,10 @@ namespace WPFPages . Views
 											$"\r\nThe process has terminated, Check Output window & your data and Db for safety\r\nMsg= {ex . Message}, {ex . Data}", "Db Error Information",
 									MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 						Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was [{SQLcommand}]..." );
+						cnn . Close ( );
 						adapter . Dispose ( );
 						break;
 					}
-					//							  Console . WriteLine ( $"Added record {counter} from bulk data..." );
 				}
 				Console . WriteLine ( $"Added {counter} record from bulk data file to BANKACCOUNT Db..." );
 			}
