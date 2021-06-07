@@ -4,8 +4,8 @@
 	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	  xmlns:local="clr-namespace:WPFPages.Views"
-	  mc:Ignorable="d"
+	  xmlns:local="clr-namespace:WPFPages.Views" d:DataContext="{d:DesignInstance Type=local:ViewEditdb}"
+	mc:Ignorable="d"
 	Closing="Window_Closing"
 	
 	  Loaded="Window_Loaded"
@@ -67,6 +67,90 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
+		<!--Styles for menuitems-->
+		<Style x:Key="MenuItemRed" TargetType="{x:Type MenuItem}">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="Foreground" Value="Black" />
+			<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="left" />
+			<Setter Property="VerticalAlignment" Value="Bottom" />
+			<Setter Property="VerticalContentAlignment" Value="Bottom" />
+			<Setter Property="MinHeight" Value="25" />
+			<!--<Setter Property="Cursor" Value="Hand" />-->
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type MenuItem}">
+						<Border x:Name="Bd" 
+							  Padding="17,0,17,0" 
+							  BorderBrush="{TemplateBinding BorderBrush}" 
+							  BorderThickness="{TemplateBinding BorderThickness}" 
+							  Background="{TemplateBinding Background}" 
+							  SnapsToDevicePixels="True" 
+							  Uid="Border_38">
+							<ContentPresenter x:Name="ContentPresenter"  
+										Content="{TemplateBinding Header}" 
+										Grid.Column="1" ContentSource="Header" 
+										Margin="{TemplateBinding Padding}" 
+										RecognizesAccessKey="True" 
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+										Uid="ContentPresenter_33"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsHighlighted" Value="True">
+								<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
+								<Setter Property="Background" TargetName="Bd" Value="Orange"/>
+								<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource Black0}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="MenuItemGreen" TargetType="{x:Type MenuItem}">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="Foreground" Value="Black" />
+			<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Bottom" />
+			<Setter Property="VerticalContentAlignment" Value="Bottom" />
+			<Setter Property="MinHeight" Value="25" />
+			<!--<Setter Property="Cursor" Value="Hand" />-->
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type MenuItem}">
+						<Border x:Name="Bd" 
+							  Padding="17,0,17,0" 
+							  BorderBrush="{TemplateBinding BorderBrush}" 
+							  BorderThickness="{TemplateBinding BorderThickness}" 
+							  Background="{TemplateBinding Background}" 
+							  SnapsToDevicePixels="True" 
+							  Uid="Border_38">
+							<ContentPresenter x:Name="ContentPresenter"  
+										Content="{TemplateBinding Header}" 
+										Grid.Column="1" 
+										ContentSource="Header" 
+										Margin="{TemplateBinding Padding}" 
+										RecognizesAccessKey="True"
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+										Uid="ContentPresenter_33"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsHighlighted" Value="True">
+								<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Green0}"/>
+								<Setter Property="Background" TargetName="Bd" Value="Green"/>
+								<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
 
 	</Window.Resources>
 
@@ -151,32 +235,101 @@
 			</MenuItem>
 
 			<MenuItem  Header="Filtering" 
-				    Click="Filter_Click"
-					Width="60" 
+				Width="60" 
 				    Foreground="{StaticResource White1}">
-				<!--<MenuItem Header="Setup Filter"
-					    Background="#35F6FB" 
-					    Click="Filter_Click"
-					    Foreground="Black"
-					    IsCheckable="false"/>-->
+
+				<MenuItem  Header="Trigger My Own Command"
+				     Command="{Binding myCommandBinding}"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				<!--<Button Grid.ColumnSpan="2" Grid.Row="4" Command="{Binding InformationCommand}">Info</Button>-->
 			</MenuItem>
+			
 			<MenuItem  Header="Options" 
 				    Click="Options_Click"
 					Width="50" 
 				    Foreground="{StaticResource White2}">
+
+				<MenuItem  Header="Export Bank Account Db => CSV"
+					Click="ExportBankCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Export Customers Db => CSV"
+					Click="ExportCustCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"				     />
+				<MenuItem  Header="Export Details Db => CSV"
+					Click="ExportDetCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				<Separator/>
+				<MenuItem  Header="Import Bank Account Db from CSV"
+					Click="ImportBankCSV_Click"
+					FontWeight="DemiBold"
+					Background="#FF0000"
+					Foreground="White"
+					Style="{StaticResource MenuItemRed}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"
+					/>
+				<MenuItem  Header="Import Customers Db from CSV"
+					Click="ImportCustCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="White"
+					Background="#FF0000"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Style="{StaticResource MenuItemRed}"
+					Width="290"
+					Margin="2"
+					/>
+				<MenuItem  Header="Import Details Db from CSV"
+					Click="ImportDetCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="White"
+					Background="#FF0000"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Style="{StaticResource MenuItemRed}"
+					Width="290"
+					Margin="2"
+					/>
+
 			</MenuItem>
 
-			<MenuItem  Header="Exit..." 
+			
+			<MenuItem  Header="Close Viewer..."
 				    Click="Exit_Click"
-					Width="50" 
-				    Foreground="{StaticResource White2}">
-				<!--<MenuItem Header="Setup Filter"
-					    Background="#35F6FB" 
-					    Click="Filter_Click"
-					    Foreground="Black"
-					    IsCheckable="false"/>-->
-			</MenuItem>
-
+				     FontWeight="SemiBold"
+				     Margin="2,0"
+					Width="97"
+				    Foreground="{StaticResource White1}"/>
 		</Menu>
 
 		<!--#endregion Menu Bar-->

@@ -89,6 +89,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\CustomCommands.cs" />
     <Compile Include="Libraries\DataClasses1.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -98,6 +99,7 @@
     <Compile Include="ViewModels\LinqSupport.cs" />
     <Compile Include="Views\AllEventArgs.cs" />
     <Compile Include="Views\BankCollection.cs" />
+    <Compile Include="Views\CellEditControl.cs" />
     <Compile Include="Views\CloseReturnButton.xaml.cs">
       <DependentUpon>CloseReturnButton.xaml</DependentUpon>
     </Compile>

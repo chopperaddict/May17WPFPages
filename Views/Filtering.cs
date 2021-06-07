@@ -28,10 +28,10 @@ namespace WPFPages . Views
 			Button Filters = new Button ( );
 			// Make sure this window has it's pointer "Registered" cos we can
 			// Click the button before the window has had focus set
-			if ( Flags . MultiViewer != null && ( MultiViewer ) obj == Flags . MultiViewer )
+			if ( Flags . SqlMultiViewer != null && ( MultiViewer ) obj == Flags . SqlMultiViewer )
 			{
 				//				Flags . CurrentSqlViewer = obj as MultiViewer;
-				Filters = Flags . MultiViewer?.FilterBtn;
+				Filters = Flags . SqlMultiViewer?.FilterBtn;
 				Filters . Content = "Filtering";
 			}
 			else

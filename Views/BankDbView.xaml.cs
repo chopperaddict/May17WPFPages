@@ -15,23 +15,28 @@ using WPFPages . ViewModels;
 
 namespace WPFPages . Views
 {
+
 	/// <summary>
 	/// Interaction logic for BankDbView.xaml
 	/// </summary>
 	public partial class BankDbView : Window
 	{
-		public BankCollection BankViewcollection = null;// = new BankCollection ( );//. EditDbBankcollection;
-								// Get our personal Collection view of the Db
+		public BankCollection BankViewcollection = null;
+
+		// Get our personal Collection view of the Db
 		public ICollectionView BankviewerView { get; set; }
 
 		private bool IsDirty = false;
 		static bool Startup = true;
-		private bool LinktoParent = false;
+		private static bool LinktoParent = false;
+		private static bool LinktoMultiParent = false;
 		private bool Triggered = false;
 		private bool LoadingDbData = false;
 		private bool RowHasBeenEdited { get; set; }
 		private bool keyshifted { get; set; }
 		private bool IsEditing { get; set; }
+		public static int bindex { get; set; }
+
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -40,12 +45,10 @@ namespace WPFPages . Views
 		private string _cdate = "";
 		private SqlDbViewer SqlParentViewer;
 		private MultiViewer MultiParentViewer;
+		private Thread t1;
 
-
-		BankAccountViewModel bvmCurrent { get; set; }
-		CustomerViewModel cvmCurrent { get; set; }
-		DetailsViewModel dvmCurrent { get; set; }
-
+		// Crucial structure for use when a Grid row is being edited
+		private static RowData bvmCurrent = null;
 		public BankDbView ( )
 		{
 			Startup = true;
@@ -66,10 +69,14 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
-			Mouse . OverrideCursor = Cursors . Wait;
+			Mouse . OverrideCursor = System . Windows . Input . Cursors . Wait;
 			this . Show ( );
 			this . Refresh ( );
 			Startup = true;
+
+			string ndx = ( string ) Properties . Settings . Default [ "BankDbView_bindex" ];
+			bindex = int . Parse ( ndx );
+			this . BankGrid . SelectedIndex = bindex < 0 ? 0 : bindex;
 
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index 
@@ -88,6 +95,7 @@ namespace WPFPages . Views
 			bool tmp = Flags . LinkviewerRecords;
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
+
 			Flags . BankDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
@@ -95,78 +103,11 @@ namespace WPFPages . Views
 			this . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
-			LinktoParent = false;
-			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
-			{
-				MultiParentViewer = null;
-				if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
-				{
-					SqlParentViewer = sender as SqlDbViewer;
-				}
-				else
-				{
-					if ( Flags . SqlCustViewer != null )
-						SqlParentViewer = Flags . SqlCustViewer;
-					else
-					{
-						LinktoParent = false;
-						LinkToParent . IsEnabled = false;
-					}
-				}
-			}
-			else if ( sender . GetType ( ) == typeof ( MultiViewer ) )
-			{
-				SqlParentViewer = null;
-				if ( sender . GetType ( ) == typeof ( MultiViewer ) )
-				{
-
-					MultiParentViewer = sender as MultiViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-				}
-				else
-				{
-					if ( Flags . MultiViewer != null )
-					{
-						MultiParentViewer = Flags . MultiViewer;
-						//						LinktoParent = true;
-						LinkToParent . IsEnabled = true;
-					}
-					else
-					{
-						//						LinktoParent = false;
-						LinkToParent . IsEnabled = false;
-					}
-				}
-			}
-			else
-			{
-				MultiParentViewer = null;
-				SqlParentViewer = null;
-				//				LinktoParent = false;
-				LinkToParent . IsEnabled = false;
-
-				if ( Flags . SqlBankViewer != null )
-				{
-					SqlParentViewer = Flags . SqlBankViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-					LinkToParent . Content = "Link to \nSqlViewer";
-				}
-				else if ( Flags . MultiViewer != null )
-				{
-					MultiParentViewer = Flags . MultiViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-					LinkToParent . Content = "Link to \nMultiViewer";
-				}
-				else
-				{
-					//					LinktoParent = false;
-					LinkToParent . IsEnabled = false;
-				}
-			}
-			this . BankGrid . SelectedIndex = 0;
+			// start our linkage monitor
+			t1 = new Thread ( checkLinkages );
+			t1 . IsBackground = true;
+			t1 . Priority = ThreadPriority . Lowest;
+			t1 . Start ( );
 			Startup = false;
 		}
 
@@ -180,6 +121,7 @@ namespace WPFPages . Views
 				return;
 			}
 			this . BankGrid . SelectedIndex = e . Row;
+			bindex = e . Row;
 			this . BankGrid . Refresh ( );
 			Triggered = false;
 		}
@@ -209,17 +151,102 @@ namespace WPFPages . Views
 		}
 		#endregion Startup/ Closedown
 
+
+		#region DATA EDIT CONTROL METHODS
+		/// <summary>
+		///  DATA EDIT CONTROL METHODS
+		/// 
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void BankGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		{
+			IsEditing = true;
+			// Save  the current data for checking later on when we exit editing
+			// but first, check to see if we already have one being saved !
+			if ( bvmCurrent == null )
+			{
+				// Nope, so create a new one and get on with the edit process
+				BankAccountViewModel tmp = new BankAccountViewModel ( );
+				tmp = e . Row . Item as BankAccountViewModel;
+				// This sets up a new bvmControl object if needed, else we  get a null back
+				bvmCurrent = CellEditControl . BankGrid_EditStart ( bvmCurrent, e );
+			}
+			// doesn't work right now - returns NULL
+			//string str = CellEditControl.GetSelectedCellValue ( this . BankGrid );
+		}
+
+		/// <summary>
+		/// does nothing at all because it is called whenver any single cell is exited
+		///     and not just when ENTER is hit to save any changes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private async void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			if ( bvmCurrent == null ) return;
+
+			// Has Data been changed in one of our rows. ?
+			BankAccountViewModel dvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+			dvm = e . Row . Item as BankAccountViewModel;
+
+			// The sequence of these next 2 blocks is critical !!!
+			//if we get here, make sure we have been NOT been told to EsCAPE out
+			//	this is a DataGridEditAction dgea
+			if ( e . EditAction == 0 )
+			{
+				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
+				// and this will notify any other open viewers as well
+				bvmCurrent = null;
+				await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
+				return;
+			}
+
+			if ( CellEditControl . BankGrid_EditEnding ( bvmCurrent, BankGrid, e ) == false )
+			{       // No change made
+				return;
+			}
+		}
+
+		/// <summary>
+		/// Compares 2 rows of BANKACCOUNT or DETAILS data to see if there are any changes
+		/// </summary>
+		/// <param name="ss"></param>
+		/// <returns></returns>
+		private bool CompareDataContent ( BankAccountViewModel ss )
+		{
+			if ( ss . CustNo != bvmCurrent . _CustNo . ToString ( ) )
+				return false;
+			if ( ss . BankNo != bvmCurrent . _BankNo . ToString ( ) )
+				return false;
+			if ( ss . AcType != bvmCurrent . _AcType )
+				return false;
+			if ( ss . IntRate != bvmCurrent . _IntRate )
+				return false;
+			if ( ss . Balance != bvmCurrent . _Balance )
+				return false;
+			if ( ss . ODate != bvmCurrent . _ODate )
+				return false;
+			if ( ss . CDate != bvmCurrent . _CDate )
+				return false;
+			return true;
+		}
+		/// <summary>
+		/// Called when an EDIT ends. This occurs whenever a field is exited, even if ENTER has NOT been pressed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private async void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
 		{
-			DataGridEditAction dgea;
 			int currow = 0;
+			// if our saved row is null, it has already been checked in Cell_EndDedit processing
+			// and found no changes have been made, so we can abort this update
+			if ( bvmCurrent == null )	return;
 
-			currow = this . BankGrid . SelectedIndex;
-			// Save current row so we can reposition correctly at end of the entire refresh process					
-			//			Flags . SqlBankCurrentIndex = currow;
+			// This is now confirmed as being CHANGED DATA in the current row
+			// So we proceed and update SQL Db's' and notify all open viewers as well
 			BankAccountViewModel ss = new BankAccountViewModel ( );
 			ss = this . BankGrid . SelectedItem as BankAccountViewModel;
-			// This is the NEW DATA from the current row
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRowAsync ( "BANKACCOUNT", ss, this . BankGrid . SelectedIndex );
 
@@ -244,6 +271,8 @@ namespace WPFPages . Views
 
 		}
 
+		#endregion DATA EDIT CONTROL METHODS
+
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for BankDataLoaded
@@ -257,11 +286,13 @@ namespace WPFPages . Views
 			BankViewcollection = e . DataSource as BankCollection;
 			BankviewerView . Refresh ( );
 			this . BankGrid . ItemsSource = BankviewerView;
-			this . BankGrid . SelectedIndex = 0;
-			this . BankGrid . SelectedItem = 0;
-			this . BankGrid . CurrentItem = 0;
+			this . BankGrid . SelectedIndex = bindex;
+			this . BankGrid . SelectedItem = bindex;
+			this . BankGrid . CurrentItem = bindex;
 			this . BankGrid . UpdateLayout ( );
 			this . BankGrid . Refresh ( );
+			Utils . SetUpGridSelection ( BankGrid, bindex );
+			bool reslt = false;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			Thread . Sleep ( 250 );
 			DataFields . Refresh ( );
@@ -302,13 +333,11 @@ namespace WPFPages . Views
 			EventControl . MultiViewerIndexChanged -= EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index 
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
-												 // Main update notification handler
-												 //			EventControl . DataUpdated -= EventControl_DataUpdated;
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl . BankDataLoaded -= EventControl_BankDataLoaded;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
 			BankViewcollection = null;
-
+			Utils . SaveProperty ( "BankDbView_bindex", bindex . ToString ( ) );
 		}
 
 		private void BankGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -318,6 +347,7 @@ namespace WPFPages . Views
 				LoadingDbData = false;
 				return;
 			}
+			bindex = this . BankGrid . SelectedIndex;
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
@@ -495,93 +525,19 @@ namespace WPFPages . Views
 			SaveButton ( sender, e );
 		}
 
-		private async void MultiAccts_Click ( object sender, RoutedEventArgs e )
-		{
-			// Filter data to show ONLY Custoimers with multiple bank accounts
-
-			if ( MultiAccounts . Content != "Show All" )
-			{
-				int currsel = this . BankGrid . SelectedIndex;
-				BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
-				if ( bgr == null ) return;
-
-				Flags . IsMultiMode = true;
-
-				BankCollection bank = new BankCollection ( );
-				bank = await bank . ReLoadBankData ( );
-				this . BankGrid . ItemsSource = null;
-				this . BankGrid . ItemsSource = bank;
-				this . BankGrid . Refresh ( );
-
-				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
-				MultiAccounts . Template = tmp;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
-				MultiAccounts . Background = br;
-				MultiAccounts . Content = "Show All";
-				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
-
-				// Get Custno from ACTIVE gridso we can find it in other grids
-				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
-				this . BankGrid . SelectedIndex = currsel;
-				if ( rec >= 0 )
-					this . BankGrid . SelectedIndex = rec;
-				else
-					this . BankGrid . SelectedIndex = 0;
-				Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-				//				Utils . ScrollRecordIntoView ( this . BankGrid, this . BankGrid . SelectedIndex );
-			}
-			else
-			{
-				Flags . IsMultiMode = false;
-				int currsel = this . BankGrid . SelectedIndex;
-				BankAccountViewModel bgr = this . BankGrid . SelectedItem as BankAccountViewModel;
-				if ( bgr == null ) return;
-
-				BankCollection bank = new BankCollection ( );
-				bank = await bank . ReLoadBankData ( );
-				this . BankGrid . ItemsSource = null;
-				this . BankGrid . ItemsSource = BankViewcollection;
-				this . BankGrid . Refresh ( );
-
-				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateBlue" );
-				MultiAccounts . Template = tmp;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushBlue" );
-				MultiAccounts . Background = br;
-				MultiAccounts . Content = "Multi Accounts";
-				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
-
-				// Get Custno from ACTIVE gridso we can find it in other grids
-				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . BankGrid, "BANKACCOUNT" );
-				this . BankGrid . SelectedIndex = 0;
-
-				if ( rec >= 0 )
-					this . BankGrid . SelectedIndex = rec;
-				else
-					this . BankGrid . SelectedIndex = 0;
-				Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-				//				Utils . ScrollRecordIntoView ( this . BankGrid, this . BankGrid . SelectedIndex );
-			}
-		}
-		//public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
-		//{
-		//	// Called internally to broadcast data change event notification
-		//	// Databases have DEFINITELY been updated successfully after a change
-		//	// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
-
-		//	EventControl . TriggerBankDataLoaded ( BankViewcollection,
-		//	new LoadedEventArgs
-		//	{
-		//		CallerType = "BANKDBVIEW",
-		//		CallerDb = "BANKACCOUNT",
-		//		DataSource = BankViewcollection,
-		//		RowCount = this . BankGrid . SelectedIndex
-		//	} );
-		//	Mouse . OverrideCursor = Cursors . Arrow;
-		//}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
+			bool reslt = false;
+			if ( IsLinkActive ( reslt ) == false )
+			{
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+				SqlParentViewer = null;
+				LinkRecords . IsChecked = false;
+			}
+			else
+				LinktoParent = !LinktoParent;
+
 			// force viewers to change records in line with each other
 			if ( LinkRecords . IsChecked == true )
 				Flags . LinkviewerRecords = true;
@@ -730,6 +686,8 @@ namespace WPFPages . Views
 		}
 		#endregion Menu items
 
+
+
 		/// <summary>
 		/// Link record selection to parent SQL viewer window only
 		/// </summary>
@@ -737,7 +695,16 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
-			LinktoParent = !LinktoParent;
+			bool reslt = false;
+			if ( IsLinkActive ( reslt ) == false )
+			{
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+				SqlParentViewer = null;
+				LinkRecords . IsChecked = false;
+			}
+			else
+				LinktoParent = !LinktoParent;
 		}
 
 		private async void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
@@ -791,59 +758,8 @@ namespace WPFPages . Views
 			IsDirty = true;
 			SaveBttn . IsEnabled = true;
 		}
-
-		private void BankGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
-		{
-			IsEditing = true;
-			// Save  the curret data for checking later on when we exit editing
-			//			RowHasBeenEdited = true;
-			bvmCurrent = e . Row . Item as BankAccountViewModel;
-
-		}
-		private async void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
-		{
-			//bool updated = false;
-			//DataGridEditAction dgea;
-			//dgea = e . EditAction;
-			//// if NOT Commit (1) the exit here
-			//if ( dgea == 0 ) return;
-			//	// Data has been changed in one of our rows.
-			//BankAccountViewModel bvm = this.BankGrid.SelectedItem as BankAccountViewModel;
-			//bvm = e . Row . Item as BankAccountViewModel;
-
-			//if ( bvm . BankNo != bvmCurrent . BankNo )
-			//	updated = true;
-			//else if ( bvm . CustNo != bvmCurrent . CustNo )
-			//	updated = true;
-			//else if ( bvm . IntRate != bvmCurrent . IntRate )
-			//	updated = true;
-			//else if ( bvm . Balance!= bvmCurrent . Balance )
-			//	updated = true;
-			//else if ( bvm . ODate!= bvmCurrent . ODate)
-			//	updated = true;
-			//else if ( bvm . CDate!= bvmCurrent . CDate)
-			//	updated = true;
-
-			//// If no change,don't bother
-			//if ( updated  == false) return;
-			////RowHasBeenEdited = true;
-			////SQLHandlers sqlh = new SQLHandlers ( );
-			////await sqlh . UpdateDbRowAsync ( "BANKACCOUNT", bvm );
-
-			////// Notify other viewers
-			////EventControl . TriggerViewerDataUpdated ( BankViewcollection,
-			////	new LoadedEventArgs
-			////	{
-			////		CallerType = "BANKDBVIEW",
-			////		CallerDb = "BANKACCOUNT",
-			////		DataSource = BankViewcollection,
-			////		RowCount = this . BankGrid . SelectedIndex
-			////	} );
-			//IsEditing = false;
-
-		}
-
 		#region KEYHANDLER for EDIT fields
+
 		// These let us tab thtorugh the editfields back and forward correctly
 		private void Window_PreviewKeyUp ( object sender, KeyEventArgs e )
 		{
@@ -864,7 +780,11 @@ namespace WPFPages . Views
 
 		}
 
-
+		/// <summary>
+		/// Key handling to allow proper tabbing between data Editing fieds
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Window_PreviewKeyDown ( object sender, KeyEventArgs e )
 		{
 			if ( e . Key == Key . RightShift || e . Key == Key . LeftShift )
@@ -905,6 +825,148 @@ namespace WPFPages . Views
 		}
 
 		#endregion KEYHANDLER for EDIT fields
+
+
+		#region HANDLERS for linkage checkboxes, inluding Thread montior
+
+		static bool IsLinkActive ( bool ParentLinkTo )
+		{
+			return Flags . SqlBankViewer != null && ParentLinkTo == false;
+		}
+		static bool IsMultiLinkActive ( bool MultiParentLinkTo )
+		{
+			if ( Flags . SqlMultiViewer == null )
+				return false;
+			else
+				return true;
+		}
+
+		private void LinkToMulti_Click ( object sender, RoutedEventArgs e )
+		{
+			bool reslt = false;
+
+			if ( IsMultiLinkActive ( reslt ) == false )
+			{
+				LinkToMulti . IsEnabled = false;
+				LinkToMulti . IsChecked = false;
+				MultiParentViewer = null;
+				LinktoMultiParent = false;
+			}
+			else
+			{
+				LinktoMultiParent = !LinktoMultiParent;
+				if ( LinktoMultiParent )
+				{
+					LinkToMulti . IsChecked = true;
+					LinktoMultiParent = true;
+				}
+				else
+				{
+					LinkToMulti . IsChecked = false;
+					LinktoMultiParent = false;
+				}
+			}
+		}
+		/// <summary>
+		/// Runs as a thread to monitor SqlDbviewer & Multiviewer availabilty
+		/// and resets checkboxes as necessary  - thread delay is TWO seconds
+		/// </summary>
+		private void checkLinkages ( )
+		{
+			while ( true )
+			{
+				int AllLinks = 0;
+				Thread . Sleep ( 2000 );
+
+				bool reslt = false;
+				if ( IsLinkActive ( reslt ) )
+				{
+					AllLinks++;
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "LINKTOPARENT", true );
+					} );
+				}
+				else
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "LINKTOPARENT", false );
+					} );
+				}
+
+				if ( IsMultiLinkActive ( reslt ) == false )
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "MULTILINKTOPARENT", false );
+					} );
+				}
+				else
+				{
+					AllLinks++;
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "MULTILINKTOPARENT", true );
+					} );
+				}
+				if ( AllLinks >= 1 )
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "ALLLINKS", true );
+					} );
+				else
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "ALLLINKS", false );
+					} );
+
+			}
+		}
+		private void ResetLinkages ( string linktype, bool value )
+		{
+			if ( linktype == "LINKTOPARENT" )
+			{
+				LinkToParent . IsEnabled = value;
+				if ( value )
+					SqlParentViewer = Flags . SqlBankViewer;
+				else
+				{
+					LinktoParent = false;
+					SqlParentViewer = null;
+				}
+			}
+			if ( linktype == "MULTILINKTOPARENT" )
+			{
+				if ( value )
+				{
+					LinkToMulti . IsEnabled = value;
+					MultiParentViewer = Flags . SqlMultiViewer;
+				}
+				else
+				{
+					LinkToMulti . IsEnabled = false;
+					LinkToMulti . IsChecked = false;
+					MultiParentViewer = null;
+					LinktoMultiParent = false;
+				}
+			}
+			if ( linktype == "ALLLINKS" && value )
+				LinkRecords . IsEnabled = true;
+			else
+				LinkRecords . IsEnabled = false;
+			#endregion HANDLERS for linkage checkboxes, inluding Thread montior
+
+		}
+		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
+		{
+
+		}
+
+		private void Minimize_click ( object sender, RoutedEventArgs e )
+		{
+			this . WindowState = WindowState . Normal;
+		}
 
 		//			BankAccountViewModel bank = new BankAccountViewModel();
 		//			var filtered = from bank inBankViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;

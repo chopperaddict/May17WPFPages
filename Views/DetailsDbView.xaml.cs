@@ -11,6 +11,7 @@ using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
+using WPFPages . Properties;
 using WPFPages . ViewModels;
 
 namespace WPFPages . Views
@@ -21,6 +22,9 @@ namespace WPFPages . Views
 	public partial class DetailsDbView : Window
 	{
 		public DetCollection DetViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
+
+		// Crucial structure for use when a Grid row is being edited
+		private static RowData bvmCurrent = null;
 
 		#region CollectionView stuff
 		public CollectionViewSource DetViewSource { get; set; }
@@ -37,13 +41,17 @@ namespace WPFPages . Views
 
 		private bool IsDirty = false;
 		private bool Startup = true;
-		private bool LinktoParent = false;
+		private static bool LinktoParents = false;
+		private static bool LinktoMultiParent = false;
 		private bool IsFiltered = false;
 		public static bool Triggered = false;
 		private bool TriggeredDataUpdate = false;
 		private bool LoadingDbData = false;
 		private bool IsEditing { get; set; }
-		private bool keyshifted {get; set; }
+		private bool keyshifted { get; set; }
+		// This MAINTAINS setting values across instances !!!
+		public static int dindex { get; set; }
+
 
 		private string _bankno = "";
 		private string _custno = "";
@@ -56,14 +64,15 @@ namespace WPFPages . Views
 		private DbSelector DbsParentViewer = null;
 		public DataChangeArgs dca = new DataChangeArgs ( );
 
-		public DetailsDbView (SqlDbViewer sqldbv = null, MultiViewer mv = null, DbSelector dbs=null)
+		private Thread t1;
+		public DetailsDbView ( SqlDbViewer sqldbv = null, MultiViewer mv = null, DbSelector dbs = null )
 		{
 			Startup = true;
 			InitializeComponent ( );
 			//Type calltype = typeof ( callerWin );
-			MultiParentViewer = mv ;
+			MultiParentViewer = mv;
 			SqlParentViewer = sqldbv;
-			DbsParentViewer = dbs;			
+			DbsParentViewer = dbs;
 		}
 		#region Mouse support
 		private void DoDragMove ( )
@@ -78,13 +87,15 @@ namespace WPFPages . Views
 		#region Startup/ Closedown
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
 		{
-			Type callerType = null;
 			Mouse . OverrideCursor = Cursors . Wait;
 			this . Show ( );
 			this . Refresh ( );
 			Startup = true;
 
-			dca . SenderName = sender . ToString ( );
+			string ndx = ( string ) Properties . Settings . Default [ "DetailsDbView_dindex" ];
+			dindex = int . Parse ( ndx );
+			this . DetGrid . SelectedIndex = dindex < 0 ? 0 : dindex;
+
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index 
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
@@ -102,48 +113,23 @@ namespace WPFPages . Views
 			bool tmp = Flags . LinkviewerRecords;
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
+
 			Flags . DetDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			this . Focus ( );
+			// start our linkage monitor
+			t1 = new Thread ( checkLinkages );
+			t1 . IsBackground = true;
+			t1 . Priority = ThreadPriority . Lowest;
+			t1 . Start ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
-			LinktoParent = false;
-			this . DetGrid . SelectedIndex = 0;
+			LinktoParents = false;
 			Startup = false;
 		}
 
-		private void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
-		{
-			// Save changes and tell other viewers about the change
-			int currow = 0;
-			currow = this . DetGrid . SelectedIndex;
-			// Save current row so we can reposition correctly at end of the entire refresh process					
-			DetailsViewModel ss = new DetailsViewModel ( );
-			ss = this . DetGrid . SelectedItem as DetailsViewModel;
-			// This is the NEW DATA from the current row
-			SQLHandlers sqlh = new SQLHandlers ( );
-			sqlh . UpdateDbRowAsync ( "DETAILS", ss, this . DetGrid . SelectedIndex );
-
-			this . DetGrid . SelectedIndex = currow;
-			this . DetGrid . SelectedItem = currow;
-			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-			// Notify EditDb to upgrade its grid
-			if ( Flags . CurrentEditDbViewer != null )
-				Flags . CurrentEditDbViewer . UpdateGrid ( "DETAILS" );
-			TriggeredDataUpdate = true;
-			// ***********  DEFINITE WIN  **********
-			// This DOES trigger a notification to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl . TriggerViewerDataUpdated ( DetViewerDbcollection,
-				new LoadedEventArgs
-				{
-					CallerType = "DETAILSDBVIEW",
-					CallerDb = "DETAILS",
-					DataSource = DetViewerDbcollection,
-					RowCount = this . DetGrid . SelectedIndex
-				} );
-		}
 
 		#region DATA BASED EVENT HANDLERS
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -158,6 +144,7 @@ namespace WPFPages . Views
 			this . DetGrid . SelectedIndex = e . Row;
 			Utils . SetSelectedItemFirstRow ( this . DetGrid, this . DetGrid . SelectedItem );
 			this . DetGrid . Refresh ( );
+			dindex = e . Row;
 			Triggered = false;
 		}
 
@@ -172,7 +159,7 @@ namespace WPFPages . Views
 			if ( e . DataSource == null ) return;
 			//ONLY do this if WE triggered the event
 			if ( e . CallerDb != "DETAILSDBVIEW" )
-			{Mouse . OverrideCursor = Cursors . Arrow;return;}
+			{ Mouse . OverrideCursor = Cursors . Arrow; return; }
 
 			if ( TriggeredDataUpdate )
 			{
@@ -184,11 +171,6 @@ namespace WPFPages . Views
 
 			LoadingDbData = true;
 
-			// Get our personal Collection view of the Db
-			// We even can create a seperate data source as a List <DetailsViewModel> as shown below
-			// but we do not need to do so
-			//IList<DetailsViewModel> DetailsDataListView = e . DataSource as DetCollection;
-
 			// This (DetviewerView) is simply an ICollectionView of the data received in e.DataSource from SQL load methods
 			// So now we have an independent reference to the "Base" data that can be manipulated in any way we wish
 			// without effecting any other Viewer's window content
@@ -197,16 +179,15 @@ namespace WPFPages . Views
 			DetviewerView . Refresh ( );
 			this . DetGrid . Focus ( );
 			this . DetGrid . ItemsSource = DetviewerView;
-			this . DetGrid . SelectedIndex = 0;
-			this . DetGrid . SelectedItem = 0;
-//			this . DetGrid . CurrentItem = 0;
-//			this . DetGrid . UpdateLayout ( );
+			this . DetGrid . SelectedIndex = dindex;
+			this . DetGrid . SelectedItem = dindex;
+			Utils . SetUpGridSelection ( DetGrid, dindex );
 			Thread . Sleep ( 250 );
-			//			DataFields . Refresh ( );
 			Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . DetGrid . Refresh ( );
 			Debug . WriteLine ( "BANKDBVIEW : Details Data fully loaded" );
+			bool reslt = false;
 		}
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
@@ -274,6 +255,8 @@ namespace WPFPages . Views
 				SaveBttn . IsEnabled = false;
 				IsDirty = false;
 			}
+			// Close our monitor thread
+
 			//UnSubscribe from Bank Data Changed event declared in EventControl
 			Flags . DetDbEditor = null;
 			//Another viewer has changed selection
@@ -287,13 +270,9 @@ namespace WPFPages . Views
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl . DetDataLoaded -= EventControl_DetDataLoaded;
 
-
+			Utils . SaveProperty ( "DetailsDbView_dindex", dindex . ToString ( ) );
 		}
 
-		static bool IsLinkActive ( bool ParentLinkTo )
-		{
-			return Flags . SqlDetViewer != null && ParentLinkTo == false;
-		}
 		private void DetGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
 		{
 			bool reslt = false;
@@ -302,7 +281,7 @@ namespace WPFPages . Views
 			// direct action (Lambda) version 
 			Predicate<bool> IsActive = delegate ( bool b )
 			{
-				return Flags . SqlDetViewer != null && LinktoParent == false;
+				return Flags . SqlDetViewer != null && LinktoParents == false;
 			};
 
 			if ( LoadingDbData )
@@ -326,37 +305,16 @@ namespace WPFPages . Views
 			if ( this . DetGrid . SelectedItem == null )
 				return;
 
-			// check to see if an SqlDbViewer has been opened that we can link to
-			//			if ( Flags . SqlDetViewer != null && LinkToParent . IsEnabled == false )
-			if ( IsActive ( reslt ) )
-			{
-				LinkToParent . IsEnabled = true;
-				SqlParentViewer = Flags . SqlDetViewer;
-			}
-			//else if ( Flags . SqlDetViewer == null )
-			//{
-			//	if ( LinkToParent . IsEnabled )
-			//	{
-			//		LinkToParent . IsEnabled = false;
-			//		LinkToParent . IsChecked = false;
-			//		LinktoParent = false;
-			//		SqlParentViewer = null;
-			//	}
-			//}
-			//			Debug . WriteLine ( $"DetviewerView CurrentItem has changed = {DetviewerView .}" );
 			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
 			Startup = true;
 			DataFields . DataContext = this . DetGrid . SelectedItem;
 
 			if ( Flags . LinkviewerRecords && Triggered == false )
-			{
-				//				Debug . WriteLine ( $" 6-1 *** TRACE *** DETAILSDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Sending TriggerEditDbIndexChanged Event trigger" );
-				TriggerViewerIndexChanged ( DetGrid );    
-			}
+				TriggerViewerIndexChanged ( DetGrid );
 
 			// Only  do this if global link is OFF
-			if ( LinktoParent )
+			if ( LinktoParents )
 			{
 				// update parents row selection
 				string bankno = "";
@@ -375,9 +333,21 @@ namespace WPFPages . Views
 					MultiParentViewer . DetailsGrid . SelectedIndex = rec;
 					Utils . SetUpGridSelection ( MultiParentViewer . DetailsGrid, rec );
 				}
-//				Utils . SetSelectedItemFirstRow ( this . DetGrid, this . DetGrid . SelectedItem );
+				if ( IsMultiLinkActive ( LinktoMultiParent ) )
+				{
+					Flags . SqlMultiViewer . DetailsGrid . SelectedIndex = this . DetGrid . SelectedIndex;
+					Flags . SqlMultiViewer . DetailsGrid . ScrollIntoView ( this . DetGrid . SelectedIndex );
+					Utils . SetUpGridSelection ( Flags . SqlMultiViewer . DetailsGrid, this . DetGrid . SelectedIndex );
+				}
+			}
+			else if ( LinktoMultiParent )
+			{
+				Flags . SqlMultiViewer . DetailsGrid . SelectedIndex = this . DetGrid . SelectedIndex;
+				Flags . SqlMultiViewer . DetailsGrid . ScrollIntoView ( this . DetGrid . SelectedIndex );
+				Utils . SetUpGridSelection ( Flags . SqlMultiViewer . DetailsGrid, this . DetGrid . SelectedIndex );
 			}
 			Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
+			dindex = this . DetGrid . SelectedIndex;
 			Triggered = false;
 		}
 		public void TriggerViewerIndexChanged ( System . Windows . Controls . DataGrid grid )
@@ -505,66 +475,66 @@ namespace WPFPages . Views
 			SaveButton ( sender, e );
 		}
 
-		private async void MultiAccts_Click ( object sender, RoutedEventArgs e )
-		{
-			// Filter data to show ONLY Custoimers with multiple bank accounts
+		//private async void MultiAccts_Click ( object sender, RoutedEventArgs e )
+		//{
+		//	// Filter data to show ONLY Custoimers with multiple bank accounts
 
-			if ( MultiAccounts . Content != "Show All" )
-			{
-				int currsel = this . DetGrid . SelectedIndex;
-				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
-				Flags . IsMultiMode = true;
-				DetailCollection det = new DetailCollection ( );
-				await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+		//	if ( MultiAccounts . Content != "Show All" )
+		//	{
+		//		int currsel = this . DetGrid . SelectedIndex;
+		//		DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
+		//		Flags . IsMultiMode = true;
+		//		DetailCollection det = new DetailCollection ( );
+		//		await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
 
-				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
-				MultiAccounts . Template = tmp;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
-				MultiAccounts . Background = br;
-				MultiAccounts . Content = "Show All";
-				Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
+		//		ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
+		//		MultiAccounts . Template = tmp;
+		//		Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
+		//		MultiAccounts . Background = br;
+		//		MultiAccounts . Content = "Show All";
+		//		Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 
-				// Get Custno from ACTIVE gridso we can find it in other grids
-				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
-				this . DetGrid . SelectedIndex = currsel;
-				if ( rec >= 0 )
-					this . DetGrid . SelectedIndex = rec;
-				else
-					this . DetGrid . SelectedIndex = 0;
-				Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-			}
-			else
-			{
-				Flags . IsMultiMode = false;
-				int currsel = this . DetGrid . SelectedIndex;
-				DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
+		//		// Get Custno from ACTIVE gridso we can find it in other grids
+		//		MultiViewer mv = new MultiViewer ( );
+		//		int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
+		//		this . DetGrid . SelectedIndex = currsel;
+		//		if ( rec >= 0 )
+		//			this . DetGrid . SelectedIndex = rec;
+		//		else
+		//			this . DetGrid . SelectedIndex = 0;
+		//		Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
+		//	}
+		//	else
+		//	{
+		//		Flags . IsMultiMode = false;
+		//		int currsel = this . DetGrid . SelectedIndex;
+		//		DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 
-				DetailCollection det = new DetailCollection ( );
-				await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
-				// Just reset our current itemssource to man Db
-				this . DetGrid . ItemsSource = null;
-				this . DetGrid . ItemsSource = DetviewerView;
-				this . DetGrid . Refresh ( );
+		//		DetailCollection det = new DetailCollection ( );
+		//		await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+		//		// Just reset our current itemssource to man Db
+		//		this . DetGrid . ItemsSource = null;
+		//		this . DetGrid . ItemsSource = DetviewerView;
+		//		this . DetGrid . Refresh ( );
 
-				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGreen" );
-				MultiAccounts . Template = tmp;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGreen" );
-				MultiAccounts . Background = br;
-				MultiAccounts . Content = "Multi Accounts";
-				Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
+		//		ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGreen" );
+		//		MultiAccounts . Template = tmp;
+		//		Brush br = Utils . GetDictionaryBrush ( "HeaderBrushGreen" );
+		//		MultiAccounts . Background = br;
+		//		MultiAccounts . Content = "Multi Accounts";
+		//		Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
 
-				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
-				this . DetGrid . SelectedIndex = 0;
+		//		MultiViewer mv = new MultiViewer ( );
+		//		int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . DetGrid, "DETAILS" );
+		//		this . DetGrid . SelectedIndex = 0;
 
-				if ( rec >= 0 )
-					this . DetGrid . SelectedIndex = rec;
-				else
-					this . DetGrid . SelectedIndex = 0;
-				Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
-			}
-		}
+		//		if ( rec >= 0 )
+		//			this . DetGrid . SelectedIndex = rec;
+		//		else
+		//			this . DetGrid . SelectedIndex = 0;
+		//		Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
+		//	}
+		//}
 		public void SendDataChanged ( SqlDbViewer o, DataGrid Grid, string dbName )
 		{
 			// Databases have DEFINITELY been updated successfully after a change
@@ -580,8 +550,89 @@ namespace WPFPages . Views
 			} );
 			Mouse . OverrideCursor = Cursors . Arrow;
 		}
+
+		public bool CheckLinkRecordsStatus ( bool status )
+		{
+			bool reslt = false;
+			if ( IsLinkActive ( reslt ) == true )
+			{
+				// We do have an active SqlDbviewer
+				if ( status == true )
+				{
+					// Active viewer and is currently checked
+					LinkRecords . IsEnabled = true;
+					SqlParentViewer = Flags . SqlDetViewer;
+				}
+				else
+				{
+					// Active viewer but Not currently checked
+					LinkRecords . IsEnabled = true;
+				}
+			}
+			else
+			{
+				// We do NOT have an active SqlDbviewer
+				LinkRecords . IsEnabled = false;
+				LinkRecords . IsChecked = false;
+				LinktoParents = false;
+				SqlParentViewer = null;
+			}
+			return false;
+		}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
+			bool reslt = false;
+			if ( LinkRecords . IsChecked == true )
+			{
+				//				CheckLinkRecordsStatus ( true);
+				// Checkbox is being CHECKED
+				if ( IsLinkActive ( reslt ) == true )
+				{
+					// We have an open Db SqlDbViewer open
+					LinkRecords . IsEnabled = true;
+					LinktoParents = false;
+					SqlParentViewer = Flags . SqlDetViewer;
+				}
+				else
+				{
+					// No Details Db SqlDbViewer open
+					LinkRecords . IsEnabled = false;
+					LinkRecords . IsChecked = false;
+					LinktoParents = false;
+					SqlParentViewer = null;
+				}
+			}
+			else
+			{
+				// Checkbox is being UNCHECKED
+				if ( IsLinkActive ( reslt ) == true )
+				{
+					// we do have an open SqlDbViewer 
+					LinkRecords . IsEnabled = true;
+					SqlParentViewer = Flags . SqlDetViewer;
+					LinktoParents = false;
+				}
+				else
+				{
+					// No Details Db SqlDbViewer open
+					LinkRecords . IsEnabled = false;
+					SqlParentViewer = null;
+					LinktoParents = false;
+
+				}
+			}
+			if ( IsMultiLinkActive ( reslt ) )
+			{
+				LinkToMulti . IsEnabled = true;
+				MultiParentViewer = Flags . SqlMultiViewer;
+			}
+			else
+			{
+				LinkToMulti . IsEnabled = false;
+				MultiParentViewer = null;
+				LinkToMulti . IsChecked = false;
+				LinktoMultiParent = false;
+			}
 			// force viewers to change records in line with each other
 			if ( LinkRecords . IsChecked == true )
 				Flags . LinkviewerRecords = true;
@@ -602,17 +653,22 @@ namespace WPFPages . Views
 			LinkRecords . Refresh ( );
 			if ( Flags . LinkviewerRecords == true )
 			{
-				LinktoParent = false;
+				LinktoParents = false;
 				LinkToParent . IsEnabled = false;
 				LinkToParent . IsChecked = false;
 			}
 			else
 			{
 				if ( SqlParentViewer != null )
+				{
 					LinkToParent . IsEnabled = true;
+					LinkToParent . Refresh ( );
+				}
 				else
+				{
 					LinkToParent . IsEnabled = false;
-				LinktoParent = false;
+					LinktoParents = false;
+				}
 
 			}
 		}
@@ -624,7 +680,16 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
-			LinktoParent = !LinktoParent;
+			bool reslt = false;
+			if ( IsLinkActive ( reslt ) == false )
+			{
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+				SqlParentViewer = null;
+				LinkRecords . IsChecked = false;
+			}
+			else
+				LinktoParents = !LinktoParents;
 		}
 
 		#region Menu items
@@ -745,7 +810,7 @@ namespace WPFPages . Views
 		{
 			string Custno = "0";
 			string Bankno = "0";
-			DetailsViewModel dvm = this.DetGrid.SelectedItem as DetailsViewModel;
+			DetailsViewModel dvm = this . DetGrid . SelectedItem as DetailsViewModel;
 			if ( dvm != null )
 			{
 				Bankno = dvm?.BankNo;
@@ -754,7 +819,7 @@ namespace WPFPages . Views
 			MenuItem mi = new MenuItem ( );
 			mi = sender as MenuItem;
 			if ( mi . Name == "Filter1" )
-				DoFilter( 1); 
+				DoFilter ( 1 );
 			else if ( mi . Name == "Filter2" )
 				DoFilter ( 2 );
 			else if ( mi . Name == "Filter3" )
@@ -764,15 +829,15 @@ namespace WPFPages . Views
 			else if ( mi . Name == "FilterReset" )
 				DoFilter ( 0 );
 			// Try to reset selection 
-			int rec =Utils . FindMatchingRecord (Custno, Bankno, this.DetGrid, "DETAILS" );
+			int rec = Utils . FindMatchingRecord ( Custno, Bankno, this . DetGrid, "DETAILS" );
 			this . DetGrid . SelectedIndex = rec;
 			Utils . SetUpGridSelection ( this . DetGrid, rec != -1 ? rec : 0 );
 			// force it to top of data grid
-			Utils.SetSelectedItemFirstRow ( this . DetGrid, this . DetGrid . SelectedItem );
+			Utils . SetSelectedItemFirstRow ( this . DetGrid, this . DetGrid . SelectedItem );
 
-			this . DetGrid . UpdateLayout (  );
+			this . DetGrid . UpdateLayout ( );
 		}
-		private void DoFilter( int filterValue)
+		private void DoFilter ( int filterValue )
 		{
 			// Test filter to try out my new Db ColloectionView stuff
 			if ( filterValue == 0 && IsFiltered )
@@ -788,7 +853,7 @@ namespace WPFPages . Views
 			ICollection<DetailsViewModel> t = CollectionViewSource . GetDefaultView ( temp ) as ICollection<DetailsViewModel>;
 			this . DetGrid . ItemsSource = temp;
 			this . DetGrid . Refresh ( );
-//			Filter1 . Header = "Reset to All records";
+			//			Filter1 . Header = "Reset to All records";
 			IsFiltered = true;
 		}
 		//private void Filter2_Click ( object sender, RoutedEventArgs e )
@@ -866,30 +931,131 @@ namespace WPFPages . Views
 			SaveBttn . IsEnabled = true;
 		}
 
-		private void DetGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
-		{
-			//// Data has been changed in one of our rows.
-			//DetailsViewModel dvm = sender as DetailsViewModel;
-			//dvm = e . Row.Item as DetailsViewModel;
-			//DataGridColumn dgc = e . Column;
-			//SQLHandlers sqlh = new SQLHandlers ( );
-			//sqlh . UpdateDbRowAsync ( "DETAILS", dvm );
-			//SendDataChanged ( null, this . DetGrid, "DETAILS" );
-			IsEditing = false;
-
-
-		}
-
+		#region DATA EDIT CONTROL METHODS
+		/// <summary>
+		///  DATA EDIT CONTROL METHODS
+		/// 
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void DetGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
 		{
 			IsEditing = true;
+			// Save  the current data for checking later on when we exit editing
+			// but first, check to see if we already have one being saved !
+			if ( bvmCurrent == null )
+			{
+				// Nope, so create a new one and get on with the edit process
+				DetailsViewModel tmp = new DetailsViewModel ( );
+				tmp = e . Row . Item as DetailsViewModel;
+				// This sets up a new bvmControl object if needed, else we  get a null back
+				bvmCurrent = CellEditControl . DetGrid_EditStart ( bvmCurrent, e );
+			}
 		}
 
-		private void cdate_PreviewKeyUp ( object sender, KeyEventArgs e )
+		/// <summary>
+		/// does nothing at all because it is called whenver any single cell is exited
+		///     and not just when ENTER is hit to save any changes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private async void DetGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
 		{
+			if ( bvmCurrent == null ) return;
+
+			// Has Data been changed in one of our rows. ?
+			DetailsViewModel dvm = this . DetGrid . SelectedItem as DetailsViewModel;
+			dvm = e . Row . Item as DetailsViewModel;
+
+			// The sequence of these next 2 blocks is critical !!!
+			//if we get here, make sure we have been NOT been told to EsCAPE out
+			//	this is a DataGridEditAction dgea
+			if ( e . EditAction == DataGridEditAction . Cancel )
+			{
+				// Either ENTER or Escape was hit, so data has been saved, or we need ot refresh the row if cancelled
+				// So we go ahead and reload our grid with new data
+				// and this will notify any other open viewers as well
+				bvmCurrent = null;
+				await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+				return;
+			}
+
+			if ( CellEditControl . DetGrid_EditEnding ( bvmCurrent, DetGrid, e ) == false )
+			{       // No change made
+				return;
+			}
 
 		}
 
+		/// <summary>
+		/// Compares 2 rows of BANKACCOUNT or DETAILS data to see if there are any changes
+		/// </summary>
+		/// <param name="ss"></param>
+		/// <returns></returns>
+		private bool CompareDataContent ( DetailsViewModel ss )
+		{
+			if ( ss . CustNo != bvmCurrent . _CustNo . ToString ( ) )
+				return false;
+			if ( ss . BankNo != bvmCurrent . _BankNo . ToString ( ) )
+				return false;
+			if ( ss . AcType != bvmCurrent . _AcType )
+				return false;
+			if ( ss . IntRate != bvmCurrent . _IntRate )
+				return false;
+			if ( ss . Balance != bvmCurrent . _Balance )
+				return false;
+			if ( ss . ODate != bvmCurrent . _ODate )
+				return false;
+			if ( ss . CDate != bvmCurrent . _CDate )
+				return false;
+			return true;
+		}
+
+		/// <summary>
+		/// Called when an EDIT ends. This occurs whenever a field is exited, even if ENTER has NOT been pressed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
+		{
+			// Save changes and tell other viewers about the change
+			// if our saved row is null, it has already been checked in Cell_EndDedit processing
+			// and found no changes have been made, so we can abort this update
+			if ( bvmCurrent == null )
+			{
+				this . DetGrid . Refresh ( );
+				return;
+			}
+			// This is now confirmed as being CHANGED DATA in the current row
+			// So we proceed and update SQL Db's' and notify all open viewers as well
+			int currow = this . DetGrid . SelectedIndex;
+			// Save current row so we can reposition correctly at end of the entire refresh process					
+			DetailsViewModel ss = new DetailsViewModel ( );
+			ss = this . DetGrid . SelectedItem as DetailsViewModel;
+			// This is the NEW DATA from the current row
+			SQLHandlers sqlh = new SQLHandlers ( );
+			sqlh . UpdateDbRowAsync ( "DETAILS", ss, this . DetGrid . SelectedIndex );
+
+			this . DetGrid . SelectedIndex = currow;
+			this . DetGrid . SelectedItem = currow;
+			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
+			// Notify EditDb to upgrade its grid
+			if ( Flags . CurrentEditDbViewer != null )
+				Flags . CurrentEditDbViewer . UpdateGrid ( "DETAILS" );
+			TriggeredDataUpdate = true;
+			// ***********  DEFINITE WIN  **********
+			// This DOES trigger a notification to SQLDBVIEWER for sure !!!   14/5/21
+			EventControl . TriggerViewerDataUpdated ( DetViewerDbcollection,
+				new LoadedEventArgs
+				{
+					CallerType = "DETAILSDBVIEW",
+					CallerDb = "DETAILS",
+					DataSource = DetViewerDbcollection,
+					RowCount = this . DetGrid . SelectedIndex
+				} );
+		}
+
+		#endregion DATA EDIT CONTROL METHODS
 
 		#region KEYHANDLER for EDIT fields
 		// These let us tab thtorugh the editfields back and forward correctly
@@ -946,13 +1112,155 @@ namespace WPFPages . Views
 				{
 					e . Handled = true;
 					cdate . Focus ( );
-//					Debug . WriteLine ( $"KEYDOWN Shift turned OFF" );
+					//					Debug . WriteLine ( $"KEYDOWN Shift turned OFF" );
 					return;
 				}
 			}
 		}
 
 		#endregion KEYHANDLER for EDIT fields
+
+		#region HANDLERS for linkage checkboxes, inluding Thread montior
+		static bool IsLinkActive ( bool ParentLinkTo )
+		{
+			return Flags . SqlDetViewer != null && ParentLinkTo == false;
+		}
+
+		static bool IsMultiLinkActive ( bool MultiParentLinkTo )
+		{
+			if ( Flags . SqlMultiViewer == null )
+				return false;
+			else
+				return true;
+		}
+
+		private void LinkToMulti_Click ( object sender, RoutedEventArgs e )
+		{
+			bool reslt = false;
+
+			if ( IsMultiLinkActive ( reslt ) == false )
+			{
+				LinkToMulti . IsEnabled = false;
+				LinkToMulti . IsChecked = false;
+				MultiParentViewer = null;
+				LinktoMultiParent = false;
+			}
+			else
+			{
+				LinktoMultiParent = !LinktoMultiParent;
+				if ( LinktoMultiParent )
+				{
+					LinkToMulti . IsChecked = true;
+					LinktoMultiParent = true;
+				}
+				else
+				{
+					LinkToMulti . IsChecked = false;
+					LinktoMultiParent = false;
+				}
+			}
+		}
+		/// <summary>
+		/// Runs as a thread to monitor SqlDbviewer & Multiviewer availabilty
+		/// and resets checkboxes as necessary  - thread delay is TWO seconds
+		/// </summary>
+		private void checkLinkages ( )
+		{
+			while ( true )
+			{
+				int AllLinks = 0;
+				Thread . Sleep ( 2000 );
+
+				bool reslt = false;
+				if ( IsLinkActive ( reslt ) )
+				{
+					AllLinks++;
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "LINKTOPARENT", true );
+					} );
+				}
+				else
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "LINKTOPARENT", false );
+					} );
+				}
+
+				if ( IsMultiLinkActive ( reslt ) == false )
+				{
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "MULTILINKTOPARENT", false );
+					} );
+				}
+				else
+				{
+					AllLinks++;
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "MULTILINKTOPARENT", true );
+					} );
+				}
+				if ( AllLinks >= 1 )
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "ALLLINKS", true );
+					} );
+				else
+					Application . Current . Dispatcher . Invoke ( ( ) =>
+					{
+						ResetLinkages ( "ALLLINKS", false );
+					} );
+
+			}
+		}
+		private void ResetLinkages ( string linktype, bool value )
+		{
+			if ( linktype == "LINKTOPARENT" )
+			{
+				LinkToParent . IsEnabled = value;
+				if ( value )
+					SqlParentViewer = Flags . SqlDetViewer;
+				else
+				{
+					LinktoParents = false;
+					SqlParentViewer = null;
+				}
+			}
+			if ( linktype == "MULTILINKTOPARENT" )
+			{
+				if ( value )
+				{
+					LinkToMulti . IsEnabled = value;
+					MultiParentViewer = Flags . SqlMultiViewer;
+				}
+				else
+				{
+					LinkToMulti . IsEnabled = false;
+					LinkToMulti . IsChecked = false;
+					MultiParentViewer = null;
+					LinktoMultiParent = false;
+				}
+			}
+			if ( linktype == "ALLLINKS" && value )
+				LinkRecords . IsEnabled = true;
+			else
+				LinkRecords . IsEnabled = false;
+			#endregion HANDLERS for linkage checkboxes, inluding Thread montior
+
+		}
+		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
+		{
+
+		}
+
+		private void Minimize_click ( object sender, RoutedEventArgs e )
+		{
+			this . WindowState = WindowState . Normal;
+		}
+
 	}
 }
 

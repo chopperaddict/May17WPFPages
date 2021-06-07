@@ -22,6 +22,7 @@ namespace WPFPages
 
 		public static DataGrid SqlBankGrid;// = null;
 		public static SqlDbViewer SqlBankViewer;// = null;
+		public static MultiViewer SqlMultiViewer;// = null;
 		public static DataGrid CurrentEditDbViewerBankGrid;// = null;
 
 		// Pointers to our data collections
@@ -82,8 +83,6 @@ namespace WPFPages
 		public static DataGrid SqlDetGrid = null;
 		public static SqlDbViewer SqlDetViewer = null;
 		public static DataGrid CurrentEditDbViewerDetailsGrid = null;
-
-		public static MultiViewer SqlMultiViewer = null;
 
 		public static List<DataGrid> CurrentEditDbViewerBankGridList;
 		public static List<DataGrid> CurrentEditDbViewerCustomerGridList;
@@ -558,14 +557,14 @@ namespace WPFPages
 			dvm = SqlDetGrid?.SelectedItem as DetailsViewModel;
 			Console . WriteLine ( $"SqlDetGrid		: {SqlDetGrid?.Items . Count} : {SqlDetGrid?.SelectedIndex}" );
 			Console . WriteLine ($"				: CustNo = {dvm ?. CustNo}, BankNo = {dvm? . BankNo}" ); 
-			bvm = SqlMultiViewer?.BankGrid?.SelectedItem as BankAccountViewModel;
-			Console . WriteLine ( $"Multi.BankGrid	: {SqlMultiViewer?.BankGrid . Items . Count} : {SqlMultiViewer?.BankGrid?.SelectedIndex}" );
+			bvm = MultiViewer?.BankGrid?.SelectedItem as BankAccountViewModel;
+			Console . WriteLine ( $"Multi.BankGrid	: {MultiViewer?.BankGrid . Items . Count} : {MultiViewer?.BankGrid?.SelectedIndex}" );
 			Console . WriteLine ($"				: CustNo = {bvm ?. CustNo}, BankNo = {bvm? . BankNo}" ); 
-			cvm = SqlMultiViewer?.CustomerGrid?.SelectedItem as CustomerViewModel;
-			Console . WriteLine ( $"Multi. CustGrid	: {SqlMultiViewer?.CustomerGrid . Items . Count} : {SqlMultiViewer?.CustomerGrid?.SelectedIndex}" );
+			cvm = MultiViewer?.CustomerGrid?.SelectedItem as CustomerViewModel;
+			Console . WriteLine ( $"Multi. CustGrid	: {MultiViewer?.CustomerGrid . Items . Count} : {MultiViewer?.CustomerGrid?.SelectedIndex}" );
 			Console . WriteLine ($"				: CustNo = {cvm ?. CustNo}, BankNo = {cvm? . BankNo}" ); 
-			dvm = SqlMultiViewer?.DetailsGrid?.SelectedItem as DetailsViewModel;
-			Console . WriteLine ( $"Multi. DetGrid		: {SqlMultiViewer?.DetailsGrid . Items . Count} : {SqlMultiViewer?.DetailsGrid . SelectedIndex}" );
+			dvm = MultiViewer?.DetailsGrid?.SelectedItem as DetailsViewModel;
+			Console . WriteLine ( $"Multi. DetGrid		: {MultiViewer?.DetailsGrid . Items . Count} : {MultiViewer?.DetailsGrid . SelectedIndex}" );
 			Console . WriteLine ($"				: CustNo = {dvm? . CustNo}, BankNo = {dvm? . BankNo}" );
 		}
 

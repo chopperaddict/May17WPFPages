@@ -54,31 +54,20 @@ namespace WPFPages . Views
 				}
 				else
 				{
-					//					Debug . WriteLine ( $"\n ***** Loading BankAccount Data from disk (using Abbreviated Await Control system)*****\n" );
-					//CustCollection c = new CustCollection();
-					//c . LoadCustDataSql ( );
-
-					//if ( dtCust . Rows . Count > 0 )
-					//	Custinternalcollection = LoadCustomerTest ( );
 					// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
 					Flags . CustCollection = Custinternalcollection;
 					if ( Flags . IsMultiMode == false )
 					{
 						// Finally fill and return The global Dataset
 						SelectViewer ( ViewerType, Custinternalcollection );
-						return null;// Custinternalcollection;
+						return null;
 					}
 					else
 					{
 						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
-						return null;// Custinternalcollection;
+						return null;
 					}
 				}
-
-
-				//Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW Master Customer Collection ..................." );
-				//await ProcessRequest ( ViewerType );
-
 				if ( Flags . IsMultiMode == false )
 				{
 					CustCollection db = new CustCollection ( );
@@ -447,6 +436,130 @@ namespace WPFPages . Views
 			{ Console . WriteLine ( $"CUSTOMER Update FAILED : {ex . Message}, {ex . Data}" ); }
 			return true;
 		}
-	}
+
+	#region EXPORT FUNCTIONS TO READ/WRITE CSV files
+		public static DataTable LoadCustExportData ( )
+		{
+			DataTable dt = new DataTable ( );
+			SqlConnection con;
+			string ConString = "";
+			string commandline = "";
+			ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+			Debug . WriteLine ( $"Making new SQL connection in CUSTCOLLECTION" );
+			con = new SqlConnection ( ConString );
+			try
+			{
+				Debug . WriteLine ( $"Using new SQL connection in CUSTCOLLECTION" );
+				using ( con )
+				{
+					if ( Flags . IsMultiMode )
+					{
+					//	// Create a valid Query Command string including any active sort ordering
+					//	commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
+					//		+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
+					//		+ $" GROUP BY CUSTNO"
+					//		+ $" HAVING COUNT(*) > 1) ORDER BY ";
+					//	commandline = Utils . GetDataSortOrder ( commandline );
+					//}
+					//else if ( Flags . FilterCommand != "" )
+					//{
+					//	commandline = Flags . FilterCommand;
+					}
+					else
+					{
+						// Create a valid Query Command string including any active sort ordering
+						commandline = "Select * from Customer  order by ";
+						commandline = Utils . GetDataSortOrder ( commandline );
+					}
+					SqlCommand cmd = new SqlCommand ( commandline, con );
+					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+					sda . Fill ( dt );
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"DETAILS : ERROR in LoadCustDataSql(): Failed to load Customer Details - {ex . Message}, {ex . Data}" );
+				MessageBox . Show ( $"DETAILS : ERROR in LoadCustDataSql(): Failed to load Customer Details - {ex . Message}, {ex . Data}" );
+			}
+			finally
+			{con . Close ( );}
+			return dt;
+		}
+
+		public static void ExportCustData ( string path, string dbType )
+		{
+			int count = 0;
+			string output = "";
+
+			// Read data in from disk first as a DataTable dt
+			DataSet ds = new DataSet ( );
+
+			DataTable dt = new DataTable ( );
+			dt = LoadCustExportData ( );
+			ds . Tables . Add ( dt );
+			//£££££££££££££££££££££££££££££££££££££££££££
+			// This works just fine with no external binding.
+			// The data is  now accessible in ds.Tables[0].Rows
+			// NB DATA ACCESS FORMAT IS [ $"{objRow["CustNo"]}"  ]
+			//££££££££££££££££££££££££££££££££££££££££££££
+			Console . WriteLine ( $"Writing results of SQL enquiry to {path} ..." );
+			foreach ( DataRow objRow in ds . Tables [ 0 ] . Rows )
+			{
+				output += ParseDbRow ( "CUSTOMER", objRow );
+				count++;
+			}
+			System . IO . File . WriteAllText ( path, output );
+			Console . WriteLine ( $"Export of {count - 1} records from the [ {dbType} ] Db in CSV format has been completed successfully." );
+
+		}
+
+		//===============================================================================
+		public static string ParseDbRow ( string dbType, DataRow objRow )
+		//===============================================================================
+
+		{
+			string tmp = "", s = "";
+			string [ ] dob, odat, cdat, revstr;
+			if( dbType == "CUSTOMER" )
+			{
+				char [ ] ch = { ' ' };
+				char [ ] ch2 = { '/' };
+
+				// Do the Dob
+				s = $"{objRow [ "Dob" ] . ToString ( )}', '";
+				dob = s . Split ( ch );
+				string doB = dob [ 0 ];
+				// now reverse it  to YYYY/MM/DD format as this is what SQL understands
+				revstr = doB . Split ( ch2 );
+				doB= revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
+
+				s = $"{objRow [ "Odate" ] . ToString ( )}', '";
+				odat = s . Split ( ch );
+				string odate = odat [ 0 ];
+				// now reverse it  to YYYY/MM/DD format as this is what SQL understands
+				revstr = odate . Split ( ch2 );
+				odate = revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
+
+				// thats  the Open date handled - now do close data
+				s = $"{objRow [ "cDate" ] . ToString ( )}', '";
+				cdat = s . Split ( ch );   // split date on '/'
+				string cdate = cdat [ 0 ];
+				// now reverse it  to YYYY/MM/DD format as this is what SQL understands
+				revstr = cdate . Split ( ch2 );
+				cdate = revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
+				string acTypestr = objRow [ "AcType" ] . ToString ( ) . Trim ( );
+
+				tmp = $"'{objRow [ "Id" ] . ToString ( )}', '" + $"{objRow [ "BankNo" ] . ToString ( )}', '" + $"'{objRow [ "CustNo" ] . ToString ( )}', '"
+					+ $"{acTypestr}', '" + $"{objRow [ "Fname" ] . ToString ( )}', '"
+					+ $"{objRow [ "Lname" ] . ToString ( )}', '" + $"{objRow [ "Addr1" ] . ToString ( )}', '" + $"{objRow [ "Addr2" ] . ToString ( )}', '"
+					+ $"{objRow [ "Town" ] . ToString ( )}', '" + $"{objRow [ "County" ] . ToString ( )}', '" + $"{objRow [ "Pcode" ] . ToString ( )}', '"
+					+ $"{objRow [ "Phone" ] . ToString ( )}', '" + $"{objRow [ "Mobile" ] . ToString ( )}', '" + $"{doB}', '"
+					+ $"{odate}', '" + $"{cdate}'\r\n";
+			}
+			return tmp;
+		}
+		#endregion EXPORT FUNCTIONS TO READ/WRITE CSV files
+
+		}
 }
 

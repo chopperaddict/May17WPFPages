@@ -892,10 +892,10 @@ namespace WPFPages . Views
 
 		private void MultiViewer_Click ( object sender, RoutedEventArgs e )
 		{
-			if ( Flags . MultiViewer != null )
+			if ( Flags . SqlMultiViewer != null )
 			{
-				Flags . MultiViewer . BringIntoView ( );
-				Flags . MultiViewer . Focus ( );
+				Flags . SqlMultiViewer . BringIntoView ( );
+				Flags . SqlMultiViewer . Focus ( );
 				return;
 			}
 

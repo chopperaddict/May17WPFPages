@@ -116,5 +116,113 @@ namespace WPFPages.Properties {
                     "SQLLOCALDB_IAN1_MDFConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string DetailsDbView_dindex {
+            get {
+                return ((string)(this["DetailsDbView_dindex"]));
+            }
+            set {
+                this["DetailsDbView_dindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string Multi_bindex {
+            get {
+                return ((string)(this["Multi_bindex"]));
+            }
+            set {
+                this["Multi_bindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string Multi_cindex {
+            get {
+                return ((string)(this["Multi_cindex"]));
+            }
+            set {
+                this["Multi_cindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string Multi_dindex {
+            get {
+                return ((string)(this["Multi_dindex"]));
+            }
+            set {
+                this["Multi_dindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string BankDbView_bindex {
+            get {
+                return ((string)(this["BankDbView_bindex"]));
+            }
+            set {
+                this["BankDbView_bindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string CustDbView_cindex {
+            get {
+                return ((string)(this["CustDbView_cindex"]));
+            }
+            set {
+                this["CustDbView_cindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string SqlDbViewer_bindex {
+            get {
+                return ((string)(this["SqlDbViewer_bindex"]));
+            }
+            set {
+                this["SqlDbViewer_bindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string SqlDbViewer_cindex {
+            get {
+                return ((string)(this["SqlDbViewer_cindex"]));
+            }
+            set {
+                this["SqlDbViewer_cindex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string SqlDbViewer_dindex {
+            get {
+                return ((string)(this["SqlDbViewer_dindex"]));
+            }
+            set {
+                this["SqlDbViewer_dindex"] = value;
+            }
+        }
     }
 }

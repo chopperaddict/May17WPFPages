@@ -20,16 +20,21 @@ namespace WPFPages . Views
 	public partial class CustDbView : Window
 	{
 		public static CustCollection CustDbViewcollection = null;// = new CustCollection ( );//. CustViewerDbcollection;
-		// Get our personal Collection view of the Db
+									 // Get our personal Collection view of the Db
 		public ICollectionView CustviewerView { get; set; }
+
+		// Crucial structure for use when a Grid row is being edited
+		private static CustRowData cvmCurrent = null;
 
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private bool Triggered = false;
-		private bool LinktoParent = false;
+		private static bool LinktoParent = false;
+		private static bool LinktoMultiParent = false;
 		private bool LoadingDbData = false;
 		private bool IsEditing { get; set; }
 		private bool keyshifted { get; set; }
+		public static int cindex { get; set; }
 
 		private string _bankno = "";
 		private string _custno = "";
@@ -39,6 +44,7 @@ namespace WPFPages . Views
 		private string _cdate = "";
 		private SqlDbViewer SqlParentViewer;
 		private MultiViewer MultiParentViewer;
+		private Thread t1;
 
 		public CustDbView ( )
 		{
@@ -63,6 +69,10 @@ namespace WPFPages . Views
 			this . Refresh ( );
 			Startup = true;
 
+			string ndx = ( string ) Properties . Settings . Default [ "CustDbView_cindex" ];
+			cindex = int . Parse ( ndx );
+			this . CustGrid . SelectedIndex = cindex < 0 ? 0 : cindex;
+
 			this . MouseDown += delegate { DoDragMove ( ); };
 			// An EditDb has changed the current index
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
@@ -80,85 +90,18 @@ namespace WPFPages . Views
 			bool tmp = Flags . LinkviewerRecords;
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
+
 			Flags . CustDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			this . Focus ( );
-			// Reset linkage setting
-			Flags . LinkviewerRecords = tmp;
-			LinktoParent = false;
-			if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
-			{
-				MultiParentViewer = null;
-				if ( sender . GetType ( ) == typeof ( SqlDbViewer ) )
-				{
-					SqlParentViewer = sender as SqlDbViewer;
-				}
-				else
-				{
-					if ( Flags . SqlCustViewer != null )
-						SqlParentViewer = Flags . SqlCustViewer;
-					else
-					{
-						LinktoParent = false;
-						LinkToParent . IsEnabled = false;
-					}
-				}
-			}
-			else if ( sender . GetType ( ) == typeof ( MultiViewer ) )
-			{
-				SqlParentViewer = null;
-				if ( sender . GetType ( ) == typeof ( MultiViewer ) )
-				{
+			// start our linkage monitor
+			t1 = new Thread ( checkLinkages );
+			t1 . IsBackground = true;
+			t1 . Priority = ThreadPriority . Lowest;
+			t1 . Start ( );
 
-					MultiParentViewer = sender as MultiViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-				}
-				else
-				{
-					if ( Flags . MultiViewer != null )
-					{
-						MultiParentViewer = Flags . MultiViewer;
-						//						LinktoParent = true;
-						LinkToParent . IsEnabled = true;
-					}
-					else
-					{
-						//						LinktoParent = false;
-						LinkToParent . IsEnabled = false;
-					}
-				}
-			}
-			else
-			{
-				MultiParentViewer = null;
-				SqlParentViewer = null;
-				LinktoParent = false;
-				LinkToParent . IsEnabled = false;
-
-				if ( Flags . SqlCustViewer != null )
-				{
-					SqlParentViewer = Flags . SqlCustViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-					LinkToParent . Content = "Link to \nSqlViewer";
-				}
-				else if ( Flags . MultiViewer != null )
-				{
-					MultiParentViewer = Flags . MultiViewer;
-					//					LinktoParent = true;
-					LinkToParent . IsEnabled = true;
-					LinkToParent . Content = "Link to \nMultiViewer";
-				}
-				else
-				{
-					//					LinktoParent = false;
-					LinkToParent . IsEnabled = false;
-				}
-			}
-			this . CustGrid . SelectedIndex = 0;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			Startup = false;
 		}
@@ -174,6 +117,7 @@ namespace WPFPages . Views
 				return;
 			}
 			this . CustGrid . SelectedIndex = e . Row;
+			cindex = e . Row;
 			this . CustGrid . Refresh ( );
 			Triggered = false;
 		}
@@ -201,11 +145,64 @@ namespace WPFPages . Views
 		}
 		#endregion Startup/ Closedown
 
+
+		private void CustGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		{
+			IsEditing = true;
+			// Save  the current data for checking later on when we exit editing
+			// but first, check to see if we already have one being saved !
+			if ( cvmCurrent == null )
+			{
+				// Nope, so create a new one and get on with the edit process
+				CustomerViewModel tmp = new CustomerViewModel ( );
+				tmp = e . Row . Item as CustomerViewModel;
+				// This sets up a new bvmControl object if needed, else we  get a null back
+				cvmCurrent = CellEditControl . CustGrid_EditStart ( cvmCurrent, e );
+			}
+			IsEditing = true;
+		}
+		private async void CustGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			if ( cvmCurrent == null ) return;
+
+			// Has Data been changed in one of our rows. ?
+			CustomerViewModel cvm = this . CustGrid . SelectedItem as CustomerViewModel;
+			cvm = e . Row . Item as CustomerViewModel;
+
+			// The sequence of these next 2 blocks is critical !!!
+			//if we get here, make sure we have been NOT been told to EsCAPE out
+			//	this is a DataGridEditAction dgea
+			if ( e . EditAction == DataGridEditAction . Cancel )
+			{
+				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
+				// and this will notify any other open viewers as well
+				cvmCurrent = null;
+				await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 2, true );
+				return;
+			}
+
+			if ( CellEditControl . CustGrid_EditEnding ( cvmCurrent, CustGrid, e ) == false )
+			{       // No change made
+				//	cvmCurrent = null;
+				return;
+			}
+			IsEditing = false;
+
+		}
 		private async void ViewerGrid_RowEditEnding ( object sender, System . Windows . Controls . DataGridRowEditEndingEventArgs e )
 		{
 			// Save changes and tell other viewers about the change
 			int currow = 0;
 			currow = this . CustGrid . SelectedIndex;
+			cindex = currow;
+			// Save changes and tell other viewers about the change
+			// if our saved row is null, it has already been checked in Cell_EndDedit processing
+			// and found no changes have been made, so we can abort this update
+			if ( cvmCurrent == null )
+			{
+				this . CustGrid . Refresh ( );
+				return;
+			}
 			// Save current row so we can reposition correctly at end of the entire refresh process
 			//			Flags . SqlCustCurrentIndex = currow;
 			CustomerViewModel ss = new CustomerViewModel ( );
@@ -248,10 +245,13 @@ namespace WPFPages . Views
 			CustDbViewcollection = e . DataSource as CustCollection;
 			CustviewerView . Refresh ( );
 			this . CustGrid . ItemsSource = CustviewerView;
-			this . CustGrid . SelectedIndex = 0;
-			this . CustGrid . SelectedItem = 0;
-			this . CustGrid . CurrentItem = 0;
+			this . CustGrid . SelectedIndex = cindex;
+			this . CustGrid . SelectedItem = cindex;
+			this . CustGrid . CurrentItem = cindex;
 			this . CustGrid . UpdateLayout ( );
+			Utils . SetUpGridSelection ( CustGrid, cindex );
+			bool reslt = false;
+
 			Thread . Sleep ( 250 );
 			DataFields . Refresh ( );
 			Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
@@ -284,6 +284,7 @@ namespace WPFPages . Views
 				SaveBttn . IsEnabled = false;
 				IsDirty = false;
 			}
+			t1 . Abort ( null );
 			Flags . CustDbEditor = null;
 			EventControl . EditIndexChanged -= EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index
@@ -292,8 +293,7 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl . CustDataLoaded -= EventControl_CustDataLoaded;
-
-
+			Utils . SaveProperty ( "CustDbView_cindex", cindex . ToString ( ) );
 		}
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -307,6 +307,7 @@ namespace WPFPages . Views
 			if ( this . CustGrid . SelectedItem == null )
 				return;
 			Utils . SetUpGridSelection ( this . CustGrid, this . CustGrid . SelectedIndex );
+			cindex = this . CustGrid . SelectedIndex;
 			Startup = true;
 			DataFields . DataContext = this . CustGrid . SelectedItem;
 			if ( Flags . LinkviewerRecords && Triggered == false )
@@ -469,70 +470,17 @@ namespace WPFPages . Views
 			SaveButton ( sender, e );
 		}
 
-		private async void MultiAccts_Click ( object sender, RoutedEventArgs e )
-		{
-			// Filter data to show ONLY Custoimers with multiple Cust accounts
 
-			if ( MultiAccounts . Content != "Show All" )
-			{
-				int currsel = this . CustGrid . SelectedIndex;
-				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
-				if ( bgr == null ) return;
-
-				Flags . IsMultiMode = true;
-
-				CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
-				this . CustGrid . ItemsSource = null;
-				this . CustGrid . ItemsSource = CustDbViewcollection;
-				this . CustGrid . Refresh ( );
-
-				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
-				MultiAccounts . Template = tmp;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
-				MultiAccounts . Background = br;
-				MultiAccounts . Content = "Show All";
-				Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
-
-				// Get Custno from ACTIVE gridso we can find it in other grids
-				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
-				this . CustGrid . SelectedIndex = currsel;
-				if ( rec >= 0 )
-					this . CustGrid . SelectedIndex = rec;
-				else
-					this . CustGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . CustGrid, this . CustGrid . SelectedIndex );
-			}
-			else
-			{
-				Flags . IsMultiMode = false;
-				CustomerViewModel bgr = this . CustGrid . SelectedItem as CustomerViewModel;
-				CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
-
-				// Just reset our iremssource to man Db
-				this . CustGrid . ItemsSource = null;
-				this . CustGrid . ItemsSource = CustDbViewcollection;
-				this . CustGrid . Refresh ( );
-
-				ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateYellow" );
-				MultiAccounts . Template = tmp;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBrushYellow" );
-				MultiAccounts . Background = br;
-				MultiAccounts . Content = "Multi Accounts";
-				Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
-
-				MultiViewer mv = new MultiViewer ( );
-				int rec = Utils . FindMatchingRecord ( bgr . CustNo, bgr . BankNo, this . CustGrid, "CUSTOMER" );
-				this . CustGrid . SelectedIndex = 0;
-				if ( rec >= 0 )
-					this . CustGrid . SelectedIndex = rec;
-				else
-					this . CustGrid . SelectedIndex = 0;
-				Utils . ScrollRecordIntoView ( this . CustGrid, this . CustGrid . SelectedIndex );
-			}
-		}
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
+			bool reslt = false;
+			if ( IsLinkActive ( reslt ) == false )
+			{
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+				SqlParentViewer = null;
+				LinkRecords . IsChecked = false;
+			}
 			// force viewers to change records in line with each other
 			if ( LinkRecords . IsChecked == true )
 				Flags . LinkviewerRecords = true;
@@ -699,7 +647,16 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
-			LinktoParent = !LinktoParent;
+			bool reslt = false;
+			if ( IsLinkActive ( reslt ) == false )
+			{
+				LinkToParent . IsEnabled = false;
+				LinkToParent . IsChecked = false;
+				SqlParentViewer = null;
+				LinkRecords . IsChecked = false;
+			}
+			else
+				LinktoParent = !LinktoParent;
 		}
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
 		{
@@ -707,30 +664,6 @@ namespace WPFPages . Views
 			SaveBttn . IsEnabled = true;
 		}
 
-		private void CustGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
-		{
-			//// Data has been changed in one of our rows.
-			//CustomerViewModel cvm = sender as CustomerViewModel;
-			//cvm = e . Row . Item as CustomerViewModel;
-			//SQLHandlers sqlh = new SQLHandlers ( );
-			//sqlh . UpdateDbRowAsync ( "CUSTOMER", cvm );
-			//EventControl . TriggerViewerDataUpdated ( CustDbViewcollection,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerType = "CUSTDBVIEW",
-			//		CallerDb = "CUSTOMER",
-			//		DataSource = CustDbViewcollection,
-			//		RowCount = this . CustGrid . SelectedIndex
-			//	} );
-			//Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
-			IsEditing = false;
-
-		}
-
-		private void CustGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
-		{
-			IsEditing = true;
-		}
 
 		#region KEYHANDLER for EDIT fields
 		// These let us tab thtorugh the editfields back and forward correctly
@@ -805,6 +738,144 @@ namespace WPFPages . Views
 		}
 
 		#endregion KEYHANDLER for EDIT fields
+
+		#region HANDLERS for linkage checkboxes, inluding Thread montior
+		static bool IsLinkActive ( bool ParentLinkTo )
+		{
+			return Flags . SqlCustViewer != null && ParentLinkTo == false;
+		}
+
+		static bool IsMultiLinkActive ( bool MultiParentLinkTo )
+		{
+			if ( Flags . SqlMultiViewer == null )
+				return false;
+			else
+				return true;
+		}
+
+		private void LinkToMulti_Click ( object sender, RoutedEventArgs e )
+		{
+			bool reslt = false;
+
+			if ( IsMultiLinkActive ( reslt ) == false )
+			{
+				LinkToMulti . IsEnabled = false;
+				LinkToMulti . IsChecked = false;
+				MultiParentViewer = null;
+				LinktoMultiParent = false;
+			}
+			else
+			{
+				LinktoMultiParent = !LinktoMultiParent;
+				if ( LinktoMultiParent )
+				{
+					LinkToMulti . IsChecked = true;
+					LinktoMultiParent = true;
+				}
+				else
+				{
+					LinkToMulti . IsChecked = false;
+					LinktoMultiParent = false;
+				}
+			}
+		}
+		/// <summary>
+		/// Runs as a thread to monitor SqlDbviewer & Multiviewer availabilty
+		/// and resets checkboxes as necessary  - thread delay is TWO seconds
+		/// </summary>
+		private void checkLinkages ( )
+		{
+			while ( true )
+			{
+				try
+				{
+					int AllLinks = 0;
+					Thread . Sleep ( 2000 );
+
+					bool reslt = false;
+					if ( IsLinkActive ( reslt ) )
+					{
+						AllLinks++;
+						Application . Current . Dispatcher . Invoke ( ( ) =>
+						{
+							ResetLinkages ( "LINKTOPARENT", true );
+						} );
+					}
+					else
+					{
+						Application . Current . Dispatcher . Invoke ( ( ) =>
+						{
+							ResetLinkages ( "LINKTOPARENT", false );
+						} );
+					}
+
+					if ( IsMultiLinkActive ( reslt ) == false )
+					{
+						Application . Current . Dispatcher . Invoke ( ( ) =>
+						{
+							ResetLinkages ( "MULTILINKTOPARENT", false );
+						} );
+					}
+					else
+					{
+						AllLinks++;
+						Application . Current . Dispatcher . Invoke ( ( ) =>
+						{
+							ResetLinkages ( "MULTILINKTOPARENT", true );
+						} );
+					}
+					if ( AllLinks >= 1 )
+						Application . Current . Dispatcher . Invoke ( ( ) =>
+						{
+							ResetLinkages ( "ALLLINKS", true );
+						} );
+					else
+						Application . Current . Dispatcher . Invoke ( ( ) =>
+						{
+							ResetLinkages ( "ALLLINKS", false );
+						} );
+				}
+				catch (Exception ex)
+				{
+					Debug . WriteLine ("Auto link sensor crashed....");
+				}
+			}
+		}
+		private void ResetLinkages ( string linktype, bool value )
+		{
+			if ( linktype == "LINKTOPARENT" )
+			{
+				LinkToParent . IsEnabled = value;
+				if ( value )
+					SqlParentViewer = Flags . SqlCustViewer;
+				else
+				{
+					LinktoParent = false;
+					SqlParentViewer = null;
+				}
+			}
+			if ( linktype == "MULTILINKTOPARENT" )
+			{
+				if ( value )
+				{
+					LinkToMulti . IsEnabled = value;
+					MultiParentViewer = Flags . SqlMultiViewer;
+				}
+				else
+				{
+					LinkToMulti . IsEnabled = false;
+					LinkToMulti . IsChecked = false;
+					MultiParentViewer = null;
+					LinktoMultiParent = false;
+				}
+			}
+			if ( linktype == "ALLLINKS" && value )
+				LinkRecords . IsEnabled = true;
+			else
+				LinkRecords . IsEnabled = false;
+		}
+		#endregion HANDLERS for linkage checkboxes, inluding Thread montior
+
 
 	}
 }

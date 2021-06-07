@@ -8,17 +8,22 @@ using System . Threading . Tasks;
 using static System . Windows . Forms . VisualStyles . VisualStyleElement . Rebar;
 using System . Windows . Forms;
 using System . Diagnostics;
+using System . Data;
+using WPFPages . Properties;
 
 namespace WPFPages . Views
 {
 	// Import CSV data into our Db system
 	public class ImportDbData
 	{
-		private void UpdateBankDbFromTextFile ( )
+
+	#region WORKING 7/6/21
+		public static void UpdateBankDbFromTextFile ( )
 		{
 			// THIS WORKS VERY WELL, AND IT IS PRETTY FAST		 - wel it did  on 8/10/2020
+			// Still does now - after a few minor changes  7/6/21
 			// write CSV comma delimited data to BankAccount Db from text file using SQL INSERT Clause
-			//Assumes COMMA delimited - NOT TAB
+			//Assumes COMMA delimited - NOT TAB, nad dates MUST be in YYYY/MM/DD format
 			string path = @"C:\Users\ianch\Documents\BankDb.csv";
 			path = Utils . GetImportFileName ( path );
 //			path = Utils . GetFileName ( path );
@@ -49,25 +54,26 @@ namespace WPFPages . Views
 					if ( fields . Length < 5 )
 						break;
 					// BEWARE = This assumes the dates are in YYYY/MM/DD format !!!!!, so if they are not, it WILL FAIL
-					string odate = Utils . ConvertInputDate ( fields [ 5 ] . ToString ( ) . Trim ( ) );
-					string cdate = Utils . ConvertInputDate ( fields [ 6 ] . ToString ( ) . Trim ( ) );
+					string odate = Utils . ConvertInputDate ( fields [ 6 ] . ToString ( ) . Trim ( ) );
+					string cdate = Utils . ConvertInputDate ( fields [ 7 ] . ToString ( ) . Trim ( ) );
 
-					output = fields [ 0 ] + "," + fields [ 1 ] + "," + fields [ 2 ] + "," + fields [ 3 ] + "," +
-						 fields [ 4 ] + ",'" + odate + "','" + cdate + "'";
+					output = fields [ 1 ] + "," + fields [ 2 ] + "," + fields [ 3 ] + "," +
+						 fields [ 4 ] + "," + fields [ 5 ] + ",'" + odate + "','" + cdate + "'";
 
 					// ID data does need to be in "ticks"
-					SQLcommand = "use ian1 Insert into BankAccount (BANKNO, CUSTNO, ACTYPE, BALANCE,  INTRATE, ODATE, CDATE) values ( " + output + ")";
+					SQLcommand = "Insert into BankAccount (BANKNO, CUSTNO, ACTYPE, BALANCE,  INTRATE, ODATE, CDATE) values ( " + output + ")";
 
-					// This command does  the code commented out below
+					string ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+
 					SqlDataAdapter adapter = new SqlDataAdapter ( );
-					SqlConnection cnn = new SqlConnection();
+					SqlConnection cnn = new SqlConnection(ConString);
 					adapter . InsertCommand = new SqlCommand ( SQLcommand, cnn );
 					try
 					{
+						cnn . Open ( );
 						adapter . InsertCommand . ExecuteNonQuery ( );
 						counter++;
-						Debug . WriteLine ($"Record {counter} from bulk data added to  Customer Db via SQL Insert command...");
-						//									Console . WriteLine ( $"Added record {counter} from bulk data..." );
+						Debug . WriteLine ($"Record {counter} from bulk data added to  BankAccount Db via SQL Insert command...");
 						cnn . Close ( );
 						adapter . Dispose ( );
 					}
@@ -94,12 +100,17 @@ namespace WPFPages . Views
 				return;
 			}
 		}
+		#endregion WORKING 7/6/21
+
+	#region UNKNOWN WORKING 7/6/21
 
 		public bool UpdateCustomerDbFromTextFile ( )
 		{
+			// unchecked 7/6/21
+
 			// THIS WORKS VERY WELL, AND IT IS PRETTY FAST
 			// write  data to Customer Db using SQL INSERT Clause
-			string path = @"C:\Users\ianch\source\C#SavedData\BulkData\CustomerDbData.txt";
+			string path = @"C:\Users\ianch\source\C#SavedData\BulkData\CustomerDb.csv";
 			//			path = Utils . GetFileName ( path );
 			path = Utils . GetImportFileName ( path );
 
@@ -171,9 +182,11 @@ namespace WPFPages . Views
 		}
 		private void UpdateSecAccountsDbFromTextFile ( )
 		{
+			// unchecked 7/6/21
+
 			// THIS WORKS VERY WELL, AND IT IS PRETTY FAST
 			// write data to SecAccounts Db from text file using SQL INSERT Clause
-			string path = @"C:\Users\ianch\source\C#SavedData\BulkData\SecAccountsDbData.txt";
+			string path = @"C:\Users\ianch\source\C#SavedData\BulkData\DetailsDb.csv";
 			path = Utils . GetImportFileName ( path );
 			if ( System . IO . File . Exists ( path ) )
 			{
@@ -234,6 +247,8 @@ namespace WPFPages . Views
 				return;
 			}
 		}
+
+		#endregion UNKNOWN WORKING 7/6/21
 
 	}
 }

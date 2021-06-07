@@ -33,6 +33,10 @@ namespace WPFPages
 		public BankCollection SqlBankcollection = null;
 		public CustCollection SqlCustcollection = null;
 		public DetCollection SqlDetcollection = null;
+		// Crucial structure for use when a Grid row is being edited
+		private static RowData bvmCurrent = null;
+		private static CustRowData cvmCurrent = null;
+		private static RowData dvmCurrent = null;
 
 		public Stopwatch stopwatch = new Stopwatch ( );
 		#region CollectionView stuff
@@ -80,6 +84,7 @@ namespace WPFPages
 		private EditDb edb;
 		private bool key1 = false;
 		private bool IsEditing { get; set; }
+		private bool GridHasFocus{ get; set; }
 		public static bool RefreshInProgress = false;
 		#endregion Private declarationss
 
@@ -331,6 +336,13 @@ namespace WPFPages
 			Flags . CurrentSqlViewer = this;
 			//This is the EventHandler declared  in THIS FILE
 			LoadedEventArgs ex = new LoadedEventArgs ( );
+
+			string ndx = ( string ) Properties . Settings . Default [ "SqlDbViewer_bindex" ];
+			bindex = int . Parse ( ndx );
+			ndx = ( string ) Properties . Settings . Default [ "SqlDbViewer_cindex" ];
+			cindex = int . Parse ( ndx );
+			ndx = ( string ) Properties . Settings . Default [ "SqlDbViewer_dindex" ];
+			dindex = int . Parse ( ndx );
 
 			ex . CallerDb = CurrentDb;
 			if ( CurrentDb == "BANKACCOUNT" )
@@ -662,6 +674,9 @@ namespace WPFPages
 			Debug . WriteLine ( $"SQLDBVIEWER : BankAccount  Data fully loaded: {stopwatch . ElapsedMilliseconds} ms" );
 			LoadingDbData = true;
 
+			WaitMessage . Visibility = Visibility . Collapsed;
+			BankGrid . Visibility = Visibility . Visible;
+
 			SqlBankcollection = e . DataSource as BankCollection;
 			// Get our personal Collection view of the Db
 			_SQLBankviewerView = CollectionViewSource . GetDefaultView ( SqlBankcollection );
@@ -670,16 +685,19 @@ namespace WPFPages
 			this . BankGrid . SelectedIndex = bindex < 0 ? 0 : bindex;
 			this . BankGrid . SelectedItem = bindex < 0 ? 0 : bindex;
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-			BankGrid . UpdateLayout ( );
+//			BankGrid . UpdateLayout ( );
 			this . BankGrid . Refresh ( );
-			WaitMessage . Visibility = Visibility . Collapsed;
-			BankGrid . Visibility = Visibility . Visible;
 			BankGrid . Refresh ( );
 			ParseButtonText ( false );
 			Count . Text = this . BankGrid . Items . Count . ToString ( );
 			stopwatch . Stop ( );
 			Debug . WriteLine ( $"SQLDBVIEWER : BankAccount DataGrid fully populated" );
-			SaveCurrentIndex ( 1, BankGrid . SelectedIndex );
+			if ( GridHasFocus == true )
+			{
+				this . BankGrid . Focus ( );
+				GridHasFocus = false;
+			}
+			SaveCurrentIndex ( 1, this . BankGrid . SelectedIndex );
 		}
 		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		{
@@ -709,7 +727,12 @@ namespace WPFPages
 			Count . Text = this . CustomerGrid . Items . Count . ToString ( );
 			stopwatch . Stop ( );
 			Debug . WriteLine ( $"SQLDBVIEWER : Customer DataGrid fully populated" );
-			SaveCurrentIndex ( 2, CustomerGrid . SelectedIndex );
+			if ( GridHasFocus == true )
+			{
+				this . CustomerGrid . Focus ( );
+				GridHasFocus = false;
+			}
+			SaveCurrentIndex ( 2, this . CustomerGrid . SelectedIndex );
 		}
 		private async void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
@@ -738,7 +761,12 @@ namespace WPFPages
 			Count . Text = this . DetailsGrid . Items . Count . ToString ( );
 			stopwatch . Stop ( );
 			Debug . WriteLine ( $"SQLDBVIEWER : Details DataGrid fully populated" );
-			SaveCurrentIndex ( 3, DetailsGrid . SelectedIndex );
+			if ( GridHasFocus == true )
+			{
+				this . DetailsGrid . Focus ( );
+				GridHasFocus = false;
+			}
+			SaveCurrentIndex ( 3, this . DetailsGrid . SelectedIndex );
 		}
 
 		/// <summary>
@@ -1034,6 +1062,12 @@ namespace WPFPages
 				MainWindow . gv . SqlViewerWindow = null;
 			}
 			UpdateDbSelectorBtns ( Flags . CurrentSqlViewer );
+
+			Utils . SaveProperty ( "SqlDbViewer_bindex", bindex . ToString ( ) );
+			Utils . SaveProperty ( "SqlDbViewer_cindex", cindex . ToString ( ) );
+			Utils . SaveProperty ( "SqlDbViewer_dindex", dindex . ToString ( ) );
+
+
 			Debug . WriteLine ( $"{CurrentDb} has Unsubscribed from All events successfully" );
 			Debug . WriteLine ( $"***Window has just closed***" );
 		}
@@ -1676,233 +1710,7 @@ namespace WPFPages
 
 		#endregion grid row selection code
 
-		#region CellEdit Checker functions
-
-		//*************************************************************************************************************//
-		private void BankGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
-		//Get the BankAccount cell data and its Db Field name BEFORE
-		// it has been changed and store in global variables
-		{
-			OrignalCellRow = e . Row . GetIndex ( );
-			OriginalCellColumn = e . Column . DisplayIndex;
-			DataGridColumn dgc = e . Column as DataGridColumn;
-			string name = dgc . SortMemberPath;
-			DataGridRow dgr = e . Row;
-			OriginalDataType = name;
-			switch ( name . ToUpper ( ) )
-			{
-				case "BANKNO":
-					OriginalCellData = bvm . BankNo;
-					break;
-
-				case "CUSTO":
-					OriginalCellData = bvm . CustNo;
-					break;
-
-				case "ACTYPE":
-					OriginalCellData = bvm . AcType;
-					break;
-
-				case "BALANCE":
-					OriginalCellData = bvm . Balance;
-					break;
-
-				case "INTRATE":
-					OriginalCellData = bvm . IntRate;
-					break;
-
-				case "ODATE":
-					OriginalCellData = bvm . ODate;
-					break;
-
-				case "CDATE":
-					OriginalCellData = bvm . CDate;
-					break;
-			}
-			IsEditing = true;
-
-		}
-
-		//These all set a global bool to flag whether a cell has actually been changed
-		//so we do not call SQL Update uneccessarily
-		//*************************************************************************************************************//
-		private void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
-		{
-			BankAccountViewModel c = BankGrid?.SelectedItem as BankAccountViewModel;
-			TextBox textBox = e . EditingElement as TextBox;
-			if ( textBox == null )
-			{
-				//default to save data - probably a date field that has been changed
-				SelectionhasChanged = true;
-				return;
-			}
-			string str = textBox . Text;
-			SelectionhasChanged = ( OriginalCellData?.ToString ( ) != str );
-			IsEditing = false;
-
-		}
-
-		//*************************************************************************************************************//
-		private void CustomerGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
-		{
-			CustomerViewModel c = CustomerGrid?.SelectedItem as CustomerViewModel;
-			TextBox textBox = e . EditingElement as TextBox;
-			if ( textBox == null )
-			{
-				//default to save data - probably a date field that has been changed
-				SelectionhasChanged = true;
-				return;
-			}
-			string str = textBox . Text;
-			SelectionhasChanged = ( OriginalCellData?.ToString ( ) != str );
-			IsEditing = false;
-		}
-
-		//*************************************************************************************************************//
-		private void DetailsGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
-		{
-			DetailsViewModel c = this . DetailsGrid . SelectedItem as DetailsViewModel;
-			TextBox textBox = e . EditingElement as TextBox;
-			if ( textBox == null )
-			{
-				//default to save data - probably a date field that has been changed
-				SelectionhasChanged = true;
-				return;
-			}
-			string str = textBox . Text;
-			SelectionhasChanged = ( OriginalCellData?.ToString ( ) != str );
-			IsEditing = false;
-			//if ( SelectionhasChanged )
-			//{
-			//	ViewerChangeType = 2;   // done in next call anyway
-			//	EditChangeType = 0;
-			//}
-		}
-
-		//*************************************************************************************************************//
-		private void DetailsGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
-		//Get the BankAccount cell data and its Db Field name BEFORE
-		// it has been changed and store in global variables
-		{
-			OrignalCellRow = e . Row . GetIndex ( );
-			OriginalCellColumn = e . Column . DisplayIndex;
-			DataGridColumn dgc = e . Column as DataGridColumn;
-			string name = dgc . SortMemberPath;
-			DataGridRow dgr = e . Row;
-			//			DetailsViewModel dvm = dgr.Item as DetailsViewModel;
-			OriginalDataType = name;
-			switch ( name . ToUpper ( ) )
-			{
-				case "BANKNO":
-					OriginalCellData = dvm . BankNo;
-					break;
-
-				case "CUSTO":
-					OriginalCellData = dvm . CustNo;
-					break;
-
-				case "ACTYPE":
-					OriginalCellData = dvm . AcType;
-					break;
-
-				case "BALANCE":
-					OriginalCellData = dvm . Balance;
-					break;
-
-				case "INTRATE":
-					OriginalCellData = dvm . IntRate;
-					break;
-
-				case "ODATE":
-					OriginalCellData = dvm . ODate;
-					break;
-
-				case "CDATE":
-					OriginalCellData = dvm . CDate;
-					break;
-			}
-			IsEditing = true;
-		}
-
-		//*************************************************************************************************************//
-		private void CustomerGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
-		//Get the BankAccount cell data and its Db Field name BEFORE
-		// it has been changed and store in global variables
-		{
-			OrignalCellRow = e . Row . GetIndex ( );
-			OriginalCellColumn = e . Column . DisplayIndex;
-			DataGridColumn dgc = e . Column as DataGridColumn;
-			string name = dgc . SortMemberPath;
-			DataGridRow dgr = e . Row;
-			OriginalDataType = name;
-			switch ( name . ToUpper ( ) )
-			{
-				case "BANKNO":
-					OriginalCellData = cvm . BankNo;
-					break;
-
-				case "CUSTO":
-					OriginalCellData = cvm . CustNo;
-					break;
-
-				case "ACTYPE":
-					OriginalCellData = cvm . AcType;
-					break;
-
-				case "FNAME":
-					OriginalCellData = cvm . FName;
-					break;
-
-				case "LNAME":
-					OriginalCellData = cvm . LName;
-					break;
-
-				case "ADDR1":
-					OriginalCellData = cvm . Addr1;
-					break;
-
-				case "ADDR2":
-					OriginalCellData = cvm . Addr2;
-					break;
-
-				case "TOWN":
-					OriginalCellData = cvm . Town;
-					break;
-
-				case "COUNTY":
-					OriginalCellData = cvm . County;
-					break;
-
-				case "PCODE":
-					OriginalCellData = cvm . PCode;
-					break;
-
-				case "PHONE":
-					OriginalCellData = cvm . Phone;
-					break;
-
-				case "MOBILE":
-					OriginalCellData = cvm . Mobile;
-					break;
-
-				case "DOB":
-					OriginalCellData = cvm . Dob;
-					break;
-
-				case "ODATE":
-					OriginalCellData = cvm . ODate;
-					break;
-
-				case "CDATE":
-					OriginalCellData = cvm . CDate;
-					break;
-			}
-			IsEditing = true;
-
-		}
-
-		#endregion CellEdit Checker functions
-
+	
 		#region Keyboard /Mousebutton handlers
 
 		//*************************************************************************************************************//
@@ -2270,6 +2078,281 @@ namespace WPFPages
 
 		#region Datagrid ROW UPDATING functionality
 
+		#region CellEdit Checker functions
+
+		//*************************************************************************************************************//
+		private void BankGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		//Get the BankAccount cell data and its Db Field name BEFORE
+		// it has been changed and store in global variables
+		{
+			IsEditing = true;
+			// Save  the current data for checking later on when we exit editing
+			// but first, check to see if we already have one being saved !
+			if ( bvmCurrent == null )
+			{
+				// Nope, so create a new one and get on with the edit process
+				BankAccountViewModel tmp = new BankAccountViewModel ( );
+				tmp = e . Row . Item as BankAccountViewModel;
+				// This sets up a new bvmControl object if needed, else we  get a null back
+				bvmCurrent = CellEditControl . BankGrid_EditStart ( bvmCurrent, e );
+			}
+		}
+
+		//These all set a global bool to flag whether a cell has actually been changed
+		//so we do not call SQL Update uneccessarily
+		//*************************************************************************************************************//
+		private async void BankGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			if ( bvmCurrent == null ) return;
+
+			// Has Data been changed in one of our rows. ?
+			BankAccountViewModel dvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+			dvm = e . Row . Item as BankAccountViewModel;
+
+			// The sequence of these next 2 blocks is critical !!!
+			//if we get here, make sure we have been NOT been told to EsCAPE out
+			//	this is a DataGridEditAction in Args e
+			if ( e . EditAction == DataGridEditAction . Cancel )
+			{
+				// ESCAPE was hit, so we need to reload our grid with new data JIC
+				// and this will notify any other open viewers as well
+				bvmCurrent = null;
+				await BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
+				return;
+			}
+
+			if ( CellEditControl . BankGrid_EditEnding ( bvmCurrent, BankGrid, e ) == false )
+			{       // No change made
+				return;
+			}
+		}
+		//*************************************************************************************************************//
+		private void CustomerGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		//Get the BankAccount cell data and its Db Field name BEFORE
+		// it has been changed and store in global variables
+		{
+			IsEditing = true;
+			// Save  the current data for checking later on when we exit editing
+			// but first, check to see if we already have one being saved !
+			if ( cvmCurrent == null )
+			{
+				// Nope, so create a new one and get on with the edit process
+				CustomerViewModel tmp = new CustomerViewModel ( );
+				tmp = e . Row . Item as CustomerViewModel;
+				// This sets up a new bvmControl object if needed, else we  get a null back
+				cvmCurrent = CellEditControl . CustGrid_EditStart ( cvmCurrent, e );
+			}
+			IsEditing = true;
+
+			//OrignalCellRow = e . Row . GetIndex ( );
+			//OriginalCellColumn = e . Column . DisplayIndex;
+			//DataGridColumn dgc = e . Column as DataGridColumn;
+			//string name = dgc . SortMemberPath;
+			//DataGridRow dgr = e . Row;
+			//OriginalDataType = name;
+			//switch ( name . ToUpper ( ) )
+			//{
+			//	case "BANKNO":
+			//		OriginalCellData = cvm . BankNo;
+			//		break;
+
+			//	case "CUSTO":
+			//		OriginalCellData = cvm . CustNo;
+			//		break;
+
+			//	case "ACTYPE":
+			//		OriginalCellData = cvm . AcType;
+			//		break;
+
+			//	case "FNAME":
+			//		OriginalCellData = cvm . FName;
+			//		break;
+
+			//	case "LNAME":
+			//		OriginalCellData = cvm . LName;
+			//		break;
+
+			//	case "ADDR1":
+			//		OriginalCellData = cvm . Addr1;
+			//		break;
+
+			//	case "ADDR2":
+			//		OriginalCellData = cvm . Addr2;
+			//		break;
+
+			//	case "TOWN":
+			//		OriginalCellData = cvm . Town;
+			//		break;
+
+			//	case "COUNTY":
+			//		OriginalCellData = cvm . County;
+			//		break;
+
+			//	case "PCODE":
+			//		OriginalCellData = cvm . PCode;
+			//		break;
+
+			//	case "PHONE":
+			//		OriginalCellData = cvm . Phone;
+			//		break;
+
+			//	case "MOBILE":
+			//		OriginalCellData = cvm . Mobile;
+			//		break;
+
+			//	case "DOB":
+			//		OriginalCellData = cvm . Dob;
+			//		break;
+
+			//	case "ODATE":
+			//		OriginalCellData = cvm . ODate;
+			//		break;
+
+			//	case "CDATE":
+			//		OriginalCellData = cvm . CDate;
+			//		break;
+			//}
+			//IsEditing = true;
+
+		}
+		//*************************************************************************************************************//
+		private async void CustomerGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			if ( cvmCurrent == null ) return;
+
+			// Has Data been changed in one of our rows. ?
+			CustomerViewModel cvm = this . CustomerGrid . SelectedItem as CustomerViewModel;
+			cvm = e . Row . Item as CustomerViewModel;
+
+			// The sequence of these next 2 blocks is critical !!!
+			//if we get here, make sure we have been NOT been told to EsCAPE out
+			//	this is a DataGridEditAction dgea
+			if ( e . EditAction == DataGridEditAction . Cancel )
+			{
+				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
+				// and this will notify any other open viewers as well
+				cvmCurrent = null;
+				await CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 2, true );
+				return;
+			}
+
+			if ( CellEditControl . CustGrid_EditEnding ( cvmCurrent, CustomerGrid, e ) == false )
+			{       // No change made
+				return;
+			}
+			IsEditing = false;
+
+
+			//CustomerViewModel c = CustomerGrid?.SelectedItem as CustomerViewModel;
+			//TextBox textBox = e . EditingElement as TextBox;
+			//if ( textBox == null )
+			//{
+			//	//default to save data - probably a date field that has been changed
+			//	SelectionhasChanged = true;
+			//	return;
+			//}
+			//string str = textBox . Text;
+			//SelectionhasChanged = ( OriginalCellData?.ToString ( ) != str );
+			//IsEditing = false;
+		}
+		//*************************************************************************************************************//
+		private void DetailsGrid_BeginningEdit ( object sender, DataGridBeginningEditEventArgs e )
+		//Get the BankAccount cell data and its Db Field name BEFORE
+		// it has been changed and store in global variables
+		{
+
+			IsEditing = true;
+			// Save  the current data for checking later on when we exit editing
+			// but first, check to see if we already have one being saved !
+			if ( dvmCurrent == null )
+			{
+				// Nope, so create a new one and get on with the edit process
+				DetailsViewModel tmp = new DetailsViewModel ( );
+				tmp = e . Row . Item as DetailsViewModel;
+				// This sets up a new bvmControl object if needed, else we  get a null back
+				dvmCurrent = CellEditControl . DetGrid_EditStart ( dvmCurrent, e );
+			}
+
+			//OrignalCellRow = e . Row . GetIndex ( );
+			//OriginalCellColumn = e . Column . DisplayIndex;
+			//DataGridColumn dgc = e . Column as DataGridColumn;
+			//string name = dgc . SortMemberPath;
+			//DataGridRow dgr = e . Row;
+			////			DetailsViewModel dvm = dgr.Item as DetailsViewModel;
+			//OriginalDataType = name;
+			//switch ( name . ToUpper ( ) )
+			//{
+			//	case "BANKNO":
+			//		OriginalCellData = dvm . BankNo;
+			//		break;
+
+			//	case "CUSTO":
+			//		OriginalCellData = dvm . CustNo;
+			//		break;
+
+			//	case "ACTYPE":
+			//		OriginalCellData = dvm . AcType;
+			//		break;
+
+			//	case "BALANCE":
+			//		OriginalCellData = dvm . Balance;
+			//		break;
+
+			//	case "INTRATE":
+			//		OriginalCellData = dvm . IntRate;
+			//		break;
+
+			//	case "ODATE":
+			//		OriginalCellData = dvm . ODate;
+			//		break;
+
+			//	case "CDATE":
+			//		OriginalCellData = dvm . CDate;
+			//		break;
+			//}
+			//IsEditing = true;
+		}
+		//*************************************************************************************************************//
+		private async void DetailsGrid_CellEditEnding ( object sender, DataGridCellEditEndingEventArgs e )
+		{
+			if ( dvmCurrent == null ) return;
+
+			DetailsViewModel c = this . DetailsGrid . SelectedItem as DetailsViewModel;
+
+			dvm = e . Row . Item as DetailsViewModel;
+
+			// The sequence of these next 2 blocks is critical !!!
+			//if we get here, make sure we have been NOT been told to EsCAPE out
+			//	this is a DataGridEditAction in Args e
+			if ( e . EditAction == DataGridEditAction . Cancel )
+			{
+				// ESCAPE was hit, so we need to reload our grid with new data JIC
+				// and this will notify any other open viewers as well
+				dvmCurrent = null;
+				await DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 2, true );
+				return;
+			}
+
+			if ( CellEditControl . DetGrid_EditEnding ( dvmCurrent, DetailsGrid, e ) == false )
+			{       // No change made
+				return;
+			}
+
+			//TextBox textBox = e . EditingElement as TextBox;
+			//if ( textBox == null )
+			//{
+			//	//default to save data - probably a date field that has been changed
+			//	SelectionhasChanged = true;
+			//	return;
+			//}
+			//string str = textBox . Text;
+			//SelectionhasChanged = ( OriginalCellData?.ToString ( ) != str );
+			//IsEditing = false;
+		}
+
+		//*************************************************************************************************************//
+		#endregion CellEdit Checker functions
+
 		/// <summary>
 		///  This is aMASSIVE Function that handles updating the Dbs via SQL plus sorting the current grid
 		///  out & notifying all other viewers that a change has occurred so they can (& in fact do) update
@@ -2287,26 +2370,28 @@ namespace WPFPages
 			BankAccountViewModel ss = bvm;
 			CustomerViewModel cs = cvm;
 			DetailsViewModel sa = dvm;
-			//if data has NOT changed, do NOT bother updating the Db
-			// Clever stuff Eh - saves lots of processing time?
-			if ( !SelectionhasChanged )
-				return;
-			else
-				SelectionhasChanged = false;    // clear the edit status flag again
 
 			Mouse . OverrideCursor = Cursors . Wait;
 
 			// Set the control flags so that we know we have changed data when we notify other windows
 			Flags . UpdateInProgress = true;
-
-			//Only called whn an edit has been completed
+	
+			// Set a global flag so we know we are in editing mode in the grid
+			GridHasFocus = true;
+			
 			if ( e != null )
 			{
+				//Only called whn an edit has been completed
 				SQLHandlers sqlh = new SQLHandlers ( );
 				// These get the row with all the NEW data
 				if ( CurrentDb == "BANKACCOUNT" )
 				{
 					int currow = 0;
+
+					// if our saved row is null, it has already been checked in Cell_EndDedit processing
+					// and found no changes have been made, so we can abort this update
+					if ( bvmCurrent == null ) return;
+
 					currow = this . BankGrid . SelectedIndex != -1 ? this . BankGrid . SelectedIndex : 0;
 					ss = this . BankGrid . SelectedItem as BankAccountViewModel;
 					// This is the NEW DATA from the current row that we are sendign to SQL handler to update the DB's
@@ -2324,6 +2409,11 @@ namespace WPFPages
 				else if ( CurrentDb == "CUSTOMER" )
 				{
 					int currow = 0;
+
+					// if our saved row is null, it has already been checked in Cell_EndDedit processing
+					// and found no changes have been made, so we can abort this update
+					if ( cvmCurrent == null ) return;
+
 					currow = this . CustomerGrid . SelectedIndex != -1 ? this . CustomerGrid . SelectedIndex : 0;
 					cs = this . CustomerGrid . SelectedItem as CustomerViewModel;
 					// This is the NEW DATA from the current row
@@ -2341,13 +2431,16 @@ namespace WPFPages
 				else if ( CurrentDb == "DETAILS" )
 				{
 					int currow = 0;
+
+					// if our saved row is null, it has already been checked in Cell_EndDedit processing
+					// and found no changes have been made, so we can abort this update
+					if ( dvmCurrent == null ) return;
+
 					currow = this . DetailsGrid . SelectedIndex != -1 ? this . DetailsGrid . SelectedIndex : 0;
 					sa = this . DetailsGrid . SelectedItem as DetailsViewModel;
 					// sa contains the NEW DATA from the current row
 					// Update Db itself via SQL
 					sqlh . UpdateDbRowAsync ( CurrentDb, sa, currow );
-
-					//					Debug . WriteLine ( $" 7-3 *** TRACE *** SQLDBVIEWER : ViewerGrid_rowEditEnding - Sending DETAILS TriggerViewerDataUpdated" );
 
 					SendDataChanged ( this, this . DetailsGrid, "DETAILS" );
 
@@ -3329,7 +3422,6 @@ namespace WPFPages
 			}
 		}
 
-		//*******************************************************************************************************//
 		//*************************************************************************************************************//
 		public void UpdateAuxilliaries ( string comment )
 		{
@@ -5322,7 +5414,7 @@ namespace WPFPages
 
 		//*************************************************************************************************************//
 		private void Options_Click ( object sender, RoutedEventArgs e )
-		{ MessageBox . Show ( $"Sorry, but there are NO options right now !!", "Database Viewer Options" ); }
+		{ }
 
 		//*************************************************************************************************************//
 		private void Exit_Click ( object sender, RoutedEventArgs e )
@@ -6029,5 +6121,38 @@ namespace WPFPages
 		}
 
 		#endregion UNUSED CODE
+
+		private void ExportBankCSV_Click ( object sender, RoutedEventArgs e )
+		{
+			// Export BANK DATA to CSV
+			BankCollection . ExportBankData ( @"C:\users\ianch\Documents\Bankb.csv", CurrentDb );
+
+		}
+		private void ExportCustCSV_Click ( object sender, RoutedEventArgs e )
+		{
+			// Export CUSTOMER DATA to CSV
+			CustCollection . ExportCustData ( @"C:\users\ianch\Documents\CustomerDbBankb.csv", CurrentDb );
+
+		}
+		private void ExportDetCSV_Click ( object sender, RoutedEventArgs e )
+		{
+			// Export DETAILS DATA to CSV
+			 DetailCollection . ExportDetData ( @"C:\users\ianch\Documents\DetailsDb.csv", CurrentDb );
+		}
+
+		private void ImportDetCSV_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ImportCustCSV_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ImportBankCSV_Click ( object sender, RoutedEventArgs e )
+		{
+			ImportDbData . UpdateBankDbFromTextFile (  );
+		}
 	}
 }

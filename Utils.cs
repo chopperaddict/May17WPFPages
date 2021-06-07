@@ -1,5 +1,6 @@
 ﻿#define SHOWWINDOWDATA
 using System;
+using System . Configuration;
 using System . Diagnostics;
 using System . Runtime . InteropServices . WindowsRuntime;
 using System . Threading;
@@ -10,6 +11,7 @@ using System . Windows . Forms . VisualStyles;
 using System . Windows . Input;
 using System . Windows . Media;
 using Microsoft . Win32;
+using WPFPages . Properties;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
@@ -172,7 +174,18 @@ namespace WPFPages
 			}
 			return t;
 		}
-
+		public static void SaveProperty ( string setting, string value )
+		{
+			if ( value . ToUpper ( ) . Contains ( "TRUE" ) )
+				Settings . Default [ setting ] = true;
+			else if ( value . ToUpper ( ) . Contains ( "FALSE" ) )
+				Settings . Default [ setting ] = false;
+			else
+				Settings . Default [ setting ] = value;
+			Settings . Default . Save ( );
+			Settings . Default . Upgrade ( );
+			ConfigurationManager . RefreshSection ( setting );
+		}
 		public static string GetImportFileName ( string filespec )
 		// opens  the common file open dialog
 		{
