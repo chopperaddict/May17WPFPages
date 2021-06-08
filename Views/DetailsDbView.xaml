@@ -5,7 +5,6 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:WPFPages.Views"
 	mc:Ignorable="d" 
-	d:DataContext="{d:DesignInstance Type=local:DetCollection}"
 	Closing="Window_Closing"
 	DataContext="DetviewerView"
 	Height="450"

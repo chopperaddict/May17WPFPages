@@ -486,7 +486,7 @@ namespace WPFPages . Views
 			return dt;
 		}
 
-		public static void ExportCustData ( string path, string dbType )
+		public static int  ExportCustData ( string path, string dbType )
 		{
 			int count = 0;
 			string output = "";
@@ -510,7 +510,7 @@ namespace WPFPages . Views
 			}
 			System . IO . File . WriteAllText ( path, output );
 			Console . WriteLine ( $"Export of {count - 1} records from the [ {dbType} ] Db in CSV format has been completed successfully." );
-
+			return count;
 		}
 
 		//===============================================================================
@@ -549,12 +549,23 @@ namespace WPFPages . Views
 				cdate = revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
 				string acTypestr = objRow [ "AcType" ] . ToString ( ) . Trim ( );
 
-				tmp = $"'{objRow [ "Id" ] . ToString ( )}', '" + $"{objRow [ "BankNo" ] . ToString ( )}', '" + $"'{objRow [ "CustNo" ] . ToString ( )}', '"
-					+ $"{acTypestr}', '" + $"{objRow [ "Fname" ] . ToString ( )}', '"
-					+ $"{objRow [ "Lname" ] . ToString ( )}', '" + $"{objRow [ "Addr1" ] . ToString ( )}', '" + $"{objRow [ "Addr2" ] . ToString ( )}', '"
-					+ $"{objRow [ "Town" ] . ToString ( )}', '" + $"{objRow [ "County" ] . ToString ( )}', '" + $"{objRow [ "Pcode" ] . ToString ( )}', '"
-					+ $"{objRow [ "Phone" ] . ToString ( )}', '" + $"{objRow [ "Mobile" ] . ToString ( )}', '" + $"{doB}', '"
-					+ $"{odate}', '" + $"{cdate}'\r\n";
+				tmp = $"{objRow [ "Id" ] . ToString ( )}, " 
+					+ $"{objRow [ "BankNo" ] . ToString ( )}, " 
+					+ $"{objRow [ "CustNo" ] . ToString ( )}, "
+					+ $"{acTypestr}, " 
+					+ $"'{objRow [ "Fname" ] . ToString ( )}', "
+					+ $"'{objRow [ "Lname" ] . ToString ( )}', " 
+					
+					+ $"'{objRow [ "Addr1" ] . ToString ( )}', " 
+					+ $"'{objRow [ "Addr2" ] . ToString ( )}', "
+					+ $"'{objRow [ "Town" ] . ToString ( )}', " 
+					+ $"'{objRow [ "County" ] . ToString ( )}', " 
+					+ $"'{objRow [ "Pcode" ] . ToString ( )}', "
+					+ $"'{objRow [ "Phone" ] . ToString ( )}', " 
+					+ $"'{objRow [ "Mobile" ] . ToString ( )}', " 
+					+ $"'{doB}', "
+					+ $"'{odate}', " 
+					+ $"'{cdate}'\r\n";
 			}
 			return tmp;
 		}

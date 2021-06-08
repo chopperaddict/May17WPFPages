@@ -4,13 +4,14 @@ using System . Collections;
 using System . Data;
 using System . Data . Linq . SqlClient;
 using System . Data . SqlClient;
+using System . Windows; 
 using System . Diagnostics;
 using System . Reflection;
-using System . Windows . Forms;
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 using System . IO;
+using System . Windows;
 
 namespace WPFPages
 {
@@ -146,9 +147,8 @@ namespace WPFPages
 					Console . WriteLine ( $"SQL ERROR - Exception message indicates the Date Values are in UK format, Year LAST. The CSV data MUST BE IN YYYY/MM/DD format" );
 				else
 					Console . WriteLine ( $"SQL ERROR - {ex . Message} + [{ex . Data}].." );
-				MessageBox . Show ( $"SQL the Insert Command [{SQLcommand}]\r\nhas failed for some reason !.\r\n" +
-									$"\r\nThe process has terminated, Check Output window & your data and Db for safety\r\nMsg= {ex . Message}, {ex . Data}", "Db Error Information",
-							MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+				System . Windows . MessageBox . Show ( $"SQL the Insert Command [{SQLcommand}]\r\nhas failed for some reason !.\r\n" +
+									$"\r\nThe process has terminated, Check Output window & your data and Db for safety\r\nMsg= {ex . Message}, {ex . Data}", "Db Error Information");
 				Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was [{SQLcommand}]..." );
 			}
 			finally

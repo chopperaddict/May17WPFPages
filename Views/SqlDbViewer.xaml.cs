@@ -6,25 +6,32 @@
 using System;
 using System . Collections . Generic;
 using System . ComponentModel;
+using System . Windows;
+using System . Windows . Controls;
+using System . Windows . Input;
+using System . Windows . Media;
+using System . Windows . Controls . Primitives;
 using System . Data;
 using System . Data . SqlClient;
 using System . Diagnostics;
 using System . Linq;
 using System . Threading;
 using System . Threading . Tasks;
-using System . Windows;
-using System . Windows . Controls;
 using System . Windows . Data;
-using System . Windows . Input;
-using System . Windows . Media;
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
 namespace WPFPages
 {
+	// Delegate for use with dragand drop operations
+	public delegate Point GetDragDropPosition ( IInputElement theElement );
+
 	public partial class SqlDbViewer : Window, INotifyPropertyChanged
 	{
+		// Used by Drag&Drop code
+		int prevRowIndex = -1;
+
 		private ClockTower _tower;
 		public SqlDbViewer ThisViewer = null;
 		//		public static Dispatcher UiThread = Dispatcher . CurrentDispatcher;
@@ -84,7 +91,7 @@ namespace WPFPages
 		private EditDb edb;
 		private bool key1 = false;
 		private bool IsEditing { get; set; }
-		private bool GridHasFocus{ get; set; }
+		private bool GridHasFocus { get; set; }
 		public static bool RefreshInProgress = false;
 		#endregion Private declarationss
 
@@ -397,6 +404,10 @@ namespace WPFPages
 				LinkRecords . IsChecked = true;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . Topmost = false;
+
+			// Drag & Drop handlers
+			this . BankGrid . PreviewMouseLeftButtonDown += new MouseButtonEventHandler ( this.BankGrid_PreviewMouseLeftButtondown );
+			this . BankGrid . Drop += new DragEventHandler ( BankGrid_Drop );
 		}
 		/// <summary>
 		/// Load the relevant data from SQl Db
@@ -438,7 +449,7 @@ namespace WPFPages
 					Mouse . OverrideCursor = Cursors . Wait;
 					stopwatch . Start ( );
 					Debug . WriteLine ( "\nSQLDBVIEWER : awaiting Load of Details Data" );
-					
+
 					await DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
 					break;
 
@@ -479,7 +490,7 @@ namespace WPFPages
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another SqlDbviewer has changed the current index
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
-			 //Subscribe to the notifier EVENT so we know when a record is deleted from one of the grids
+												 //Subscribe to the notifier EVENT so we know when a record is deleted from one of the grids
 			EventControl . RecordDeleted += OnDeletion;
 		}
 
@@ -685,11 +696,12 @@ namespace WPFPages
 			this . BankGrid . SelectedIndex = bindex < 0 ? 0 : bindex;
 			this . BankGrid . SelectedItem = bindex < 0 ? 0 : bindex;
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-//			BankGrid . UpdateLayout ( );
+			//			BankGrid . UpdateLayout ( );
 			this . BankGrid . Refresh ( );
 			BankGrid . Refresh ( );
 			ParseButtonText ( false );
-			Count . Text = this . BankGrid . Items . Count . ToString ( );
+			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+			//			this . BankGrid . Items . Count . ToString ( );
 			stopwatch . Stop ( );
 			Debug . WriteLine ( $"SQLDBVIEWER : BankAccount DataGrid fully populated" );
 			if ( GridHasFocus == true )
@@ -724,7 +736,7 @@ namespace WPFPages
 			this . CustomerGrid . Visibility = Visibility . Visible;
 			this . CustomerGrid . Refresh ( );
 			ParseButtonText ( true );
-			Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+			Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
 			stopwatch . Stop ( );
 			Debug . WriteLine ( $"SQLDBVIEWER : Customer DataGrid fully populated" );
 			if ( GridHasFocus == true )
@@ -751,14 +763,14 @@ namespace WPFPages
 			this . DetailsGrid . ItemsSource = SQLDetViewerView;
 			this . DetailsGrid . SelectedIndex = dindex < 0 ? 0 : dindex;
 			this . DetailsGrid . SelectedItem = dindex < 0 ? 0 : dindex;
-			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid.SelectedIndex );
+			Utils . SetUpGridSelection ( this . DetailsGrid, this . DetailsGrid . SelectedIndex );
 			this . DetailsGrid . UpdateLayout ( );
 			this . DetailsGrid . Refresh ( );
 			WaitMessage . Visibility = Visibility . Collapsed;
 			this . DetailsGrid . Visibility = Visibility . Visible;
 			this . DetailsGrid . Refresh ( );
 			ParseButtonText ( true );
-			Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+			Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
 			stopwatch . Stop ( );
 			Debug . WriteLine ( $"SQLDBVIEWER : Details DataGrid fully populated" );
 			if ( GridHasFocus == true )
@@ -817,7 +829,8 @@ namespace WPFPages
 				Utils . SetUpGridSelection ( this . BankGrid, currsel );
 				RefreshInProgress = false;
 				ParseButtonText ( true );
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = this . BankGrid . Items . Count . ToString ( );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				SaveCurrentIndex ( 1, BankGrid . SelectedIndex );
 			}
@@ -853,7 +866,8 @@ namespace WPFPages
 				Utils . SetUpGridSelection ( this . CustomerGrid, currsel );
 				RefreshInProgress = false;
 				ParseButtonText ( true );
-				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				SaveCurrentIndex ( 2, CustomerGrid . SelectedIndex );
 			}
@@ -893,7 +907,8 @@ namespace WPFPages
 				Utils . SetUpGridSelection ( this . DetailsGrid, currsel );
 				RefreshInProgress = false;
 				ParseButtonText ( true );
-				Count . Text = this . DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//				Count . Text = this . DetailsGrid . Items . Count . ToString ( );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				SaveCurrentIndex ( 3, DetailsGrid . SelectedIndex );
 			}
@@ -1710,7 +1725,7 @@ namespace WPFPages
 
 		#endregion grid row selection code
 
-	
+
 		#region Keyboard /Mousebutton handlers
 
 		//*************************************************************************************************************//
@@ -1884,7 +1899,8 @@ namespace WPFPages
 				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 				Utils . SetUpGridSelection ( this . BankGrid, row );
 				ParseButtonText ( true );
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = this . BankGrid . Items . Count . ToString ( );
 
 				// This is essential to get selection activated again
 				this . BankGrid . Focus ( );
@@ -2375,10 +2391,10 @@ namespace WPFPages
 
 			// Set the control flags so that we know we have changed data when we notify other windows
 			Flags . UpdateInProgress = true;
-	
+
 			// Set a global flag so we know we are in editing mode in the grid
 			GridHasFocus = true;
-			
+
 			if ( e != null )
 			{
 				//Only called whn an edit has been completed
@@ -3241,6 +3257,7 @@ namespace WPFPages
 					UpdateRowDetails ( this . BankGrid . SelectedItem, "BankGrid" );
 					RefreshInProgress = false;
 					IsDirty = false;
+					Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 					SaveCurrentIndex ( 1, BankGrid . SelectedIndex );
 					//					Debug . WriteLine ( $" *** TRACE 1-0 *** SQLDBVIEWER : Itemsview_OnSelectionChanged  BANKACCOUNT - Index = {this . BankGrid . SelectedIndex}" );
 				}
@@ -3279,6 +3296,7 @@ namespace WPFPages
 					//// Updates  the MainWindow.gv[] structure
 					UpdateRowDetails ( this . CustomerGrid . SelectedItem, "CustomerGrid" );
 					IsDirty = false;
+					Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
 					SaveCurrentIndex ( 2, CustomerGrid . SelectedIndex );
 					//					Debug . WriteLine ( $" *** TRACE 1-1***  SQLDBVIEWER : Itemsview_OnSelectionChanged  CUSTOMER - Index = {this . CustomerGrid . SelectedIndex}" );
 				}
@@ -3320,6 +3338,7 @@ namespace WPFPages
 					UpdateRowDetails ( this . DetailsGrid . SelectedItem, "DetailsGrid" );
 					//					Debug . WriteLine ( $" *** TRACE 1-2 *** SQLDBVIEWER : Itemsview_OnSelectionChanged  DETAILS - Index = {this . DetailsGrid . SelectedIndex}, {this . DetailsGrid . SelectedItem}" );
 					IsDirty = false;
+					Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
 					SaveCurrentIndex ( 3, DetailsGrid . SelectedIndex );
 				}
 
@@ -3348,6 +3367,7 @@ namespace WPFPages
 						}
 					}
 					Triggered = false;
+					Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 					SaveCurrentIndex ( 1, BankGrid . SelectedIndex );
 				}
 				else if ( CurrentDb == "CUSTOMER" )
@@ -3371,6 +3391,7 @@ namespace WPFPages
 						}
 					}
 					Triggered = false;
+					Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
 					SaveCurrentIndex ( 2, CustomerGrid . SelectedIndex );
 				}
 				else if ( CurrentDb == "DETAILS" )
@@ -3395,6 +3416,7 @@ namespace WPFPages
 					}
 					Triggered = false;
 					SaveCurrentIndex ( 3, DetailsGrid . SelectedIndex );
+					Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
 				}
 			}
 			UpdateAuxilliaries ( "" );
@@ -3753,7 +3775,8 @@ namespace WPFPages
 				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 				Utils . SetUpGridSelection ( this . BankGrid, row );
 				ParseButtonText ( true );
-				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = this . CustomerGrid . Items . Count . ToString ( );
 				// This is essential to get selection activated again
 				this . CustomerGrid . Focus ( );
 			}
@@ -4267,7 +4290,7 @@ namespace WPFPages
 			bool showdebug = false;
 
 			if ( IsEditing ) return;
-			
+
 			if ( e . Key == Key . LeftCtrl )
 			{
 				key1 = true;
@@ -4926,7 +4949,8 @@ namespace WPFPages
 					       select items;
 				BankGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				BankFiltered = true;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
@@ -4937,7 +4961,8 @@ namespace WPFPages
 					       select items;
 				CustomerGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = CustomerGrid . Items . Count . ToString ( );
 				CustFiltered = true;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -4948,7 +4973,8 @@ namespace WPFPages
 					       select items;
 				DetailsGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//Count . Text = DetailsGrid . Items . Count . ToString ( );
 				DetFiltered = true;
 			}
 		}
@@ -4965,7 +4991,8 @@ namespace WPFPages
 					       select items;
 				BankGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				BankFiltered = true;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
@@ -4976,7 +5003,8 @@ namespace WPFPages
 					       select items;
 				CustomerGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = CustomerGrid . Items . Count . ToString ( );
 				CustFiltered = true;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -4987,7 +5015,8 @@ namespace WPFPages
 					       select items;
 				DetailsGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//				Count . Text = DetailsGrid . Items . Count . ToString ( );
 				DetFiltered = true;
 			}
 		}
@@ -5004,7 +5033,8 @@ namespace WPFPages
 					       select items;
 				BankGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				BankFiltered = true;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
@@ -5015,7 +5045,8 @@ namespace WPFPages
 					       select items;
 				CustomerGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = CustomerGrid . Items . Count . ToString ( );
 				CustFiltered = true;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -5026,7 +5057,8 @@ namespace WPFPages
 					       select items;
 				DetailsGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//				Count . Text = DetailsGrid . Items . Count . ToString ( );
 				DetFiltered = true;
 			}
 		}
@@ -5043,7 +5075,8 @@ namespace WPFPages
 					       select items;
 				BankGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				BankFiltered = true;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
@@ -5054,7 +5087,8 @@ namespace WPFPages
 					       select items;
 				CustomerGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = CustomerGrid . Items . Count . ToString ( );
 				CustFiltered = true;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -5065,7 +5099,8 @@ namespace WPFPages
 					       select items;
 				DetailsGrid . ItemsSource = accounts;
 				ParseButtonText ( true );
-				Count . Text = DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//				Count . Text = DetailsGrid . Items . Count . ToString ( );
 				DetFiltered = true;
 			}
 		}
@@ -5104,7 +5139,8 @@ namespace WPFPages
 				}
 				BankGrid . ItemsSource = output;
 				ParseButtonText ( true );
-				Count . Text = BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				StatusBar . Text = $"Filtering completed, {output . Count} Multi Account records match";
 				BankFiltered = true;
 			}
@@ -5135,7 +5171,8 @@ namespace WPFPages
 				CustomerGrid . ItemsSource = output;
 				StatusBar . Text = $"Filtering completed, {output . Count} Multi Account records match";
 				ParseButtonText ( true );
-				Count . Text = CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = CustomerGrid . Items . Count . ToString ( );
 				CustFiltered = true;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -5165,7 +5202,8 @@ namespace WPFPages
 				DetailsGrid . ItemsSource = output;
 				StatusBar . Text = $"Filtering completed, {output . Count} Multi Account records match";
 				ParseButtonText ( true );
-				Count . Text = DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//				Count . Text = DetailsGrid . Items . Count . ToString ( );
 				DetFiltered = true;
 			}
 		}
@@ -5213,7 +5251,7 @@ namespace WPFPages
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				List<BankAccountViewModel> output = new List<BankAccountViewModel> ( );
-//				List<int> duplicates = new List<int> ( );
+				//				List<int> duplicates = new List<int> ( );
 
 				//select All the items first;
 				var accounts = from items in SqlBankcollection orderby items . CustNo, items . BankNo select items;
@@ -5277,15 +5315,16 @@ namespace WPFPages
 
 				// Al done
 				ParseButtonText ( true );
-				Count . Text = BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				StatusBar . Text = $"Filtering completed, {output . Count} records with DUPLICATED Bank Account # records";
 				BankFiltered = true;
 			}
 			if ( CurrentDb == "CUSTOMER" )
 			{
 				List<CustomerViewModel> output = new List<CustomerViewModel> ( );
-//				List<int> duplicates = new List<int> ( );                               
-				
+				//				List<int> duplicates = new List<int> ( );                               
+
 				//select All the items first;
 				var accounts = from items in SqlCustcollection orderby items . CustNo, items . BankNo select items;
 				//Next Group collection on CustNo
@@ -5344,7 +5383,8 @@ namespace WPFPages
 				CustomerGrid . ItemsSource = output;
 				StatusBar . Text = $"Filtering completed, {output . Count} Multi Account records match";
 				ParseButtonText ( true );
-				Count . Text = CustomerGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . CustomerGrid . SelectedIndex} / { this . CustomerGrid . Items . Count . ToString ( )}";
+				//				Count . Text = CustomerGrid . Items . Count . ToString ( );
 				CustFiltered = true;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -5375,7 +5415,8 @@ namespace WPFPages
 				DetailsGrid . ItemsSource = output;
 				StatusBar . Text = $"Filtering completed, {output . Count} Multi Account records match";
 				ParseButtonText ( true );
-				Count . Text = DetailsGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+				//				Count . Text = DetailsGrid . Items . Count . ToString ( );
 				DetFiltered = true;
 			}
 		}
@@ -5402,7 +5443,8 @@ namespace WPFPages
 			DetailsGrid . ItemsSource = output;
 			StatusBar . Text = $"Filtering completed, {output . Count} Multi Account records match";
 			ParseButtonText ( true );
-			Count . Text = DetailsGrid . Items . Count . ToString ( );
+			Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
+			//			Count . Text = DetailsGrid . Items . Count . ToString ( );
 			DetFiltered = true;
 		}
 
@@ -5587,7 +5629,8 @@ namespace WPFPages
 				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
 				Utils . SetUpGridSelection ( this . BankGrid, row );
 				ParseButtonText ( true );
-				Count . Text = this . BankGrid . Items . Count . ToString ( );
+				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+				//				Count . Text = this . BankGrid . Items . Count . ToString ( );
 				// This is essential to get selection activated again
 				this . BankGrid . Focus ( );
 			}
@@ -6124,20 +6167,60 @@ namespace WPFPages
 
 		private void ExportBankCSV_Click ( object sender, RoutedEventArgs e )
 		{
+			string message = "";
+			string part2 = "";
+			string outstats = "Please check Output for failure details";
 			// Export BANK DATA to CSV
-			BankCollection . ExportBankData ( @"C:\users\ianch\Documents\Bankb.csv", CurrentDb );
-
+			int count = BankCollection . ExportBankData ( @"C:\users\ianch\Documents\Bankb.csv", CurrentDb );
+			if ( count > 0 )
+			{
+				part2 = $"\n{count} records have been saved successully.";
+				message = $"Bank Data Exported successfully.{part2}";
+			}
+			else
+			{
+				part2 = $"The data was NOT saved correctly...\n{outstats}";
+				message = part2;
+			}
+			MessageBox . Show ( message );
 		}
 		private void ExportCustCSV_Click ( object sender, RoutedEventArgs e )
 		{
+			string message = "";
+			string part2 = "";
+			string outstats = "Please check Output for failure details";
 			// Export CUSTOMER DATA to CSV
-			CustCollection . ExportCustData ( @"C:\users\ianch\Documents\CustomerDbBankb.csv", CurrentDb );
-
+			int count = CustCollection . ExportCustData ( @"C:\users\ianch\Documents\CustomerDbBankb.csv", CurrentDb );
+			if ( count > 0 )
+			{
+				part2 = $"\n{count} records have been saved successully.";
+				message = $"Bank Data Exported successfully.{part2}";
+			}
+			else
+			{
+				part2 = $"The data was NOT saved correctly...\n{outstats}";
+				message = part2;
+			}
+			MessageBox . Show ( message );
 		}
 		private void ExportDetCSV_Click ( object sender, RoutedEventArgs e )
 		{
+			string message = "";
+			string part2 = "";
+			string outstats = "Please check Output for failure details";
 			// Export DETAILS DATA to CSV
-			 DetailCollection . ExportDetData ( @"C:\users\ianch\Documents\DetailsDb.csv", CurrentDb );
+			int count = DetailCollection . ExportDetData ( @"C:\users\ianch\Documents\DetailsDb.csv", CurrentDb );
+			if ( count > 0 )
+			{
+				part2 = $"\n{count} records have been saved successully.";
+				message = $"Bank Data Exported successfully.{part2}";
+			}
+			else
+			{
+				part2 = $"The data was NOT saved correctly...\n{outstats}";
+				message = part2;
+			}
+			MessageBox . Show ( message );
 		}
 
 		private void ImportDetCSV_Click ( object sender, RoutedEventArgs e )
@@ -6152,7 +6235,191 @@ namespace WPFPages
 
 		private void ImportBankCSV_Click ( object sender, RoutedEventArgs e )
 		{
-			ImportDbData . UpdateBankDbFromTextFile (  );
+			ImportDbData . UpdateBankDbFromTextFile ( );
 		}
+
+		private void Exportselected_Click ( object sender, RoutedEventArgs e )
+		{
+			// Export selected records to a csv file
+			//			int [ , ] recordsarray = new int [ 5000, 2 ];
+			List<BankAccountViewModel> recs = new List<BankAccountViewModel> ( );
+			// Get all CustNo + BankNo records into a List<int>
+			//			List<int> BanknoList = new List<int> ( );
+			//			List<int> CustnoList = new List<int> ( );
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				//select All the items first;
+				var accounts = from items in SqlBankcollection orderby items . CustNo, items . BankNo select items;
+				//Next Group collection on CustNo
+				var grouped = accounts . GroupBy ( b => b . CustNo );
+
+				//Now filter content down to only those a/c's with multiple Bank A/c's
+				var sel = from g in grouped
+					  where g . Count ( ) > 1
+					  select g;
+
+				// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full BankAccounts data
+				// giving us ONLY the full records for any records that have > 1 Bank accounts
+				List<BankAccountViewModel> outputt = new List<BankAccountViewModel> ( );
+
+				foreach ( var item1 in sel )
+				{
+					foreach ( var item2 in accounts )
+					{
+						if ( item2 . CustNo . ToString ( ) == item1 . Key )
+						{ recs . Add ( item2 ); }
+					}
+				}
+
+				// By now, we have a list of BankAccountViewModels matching Duped Bankaccounts
+				//in outputt
+				//string output = "";
+				//foreach ( var item1 in outputt )
+				//{
+				//	output = item1.CustNo + "\t" + item1 . BankNo;
+				//	recs . Add ( output );
+				//	//BanknoList . Add ( int . Parse ( item1 . BankNo ) );
+				//	//CustnoList . Add ( int . Parse ( item1 . CustNo ) );
+				//	//recordsarray [ indx, 0 ] = int . Parse ( item1 . CustNo );
+				//	//recordsarray [ indx++, 1 ] = int . Parse ( item1 . BankNo );
+				//}
+			}
+			//int index = 0;
+			//for ( int i = 0 ; i < recordsarray . Length ; i++ )
+			//{
+			//	if ( recordsarray [ i, 0 ] == 0 ) break;
+			//	output = recordsarray [ i, 0 ] . ToString ( ) + "\t" + recordsarray [ i, 1 ] . ToString ( );
+			//	recs .Add(output);
+			//}
+			//dataGrid . ItemsSource = recs;
+			GetExportRecords ger = new GetExportRecords ( recs );
+			ger . ShowDialog ( );
+			DbManipulation . OutputSelectedRecords ( CurrentDb, recs );
+		}
+
+
+
+
+	#region // DRAG AND DROP STUFF
+
+		void BankGrid_Drop (object sender, DragEventArgs e )
+		{
+			if ( prevRowIndex < 0)
+				return;
+
+			int index = this . GetDataGridItemCurrentRowIndex ( e . GetPosition );
+
+			//The current Rowindex is -1 (No selected)
+			if ( index < 0 )
+				return;
+			//If Drag-Drop Location are same
+			if ( index == prevRowIndex )
+				return;
+
+			//If the Drop Index is the last Row of DataGrid(
+			// Note: This Row is typically used for performing Insert operation)
+			if ( index == BankGrid . Items . Count - 1 )
+			{
+				MessageBox . Show ( "This row-index cannot be used for Drop Operations" );
+				return;
+			}
+
+			BankAccountViewModel myAccounts = Resources [ "data" ] as BankAccountViewModel;
+
+//			BankAccountViewModel moved = myAccounts ( prevRowIndex );
+//			myAccounts . RemoveAt ( prevRowIndex );
+
+//			myAccounts . Insert ( index, moved );
+
+		}
+		public void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			prevRowIndex = GetDataGridItemCurrentRowIndex ( e . GetPosition );
+
+			if ( prevRowIndex < 0 )
+				return;
+			this . BankGrid . SelectedIndex = prevRowIndex;
+
+			BankAccountViewModel selectedAccount = this . BankGrid . Items [ prevRowIndex ] as BankAccountViewModel;
+
+			if ( selectedAccount == null )
+				return;
+
+			// Now create a Drag Rectangle
+			DragDropEffects dragdropeffects = DragDropEffects . Move;
+
+			if ( DragDrop . DoDragDrop ( this . BankGrid, selectedAccount, dragdropeffects ) != DragDropEffects . None )
+			{
+				//Now This Item will be dropped at new location and so the new Selected Item
+				this . BankGrid . SelectedItem = selectedAccount;
+			}
+		}
+
+		public bool IsTheMouseOnTargetRow ( Visual theTarget, GetDragDropPosition pos )
+		{
+			if ( theTarget == null ) return false;
+			Rect posBounds = VisualTreeHelper . GetDescendantBounds ( theTarget );
+			Point theMousePos = pos ( ( IInputElement ) theTarget );
+			return posBounds . Contains ( theMousePos );
+		}
+		private DataGridRow GetDataGridRowItem ( int index )
+		{
+			if ( this . BankGrid . ItemContainerGenerator . Status != GeneratorStatus . ContainersGenerated )
+				return null;
+
+			return BankGrid . ItemContainerGenerator . ContainerFromIndex ( index ) as DataGridRow;
+		}
+
+		private int GetDataGridItemCurrentRowIndex ( GetDragDropPosition pos )
+		{
+			int curIndex = -1;
+			for ( int i = 0 ; i < BankGrid . Items . Count ; i++ )
+			{
+				DataGridRow itm = GetDataGridRowItem ( i );
+				 itm = this . BankGrid . CurrentItem as DataGridRow;
+
+				if ( itm == null )
+					return -1;
+				if ( IsTheMouseOnTargetRow ( itm, pos ) )
+				{
+					curIndex = i;
+					break;
+				}
+			}
+			return curIndex;
+		}
+
+
+	#endregion // DRAG AND DROP STUFF
+
+
+
+
+
+
+
+
+		/// <summary>
+		/// down
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void SelectedGrid_PreviewDrop ( object sender, DragEventArgs e )
+		{
+			int x = 0;
+		}
+
+		private void DataGrid_DragEnter ( object sender, DragEventArgs e )
+		{
+			int x = 0;
+
+		}
+
+		private void DataGrid_PreparingCellForEdit ( object sender, DataGridPreparingCellForEditEventArgs e )
+		{
+
+		}
+
+
 	}
 }

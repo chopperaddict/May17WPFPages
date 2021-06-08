@@ -41,7 +41,7 @@ namespace WPFPages . Views
 
 		private bool IsDirty = false;
 		private bool Startup = true;
-		private static bool LinktoParents = false;
+		private static bool LinktoParent = false;
 		private static bool LinktoMultiParent = false;
 		private bool IsFiltered = false;
 		public static bool Triggered = false;
@@ -111,8 +111,6 @@ namespace WPFPages . Views
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
 			bool tmp = Flags . LinkviewerRecords;
-			if ( Flags . LinkviewerRecords )
-				LinkRecords . IsChecked = true;
 
 			Flags . DetDbEditor = this;
 			// Set window to TOPMOST
@@ -126,7 +124,17 @@ namespace WPFPages . Views
 			t1 . Start ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
-			LinktoParents = false;
+			if ( Flags . LinkviewerRecords )
+			{
+				LinkRecords . IsChecked = true;
+				LinktoParent = false;
+			}
+			else
+			{
+				LinkRecords . IsChecked = false;
+				LinktoParent = false;
+			}
+			LinktoMultiParent = false;
 			Startup = false;
 		}
 
@@ -281,7 +289,7 @@ namespace WPFPages . Views
 			// direct action (Lambda) version 
 			Predicate<bool> IsActive = delegate ( bool b )
 			{
-				return Flags . SqlDetViewer != null && LinktoParents == false;
+				return Flags . SqlDetViewer != null && LinktoParent == false;
 			};
 
 			if ( LoadingDbData )
@@ -314,7 +322,7 @@ namespace WPFPages . Views
 				TriggerViewerIndexChanged ( DetGrid );
 
 			// Only  do this if global link is OFF
-			if ( LinktoParents )
+			if ( LinktoParent )
 			{
 				// update parents row selection
 				string bankno = "";
@@ -574,7 +582,7 @@ namespace WPFPages . Views
 				// We do NOT have an active SqlDbviewer
 				LinkRecords . IsEnabled = false;
 				LinkRecords . IsChecked = false;
-				LinktoParents = false;
+				LinktoParent = false;
 				SqlParentViewer = null;
 			}
 			return false;
@@ -590,7 +598,7 @@ namespace WPFPages . Views
 				{
 					// We have an open Db SqlDbViewer open
 					LinkRecords . IsEnabled = true;
-					LinktoParents = false;
+					LinktoParent = false;
 					SqlParentViewer = Flags . SqlDetViewer;
 				}
 				else
@@ -598,7 +606,7 @@ namespace WPFPages . Views
 					// No Details Db SqlDbViewer open
 					LinkRecords . IsEnabled = false;
 					LinkRecords . IsChecked = false;
-					LinktoParents = false;
+					LinktoParent = false;
 					SqlParentViewer = null;
 				}
 			}
@@ -610,14 +618,14 @@ namespace WPFPages . Views
 					// we do have an open SqlDbViewer 
 					LinkRecords . IsEnabled = true;
 					SqlParentViewer = Flags . SqlDetViewer;
-					LinktoParents = false;
+					LinktoParent = false;
 				}
 				else
 				{
 					// No Details Db SqlDbViewer open
 					LinkRecords . IsEnabled = false;
 					SqlParentViewer = null;
-					LinktoParents = false;
+					LinktoParent = false;
 
 				}
 			}
@@ -653,7 +661,7 @@ namespace WPFPages . Views
 			LinkRecords . Refresh ( );
 			if ( Flags . LinkviewerRecords == true )
 			{
-				LinktoParents = false;
+				LinktoParent = false;
 				LinkToParent . IsEnabled = false;
 				LinkToParent . IsChecked = false;
 			}
@@ -667,7 +675,7 @@ namespace WPFPages . Views
 				else
 				{
 					LinkToParent . IsEnabled = false;
-					LinktoParents = false;
+					LinktoParent = false;
 				}
 
 			}
@@ -689,7 +697,7 @@ namespace WPFPages . Views
 				LinkRecords . IsChecked = false;
 			}
 			else
-				LinktoParents = !LinktoParents;
+				LinktoParent = !LinktoParent;
 		}
 
 		#region Menu items
@@ -1225,7 +1233,7 @@ namespace WPFPages . Views
 					SqlParentViewer = Flags . SqlDetViewer;
 				else
 				{
-					LinktoParents = false;
+					LinktoParent = false;
 					SqlParentViewer = null;
 				}
 			}

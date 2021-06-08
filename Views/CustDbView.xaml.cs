@@ -88,8 +88,6 @@ namespace WPFPages . Views
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
 			bool tmp = Flags . LinkviewerRecords;
-			if ( Flags . LinkviewerRecords )
-				LinkRecords . IsChecked = true;
 
 			Flags . CustDbEditor = this;
 			// Set window to TOPMOST
@@ -101,6 +99,17 @@ namespace WPFPages . Views
 			t1 . IsBackground = true;
 			t1 . Priority = ThreadPriority . Lowest;
 			t1 . Start ( );
+			if ( Flags . LinkviewerRecords )
+			{
+				LinkRecords . IsChecked = true;
+				LinktoParent = false;
+			}
+			else
+			{
+				LinkRecords . IsChecked = false;
+				LinktoParent = false;
+			}
+			LinktoMultiParent = false;
 
 			Mouse . OverrideCursor = Cursors . Arrow;
 			Startup = false;
@@ -354,6 +363,12 @@ namespace WPFPages . Views
 					MultiParentViewer . CustomerGrid . SelectedIndex = rec;
 					Utils . SetUpGridSelection ( MultiParentViewer . CustomerGrid, rec );
 				}
+			}
+			else if ( LinktoMultiParent )
+			{
+				Flags . SqlMultiViewer . CustomerGrid . SelectedIndex = this . CustGrid . SelectedIndex;
+				Flags . SqlMultiViewer . CustomerGrid . ScrollIntoView ( this . CustGrid . SelectedIndex );
+				Utils . SetUpGridSelection ( Flags . SqlMultiViewer . CustomerGrid, this . CustGrid . SelectedIndex );
 			}
 
 			IsDirty = false;

@@ -12,7 +12,6 @@ using System . Windows . Input;
 using System . Windows . Media;
 using WPFPages . Commands;
 using WPFPages . ViewModels;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
 using DataGrid = System . Windows . Controls . DataGrid;
 
 namespace WPFPages . Views

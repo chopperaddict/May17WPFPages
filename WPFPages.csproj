@@ -58,9 +58,6 @@
     </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.12.3.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
-      <HintPath>..\WpfUI\packages\DocumentFormat.OpenXml.2.12.3\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Win32.SystemEvents, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Win32.SystemEvents.5.0.0\lib\net461\Microsoft.Win32.SystemEvents.dll</HintPath>
     </Reference>
@@ -111,12 +108,16 @@
       <DependentUpon>CustDbView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DataGridNavigation.cs" />
+    <Compile Include="Views\DbManipulation.cs" />
     <Compile Include="Views\DelegateSelection.xaml.cs">
       <DependentUpon>DelegateSelection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DetailCollection.cs" />
     <Compile Include="Views\DetailsDbView.xaml.cs">
       <DependentUpon>DetailsDbView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GetExportRecords.xaml.cs">
+      <DependentUpon>GetExportRecords.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImportDbData.cs" />
     <Compile Include="Views\new_DetCollection.cs" />
@@ -217,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EditDb.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GetExportRecords.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

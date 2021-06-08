@@ -276,7 +276,7 @@ namespace WPFPages . Views
 			return dt;
 		}
 
-		public static void ExportDetData ( string path, string dbType )
+		public static int  ExportDetData ( string path, string dbType )
 		{
 			int count = 0;
 			string output = "";
@@ -300,6 +300,7 @@ namespace WPFPages . Views
 			}
 			System . IO . File . WriteAllText ( path, output );
 			Console . WriteLine ( $"Export of {count - 1} records from the [ {dbType} ] Db has been completed successfully." );
+			return count;
 		}
 
 		//===============================================================================
@@ -336,7 +337,7 @@ namespace WPFPages . Views
 				tmp = $"{objRow [ "Id" ] . ToString ( )}, "
 					+ $"{objRow [ "BankNo" ] . ToString ( )}, "
 					+ $"{objRow [ "CustNo" ] . ToString ( )}, "
-					+ $"{acTypestr}, '"
+					+ $"{acTypestr},"
 					+ $"{objRow [ "Balance" ] . ToString ( )}, "
 					+ $"{objRow [ "Intrate" ] . ToString ( )}, "
 					+ $"'{odate}', "

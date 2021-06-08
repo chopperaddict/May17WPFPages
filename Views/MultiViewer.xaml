@@ -366,7 +366,7 @@
 					     Grid.Column="0"
 						Grid.ColumnSpan="1" 
 						Grid.Row="0"
-					     Margin="20,0,0,0"
+					     Margin="10,0,0,0"
 					     Height="18"
 					     TextAlignment="Left"
 				     />
@@ -377,7 +377,7 @@
 					Grid.ColumnSpan="1"
 					Grid.Row="1" 
 					HorizontalAlignment="Left"
-					     Margin="20,0,0,0"
+					     Margin="10,0,0,0"
 					Height="18" 
 					     />
 
@@ -386,34 +386,34 @@
 					Grid.Column="0"
 					Grid.ColumnSpan="1" 
 					Grid.Row="2"					    
-					     Margin="20,0,0,0"
+					     Margin="10,0,0,0"
 					Height="18"
 					TextAlignment="Left"/>
 
 			<TextBlock x:Name="BankCount"
 					     Grid.Column="1"
-						Grid.ColumnSpan="1" 
+						Grid.ColumnSpan="2" 
 					     Grid.Row="0"					    
 					     Foreground="Red"
 					     Height="18"
 					     HorizontalAlignment="Center"
-					     Margin="20,3,0,0"
+					     Margin="10,3,0,0"
 					     TextAlignment="Center"
 					     VerticalAlignment="Top"
-					     Width="58"
+					     Width="88"
 					     Background="Beige" RenderTransformOrigin="0.924,0.407"
 					/>
 
 			<TextBox x:Name="CustCount"
 					     Foreground="Red"
 					     Grid.Column="1"
-					     Grid.ColumnSpan="1" 
+					     Grid.ColumnSpan="2" 
 						Grid.Row="1"
 					     Height="18"
 					     HorizontalAlignment="Center"		
 					    TextAlignment="Center"
-					     Margin="20,4,0,0"
-					     Width="58"
+					     Margin="10,4,0,0"
+					     Width="88"
 					     VerticalAlignment="Top"
 					     Background="Beige" RenderTransformOrigin="-2.686,0.889"/>
 
@@ -421,12 +421,13 @@
 			<TextBox x:Name="DetCount"
 				     Foreground="Red"
 				   Grid.Column="1"
+				     Grid.ColumnSpan="2" 
 				   Grid.Row="2"
 				   Height="18"
 				   HorizontalAlignment="Center"		
 				   TextAlignment="Center"
-				     Margin="20,5,0,0"
-				   Width="58"
+				     Margin="10,5,0,0"
+				   Width="88"
 				   VerticalAlignment="Top"
 				   Background="Beige" RenderTransformOrigin="-2.686,0.889"/>
 
@@ -489,16 +490,16 @@
 			Orientation="Horizontal"
 			Height="30"
 			HorizontalAlignment="Right" 			
-			Margin="30,0,-44,0" 
+			Margin="30,20,-44,0" 
 			Width="750"
 			>
-			<TextBlock Text="****   Database      Editors   ****"
+			<TextBlock Text="****     -----    Database      Editors     -----       ****"
 				Background="Transparent"
 			     FontSize="12"
 			     Foreground="white"
 				Height="20"
-				     Margin="40,0,0,0"
-				TextAlignment="Left" Width="231"/>
+				     Margin="-20,0,0,0"
+				TextAlignment="Left" Width="260"/>
 			<!--<TextBlock.Foreground>
 			-->
 

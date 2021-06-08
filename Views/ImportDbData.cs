@@ -5,11 +5,10 @@ using System . Data . SqlClient;
 using System . Linq;
 using System . Text;
 using System . Threading . Tasks;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . Rebar;
-using System . Windows . Forms;
 using System . Diagnostics;
 using System . Data;
 using WPFPages . Properties;
+using System . Windows;
 
 namespace WPFPages . Views
 {
@@ -84,8 +83,8 @@ namespace WPFPages . Views
 						else
 							Console . WriteLine ( $"SQL ERROR - {ex . Message} + [{ex . Data}].." );
 						MessageBox . Show ( $"SQL the Insert Command [{SQLcommand}]\r\nhas failed for some reason !.\r\n" +
-											$"\r\nThe process has terminated, Check Output window & your data and Db for safety\r\nMsg= {ex . Message}, {ex . Data}", "Db Error Information",
-									MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+											$"\r\nThe process has terminated, Check Output window & your data and Db for safety\r\nMsg= {ex . Message}, {ex . Data}", "Db Error Information" );//,
+						//MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 						Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was [{SQLcommand}]..." );
 						cnn . Close ( );
 						adapter . Dispose ( );
@@ -96,7 +95,7 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				MessageBox . Show ( $"Missing Data file {path}.!.", "Db Update Information", MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+				MessageBox . Show ( $"Missing Data file {path}.!.", "Db Update Information" );//, MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 				return;
 			}
 		}
@@ -118,7 +117,7 @@ namespace WPFPages . Views
 			{
 				MessageBox . Show (
 								$"There does not appear to be a suitable Raw Data File in the BulkData Folder ?\r\nTry using the [Create New data] option to create some suitable data",
-								"", MessageBoxButtons . OK );
+								"" );//, MessageBoxButtons . OK );
 				return false;
 			}
 			int counter = 0;
@@ -232,8 +231,8 @@ namespace WPFPages . Views
 					{
 						Console . WriteLine ( $"SQL ERROR - {ex . Message} + [{ex . Data}].." );
 						MessageBox . Show ( $"SQL the Insert Command [{SQLcommand}]\r\nhas failed for some reason !.\r\n" +
-										  $"\r\nThe process has terminated, Check your data and Db for safety", "Db Error Information",
-									MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+										  $"\r\nThe process has terminated, Check your data and Db for safety", "Db Error Information" );//,
+									//MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 						Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was -  {SQLcommand}..." );
 						adapter . Dispose ( );
 						break;
@@ -243,7 +242,7 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				MessageBox . Show ( $"Missing Data file {path}.!.", "Db Update Information", MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+				MessageBox . Show ( $"Missing Data file {path}.!.", "Db Update Information" );//, MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 				return;
 			}
 		}

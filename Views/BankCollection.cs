@@ -548,7 +548,7 @@ namespace WPFPages . Views
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="dbType"></param>
-		public static void ExportBankData ( string path, string dbType )
+		public static int  ExportBankData ( string path, string dbType )
 		{
 			int count = 0;
 			string output = "";
@@ -570,16 +570,20 @@ namespace WPFPages . Views
 				output += ParseDbRow ( "BANKACCOUNT", objRow );
 				count++;
 			}
-			System . IO . File . WriteAllText ( path, output );
-			Console . WriteLine ( $"Export of {count - 1} records from the [ {dbType} ] Db has been completed successfully." );
+			if(path == "")
+				path = @"C:\Users\ianch\Documents\Bank";
+			string savepath = Utils . GetExportFileName ( path );
 
+			System . IO . File . WriteAllText ( savepath, output );
+			Console . WriteLine ( $"Export of {count - 1} records from the [ {dbType} ] Db has been saved to {path} successfully." );
+			return count;
 		}
 
 
 		//===============================================================================
 		/// <summary>
 		/// Special method to check the data format we are going to write to the CSV file 
-		/// and creates the output line by line
+		/// and creates the output line by line from a datarow of the DataTable we have just read in
 		/// </summary>
 		/// <param name="dbType"></param>
 		/// <param name="objRow"></param>
@@ -609,11 +613,11 @@ namespace WPFPages . Views
 
 				//Creates the correct format for the CSV fle output, including adding single quotes to DATE fields
 				// Tested and working 7/6/21
-				tmp = $"{objRow [ "Id" ] . ToString ( )}, '"
-					+ $"{objRow [ "BankNo" ] . ToString ( )}, '"
-					+ $"{objRow [ "CustNo" ] . ToString ( )}, '"
-					+ $"{acTypestr}, '"
-					+ $"{objRow [ "Balance" ] . ToString ( )}, '"
+				tmp = $"{objRow [ "Id" ] . ToString ( )}, "
+					+ $"{objRow [ "BankNo" ] . ToString ( )}, "
+					+ $"{objRow [ "CustNo" ] . ToString ( )}, "
+					+ $"{acTypestr}, "
+					+ $"{objRow [ "Balance" ] . ToString ( )}, "
 					+ $"{objRow [ "Intrate" ] . ToString ( )}, "
 					+ $"'{odate}', '"
 					+ $"{cdate}'\r\n";

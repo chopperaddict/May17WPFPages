@@ -7,7 +7,6 @@ using WPFPages . Views;
 using WPFPages . ViewModels;
 
 //using WpfUI;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . Window;
 using System;
 using System . Data . SqlClient;
 using System . Data;

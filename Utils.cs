@@ -186,11 +186,44 @@ namespace WPFPages
 			Settings . Default . Upgrade ( );
 			ConfigurationManager . RefreshSection ( setting );
 		}
+		public static string GetExportFileName ( string filespec )
+		// opens  the common file open dialog
+		{
+			OpenFileDialog ofd = new OpenFileDialog ( );
+			ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
+			ofd . CheckFileExists = false;
+			ofd . AddExtension = true;
+			ofd . Title = "Select name for Exported data file.";
+			if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
+				ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
+			else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
+				ofd . Filter = "Comma seperated data (*.csv) | *.csv";
+			else if ( filespec . ToUpper ( ) . Contains ( "*.*" ) )
+				ofd . Filter = "All Files (*.*) | *.*";
+			else if ( filespec == "" )
+			{
+				ofd . Filter = "All Files (*.*) | *.*";
+				ofd . DefaultExt = ".CSV";
+			}
+//			string initfolder = ofd . InitialDirectory;
+//			if ( initfolder != "" && fnameonly != "" )
+//				filespec = initfolder + fnameonly;
+			ofd . FileName = filespec;
+			//if ( filespec == "" )
+			//	ofd . DefaultExt = ".XLS*" ;
+			//else
+			//	ofd . DefaultExt = $".{filespec . ToUpper ( )}" ;
+			ofd . ShowDialog ( );
+			string fnameonly = ofd . SafeFileName;
+			return ofd . FileName;
+		}
+
 		public static string GetImportFileName ( string filespec )
 		// opens  the common file open dialog
 		{
 			OpenFileDialog ofd = new OpenFileDialog ( );
 			ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
+			ofd . CheckFileExists = true;
 			if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
 				ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
 			else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
@@ -205,7 +238,6 @@ namespace WPFPages
 			ofd . ShowDialog ( );
 			return ofd . FileName;
 		}
-
 		public static string ConvertInputDate ( string datein )
 		{
 			string YYYMMDD = "";

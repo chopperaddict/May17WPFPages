@@ -93,8 +93,6 @@ namespace WPFPages . Views
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
 			bool tmp = Flags . LinkviewerRecords;
-			if ( Flags . LinkviewerRecords )
-				LinkRecords . IsChecked = true;
 
 			Flags . BankDbEditor = this;
 			// Set window to TOPMOST
@@ -103,6 +101,18 @@ namespace WPFPages . Views
 			this . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
+			Flags . LinkviewerRecords = tmp;
+			if ( Flags . LinkviewerRecords )
+			{
+				LinkRecords . IsChecked = true;
+				LinktoParent = false;
+			}
+			else
+			{
+				LinkRecords . IsChecked = false;
+				LinktoParent = false;
+			}
+			LinktoMultiParent = false;
 			// start our linkage monitor
 			t1 = new Thread ( checkLinkages );
 			t1 . IsBackground = true;
@@ -395,6 +405,12 @@ namespace WPFPages . Views
 					MultiParentViewer . BankGrid . SelectedIndex = rec;
 					Utils . SetUpGridSelection ( MultiParentViewer . BankGrid, rec );
 				}
+			}
+			if ( LinktoMultiParent )
+			{
+				Flags . SqlMultiViewer . BankGrid . SelectedIndex = this . BankGrid . SelectedIndex;
+				Flags . SqlMultiViewer . BankGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
+				Utils . SetUpGridSelection ( Flags . SqlMultiViewer . BankGrid, this . BankGrid . SelectedIndex );
 			}
 
 			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
