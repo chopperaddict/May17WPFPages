@@ -302,12 +302,15 @@ namespace WPFPages . Views
 			this . BankGrid . UpdateLayout ( );
 			this . BankGrid . Refresh ( );
 			Utils . SetUpGridSelection ( BankGrid, bindex );
-			bool reslt = false;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			Thread . Sleep ( 250 );
 			DataFields . Refresh ( );
 			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 			IsDirty = false;
+			this . BankGrid . SelectedItem = bindex;
+			this . BankGrid . CurrentItem = bindex;
+			this . BankGrid . Focus ( );
+			DataFields . Refresh ( );
 			Debug . WriteLine ( "BANKDBVIEW : Bank Data fully loaded" );
 		}
 

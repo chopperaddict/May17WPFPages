@@ -18,7 +18,9 @@
 	    Margin="0,0,27,17">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="10"/>
+			<RowDefinition Height="30"/>
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="20"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="0"/>
@@ -29,20 +31,38 @@
 			<ColumnDefinition Width="10"/>
 		</Grid.ColumnDefinitions>
 
+		<WrapPanel
+			Grid.Row="1"
+			Grid.Column="0"
+			Grid.ColumnSpan="3"
+			Orientation="Horizontal"	
+			HorizontalAlignment="Stretch"			
+			>
+			<TextBlock
+				x:Name="UpperGridName"
+				Text=" = dddgfggjfdghghsdf"
+				Foreground="White"
+				HorizontalAlignment="Left"
+				Margin="5,5,5,5"
+				Width="350"
+				/>
+		</WrapPanel>
 		<DataGrid x:Name="dataGrid" 
 			    AllowDrop="False"			    
 			    CanUserAddRows="False"
 			    AutoGenerateColumns="True"
 			    Grid.Column="1"
-			    Grid.ColumnSpan="2"
-			    Grid.Row="1"
+			    Grid.ColumnSpan="3"
+			    Grid.Row="2"
 			    Grid.RowSpan="1"
-			    MinHeight="200"
-			    SelectionMode="Extended"
-			    SelectionUnit="FullRow"
-			    VerticalAlignment="Stretch">
+			    MinHeight="400"
+			    SelectionMode="Single"
+			    Visibility="Visible"
+			    SelectionUnit="FullRow" 
+			    MouseDoubleClick="dataGrid_MouseDoubleClick" 
+			    Margin="0,0,33,0">
 
-		<!--#region bank Columns-->
+			<!--#region bank Columns-->
 			<DataGrid.Columns>
 				<DataGridTemplateColumn
 					Width="40"
@@ -115,21 +135,41 @@
 				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 			<!--#endregion bank Columns-->
-			
+
 		</DataGrid>
 
+		<WrapPanel
+			Grid.Row="3"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Height="30"
+			Margin="0,0,0,0"
+			Orientation="Horizontal"	
+			HorizontalAlignment="Stretch"			
+			>
+			<TextBlock Name="LowerGridName"
+				Text=" = Details data"
+				Foreground="White"
+				HorizontalAlignment="Left"
+				Margin="5,5,5,5"
+				Height="35"
+				VerticalAlignment="Top"
+				Width="350"
+				/>
+
+		</WrapPanel>
 		<DataGrid x:Name="selectedGrid" 
 			    AllowDrop="True"
 			    CanUserAddRows="True"
 			    AutoGenerateColumns="True"
 			    Grid.Column="1"
-			    Grid.ColumnSpan="2"
-			    Grid.Row="2"
+			    Grid.ColumnSpan="3"
+			    Grid.Row="4"
 			    Grid.RowSpan="1"
 			    Height="150"
 			    MinHeight="200"
-			    VerticalAlignment="Stretch"
-			    VerticalContentAlignment="Stretch">
+			    VerticalContentAlignment="Stretch" 
+			    Margin="0,5,33,0">
 
 
 			<!--#region bank Columns 2-->
@@ -206,43 +246,78 @@
 			</DataGrid.Columns>
 			<!--#endregion bank Columns 2-->
 
-
 		</DataGrid>
 
-	
-		<StackPanel
-			    Grid.Column="1"
-			    Grid.ColumnSpan="3"
-			    Grid.Row="3"
-			    Grid.RowSpan="1"
-				Height="50"
+		<WrapPanel					
 				Orientation="Horizontal"
-				HorizontalAlignment="Right"			
-				VerticalAlignment="Stretch"
-			    >
+				Grid.Column="0"
+				Grid.ColumnSpan="3"
+				Grid.Row="5"
+				Grid.RowSpan="2"
+				VerticalAlignment="Top" 
+			Margin="0,0,0,0" Width="693" 
+				>
+			<TextBlock
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Grid.Row="3"
+				Grid.RowSpan="1"
+				Text="Double Click on an item in top list to move it to lower list..." 
+				Margin="35,20,55,5"
+				FontWeight="Bold"
+				Height="22"/>
+			<Button x:Name="Select" 
+					Background="{StaticResource HeaderBorderBrushRed}"			  
+					Click="Select_Click"
+					Content="Update Db"
+					Foreground="White"
+					Height="30"
+					Margin="-3,20,10,0"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Top"
+					Width="90" />
 
 			<Button x:Name="cancelbutton" 
-			  Background="{StaticResource HeaderBorderBrushBlue}"			  
-			  Click="Cancelbutton_Click"
-			  Content="Cancel"
-			  Foreground="White"
-			  Height="30"
-			  Margin="0,15,0,0"
-			  HorizontalAlignment="Right"
-			  VerticalAlignment="Center"
-			  Width="60"
-			  />
-			<Button x:Name="gobutton" 
-			  Background="{StaticResource HeaderBorderBrushBlue}"			  
-			  Click="Gobutton_Click"
-			  Content="Go !"
-			  Foreground="White"
-			  Height="30"
-			  HorizontalAlignment="Right"
-			  Margin="10,15,-10,0"
-			  VerticalAlignment="Center"
-			  Width="60"
-			  />
-		</StackPanel>
+					Background="{StaticResource HeaderBorderBrushBlue}"			  
+					Click="Cancelbutton_Click"
+					Content="Close/Cancel"
+					Foreground="White"
+					Grid.Column="2"
+					Grid.ColumnSpan="2"
+					Grid.Row="4"
+					Grid.RowSpan="1"
+					Height="30"
+					Margin="0,20,0,0"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Center"
+					Width="120"
+					/>
+			</WrapPanel>
+
+		<!--#region side buttons-->
+		<Button x:Name="Dnbutton" 
+				  Background="{StaticResource HeaderBorderBrushGreen}"			  
+				  Content="v" 
+				  Foreground="White"
+				  Grid.Column="1" 
+				  Height="45"
+				  HorizontalAlignment="Right" 
+				  VerticalContentAlignment="Center"
+				  Margin="0,82,-10,0" 
+				  Grid.Row="4" 
+				  VerticalAlignment="Top"
+				  Width="25" RenderTransformOrigin="0.533,0.96" Grid.ColumnSpan="2"/>
+		<Button x:Name="Upbutton" 
+				  Background="{StaticResource HeaderBorderBrushGreen}"			  
+				  Content="^" 
+				  Foreground="White"
+				  Grid.Column="1" 
+				  Height="45"
+				  HorizontalAlignment="Right" 
+				  Margin="0,90,-20,0" 
+				  Grid.Row="2" 
+				  VerticalAlignment="Top"
+				  Width="25"/>
+		<!--#endregion side buttons-->
 	</Grid>
 </Window>

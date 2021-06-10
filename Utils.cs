@@ -27,6 +27,19 @@ namespace WPFPages
 		public static Action<DataGrid, int> GridInitialSetup = Utils . SetUpGridSelection;
 		//		public static Func<bool, BankAccountViewModel, CustomerViewModel, DetailsViewModel> IsMatched = CheckRecordMatch; 
 		public static Func<object, object, bool> IsRecordMatched = Utils . CompareDbRecords;
+
+		public struct bankrec
+		{
+			public string custno { get; set; }
+			public string bankno { get; set; }
+			public int actype { get; set; }
+			public decimal intrate{ get; set; }
+			public decimal balance { get; set; }
+			public DateTime odate { get; set; }
+			public DateTime cdate { get; set; }
+		}
+
+
 		// Declare the first few notes of the song, "Mary Had A Little Lamb".
 		// Define the frequencies of notes in an octave, as well as
 		// silence (rest).

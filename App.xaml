@@ -13,6 +13,7 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="Dicts\ButtonMainTemplate.xaml" />
+				<ResourceDictionary Source="Dicts\Menus.xaml" />
 				<ResourceDictionary Source="Dicts\ColorsDictionary.xaml" />
 				<ResourceDictionary Source="Dicts\ButtonsMaster.xaml" />
 				<ResourceDictionary Source="Dicts\DiagonalGradients.xaml" />

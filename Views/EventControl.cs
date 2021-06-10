@@ -11,21 +11,21 @@ namespace WPFPages . Views
 {
 	#region KNOWN DELEGATES IN USE
 
-//	public delegate bool DbReloaded ( object sender , DataLoadedArgs args );
+	//	public delegate bool DbReloaded ( object sender , DataLoadedArgs args );
 
-//	public delegate void EditDbGridSelectionChanged ( int ChangeType , int value , string caller );
+	//	public delegate void EditDbGridSelectionChanged ( int ChangeType , int value , string caller );
 
-//	public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
+	//	public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
 
-//	public delegate void NotifyViewer ( int status , string info , SqlDbViewer NewSqlViewer );
+	//	public delegate void NotifyViewer ( int status , string info , SqlDbViewer NewSqlViewer );
 
-//	public delegate void SQLViewerSelectionChanged ( int ChangeType , int row , string CurrentDb );
+	//	public delegate void SQLViewerSelectionChanged ( int ChangeType , int row , string CurrentDb );
 
-//	public delegate void SqlSelectedRowChanged ( int ChangeType , int row , string CurentDb );
+	//	public delegate void SqlSelectedRowChanged ( int ChangeType , int row , string CurentDb );
 
-//	public delegate void SqlViewerNotify ( int status , string info , SqlDbViewer NewSqlViewer );
+	//	public delegate void SqlViewerNotify ( int status , string info , SqlDbViewer NewSqlViewer );
 
-//	public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
+	//	public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
 
 	#endregion KNOWN DELEGATES IN USE
 
@@ -38,9 +38,9 @@ namespace WPFPages . Views
 		//Event CallBack for when Asynchronous data loading has been completed in the Various ViewModel classes
 
 		// Main Event handlersfor when DB's load data from disk
-		public static  event EventHandler<LoadedEventArgs> BankDataLoaded;
-		public static  event EventHandler<LoadedEventArgs> CustDataLoaded;
-		public static  event EventHandler<LoadedEventArgs> DetDataLoaded;
+		public static event EventHandler<LoadedEventArgs> BankDataLoaded;
+		public static event EventHandler<LoadedEventArgs> CustDataLoaded;
+		public static event EventHandler<LoadedEventArgs> DetDataLoaded;
 
 		public static event EventHandler<IndexChangedArgs> ViewerIndexChanged;
 		public static event EventHandler<IndexChangedArgs> EditIndexChanged;
@@ -52,8 +52,12 @@ namespace WPFPages . Views
 		public static event EventHandler<LoadedEventArgs> EditDbDataUpdated;
 		public static event EventHandler<LoadedEventArgs> MultiViewerDataUpdated;
 
-//		public static event EventHandler<LoadedEventArgs> DataUpdated;
+		//		public static event EventHandler<LoadedEventArgs> DataUpdated;
 		public static event EventHandler<LoadedEventArgs> RecordDeleted;
+
+		public static event EventHandler<LoadedEventArgs> TransferDataUpdated;
+		public static event EventHandler<LoadedEventArgs> DbChangedExternally;
+
 		// Event we TRIGGER to notify SqlViewer of  a selectedindex change
 		// uses delegate : public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
 		//		public static event EditDbDataChanged ViewerDataHasBeenChanged;
@@ -82,7 +86,7 @@ namespace WPFPages . Views
 		}
 
 		public static Func<int, int, int> CalcAdd = ( x, y ) => x + y;
-		public static Func<int, int, int> CalcSub= ( x, y ) => x - y;
+		public static Func<int, int, int> CalcSub = ( x, y ) => x - y;
 		public static Func<int, int, int> CalcMult = ( x, y ) => x * y;
 		public static Func<int, int, int> CalcDiv = ( x, y ) => x / y;
 		public static Func<int, int, int> CalcMod = ( x, y ) => x % y;
@@ -90,25 +94,26 @@ namespace WPFPages . Views
 		public static int CalcInts ( int Calctype, int in1, int in2 )
 		{
 			int result = 0;
-			switch ( Calctype ) {
-				case 1:		//ADD
+			switch ( Calctype )
+			{
+				case 1:         //ADD
 					result = in1 + in2;
 					break;
-				case 2:		// SUBTRACT
+				case 2:         // SUBTRACT
 					result = in1 - in2;
 					break;
-				case 3:		//MULTIPLY
+				case 3:         //MULTIPLY
 					result = in1 * in2;
 					break;
-				case 4:		// DIVIDE
+				case 4:         // DIVIDE
 					result = in1 / in2;
 					break;
 				case 5:         // RETURN MODULO
 					result = in1 % in2 == 0 ? 0 : 1;
 					break;
-				case 6:		// return remainder
+				case 6:         // return remainder
 					int divisor = in1 / in2;
-					int divresult= in1 % in2;
+					int divresult = in1 % in2;
 					if ( divresult == 0 )
 						result = 0;
 					else
@@ -119,7 +124,7 @@ namespace WPFPages . Views
 		}
 
 
-	
+
 		/// <summary>
 		/// Central point for TRIGGERING this event
 		/// </summary>
@@ -148,12 +153,12 @@ namespace WPFPages . Views
 		}
 		public static void TriggerViewerIndexChanged ( object obj, IndexChangedArgs e )
 		{
-//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerIndexChanged EVENT trigger (from {obj?.ToString ( )})" );
+			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerIndexChanged EVENT trigger (from {obj?.ToString ( )})" );
 			ViewerIndexChanged?.Invoke ( obj, e );
 		}
 		public static void TriggerMultiViewerIndexChanged ( object obj, IndexChangedArgs e )
 		{
-//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
+			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
 			MultiViewerIndexChanged?.Invoke ( obj, e );
 		}
 		//------------------------------//
@@ -161,36 +166,49 @@ namespace WPFPages . Views
 		//------------------------------//
 		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerDataUpdated EVENT trigger (from{obj?.ToString ( )})" );
 			ViewerDataUpdated?.Invoke ( obj, e );
 		}
 		public static void TriggerEditDbDataUpdated ( object obj, LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  EditDbDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  EditDbDataUpdated EVENT trigger (from{obj?.ToString ( )})" );
 			EditDbDataUpdated?.Invoke ( obj, e );
 		}
 		public static void TriggerMultiViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
-			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerDataUpdated EVENT trigger (from{obj? . ToString ( )})" );
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerDataUpdated EVENT trigger (from{obj?.ToString ( )})" );
 			MultiViewerDataUpdated?.Invoke ( obj, e );
 		}
+		public static void TriggerTransferDataUpdated ( object obj, LoadedEventArgs e )
+		{
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  TransferDataUpdated EVENT trigger (from{obj?.ToString ( )})" );
+			TransferDataUpdated ?.Invoke ( obj, e );
+		}
+		
+
 		//------------------------------//
 		// DATA LOADED EVENTS
 		//------------------------------//		
-		public static void TriggerBankDataLoaded ( object obj , LoadedEventArgs e )
+		public static void TriggerBankDataLoaded ( object obj, LoadedEventArgs e )
 		{
-//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  BankDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
+			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  BankDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
 			BankDataLoaded?.Invoke ( obj, e );
 		}
-		public static void TriggerCustDataLoaded ( object obj , LoadedEventArgs e )
+		public static void TriggerCustDataLoaded ( object obj, LoadedEventArgs e )
 		{
-//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  CustDataLoaded EVENT trigger (from{obj ?. ToString ( )})" );
+			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  CustDataLoaded EVENT trigger (from{obj ?. ToString ( )})" );
 			CustDataLoaded?.Invoke ( obj, e );
 		}
-		public static void TriggerDetDataLoaded ( object obj , LoadedEventArgs e )
+		public static void TriggerDetDataLoaded ( object obj, LoadedEventArgs e )
 		{
-//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
+			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  DetDataLoaded EVENT trigger (from{obj? . ToString ( )})" );
 			DetDataLoaded?.Invoke ( obj, e );
+		}
+
+		
+		public static void TriggerDbChangedExternally ( object obj, LoadedEventArgs e )
+		{
+			DbChangedExternally ?.Invoke ( obj, e );
 		}
 		//------------------------------//
 		// DATA DELETION EVENTS
@@ -198,7 +216,7 @@ namespace WPFPages . Views
 		public static void TriggerRecordDeleted ( object obj, LoadedEventArgs e )
 		{
 			RecordDeleted?.Invoke ( obj, e );
-				Console . WriteLine ( $"DEBUG : In EventControl : Sending  RecordDeleted  EVENT trigger" );
+			Console . WriteLine ( $"DEBUG : In EventControl : Sending  RecordDeleted  EVENT trigger" );
 		}
 
 		#region DEBUG utilities
@@ -218,7 +236,7 @@ namespace WPFPages . Views
 				dglist2 = ViewerIndexChanged?.GetInvocationList ( );
 			return dglist2;
 		}
-		
+
 		public static Delegate [ ] GetEventCount6 ( )
 		{
 			Delegate [ ] dglist2 = null;

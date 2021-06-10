@@ -29,9 +29,9 @@
 		on the left side in the main window (the 'Control Panel' area).
 	-->
 	<Window.Resources>
-		<data:BankCollection x:Key="BankData" />
-		<data:CustCollection x:Key="CustData" />
-		<data:DetCollection x:Key="DetData" />
+		<!--<data:BankCollection x:Key="BankData" />-->
+		<!--<data:CustCollection x:Key="CustData" />-->
+		<!--<data:OriginalDetcollection x:Key="DetData" />-->
 
 		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />

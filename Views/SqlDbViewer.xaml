@@ -27,7 +27,7 @@
 
 	<Window.Resources>
 
-		<!--<data:SqlBankcollection x:Key="SqlBankcollection"/>-->
+		<!--<dd:SqlBankcollection x:Key="SqlBankcollection"/>-->
 		
 		<Style x:Key="ButtonFocusVisual">
 			<Setter Property="Control.Template">
@@ -374,90 +374,6 @@
 			</Style.Triggers>
 		</Style>
 
-		<!--Styles for menuitems-->
-		<Style x:Key="MenuItemRed" TargetType="{x:Type MenuItem}">
-			<Setter Property="Background" Value="Transparent" />
-			<Setter Property="Foreground" Value="Black" />
-			<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
-			<Setter Property="BorderThickness" Value="1" />
-			<Setter Property="SnapsToDevicePixels" Value="True" />
-			<Setter Property="HorizontalContentAlignment" Value="left" />
-			<Setter Property="VerticalAlignment" Value="Bottom" />
-			<Setter Property="VerticalContentAlignment" Value="Bottom" />
-			<Setter Property="MinHeight" Value="25" />
-			<!--<Setter Property="Cursor" Value="Hand" />-->
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type MenuItem}">
-						<Border x:Name="Bd" 
-							  Padding="17,0,17,0" 
-							  BorderBrush="{TemplateBinding BorderBrush}" 
-							  BorderThickness="{TemplateBinding BorderThickness}" 
-							  Background="{TemplateBinding Background}" 
-							  SnapsToDevicePixels="True" 
-							  Uid="Border_38">
-							<ContentPresenter x:Name="ContentPresenter"  
-										Content="{TemplateBinding Header}" 
-										Grid.Column="1" ContentSource="Header" 
-										Margin="{TemplateBinding Padding}" 
-										RecognizesAccessKey="True" 
-										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-										Uid="ContentPresenter_33"/>
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsHighlighted" Value="True">
-								<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
-								<Setter Property="Background" TargetName="Bd" Value="Orange"/>
-								<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource Black0}"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-		<Style x:Key="MenuItemGreen" TargetType="{x:Type MenuItem}">
-			<Setter Property="Background" Value="Transparent" />
-			<Setter Property="Foreground" Value="Black" />
-			<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
-			<Setter Property="BorderThickness" Value="1" />
-			<Setter Property="SnapsToDevicePixels" Value="True" />
-			<Setter Property="HorizontalContentAlignment" Value="Center" />
-			<Setter Property="VerticalAlignment" Value="Bottom" />
-			<Setter Property="VerticalContentAlignment" Value="Bottom" />
-			<Setter Property="MinHeight" Value="25" />
-			<!--<Setter Property="Cursor" Value="Hand" />-->
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type MenuItem}">
-						<Border x:Name="Bd" 
-							  Padding="17,0,17,0" 
-							  BorderBrush="{TemplateBinding BorderBrush}" 
-							  BorderThickness="{TemplateBinding BorderThickness}" 
-							  Background="{TemplateBinding Background}" 
-							  SnapsToDevicePixels="True" 
-							  Uid="Border_38">
-							<ContentPresenter x:Name="ContentPresenter"  
-										Content="{TemplateBinding Header}" 
-										Grid.Column="1" 
-										ContentSource="Header" 
-										Margin="{TemplateBinding Padding}" 
-										RecognizesAccessKey="True"
-										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-										Uid="ContentPresenter_33"/>
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsHighlighted" Value="True">
-								<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Green0}"/>
-								<Setter Property="Background" TargetName="Bd" Value="Green"/>
-								<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
 		<!--<Style x:Key="CenterText" TargetType="TextBox">
 			<Setter Property="HorizontalAlignment" Value="Center" />
 			<Setter Property="VerticalAlignment" Value="Center" />
@@ -532,77 +448,123 @@
 			<MenuItem  Header="_Linq Queries"
 				     Margin="2"
 				     FontWeight="Bold"
-					Width="80"
-				    Foreground="{StaticResource Black1}">
+				     IsTabStop="False"
+					Width="100"
+				    Foreground="{StaticResource Black0}">
 				
-				<MenuItem Header="Show All records"
+					<MenuItem Header="Show All records"
+				     FontWeight="Bold"
 					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
 					Style="{StaticResource MenuItemGreen}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-						Click="Linq6_Click"
-					    IsCheckable="false"
-				/>
-				<MenuItem Header="A/c Type 1 Only"
-					    Background="#35F6FB"
-					    Click="Linq1_Click"
-					    Foreground="Black"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					    IsCheckable="false"/>
+					Background="#00FF00"
+						    VerticalAlignment="Top"
+					Click="Linq6_Click"
+					IsCheckable="false"
+					/>
+					<MenuItem Header="A/c Type 1 Only"
+					Background="#35F6FB"
+					Click="Linq1_Click"
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemBlue}"
+					IsCheckable="false"
+/>
 				
-				<MenuItem Header="A/c Type 2 Only"
+					<MenuItem Header="A/c Type 2 Only"
 					Background="#35F6FB"
 					Click="Linq2_Click"
-					Foreground="Black"
-					    IsCheckable="false"/>
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemBlue}"
+					IsCheckable="false"
+						    />
 				
-				<MenuItem Header="A/c Type 3 Only"
+					<MenuItem Header="A/c Type 3 Only"
 					Background="#35F6FB"
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemBlue}"
 					Click="Linq3_Click"
-					Foreground="Black"
-					    IsCheckable="false"/>
+					IsCheckable="false"
+						    />
 				
-				<MenuItem Header="A/c Type 4 Only"
+					<MenuItem Header="A/c Type 4 Only"
 					Background="#35F6FB"
 					Click="Linq4_Click"
-					Foreground="Black"
-				    IsCheckable="false"/>
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemBlue}"
+					IsCheckable="false"
+						    />
 				
-				<MenuItem Header="Multi A/C Holders"
-					Background="#FF0000"
-				     Foreground="White"
-					Style="{StaticResource MenuItemRed}"
-					Click="Linq5_Click"
-					    IsCheckable="false"
-				/>
 				<Separator />
 
-				<MenuItem Header="Create 'Join' of Bank and Details"
+				<MenuItem Header="Multi A/C Holders"
+					Background="#FF0000"
+					Foreground="White"
+					Click="Linq5_Click"
+					IsCheckable="false"
+					/>
+
+					<!--<MenuItem Header="Create 'Join' of Bank and Details"
 					Background="#35F6FB"
 					Click="bankjoin_Click"
 					IsCheckable="false"
 					Foreground="Black"/>
-				<Separator />
-			</MenuItem>
+					<Separator />-->
+				</MenuItem>
 
-			<MenuItem  Header="Db Utilities"
+			<MenuItem  Header="Data Copy Utilities"
 				    Click="Filter_Click"
 				     FontWeight="DemiBold"
-					Width="80"
+     				     IsTabStop="False"
+					Width="130"
 				     Margin="2"
 				    Foreground="{StaticResource Black1}">
-				<MenuItem Header="Export Selected Customer accounts"
-					Background="#35F6FB"
+
+				<MenuItem Header="Copy Multi Bank a/c's to Details Db"
+				    Name="ExportBank"
 					Click="Exportselected_Click"
 					IsCheckable="false"
-					Foreground="Black"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
 				    Width="280"/>
+
+				<MenuItem Header="Copy Multi Details a/c's to Bank Db"
+				    Name="ExportDetails"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					Click="Exportselected_Click"
+					IsCheckable="false"
+				    Width="280"/>
+
+				<Separator
+					Background="Gray"
+					Foreground="Gray"
+					Height="8"
+					HorizontalAlignment="Left"/>
+				
+				<MenuItem Header="Copy Bank a/c's to Details Db"
+				    Name="ExportFullBank"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					Click="Exportany_Click"
+					IsCheckable="false"
+				    Width="280"/>
+
+				<MenuItem Header="Copy Details a/c's to Bank Db"
+				    Name="ExportFullDetails"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					Click="Exportany_Click"
+					IsCheckable="false"
+				    Width="280"/>
+
 			</MenuItem>
 			
 			<MenuItem  Header="Options"
 				Click="Options_Click"
+				     IsTabStop="False"
 				Width="70"
 				Foreground="{StaticResource White2}">
 
@@ -625,7 +587,7 @@
 					HorizontalAlignment="Left"
 					HorizontalContentAlignment="Left"
 					Width="290"
-					Margin="2"				     />
+					Margin="2"/>
 				<MenuItem  Header="Export Details Db => CSV"
 					Click="ExportDetCSV_Click"
 					FontWeight="DemiBold"
@@ -638,17 +600,18 @@
 					Margin="2"/>
 				<Separator/>
 				<MenuItem  Header="Import Bank Account Db from CSV"
+				     Name="bankfromCSV"
 					Click="ImportBankCSV_Click"
 					FontWeight="DemiBold"
-					Background="#FF0000"
-					Foreground="White"
+					Background="{StaticResource Red2}"
+					Foreground="Black"
 					Style="{StaticResource MenuItemRed}"
 					HorizontalAlignment="Left"
 					HorizontalContentAlignment="Left"
 					Width="290"
-					Margin="2"
-					/>
+					Margin="2"/>
 				<MenuItem  Header="Import Customers Db from CSV"
+				     Name="custfromCSV"
 					Click="ImportCustCSV_Click"
 					FontWeight="DemiBold"
 					Foreground="White"
@@ -657,9 +620,9 @@
 					HorizontalContentAlignment="Left"
 					Style="{StaticResource MenuItemRed}"
 					Width="290"
-					Margin="2"
-					/>
+					Margin="2"/>
 				<MenuItem  Header="Import Details Db from CSV"
+				     Name="detfromCSV"
 					Click="ImportDetCSV_Click"
 					FontWeight="DemiBold"
 					Foreground="White"
@@ -668,23 +631,23 @@
 					HorizontalContentAlignment="Left"
 					Style="{StaticResource MenuItemRed}"
 					Width="290"
-					Margin="2"
-					/>
+					Margin="2"/>
 
 			</MenuItem>
 
-			<MenuItem  Header="Close Viewer..."
+				<MenuItem  Header="Close Viewer..."
 				    Click="Exit_Click"
 				     FontWeight="SemiBold"
+				     IsTabStop="False"
 				     Margin="2,0"
 					Width="97"
-				    Foreground="{StaticResource White1}">
+				    Foreground="{StaticResource White1}"/>
 				<!--<MenuItem Header="Setup Filter"
 					    Background="#35F6FB"
 					    Click="Filter_Click"
 					    Foreground="Black"
 					    IsCheckable="false"/>-->
-			</MenuItem>
+			<!--</MenuItem>-->
 
 		</Menu>
 
@@ -942,40 +905,43 @@
 			<!--b:DataGridBehaviour.FullRowSelect="true"-->
 			<!--#region BankAccount data Grid-->
 			<DataGrid Name="BankGrid"
-				AllowDrop="True"
-				AlternatingRowBackground="{StaticResource Blue4}"				    
-				AutoGenerateColumns="False"
-				BeginningEdit="BankGrid_BeginningEdit"
-				BorderBrush="{StaticResource Blue3}"
-				BorderThickness="0"
-				CanUserAddRows="False"
-				CanUserSortColumns="True"
-				CellEditEnding="BankGrid_CellEditEnding"
-				ColumnHeaderHeight="25"
-				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
-				GotFocus="BankGrid_GotFocus"
-				Grid.ColumnSpan="4"
-				HorizontalAlignment="Stretch"
-				IsEnabled="true"
-				ItemsSource="{Binding}"
-				IsSynchronizedWithCurrentItem="false"
-				MouseRightButtonDown="BankGrid_MouseRightButtonDown"
-				PreviewMouseDown="BankGrid_PreviewMouseDown"
-				RowEditEnding="ViewerGrid_RowEditEnding"
-				RowHeight="22"
-				ScrollBar.Scroll="BankGrid_Scroll"
-				ScrollViewer.ScrollChanged="BankGrid_ScrollChanged"
-				SelectedCellsChanged="BankGrid_SelectedCellsChanged"
-				SelectionChanged="ItemsView_OnSelectionChanged"
-				SelectionMode="Single"
-				SelectionUnit="FullRow"
-				TabIndex="1"
-				TargetUpdated="BankGrid_TargetUpdated"
-				VerticalAlignment="Stretch"
-				VerticalGridLinesBrush="{StaticResource Blue2}"
-				VirtualizingPanel.ScrollUnit="Pixel"
-				Visibility="Collapsed"
+					AllowDrop="True"
+				    
+					AlternatingRowBackground="{StaticResource Blue4}"				    
+					AutoGenerateColumns="False"
+					BeginningEdit="BankGrid_BeginningEdit"
+					BorderBrush="{StaticResource Blue3}"
+					BorderThickness="0"
+					CanUserAddRows="False"
+					CanUserSortColumns="True"
+					CellEditEnding="BankGrid_CellEditEnding"
+					ColumnHeaderHeight="25"
+					ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
+					GotFocus="BankGrid_GotFocus"
+					Grid.ColumnSpan="4"
+					HorizontalAlignment="Stretch"
+					IsEnabled="true"
+					ItemsSource="{Binding}"				    
+					IsSynchronizedWithCurrentItem="True"			    
+			    
+					PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtondown"
+					RowEditEnding="ViewerGrid_RowEditEnding"
+					RowHeight="22"
+					ScrollBar.Scroll="BankGrid_Scroll"
+					ScrollViewer.ScrollChanged="BankGrid_ScrollChanged"
+					SelectedCellsChanged="BankGrid_SelectedCellsChanged"
+					SelectionChanged="ItemsView_OnSelectionChanged"
+					SelectionMode="Single"
+					SelectionUnit="FullRow"
+					TabIndex="1"
+					TargetUpdated="BankGrid_TargetUpdated"
+					VerticalAlignment="Stretch"
+					VerticalGridLinesBrush="{StaticResource Blue2}"
+					VirtualizingPanel.ScrollUnit="Pixel"
+					Visibility="Collapsed" 
 				    >
+				<!--PreviewMouseDown="BankGrid_PreviewMouseDown"-->
+				<!--PreviewMouseLeftButtonUp="BankGrid_PreviewMouseLeftButtonUp"-->
 				<!--VirtualizingPanel.ScrollUnit="Pixel"-->
 				<!--PreviewMouseDown="BankGrid_PreviewMouseDown"-->
 
@@ -983,6 +949,9 @@
 				<DataGrid.Resources>
 					<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#96A3FB" />
 				</DataGrid.Resources>
+				<!--<DataGrid.DragIndicatorStyle>
+					<Style/>
+				</DataGrid.DragIndicatorStyle>-->
 
 				<!--Not implemented just yet-->
 				<!--

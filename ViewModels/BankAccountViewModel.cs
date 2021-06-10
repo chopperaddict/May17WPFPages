@@ -5,6 +5,7 @@
 
 using System;
 using System . Collections . Generic;
+using System . Collections . ObjectModel;
 using System . ComponentModel;
 using System . Windows . Controls;
 
@@ -22,10 +23,10 @@ namespace WPFPages . ViewModels
 
 		// CONSTRUCTOR
 		//**************************************************************************************************************************************************************//
+
 		public BankAccountViewModel ( )
 		{
 		}
-
 		#endregion CONSTRUCTORS
 
 		#region STANDARD CLASS PROPERTIES SETUP

@@ -139,7 +139,7 @@ namespace WPFPages . Views
 				async ( Bankinternalcollection ) =>
 				{
 					LoadBankCollection ( );
-//					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
+					//					Debug . WriteLine ( $"Just Called LoadBankCollection () in second Task.Run() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				}, TaskScheduler . FromCurrentSynchronizationContext ( )
 			 );
 			#endregion process code to load data
@@ -309,10 +309,7 @@ namespace WPFPages . Views
 			{
 				SqlConnection con;
 				string ConString = "";
-
-				//ConString = ( string ) Properties . Settings . Default [ "ConnectionString" ];
 				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
-				//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
 				Debug . WriteLine ( $"Making new SQL connection in BANKCOLLECTION" );
 				con = new SqlConnection ( ConString );
 
@@ -403,7 +400,7 @@ namespace WPFPages . Views
 							DataSource = Bankinternalcollection,
 							RowCount = Bankinternalcollection . Count
 						} );
-//					Debug . WriteLine ( $"DEBUG : In BankCollection : Sending  BankDataLoaded EVENT trigger" );
+					//					Debug . WriteLine ( $"DEBUG : In BankCollection : Sending  BankDataLoaded EVENT trigger" );
 				}
 			}
 			//			Flags . BankCollection = Bankcollection;
@@ -465,7 +462,7 @@ namespace WPFPages . Views
 				{
 					con . Open ( );
 					SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
-						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno",  con );
+						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno", con );
 					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
 					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
 					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );
@@ -481,13 +478,94 @@ namespace WPFPages . Views
 			catch ( Exception ex )
 			{ Console . WriteLine ( $"BANKACCOUNT Update FAILED : {ex . Message}, {ex . Data}" ); }
 			finally
-			{con . Close ( );}
+			{ con . Close ( ); }
 			return true;
 		}
 
+		#region update functionality
+
+		/// <summary>
+		/// Called to allow any method to load FULL Bank data directly 
+		/// it returns a populated DataTable
+		/// </summary>
+		/// <param name="dtBank"></param>
+		/// <param name="Sqlcommand"></param>
+		/// <returns></returns>
+		public static DataTable LoadBankDirect ( DataTable dtBank, string Sqlcommand = "Select* from BankAccount order by CustNo, BankNo" )
+		{
+			SqlConnection con;
+			string ConString = "";
+			string commandline = "";
+			dtBank. Clear ( );
+
+			try
+			{
+				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+				Debug . WriteLine ( $"Making new SQL connection in BANKCOLLECTION" );
+				con = new SqlConnection ( ConString );
+
+				using ( con )
+				{
+					Debug . WriteLine ( $"Using new SQL connection in BANKCOLLECTION" );
+					if ( Sqlcommand != "" )
+						commandline = Sqlcommand;
+					else
+						commandline = "Select * from BankAccount order by CustNo, BankNo";
+
+					SqlCommand cmd = new SqlCommand ( commandline, con );
+					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+					if ( dtBank == null )
+						dtBank = new DataTable ( );
+					sda . Fill ( dtBank );
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"Failed to load Bank Details - {ex . Message}, {ex . Data}" ); return null;
+			}
+			return dtBank;
+
+		}
+		/// <summary>
+		/// A specialist version  to reload data WITHOUT changing global version
+		/// </summary>
+		/// <returns></returns>
+		public  static BankCollection LoadBankCollectionDirect( BankCollection temp, DataTable dtBank )
+		{
+			try
+			{
+				for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
+				{
+					temp . Add ( new BankAccountViewModel
+					{
+						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
+						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
+						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
+						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
+					} );
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
+				MessageBox . Show ( $"BANK : SQL Error in BankCollection load function : {ex . Message}, {ex . Data}" );
+			}
+			finally
+			{
+				Debug . WriteLine ( $"BANK : Completed load into Bankcollection :  {temp . Count} records loaded successfully ...." );
+			}
+			return temp;
+		}
+
+		#endregion update functionality
+
 
 		#region EXPORT FUNCTIONS TO READ/WRITE CSV files for BANKACCOUNT DB
-		
+
 		/// <summary>
 		/// Load the data into a DataTable for our export functions below here
 		/// </summary>
@@ -548,7 +626,7 @@ namespace WPFPages . Views
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="dbType"></param>
-		public static int  ExportBankData ( string path, string dbType )
+		public static int ExportBankData ( string path, string dbType )
 		{
 			int count = 0;
 			string output = "";
@@ -570,7 +648,7 @@ namespace WPFPages . Views
 				output += ParseDbRow ( "BANKACCOUNT", objRow );
 				count++;
 			}
-			if(path == "")
+			if ( path == "" )
 				path = @"C:\Users\ianch\Documents\Bank";
 			string savepath = Utils . GetExportFileName ( path );
 
@@ -592,7 +670,7 @@ namespace WPFPages . Views
 		{
 			string tmp = "", s = "";
 			string [ ] odat, cdat, revstr;
-			if (dbType == "BANKACCOUNT" )
+			if ( dbType == "BANKACCOUNT" )
 			{
 				char [ ] ch = { ' ' };
 				char [ ] ch2 = { '/' };

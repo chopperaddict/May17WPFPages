@@ -10,7 +10,9 @@ using System . Security . Cryptography;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
+using System . Windows . Controls . Primitives;
 using System . Windows . Input;
+using WPFPages . Libraries;
 using WPFPages . ViewModels;
 
 // Used by DetailsDbViewer
@@ -93,8 +95,8 @@ namespace WPFPages . Views
 			t1 . ContinueWith (
 				( Detinternalcollection ) =>
 				{
-				//				Debug . WriteLine ( $"DETAILS : Task.Run() Completed : Status was [ {Detinternalcollection . Status} ]." );
-			}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
+					//				Debug . WriteLine ( $"DETAILS : Task.Run() Completed : Status was [ {Detinternalcollection . Status} ]." );
+				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
 			// but ONLY if there were any Exceptions !!
@@ -224,6 +226,85 @@ namespace WPFPages . Views
 			}
 			return true;
 		}
+		public static DataTable LoadDetailsDirect ( DataTable dtDetails, string Sqlcommand = "Select* from SecAccounts order by CustNo, BankNo" )
+		{
+			SqlConnection con;
+			string ConString = "";
+			string commandline = "";
+			dtDetails . Clear ( );
+			ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+			Debug . WriteLine ( $"Making new SQL connection in DETAILSCOLLECTION" );
+			con = new SqlConnection ( ConString );
+			try
+			{
+				Debug . WriteLine ( $"Using new SQL connection in DETAILSCOLLECTION" );
+				using ( con )
+				{
+					// Create a valid Query Command string including any active sort ordering
+					commandline = "Select * from SecAccounts  order by ";
+					commandline = Utils . GetDataSortOrder ( commandline );
+					SqlCommand cmd = new SqlCommand ( commandline, con );
+					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
+
+					DetCollection bptr = new DetCollection ( );
+					sda . Fill ( dtDetails );
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+				MessageBox . Show ( $"DETAILS : ERROR in LoadDetailsDataSql(): Failed to load Details Details - {ex . Message}, {ex . Data}" );
+			}
+			finally
+			{
+				con . Close ( );
+			}
+			return dtDetails;
+		}
+
+		public static DetCollection LoadDetailsCollectionDirect ( DetCollection collection , DataTable dtDetails)
+		{
+			int count = 0;
+			try
+			{
+				for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
+				{
+					collection . Add ( new DetailsViewModel
+					{
+						Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
+						BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
+						CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
+						Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
+						IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
+						ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
+						CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
+					} );
+					count = i;
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+				MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+				return null;
+			}
+			finally
+			{
+				if ( Notify )
+				{
+					EventControl . TriggerDetDataLoaded ( null,
+						new LoadedEventArgs
+						{
+							CallerType = "SQLSERVER",
+							CallerDb = Caller,
+							DataSource = internalcollection,
+							RowCount = internalcollection . Count
+						} );
+				}
+			}
+			return collection;
+		}
 
 		#region EXPORT FUNCTIONS TO READ/WRITE CSV files
 		public static DataTable LoadDetailsExportData ( )
@@ -242,16 +323,16 @@ namespace WPFPages . Views
 				{
 					if ( Flags . IsMultiMode )
 					{
-					//	// Create a valid Query Command string including any active sort ordering
-					//	commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
-					//		+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
-					//		+ $" GROUP BY CUSTNO"
-					//		+ $" HAVING COUNT(*) > 1) ORDER BY ";
-					//	commandline = Utils . GetDataSortOrder ( commandline );
-					//}
-					//else if ( Flags . FilterCommand != "" )
-					//{
-					//	commandline = Flags . FilterCommand;
+						//	// Create a valid Query Command string including any active sort ordering
+						//	commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
+						//		+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
+						//		+ $" GROUP BY CUSTNO"
+						//		+ $" HAVING COUNT(*) > 1) ORDER BY ";
+						//	commandline = Utils . GetDataSortOrder ( commandline );
+						//}
+						//else if ( Flags . FilterCommand != "" )
+						//{
+						//	commandline = Flags . FilterCommand;
 					}
 					else
 					{
@@ -276,7 +357,7 @@ namespace WPFPages . Views
 			return dt;
 		}
 
-		public static int  ExportDetData ( string path, string dbType )
+		public static int ExportDetData ( string path, string dbType )
 		{
 			int count = 0;
 			string output = "";
@@ -285,8 +366,8 @@ namespace WPFPages . Views
 			DataSet ds = new DataSet ( );
 
 			DataTable dt = new DataTable ( );
-			dt = LoadDetailsExportData ( );             
-			ds . Tables . Add (dt  );
+			dt = LoadDetailsExportData ( );
+			ds . Tables . Add ( dt );
 			//£££££££££££££££££££££££££££££££££££££££££££
 			// This works just fine with no external binding.
 			// The data is  now accessible in ds.Tables[0].Rows
@@ -314,7 +395,7 @@ namespace WPFPages . Views
 		{
 			string tmp = "", s = "";
 			string [ ] odat, cdat, revstr;
-			if ( dbType == "DETAILS")
+			if ( dbType == "DETAILS" )
 			{
 				char [ ] ch = { ' ' };
 				char [ ] ch2 = { '/' };
@@ -331,7 +412,7 @@ namespace WPFPages . Views
 				// now reverse it  to YYYY/MM/DD format as this is what SQL understands
 				revstr = cdate . Split ( ch2 );
 				cdate = revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
-				string acTypestr =objRow["AcType"] . ToString ( ) . Trim ( );
+				string acTypestr = objRow [ "AcType" ] . ToString ( ) . Trim ( );
 
 				// Formats data correctly for CSV output, with single quotes around dates converted to YYYY/MM/DD format as required by SQL Server
 				tmp = $"{objRow [ "Id" ] . ToString ( )}, "

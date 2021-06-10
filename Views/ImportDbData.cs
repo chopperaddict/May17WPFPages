@@ -9,6 +9,7 @@ using System . Diagnostics;
 using System . Data;
 using WPFPages . Properties;
 using System . Windows;
+using WPFPages . ViewModels;
 
 namespace WPFPages . Views
 {
@@ -16,7 +17,7 @@ namespace WPFPages . Views
 	public class ImportDbData
 	{
 
-	#region WORKING 7/6/21
+		#region WORKING 7/6/21
 		public static void UpdateBankDbFromTextFile ( )
 		{
 			// THIS WORKS VERY WELL, AND IT IS PRETTY FAST		 - wel it did  on 8/10/2020
@@ -25,7 +26,7 @@ namespace WPFPages . Views
 			//Assumes COMMA delimited - NOT TAB, nad dates MUST be in YYYY/MM/DD format
 			string path = @"C:\Users\ianch\Documents\BankDb.csv";
 			path = Utils . GetImportFileName ( path );
-//			path = Utils . GetFileName ( path );
+			//			path = Utils . GetFileName ( path );
 			if ( System . IO . File . Exists ( path ) )
 			{
 				int counter = 0;
@@ -65,14 +66,14 @@ namespace WPFPages . Views
 					string ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
 
 					SqlDataAdapter adapter = new SqlDataAdapter ( );
-					SqlConnection cnn = new SqlConnection(ConString);
+					SqlConnection cnn = new SqlConnection ( ConString );
 					adapter . InsertCommand = new SqlCommand ( SQLcommand, cnn );
 					try
 					{
 						cnn . Open ( );
 						adapter . InsertCommand . ExecuteNonQuery ( );
 						counter++;
-						Debug . WriteLine ($"Record {counter} from bulk data added to  BankAccount Db via SQL Insert command...");
+						Debug . WriteLine ( $"Record {counter} from bulk data added to  BankAccount Db via SQL Insert command..." );
 						cnn . Close ( );
 						adapter . Dispose ( );
 					}
@@ -84,7 +85,7 @@ namespace WPFPages . Views
 							Console . WriteLine ( $"SQL ERROR - {ex . Message} + [{ex . Data}].." );
 						MessageBox . Show ( $"SQL the Insert Command [{SQLcommand}]\r\nhas failed for some reason !.\r\n" +
 											$"\r\nThe process has terminated, Check Output window & your data and Db for safety\r\nMsg= {ex . Message}, {ex . Data}", "Db Error Information" );//,
-						//MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+																													   //MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 						Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was [{SQLcommand}]..." );
 						cnn . Close ( );
 						adapter . Dispose ( );
@@ -99,9 +100,74 @@ namespace WPFPages . Views
 				return;
 			}
 		}
+
+		public static bool UpdateSingleBankRecordOnCustnoOnly ( BankAccountViewModel NewData )
+		{
+			SqlConnection con;
+			string ConString = "";
+			ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+			con = new SqlConnection ( ConString );
+			try
+			{
+				using ( con )
+				{
+					con . Open ( );
+					SqlCommand cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
+						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno", con );
+					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
+					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@actype", Convert . ToInt32 ( NewData . AcType ) );
+					cmd . Parameters . AddWithValue ( "@balance", Convert . ToDecimal ( NewData . Balance ) );
+					cmd . Parameters . AddWithValue ( "@intrate", Convert . ToDecimal ( NewData . IntRate ) );
+					cmd . Parameters . AddWithValue ( "@odate", Convert . ToDateTime ( NewData . ODate ) );
+					cmd . Parameters . AddWithValue ( "@cdate", Convert . ToDateTime ( NewData . CDate ) );
+					cmd . ExecuteNonQuery ( );
+					Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
+				}
+			}
+			catch ( Exception ex )
+			{ Console . WriteLine ( $"BANKACCOUNT Update FAILED : {ex . Message}, {ex . Data}" ); }
+			finally
+			{ con . Close ( ); }
+			return true;
+		}
+		public static bool UpdateSingleDetailsRecordOnCustnoOnly ( DetailsViewModel NewData )
+		{
+			SqlConnection con;
+			string ConString = "";
+			ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+			con = new SqlConnection ( ConString );
+			try
+			{
+				using ( con )
+				{
+					con . Open ( );
+					SqlCommand cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
+						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno", con );
+					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
+					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );
+					cmd . Parameters . AddWithValue ( "@actype", Convert . ToInt32 ( NewData . AcType ) );
+					cmd . Parameters . AddWithValue ( "@balance", Convert . ToDecimal ( NewData . Balance ) );
+					cmd . Parameters . AddWithValue ( "@intrate", Convert . ToDecimal ( NewData . IntRate ) );
+					cmd . Parameters . AddWithValue ( "@odate", Convert . ToDateTime ( NewData . ODate ) );
+					cmd . Parameters . AddWithValue ( "@cdate", Convert . ToDateTime ( NewData . CDate ) );
+					cmd . ExecuteNonQuery ( );
+					Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
+				}
+			}
+			catch ( Exception ex )
+			{ Console . WriteLine ( $"SECACCOUNT Update FAILED : {ex . Message}, {ex . Data}" ); }
+			finally
+			{ con . Close ( ); }
+			return true;
+		}
+
+
 		#endregion WORKING 7/6/21
 
-	#region UNKNOWN WORKING 7/6/21
+		#region UNKNOWN WORKING 7/6/21
 
 		public bool UpdateCustomerDbFromTextFile ( )
 		{
@@ -153,15 +219,15 @@ namespace WPFPages . Views
 				SQLcommand = "USE Ian1 INSERT INTO Customer (CustNo, BankNo, actype, Fname, Lname, Addr1, Addr2, Town, County, Pcode, Phone, Mobile, Dob, Odate, Cdate)"
 					  + $" values ( " + output + ")";
 
-				// This command does  the code commented out below
+				string ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+				SqlConnection cnn = new SqlConnection ( ConString );
 				SqlDataAdapter adapter = new SqlDataAdapter ( );
-				SqlConnection cnn = new SqlConnection ( );
 				adapter . InsertCommand = new SqlCommand ( SQLcommand, cnn );
 				try
 				{
 					adapter . InsertCommand . ExecuteNonQuery ( );
 					counter++;
-					Debug . WriteLine ( $"Added record {counter} via SQL Insert command to Customer Db");
+					Debug . WriteLine ( $"Added record {counter} via SQL Insert command to Customer Db" );
 					adapter . Dispose ( );
 				}
 				catch ( Exception ex )
@@ -178,6 +244,86 @@ namespace WPFPages . Views
 			}
 			return false;
 
+		}
+
+		public static bool InsertSingleDetailsRecord ( DetailsViewModel brec)
+		{
+			// unchecked 7/6/21
+			string output = "";
+			bool result = false;
+			// THIS WORKS VERY WELL, AND IT IS PRETTY FAST
+
+			// write  single records data to Customer Db using SQL INSERT Clause	
+
+			string odate = Utils . ConvertInputDate ( brec. ODate. ToString ( ) . Trim ( ) );
+			string cdate = Utils . ConvertInputDate ( brec . CDate . ToString ( ) . Trim ( ) );
+			output = $"{brec . CustNo} ,  {brec . BankNo}, {brec . AcType} , {brec . Balance} , {brec.IntRate}, '{odate}' , '{cdate}'";
+
+			string SQLcommand = "INSERT INTO SECACCOUNTS (CustNo, BankNo, actype, Balance, IntRate, Odate, Cdate) "
+				  + $" values ( " + output + ")";
+
+			string ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+			SqlConnection cnn = new SqlConnection ( ConString );
+			SqlDataAdapter adapter = new SqlDataAdapter ( );
+			adapter . InsertCommand = new SqlCommand ( SQLcommand, cnn );
+			try
+			{
+				cnn . Open ( );
+				adapter . InsertCommand . ExecuteNonQuery ( );
+				result  = true;
+			}
+			catch ( Exception ex )
+			{
+				Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was [{SQLcommand}]..." );
+				Console . WriteLine ( $"SQL ERROR - {ex . Message}, {ex . Data}" );
+			}
+			finally
+			{
+				cnn . Close ( );
+				adapter . Dispose ( );
+			}
+			return result;
+		}
+
+		
+		public static bool InsertSingleBankRecord ( BankAccountViewModel brec )
+		{
+			// unchecked 7/6/21
+			string output = "";
+			bool result = false;
+			// THIS WORKS VERY WELL, AND IT IS PRETTY FAST
+
+			// write  single records data to Customer Db using SQL INSERT Clause	
+
+			string odate = Utils . ConvertInputDate ( brec . ODate . ToString ( ) . Trim ( ) );
+			string cdate = Utils . ConvertInputDate ( brec . CDate . ToString ( ) . Trim ( ) );
+			output = $"{brec . CustNo} ,  {brec . BankNo}, {brec . AcType} , {brec . Balance} , {brec . IntRate}, '{odate}' , '{cdate}'";
+
+			string SQLcommand = "INSERT INTO BANKACCOUNT (CustNo, BankNo, actype, Balance, IntRate, Odate, Cdate) "
+				  + $" values ( " + output + ")";
+
+			string ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
+			SqlConnection cnn = new SqlConnection ( ConString );
+			SqlDataAdapter adapter = new SqlDataAdapter ( );
+			adapter . InsertCommand = new SqlCommand ( SQLcommand, cnn );
+			try
+			{
+				cnn . Open ( );
+				adapter . InsertCommand . ExecuteNonQuery ( );
+				result = true;
+				Console . WriteLine ( $"New row for A/C {brec.CustNo} + {brec.BankNo} inserted into Db successfully\r\nCommand was [{SQLcommand}]..." );
+			}
+			catch ( Exception ex )
+			{
+				Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was [{SQLcommand}]..." );
+				Console . WriteLine ( $"SQL ERROR - {ex . Message}, {ex . Data}" );
+			}
+			finally
+			{
+				cnn . Close ( );
+				adapter . Dispose ( );
+			}
+			return result;
 		}
 		private void UpdateSecAccountsDbFromTextFile ( )
 		{
@@ -232,7 +378,7 @@ namespace WPFPages . Views
 						Console . WriteLine ( $"SQL ERROR - {ex . Message} + [{ex . Data}].." );
 						MessageBox . Show ( $"SQL the Insert Command [{SQLcommand}]\r\nhas failed for some reason !.\r\n" +
 										  $"\r\nThe process has terminated, Check your data and Db for safety", "Db Error Information" );//,
-									//MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
+																						 //MessageBoxButtons . OK, MessageBoxIcon . Information, MessageBoxDefaultButton . Button1 );
 						Console . WriteLine ( $"SQL ERROR - Failed to Insert a data row into Db\r\nCommand was -  {SQLcommand}..." );
 						adapter . Dispose ( );
 						break;
