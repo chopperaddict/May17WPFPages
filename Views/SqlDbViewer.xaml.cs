@@ -6094,8 +6094,10 @@ namespace WPFPages
 					return;
 				List<BankAccountViewModel> recs = new List<BankAccountViewModel> ( );
 				//select All the items first;
-				recs = SqlBankcollection . ToList ( );
-				List<BankAccountViewModel> Banknolist = new List<BankAccountViewModel> ( );
+				recs = SqlBankcollection .ToList ( );
+//				OrderBy ( CustNo => CustNo ) .
+				//recs . Sort ( );
+				List <BankAccountViewModel> Banknolist = new List<BankAccountViewModel> ( );
 				List<DetailsViewModel> NewDetlist = new List<DetailsViewModel> ( );
 				GetExportRecords getExportrec = new GetExportRecords ( CurrentDb, ref recs, ref NewDetlist );
 
@@ -6107,10 +6109,10 @@ namespace WPFPages
 			{
 				if ( SqlDetcollection == null )
 					return;
-				List<DetailsViewModel> recs = new List<DetailsViewModel> ( );
-				//select All the items first;
-				recs = SqlDetcollection . ToList ( );
-				List<DetailsViewModel> Detnolist = new List<DetailsViewModel> ( );
+				// Get a new List sorted by BankNo within CustNo
+				List<DetailsViewModel> recs = SqlDetcollection . OrderBy ( DetailsViewModel => DetailsViewModel . CustNo  )
+					.ThenBy(DetailsViewModel => DetailsViewModel .BankNo)
+					. ToList ( );
 				List<BankAccountViewModel> NewBanklist = new List<BankAccountViewModel> ( );
 				GetExportRecords getExportrec = new GetExportRecords ( CurrentDb, ref NewBanklist, ref recs );
 

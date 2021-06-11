@@ -9,12 +9,24 @@
 	  Loaded="OnLoaded"
 	  MinHeight="550"
 	  MinWidth="700"
-        Title="Get Records to Export" 
-	  Height="400" 
+        Title="Move accounts between Databases" 
+	  Height="562" 
 	  Width="512">
 
+	<Window.Resources>
+		<!--<Style x:Key="BlueGridBackground" TargetType="DataGrid">
+			<
+			--><!--  create an elegant left to right light-> Dark gradient as a background  --><!--
+			<LinearGradientBrush StartPoint="1.3,0" EndPoint="0.0,1">
+				<GradientStop Offset="1" Color="#333333" />
+				<GradientStop Offset="0.3" Color="#35F6FB" />
+			</LinearGradientBrush>-->
+
+
+	</Window.Resources>
 	<Grid 
 	    
+
 	    Margin="0,0,27,17">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="10"/>
@@ -22,7 +34,7 @@
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="20"/>
 			<RowDefinition Height="*"/>
-			<RowDefinition Height="50"/>
+			<RowDefinition Height="80"/>
 			<RowDefinition Height="0"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -35,8 +47,7 @@
 			Grid.Row="1"
 			Grid.Column="0"
 			Grid.ColumnSpan="3"
-			Orientation="Horizontal"	
-			HorizontalAlignment="Stretch"			
+			Orientation="Horizontal" Margin="0,0,-23,0"			
 			>
 			<TextBlock
 				x:Name="UpperGridName"
@@ -46,21 +57,51 @@
 				Margin="5,5,5,5"
 				Width="350"
 				/>
+			<CheckBox
+				x:Name="TopMostOption"
+				Content="Keep on Top"
+				IsChecked="False"
+				FontWeight="Bold"
+				Foreground="{StaticResource White0}"
+				Margin="150,6,45,0"
+				Width="121"
+				Height="35"
+				Click="TopMost_Click"  />
 		</WrapPanel>
-		<DataGrid x:Name="dataGrid" 
-			    AllowDrop="False"			    
-			    CanUserAddRows="False"
-			    AutoGenerateColumns="True"
-			    Grid.Column="1"
-			    Grid.ColumnSpan="3"
-			    Grid.Row="2"
-			    Grid.RowSpan="1"
-			    MinHeight="400"
-			    SelectionMode="Single"
-			    Visibility="Visible"
-			    SelectionUnit="FullRow" 
-			    MouseDoubleClick="dataGrid_MouseDoubleClick" 
-			    Margin="0,0,33,0">
+		<DataGrid x:Name="TopGrid" 
+				AllowDrop="True"			    
+				CanUserAddRows="True"
+			    CanUserSortColumns="True"
+				AutoGenerateColumns="True"
+				Grid.Column="1"
+				Grid.ColumnSpan="3"
+				Grid.Row="2"
+				Grid.RowSpan="1"
+				IsSynchronizedWithCurrentItem="False"			    
+				MinHeight="400"
+				SelectionMode="Single"
+				Visibility="Visible"
+				SelectionUnit="FullRow" 
+				MouseDoubleClick="TopGrid_MouseDoubleClick" 
+				Margin="0,0,33,0"
+			    PreviewMouseLeftButtonDown="TopGrid_PreviewMouseLeftButtonDown"
+				PreviewMouseLeftButtonUp="TopGrid_PreviewLeftMouseButtonUp"
+				PreviewMouseMove="TopGrid_PreviewMouseMove" 
+			    SelectionChanged="TopGrid_SelectionChanged"
+				Drop="TopGrid_Drop" 
+			>
+			<DataGrid.Resources>
+				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#CCFAFB"/>-->
+				<Style TargetType="DataGridCell">
+					<Style.Triggers>
+						<Trigger Property="DataGridCell.IsSelected" Value="True">
+							<Setter Property="FontWeight" Value="SemiBold" />
+							<Setter Property="Foreground" Value="Red"/>
+							<Setter Property="Background" Value="#77FF00" />
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.Resources>
 
 			<!--#region bank Columns-->
 			<DataGrid.Columns>
@@ -158,9 +199,10 @@
 				/>
 
 		</WrapPanel>
-		<DataGrid x:Name="selectedGrid" 
+		<DataGrid x:Name="BottomGrid" 
 			    AllowDrop="True"
 			    CanUserAddRows="True"
+			    CanUserSortColumns="True"
 			    AutoGenerateColumns="True"
 			    Grid.Column="1"
 			    Grid.ColumnSpan="3"
@@ -168,8 +210,25 @@
 			    Grid.RowSpan="1"
 			    Height="150"
 			    MinHeight="200"
+				MouseDoubleClick="BottomGrid_MouseDoubleClick"
+			    PreviewMouseMove="BottomGrid_PreviewMouseMove"
+			    SelectionChanged="BottomGrid_SelectionChanged"
 			    VerticalContentAlignment="Stretch" 
-			    Margin="0,5,33,0">
+			    Margin="0,5,33,0" 
+			    Drop="BottomGrid_Drop" >
+
+			<DataGrid.Resources>
+				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#CCFAFB"/>-->
+				<Style TargetType="DataGridCell">
+					<Style.Triggers>
+						<Trigger Property="DataGridCell.IsSelected" Value="True">
+							<Setter Property="FontWeight" Value="SemiBold" />
+							<Setter Property="Foreground" Value="White"/>
+							<Setter Property="Background" Value="Blue" />
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.Resources>
 
 
 			<!--#region bank Columns 2-->
@@ -253,71 +312,78 @@
 				Grid.Column="0"
 				Grid.ColumnSpan="3"
 				Grid.Row="5"
-				Grid.RowSpan="2"
-				VerticalAlignment="Top" 
-			Margin="0,0,0,0" Width="693" 
+				VerticalAlignment="Center" 
+			Margin="0,0,-35,0" Height="50" 
 				>
 			<TextBlock
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				Grid.Row="3"
 				Grid.RowSpan="1"
-				Text="Double Click on an item in top list to move it to lower list..." 
-				Margin="35,20,55,5"
+				Text="Double Click on an item in top list to move it to lower list, or you can Drag and Drop in either direction. " 
+				TextWrapping="Wrap"
+				Margin="15,0,55,5"
 				FontWeight="Bold"
-				Height="22"/>
+				Height="72" Width="328"/>
+
 			<Button x:Name="Select" 
 					Background="{StaticResource HeaderBorderBrushRed}"			  
 					Click="Select_Click"
-					Content="Update Db"
+					Content="Save Changes to Db's"
 					Foreground="White"
-					Height="30"
-					Margin="-3,20,10,0"
+					Height="40"
+					Margin="-10,10,10,0"
 					HorizontalAlignment="Right"
+					Template="{StaticResource HorizontalGradientTemplateRed}"
 					VerticalAlignment="Top"
-					Width="90" />
+					Width="150" />
 
 			<Button x:Name="cancelbutton" 
 					Background="{StaticResource HeaderBorderBrushBlue}"			  
 					Click="Cancelbutton_Click"
-					Content="Close/Cancel"
+					Content="Close / Discard"
 					Foreground="White"
 					Grid.Column="2"
 					Grid.ColumnSpan="2"
 					Grid.Row="4"
 					Grid.RowSpan="1"
-					Height="30"
-					Margin="0,20,0,0"
+					Height="40"
+					Margin="0,11,0,0"
 					HorizontalAlignment="Right"
+					Template="{StaticResource HorizontalGradientTemplateBlue}"
 					VerticalAlignment="Center"
 					Width="120"
 					/>
-			</WrapPanel>
+		</WrapPanel>
 
 		<!--#region side buttons-->
-		<Button x:Name="Dnbutton" 
-				  Background="{StaticResource HeaderBorderBrushGreen}"			  
-				  Content="v" 
-				  Foreground="White"
-				  Grid.Column="1" 
-				  Height="45"
-				  HorizontalAlignment="Right" 
-				  VerticalContentAlignment="Center"
-				  Margin="0,82,-10,0" 
-				  Grid.Row="4" 
-				  VerticalAlignment="Top"
-				  Width="25" RenderTransformOrigin="0.533,0.96" Grid.ColumnSpan="2"/>
 		<Button x:Name="Upbutton" 
-				  Background="{StaticResource HeaderBorderBrushGreen}"			  
-				  Content="^" 
+				  Background="{StaticResource HeaderBorderBrushBlue}"			  
+				Click="Refresh_topgrid"	  
+				Content="v" 
 				  Foreground="White"
 				  Grid.Column="1" 
 				  Height="45"
 				  HorizontalAlignment="Right" 
 				  Margin="0,90,-20,0" 
 				  Grid.Row="2" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
 				  VerticalAlignment="Top"
 				  Width="25"/>
+		<Button x:Name="Dnbutton" 
+				Background="{StaticResource HeaderBorderBrushBlue}"			  
+				Click="Refresh_bottomgrid"	  
+				Content="^" 
+				Foreground="White"
+				Grid.Column="1" 
+				Height="45"
+				HorizontalAlignment="Right" 
+				Template="{StaticResource HorizontalGradientTemplateBlue}"
+				VerticalContentAlignment="Center"
+				Margin="0,82,-10,0" 
+				Grid.Row="4" 
+				VerticalAlignment="Top"
+				Width="25" RenderTransformOrigin="0.533,0.96" Grid.ColumnSpan="2"/>
 		<!--#endregion side buttons-->
 	</Grid>
 </Window>

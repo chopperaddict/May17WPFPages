@@ -753,7 +753,6 @@
 				VerticalGridLinesBrush="{StaticResource Blue2}"	   
 				Visibility="Visible"
 				    >
-			<!--AlternatingRowBackground="{StaticResource Blue4}"-->
 			
 			<DataGrid.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#CCFAFB"/>

@@ -62,7 +62,9 @@
       <HintPath>packages\Microsoft.Win32.SystemEvents.5.0.0\lib\net461\Microsoft.Win32.SystemEvents.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero2" />
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />

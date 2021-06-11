@@ -497,7 +497,9 @@
 
 				<MenuItem Header="Multi A/C Holders"
 					Background="#FF0000"
-					Foreground="White"
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemRed
+					}"
 					Click="Linq5_Click"
 					IsCheckable="false"
 					/>
@@ -603,11 +605,11 @@
 				     Name="bankfromCSV"
 					Click="ImportBankCSV_Click"
 					FontWeight="DemiBold"
-					Background="{StaticResource Red2}"
-					Foreground="Black"
-					Style="{StaticResource MenuItemRed}"
+					Foreground="White"
+					Background="#FF0000"
 					HorizontalAlignment="Left"
 					HorizontalContentAlignment="Left"
+					Style="{StaticResource MenuItemRed}"
 					Width="290"
 					Margin="2"/>
 				<MenuItem  Header="Import Customers Db from CSV"

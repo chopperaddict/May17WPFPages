@@ -71,7 +71,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Foreground" Value="Black" />
 		<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
-		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderThickness" Value="1.5" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="HorizontalContentAlignment" Value="left" />
 		<Setter Property="VerticalAlignment" Value="Bottom" />
@@ -98,7 +98,7 @@
 					</Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsHighlighted" Value="True">
-							<Setter Property="Height" TargetName="Bd" Value="35"/>
+							<Setter Property="Height" TargetName="Bd" Value="25"/>
 							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
 							<Setter Property="Background" TargetName="Bd" Value="Orange"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource Black0}"/>
@@ -113,7 +113,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Foreground" Value="Black" />
 		<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
-		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderThickness" Value="1.5" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="HorizontalContentAlignment" Value="left" />
 		<Setter Property="VerticalAlignment" Value="Bottom" />
@@ -140,7 +140,7 @@
 					</Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsHighlighted" Value="True">
-							<Setter Property="Height" TargetName="Bd" Value="35"/>
+							<Setter Property="Height" TargetName="Bd" Value="25"/>
 							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
 							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Blue2}"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
@@ -155,7 +155,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Foreground" Value="Black" />
 		<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
-		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderThickness" Value="1.5" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="HorizontalContentAlignment" Value="Center" />
 		<Setter Property="VerticalAlignment" Value="Bottom" />
@@ -183,9 +183,9 @@
 					</Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsHighlighted" Value="True">
-							<Setter Property="Height" TargetName="Bd" Value="35"/>
+							<Setter Property="Height" TargetName="Bd" Value="25"/>
 							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Black0}"/>
-							<Setter Property="BorderThickness" TargetName="Bd" Value="2"/>
+							<Setter Property="BorderThickness" TargetName="Bd" Value="1.5"/>
 							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Green0}"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
 							<!--<Setter Property="Fill" TargetName="Bd" Value="{StaticResource White0}"/>-->

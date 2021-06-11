@@ -1113,12 +1113,8 @@
 			SelectionChanged="DetailsGrid_SelectionChanged"
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
-			Visibility="Visible" Margin="0,0,0,10">
-			<!--  VirtualizingPanel.ScrollUnit="Pixel"  -->
-			<!--  CellEditEnding="DetailsGrid_CellEditEnding"  -->
-			<!--  ItemsSource="{Binding Source={StaticResource DetData}}"  -->
-			<!--  ItemTemplate=""  -->
-			<!--  SelectedItem="{Binding DetModel, Mode=TwoWay}"  -->
+			Visibility="Visible" 
+			Margin="0,0,0,10">
 			<DataGrid.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Green" />
 				<Style TargetType="DataGridCell">
