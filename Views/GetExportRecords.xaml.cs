@@ -2,6 +2,8 @@
 using System;
 using System . Collections . Generic;
 using System . Diagnostics;
+using System . Dynamic;
+using System . IO;
 using System . Linq;
 using System . Windows;
 using System . Windows . Controls;
@@ -29,7 +31,8 @@ namespace WPFPages . Views
 		public bool DraggingInProgress { get; set; }
 		public bool LeftMouseButtonIsDown { get; set; }
 		public int currseltop { get; set; }
-		public int currselbottom{ get; set; }
+		public int currselbottom { get; set; }
+		public string topGridIdentity { get; set; }
 		//List<BankAccountViewModel> BankMoved = new List<BankAccountViewModel> ( );
 		//List<DetailsViewModel> DetMoved = new List<DetailsViewModel> ( );
 
@@ -46,6 +49,7 @@ namespace WPFPages . Views
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				// Setup internal pointers to our Collections
+				topGridIdentity = "BANK";
 				BankRecords = Bankrecordreceived;
 				DetRecords = Detrecordreceived;
 				TopGrid . Items . Clear ( );
@@ -60,6 +64,7 @@ namespace WPFPages . Views
 			else if ( CurrentDb == "DETAILS" )
 			{
 				// Setup internal pointers to our Collections
+				topGridIdentity = "DET";
 				BankRecords = Bankrecordreceived;
 				DetRecords = Detrecordreceived;
 				TopGrid . Items . Clear ( );
@@ -76,6 +81,16 @@ namespace WPFPages . Views
 			TopGrid . SelectedItem = 0;
 			TopGrid . Refresh ( );
 			BottomGrid . Refresh ( );
+			if ( topGridIdentity == "BANK" )
+			{
+				uppercount . Text = BankRecords . Count . ToString ( );
+				lowercount . Text = DetRecords . Count . ToString ( );
+			}
+			else
+			{
+				lowercount . Text = BankRecords . Count . ToString ( );
+				uppercount . Text = DetRecords . Count . ToString ( );
+			}
 			TopMostOption . IsChecked = true;
 			this . Topmost = true;
 			this . MouseDown += delegate { DoDragMove ( ); };
@@ -103,23 +118,57 @@ namespace WPFPages . Views
 
 		private async void Select_Click ( object sender, RoutedEventArgs e )
 		{
-			if ( CurrentDb == "BANKACCOUNT" )
+			string filename = Utils . GetExportFileName ( "*.CSV" );
+			string lineout = "", output = "";
+			if ( topGridIdentity == "BANK" )
 			{
-				EventControl . TriggerTransferDataUpdated ( this, new LoadedEventArgs
+				// Top Grid is BANK, so our bottom grid must be DETAILS
+				DetailsViewModel dvm = new DetailsViewModel ( );
+				// looping thru the ROWS
+				for ( int i = 0 ; i < BottomGrid . Items . Count ; i++ )
 				{
-					DataSource = DetRecords,
-					CallerType = "Updatemultiaccounts",
-					CallerDb = CurrentDb
-				} ); ;
+					// iterate through each column in our dataset
+					dvm = BottomGrid . Items [ i ] as DetailsViewModel;
+					/*
+					 * 		private string CreateTextFromRecord ( BankAccountViewModel bvm,
+											DetailsViewModel dvm,
+											bool IncludeType = true,
+											bool includeDateQuotemarks = false,
+											bool UseShortDate = false , 
+											bool IncludeIdField = true)
+
+					 * */
+					lineout = CreateTextFromRecord ( null, dvm, false, true ,true, false);
+					output += lineout + "\n";
+					lineout = "";
+				}
 			}
 			else
 			{
-				EventControl . TriggerTransferDataUpdated ( this, new LoadedEventArgs
+				// Top Grid is DETAILS, so our bottom grid must be BANK
+				BankAccountViewModel bvm = new BankAccountViewModel ( );
+				// looping thru the ROWS
+				for ( int i = 0 ; i < BottomGrid . Items . Count ; i++ )
 				{
-					DataSource = BankRecords,
-					CallerType = "Updatemultiaccounts",
-					CallerDb = CurrentDb
-				} );
+					// iterate through each column in our dataset
+					bvm = BottomGrid . Items [ i ] as BankAccountViewModel;
+					lineout = CreateTextFromRecord ( bvm, null, false, true, true, false );
+					output += lineout + "\n";
+					lineout = "";
+				}
+			}
+			// write the data to disk
+			File . WriteAllText ( filename, output );
+			Console . WriteLine ( $"All the selected data has been Exported Successfully to  [{filename}]" );
+			MessageBox . Show ( $"All the selected data has been Exported Successfully to  [{filename}]", "Data Save" );
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				//	EventControl . TriggerTransferDataUpdated ( this, new LoadedEventArgs
+				//	{
+				//		DataSource = DetRecords,
+				//		CallerType = "Updatemultiaccounts",
+				//		CallerDb = CurrentDb
+				//	} ); ;
 			}
 			Close ( );
 		}
@@ -141,69 +190,34 @@ namespace WPFPages . Views
 			int selindex = 0, delindex = 0;
 			string custno = "", bankno = "", DataRecord = "";
 			List<int> deleted = new List<int> ( );
-			if ( CurrentDb == "BANKACCOUNT" )
+			if ( topGridIdentity == "DET" )
 			{
-				// Parent		= BANK
-				// TOPGRID		= BANK   	- List<BankAccountViewModel>	BANKRECORDS
-				//BOTTOMGRID	= DETAILS	- List<DetailsViewModel>			DETRECORDS
-				// File Handling Bank moving records to Details
+				// we are moving BANK record to DETAILS Grid
+				// LOWER BANK -> TOP DETAILS  
 				DetailsViewModel dvm = new DetailsViewModel ( );
 				BankAccountViewModel bvm = new BankAccountViewModel ( );
 
 				// Get Details record that has been dblclicked on from TOPGRID
-				selindex = TopGrid . SelectedIndex;
-				bvm = TopGrid . SelectedItem as BankAccountViewModel;
-				// Store Custno as our key
-				custno = bvm . CustNo;
-				//Get all records matching this customer No 
-				BankAccountViewModel tmp = new BankAccountViewModel ( );
-				DataRecord = CreateTextFromRecord ( bvm, null );
-				dvm = CreateDetailsRecord( bvm);
-				DetRecords . Add ( dvm );
-
-				// iterate thru BANK upper grid and delete the record we have moded to lower grid
-				for ( int i = 0 ; i < TopGrid . Items . Count - 1 ; i++ )
-				{
-					bvm = TopGrid . Items [ i ] as BankAccountViewModel;
-					if ( dvm . CustNo == custno )
-						BankRecords . Remove ( bvm );
-				}
-				// Refresh both grids
-				TopGrid . ItemsSource = null;
-				TopGrid . ItemsSource = BankRecords;
-				TopGrid . Refresh ( );
-				BottomGrid . ItemsSource = null;
-				BottomGrid . ItemsSource = DetRecords;
-				BottomGrid . Refresh ( );
-			}
-			if ( CurrentDb == "DETAILS" )
-			{
-				// WORKING CORRECTLY 11/6/21
-				// Parent		= DETAILS
-				// TOPGRID		= DETAILS	-List<DetailsViewModel>			DETRECORDS
-				//BOTTOMGRID	= BANK		- List<BankAccountViewModel>	BANKRECORDS
-				// File Handling Details moving records to Bank
-				DetailsViewModel dvm = new DetailsViewModel ( );
-				BankAccountViewModel bvm = new BankAccountViewModel ( );
-
-				// Get BANK record that has been dblclicked on from BOTTOMGRID
 				selindex = BottomGrid . SelectedIndex;
 				bvm = BottomGrid . SelectedItem as BankAccountViewModel;
 				// Store Custno as our key
 				custno = bvm . CustNo;
-				// Convert BANK record into DETAILS Record and add  to UPPER DETAILS GRID
-				DetailsViewModel tmp = CreateDetailsRecord ( bvm );
-				// Add DETAILS record to UPPER grid
-				DetRecords . Add ( tmp );
 
-				// iterate thru lower  BANK grid and delete the record we have moved to upper BANK grid
-				for ( int i = 0 ; i < BottomGrid . Items . Count - 1 ; i++ )
+				// Create a DETAILS record & add it to TOP DETAILS grid
+				dvm = CreateDetailsRecord ( bvm );
+				DetRecords . Add ( dvm );
+
+				// now iterate thru BANK lower grid and delete the record we have moved to upper grid
+				for ( int i = 0 ; i < TopGrid . Items . Count - 1 ; i++ )
 				{
 					bvm = BottomGrid . Items [ i ] as BankAccountViewModel;
 					if ( bvm . CustNo == custno )
+					{
 						BankRecords . Remove ( bvm );
+						break;
+					}
 				}
-				// Refresh both grid
+				// Refresh both grids
 				TopGrid . ItemsSource = null;
 				TopGrid . ItemsSource = DetRecords;
 				TopGrid . Refresh ( );
@@ -211,18 +225,61 @@ namespace WPFPages . Views
 				BottomGrid . ItemsSource = BankRecords;
 				BottomGrid . Refresh ( );
 			}
+			else if ( topGridIdentity == "BANK" )
+			{
+				// we are moving DETAILS records to BANK Grid
+				// LOWER DETAILS  -> TOP BANK
+				DetailsViewModel dvm = new DetailsViewModel ( );
+				BankAccountViewModel bvm = new BankAccountViewModel ( );
+
+				// Get BANK record that has been dblclicked on from BOTTOMGRID
+				selindex = BottomGrid . SelectedIndex;
+				dvm = BottomGrid . SelectedItem as DetailsViewModel;
+				// Store Custno as our key
+				custno = dvm . CustNo;
+				// Convert DETAILS record into BANK Record and add  to UPPER DETAILS GRID
+				bvm = CreateBankRecord ( dvm );
+				// Add DETAILS record to UPPER grid
+				BankRecords . Add ( bvm );
+
+				// iterate thru lower  BANK grid and delete the record we have moved to upper BANK grid
+				for ( int i = 0 ; i < BottomGrid . Items . Count ; i++ )
+				{
+					dvm = BottomGrid . Items [ i ] as DetailsViewModel;
+					if ( dvm . CustNo == custno )
+					{
+						DetRecords . Remove ( dvm );
+						break;
+					}
+				}
+				// Refresh both grid
+				TopGrid . ItemsSource = null;
+				TopGrid . ItemsSource = BankRecords;
+				TopGrid . Refresh ( );
+				BottomGrid . ItemsSource = null;
+				BottomGrid . ItemsSource = DetRecords;
+				BottomGrid . Refresh ( );
+			}
+			if ( topGridIdentity == "BANK" )
+			{
+				uppercount . Text = BankRecords . Count . ToString ( );
+				lowercount . Text = DetRecords . Count . ToString ( );
+			}
+			else
+			{
+				lowercount . Text = BankRecords . Count . ToString ( );
+				uppercount . Text = DetRecords . Count . ToString ( );
+			}
 		}
 		private void TopGrid_MouseDoubleClick ( object sender, MouseButtonEventArgs e )
 		{
 			int selindex = 0, delindex = 0;
 			string custno = "", bankno = "", DataRecord = "";
 			List<int> deleted = new List<int> ( );
-			if ( CurrentDb == "BANKACCOUNT" )
+			if ( topGridIdentity == "BANK" )
 			{
-				// Parent		= BANK
-				// TOPGRID		= BANK   	- List<BankAccountViewModel>	BANKRECORDS
-				//BOTTOMGRID	= DETAILS	- List<DetailsViewModel>			DETRECORDS
-				// File Handling Bank moving records to Details
+				// we are moving BANK records to DETAILS Grid
+				// TOP BANK -> LOWER DETAILS 
 				DetailsViewModel dvm = new DetailsViewModel ( );
 				BankAccountViewModel bvm = new BankAccountViewModel ( );
 
@@ -252,13 +309,10 @@ namespace WPFPages . Views
 				BottomGrid . ItemsSource = DetRecords;
 				BottomGrid . Refresh ( );
 			}
-			if ( CurrentDb == "DETAILS" )
+			else if ( topGridIdentity == "DET" )
 			{
-				// WORKING CORRECTLY 11/6/21
-				// Parent		= DETAILS
-				// TOPGRID		= DETAILS	-List<DetailsViewModel>			DETRECORDS
-				//BOTTOMGRID	= BANK		- List<BankAccountViewModel>	BANKRECORDS
-				// File Handling Details moving records to Bank
+				// we are moving DETAILS records to BANK Grid
+				// TOP DETAILS -> LOWER BANK
 				DetailsViewModel dvm = new DetailsViewModel ( );
 				BankAccountViewModel bvm = new BankAccountViewModel ( );
 
@@ -270,7 +324,7 @@ namespace WPFPages . Views
 				//Get all records matching this customer No 
 				//BankAccountViewModel tmp = new BankAccountViewModel ( );
 				//DataRecord = CreateTextFromRecord ( null, dvm );
-				bvm = CreateBankRecord( dvm);
+				bvm = CreateBankRecord ( dvm );
 				BankRecords . Add ( bvm );
 
 				// iterate thru upper grid and delete the record we have moded to lower grid
@@ -288,24 +342,39 @@ namespace WPFPages . Views
 				BottomGrid . ItemsSource = BankRecords;
 				BottomGrid . Refresh ( );
 			}
+			if ( topGridIdentity == "BANK" )
+			{
+				uppercount . Text = BankRecords . Count . ToString ( );
+				lowercount . Text = DetRecords . Count . ToString ( );
+			}
+			else
+			{
+				lowercount . Text = BankRecords . Count . ToString ( );
+				uppercount . Text = DetRecords . Count . ToString ( );
+			}
 		}
 		private void BottomGrid_PreviewMouseMove ( object sender, System . Windows . Input . MouseEventArgs e )
 		{
-			if ( LeftMouseButtonIsDown == false ) { 
+			if ( LeftMouseButtonIsDown == false )
+			{
 				// Dragging must have neded as well if button is up
-				DraggingInProgress = false;  
-					return; 
+				DraggingInProgress = false;
+				return;
 			}
-			if ( DraggingInProgress ) return;
+			if ( DraggingInProgress )
+				return;
 
+			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
 				if ( BottomGrid . SelectedItem != null )
 				{
-					if ( CurrentDb == "BANKACCOUNT" )
+					if ( topGridIdentity == "BANK" )
 					{
+						// We are dragging from the DETAILS grid
 						//Working string version
-						string str = CreateTextFromRecord ( null, TopGrid . SelectedItem as DetailsViewModel );
+						DraggingInProgress = true;
+						string str = CreateTextFromRecord ( null, BottomGrid . SelectedItem as DetailsViewModel );
 						string dataFormat = DataFormats . UnicodeText;
 						DataObject dataObject = new DataObject ( dataFormat, str );
 						DragDrop . DoDragDrop (
@@ -313,8 +382,9 @@ namespace WPFPages . Views
 						dataObject,
 						DragDropEffects . Move );
 					}
-					else
+					else if ( topGridIdentity == "DET" )
 					{
+						// We are dragging from the BANK grid
 						// We are dragging from the lower BANK grid in this case
 						DraggingInProgress = true;
 						string str = CreateTextFromRecord ( BottomGrid . SelectedItem as BankAccountViewModel, null );
@@ -336,14 +406,19 @@ namespace WPFPages . Views
 				DraggingInProgress = false;
 				return;
 			}
-			if ( DraggingInProgress ) return;
+			if ( DraggingInProgress )
+				return;
 
+			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
+				// ensure we have a record selected in Top Grid
 				if ( TopGrid . SelectedItem != null )
 				{
-					if ( TopGrid . ItemsSource == BankRecords )
+					if ( topGridIdentity == "BANK" )
 					{
+						// We are dragging from the upper BANK grid
+						// to the lower DETAILS grid
 						DraggingInProgress = true;
 						string str = CreateTextFromRecord ( TopGrid . SelectedItem as BankAccountViewModel, null );
 						string dataFormat = DataFormats . UnicodeText;
@@ -353,8 +428,10 @@ namespace WPFPages . Views
 						dataObject,
 						DragDropEffects . Move );
 					}
-					else if ( TopGrid . ItemsSource == DetRecords )
+					else if ( topGridIdentity == "DET" )
 					{
+						// We are dragging from the upper DETAILS grid
+						// to the lower BANK grid
 						DraggingInProgress = true;
 						string str = CreateTextFromRecord ( null, TopGrid . SelectedItem as DetailsViewModel );
 						string dataFormat = DataFormats . UnicodeText;
@@ -370,28 +447,36 @@ namespace WPFPages . Views
 		private void BottomGrid_Drop ( object sender, DragEventArgs e )
 		{
 			int selindex = 0;
-			string DataRecord = "", custno = "0", bankno = "0";
+			string custno = "0";
+			string dataString = "";
+			if ( DraggingInProgress == false )
+				return;
 
-			if ( DraggingInProgress == false ) return;
-
+			// Have we got any data from a drag ?
 			if ( e . Data . GetDataPresent ( DataFormats . StringFormat ) )
 			{
-				// Yes, there is some Dragged data available, but do NOT do it if the door grid is this grid itself
-				if ( CurrentDb == "BANKACCOUNT"  )
-				{
-					// Parent		= BANK
-					// TOPGRID		= BANK   	- List<BankAccountViewModel>	BANKRECORDS
-					//BOTTOMGRID	= DETAILS	- List<DetailsViewModel>			DETRECORDS
-					// File Handling Bank moving records to Details
-					DetailsViewModel dvm = new DetailsViewModel ( );
-					BankAccountViewModel bvm = new BankAccountViewModel ( );
+				// Yes, so check what it is by verifying the Flag we put inside it in the Drag creation
+				dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
+				// Yes, there is some Dragged data available
+				if ( topGridIdentity == "BANK" )
+				{       // working 11/6/21
 
-					string dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
+					//Window is a child of a BANK  SqlDbViewer
+					// We are dropping into the BOTTOM DETAILS grid, so data MUST be a BANK record
+					if ( dataString . Contains ( "DETAILS" ) )
+					{
+						// WRONG - It's from our own grid, so ignore it
+						DraggingInProgress = false;
+						return;
+					}
+
+					// We are dropping an upper grid BANK record into ;lower DETAILS grid
+
 					// Reset flag as We have now got the dragged data
 					e . Handled = true;
 
 					//Sanity check do we have a Details Record or not ?
-					if ( dataString . Contains ( "DETAILS" ) == false )
+					if ( dataString . Contains ( "BANKACCOUNT" ) == false )
 					{
 						DraggingInProgress = false;
 						return;
@@ -399,10 +484,12 @@ namespace WPFPages . Views
 
 					// Get Details record that has been dblclicked on from TOPGRID
 					selindex = TopGrid . SelectedIndex;
+					BankAccountViewModel bvm = new BankAccountViewModel ( );
 					bvm = TopGrid . SelectedItem as BankAccountViewModel;
 					// Store Custno as our key
 					custno = bvm . CustNo;
-					dvm = CreateDetailsRecordFromString ( dataString );
+					DetailsViewModel dvm = new DetailsViewModel ( );
+					dvm = CreateDetailsRecord ( bvm );
 					DetRecords . Add ( dvm );
 
 					// iterate thru BANK upper grid and delete the record we have moded to lower grid
@@ -410,7 +497,10 @@ namespace WPFPages . Views
 					{
 						bvm = TopGrid . Items [ i ] as BankAccountViewModel;
 						if ( dvm . CustNo == custno )
+						{
 							BankRecords . Remove ( bvm );
+							break;
+						}
 					}
 					// Refresh both grid
 					TopGrid . ItemsSource = null;
@@ -419,31 +509,29 @@ namespace WPFPages . Views
 					BottomGrid . ItemsSource = null;
 					BottomGrid . ItemsSource = DetRecords;
 					BottomGrid . Refresh ( );
-					DraggingInProgress = false;
-
 				}
-				if ( CurrentDb == "DETAILS"  )
-				{
-					// WORKING CORRECTLY 11/6/21 (in mouse dblclick)
-					// Parent		= DETAILS
-					// TOPGRID		= DETAILS	-List<DetailsViewModel>			DETRECORDS
-					//BOTTOMGRID	= BANK		- List<BankAccountViewModel>	BANKRECORDS
-					// File Handling Details moving records to Bank
-					BankAccountViewModel bvm = new BankAccountViewModel ( );
-
-					// Get the dragged data with this call (I massaged it into a string format for easier usage overall)
-					string dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
-					// Reset flag as We have now got the dragged data
-					e . Handled = true;
-					//Sanity check do we have a Details  Record or not ?
-					if ( dataString. Contains ( "DETAILS" ) == false )
+				else if ( topGridIdentity == "DET" )
+				{       // working 11/6/21
+					//Window is a child of a DETAILS SqlDbViewer
+					// We are dropping into the BOTTOM BANK grid, so data MUST be a DETAILS record
+					if ( dataString . Contains ( "BANK" ) )
 					{
+						// It's from our own grid, so ignore it
 						DraggingInProgress = false;
 						return;
 					}
 
+					// We are dropping an upper grid DETAIL record into lower BANK grid
+
+					// Get the dragged data with this call (I massaged it into a string format for easier usage overall)
+					//					 dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
+					// Reset flag as We have now got the dragged data
+					e . Handled = true;
+					//Sanity check do we have a Details  Record or not ?
+
 					selindex = TopGrid . SelectedIndex;
 					// Massage it into a DetailsViewModel record so we can add it to lower DETAILS GRID
+					BankAccountViewModel bvm = new BankAccountViewModel ( );
 					bvm = CreateBankRecordFromString ( dataString );
 					// Store Custno as our key
 					custno = bvm . CustNo;
@@ -451,7 +539,7 @@ namespace WPFPages . Views
 
 					DetailsViewModel dvm = new DetailsViewModel ( );
 					// iterate thru upper grid and delete the record we have moded to lower grid
-					for ( int i = 0 ; i < TopGrid . Items . Count - 1 ; i++ )
+					for ( int i = 0 ; i < TopGrid . Items . Count ; i++ )
 					{
 						dvm = TopGrid . Items [ i ] as DetailsViewModel;
 						if ( dvm . CustNo == custno )
@@ -466,8 +554,6 @@ namespace WPFPages . Views
 						. ThenBy ( DetailsViewModel => DetailsViewModel . BankNo )
 						. ToList ( );
 					DetRecords = temp;
-					// Clear global dragging flag so a new one can start
-					DraggingInProgress = false;
 					TopGrid . ItemsSource = null;
 					TopGrid . ItemsSource = DetRecords;
 					TopGrid . SelectedIndex = selindex;
@@ -476,52 +562,68 @@ namespace WPFPages . Views
 					BottomGrid . ItemsSource = null;
 					BottomGrid . ItemsSource = BankRecords;
 					BottomGrid . Refresh ( );
+					// Clear global dragging flag so a new one can start
 				}
+				// Clear global dragging flag so a new one can start
+				DraggingInProgress = false;
+				if ( topGridIdentity == "BANK" )
+				{
+					uppercount . Text = BankRecords . Count . ToString ( );
+					lowercount . Text = DetRecords . Count . ToString ( );
+				}
+				else
+				{
+					lowercount . Text = BankRecords . Count . ToString ( );
+					uppercount . Text = DetRecords . Count . ToString ( );
+				}
+				CreateTextFromRecord ( null,
+										       null,
+										       true,
+										       false,
+										       false,
+										        true );
 			}
 		}
 		private void TopGrid_Drop ( object sender, DragEventArgs e )
 		{
-			//if ( LeftMouseButtonIsDown == false )
-			//{
-			//	// Dragging must have neded as well if button is up
-			//	DraggingInProgress = false;
-			//	return;
-			//}
 			// Not dragging, so we are outta here
-			if ( DraggingInProgress == false ) return;
+			if ( DraggingInProgress == false )
+				return;
 
 			if ( e . Data . GetDataPresent ( DataFormats . StringFormat ) )
 			{
-				if ( CurrentDb == "BANKACCOUNT" )
+				// get the data sent in  the drag message so we can verify what it is 
+				string dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
+				if ( topGridIdentity == "BANK" )
 				{
-					// we have recieved a BANK data record to drop back into our DETAILS grid
-					BankAccountViewModel bvm = new BankAccountViewModel ( );
-					string dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
-
-					//Sanity check do we have a Bank Record or not ?
-					if ( dataString . Contains ( "BANKACCOUNT" ) == false )
+					// We are dropping into the TOP grid, which is a BANK grid, so data MUST be a DETAILS record
+					if ( dataString . Contains ( "BANKACCOUNT" ) )
 					{
+						// It's from our own grid, so ignore it
 						DraggingInProgress = false;
 						return;
 					}
 
-					// massage data from a string to a Bank record that we can add then to our bank list
+					// We are dropping an lower grid DETAILS record into upper BANK grid
+					// we have recieved a DETAILS  data record to drop back into our BANK grid
+					BankAccountViewModel bvm = new BankAccountViewModel ( );
+
+					// massage DETAILS data received from a string to a Bank record that we can add then to our bank list
 					bvm = CreateBankRecordFromString ( dataString );
 					BankRecords . Add ( bvm );
+					string custno = bvm . CustNo . ToString ( );
 					int currsel = TopGrid . SelectedIndex;
 					TopGrid . ItemsSource = null;
 					TopGrid . ItemsSource = BankRecords;
 					TopGrid . SelectedIndex = currsel;
 					TopGrid . Refresh ( );
-					// Recipient Bank  grid now has  the record added (back into) it, so now lets sort out the lower donor Details grid
-					// and remove it from there, iterate thru from end working backwards and delete current record from the bank grid
+					// Recipient BANK  grid now has  the record added (back into) it, so now lets sort out the lower donor Details grid
+					// and remove it from there, iterate thru and delete current record from the lower bank grid
 					DetailsViewModel tmp = new DetailsViewModel ( );
-					BankAccountViewModel bvm2 = new BankAccountViewModel ( );
-//					return;
-					for ( int i = BottomGrid . Items . Count - 2 ; i >= 0 ; i-- )
+					for ( int i = 0 ; i < BottomGrid . Items . Count ; i++ )
 					{
-						bvm2 = BottomGrid . Items [ i ] as BankAccountViewModel;
-						if ( tmp . CustNo == bvm2 . CustNo )
+						tmp = BottomGrid . Items [ i ] as DetailsViewModel;
+						if ( tmp . CustNo == custno )
 						{
 							DetRecords . Remove ( tmp );
 							break;
@@ -532,76 +634,148 @@ namespace WPFPages . Views
 					BottomGrid . ItemsSource = DetRecords;
 					BottomGrid . Refresh ( );
 				}
-
-				if ( CurrentDb == "DETAILS" )
+				else if ( topGridIdentity == "DET" )
 				{
-					if ( e . Data . GetDataPresent ( DataFormats . StringFormat ) )
+					// We are dropping an lower BANK grid record into upper DETAILS grid
+					// we have recieved a BANK data record to drop back into our DETAILS upper grid 
+					DetailsViewModel dvm = new DetailsViewModel ( );
+
+					dvm = CreateDetailsRecordFromString ( dataString );
+					DetRecords . Add ( dvm );
+					int currsel = TopGrid . SelectedIndex;
+					TopGrid . ItemsSource = null;
+					TopGrid . ItemsSource = DetRecords;
+					TopGrid . SelectedIndex = currsel;
+					TopGrid . Refresh ( );
+					// iterate thru and delete current record from the upper grid
+					BankAccountViewModel tmp = new BankAccountViewModel ( );
+					for ( int i = 0 ; i < BottomGrid . Items . Count ; i++ )
 					{
-						// Called when we are dropping onto the upper DETAILS grid
-						// we have received a BANK record, so first we massage it into a DETAILS record and add it to TOP list
-						DetailsViewModel dvm = new DetailsViewModel ( );
-						var  dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
-
-						//Sanity check do we have a Bank Record or not ?
-						if ( dataString . Contains ( "DETAILS" ) )
+						tmp = BottomGrid . Items [ i ] as BankAccountViewModel;
+						if ( tmp . CustNo == dvm . CustNo )
 						{
-							DraggingInProgress = false;
-							return;
+							BankRecords . Remove ( tmp );
+							break;
 						}
-
-						dvm = CreateDetailsRecordFromString ( dataString );
-						DetRecords . Add ( dvm );
-						int currsel = TopGrid . SelectedIndex;
-						TopGrid . ItemsSource = null;
-						TopGrid . ItemsSource = DetRecords;
-						TopGrid . SelectedIndex = currsel;
-						TopGrid . Refresh ( );
-						// iterate thru from end working backwards and delete current record from the upper grid
-						BankAccountViewModel tmp = new BankAccountViewModel ( );
-						for ( int i = 0 ; i < BottomGrid . Items . Count - 1 ; i++ )
-						{
-							tmp = BottomGrid . Items [ i ] as BankAccountViewModel;
-							if ( tmp . CustNo == dvm . CustNo )
-							{
-								BankRecords . Remove ( tmp );
-								break;
-							}
-						}
-						DraggingInProgress = false;
-						BottomGrid . ItemsSource = null;
-						BottomGrid . ItemsSource = BankRecords;
-						BottomGrid . Refresh ( );
 					}
+					DraggingInProgress = false;
+					BottomGrid . ItemsSource = null;
+					BottomGrid . ItemsSource = BankRecords;
+					BottomGrid . Refresh ( );
 				}
 			}
+			if ( topGridIdentity == "BANK" )
+			{
+				uppercount . Text = BankRecords . Count . ToString ( );
+				lowercount . Text = DetRecords . Count . ToString ( );
+			}
+			else
+			{
+				lowercount . Text = BankRecords . Count . ToString ( );
+				uppercount . Text = DetRecords . Count . ToString ( );
+			}
 		}
-		private string CreateTextFromRecord ( BankAccountViewModel bvm, DetailsViewModel dvm )
+
+		/// <summary>
+		/// Specialist Fn to create a CSV style comma delimited string forBANK or DETAILS records
+		/// It provides (optional) arguments to control  the output format:
+		/// <list type="bullet">
+		/// <item>
+		/// <description>Include Data Type - True/False.</description>
+		/// </item>
+		/// <item>
+		/// <description>wrap dates in single quotemarks - True/False</description>
+		/// </item>
+		/// <item>
+		/// <description>Use Short Date format - True/False</description>
+		/// </item>
+		/// <item>
+		/// <description>Include ID field - True/False</description>
+		/// </item>
+		/// </list>
+		/// </summary>
+		/// <param name="bvm"></param>
+		/// <param name="dvm"></param>
+		/// <param name="IncludeType"></param>
+		/// <param name="includeDateQuotemarks"></param>
+		/// <param name="UseShortDate"></param>
+		/// <param name="IncludeIdField"></param>
+		/// <returns></returns>
+		private string CreateTextFromRecord ( BankAccountViewModel bvm,
+											DetailsViewModel dvm,
+											bool IncludeType = true,
+											bool includeDateQuotemarks = false,
+											bool UseShortDate = false , 
+											bool IncludeIdField = true)
 		{
 			if ( bvm == null && dvm == null ) return "";
 			string datastring = "";
 			if ( bvm != null )
 			{
-				datastring = "BANKACCOUNT,"; 
-				datastring += bvm . Id + ",";
+				// Handle a BANK Record
+				if ( IncludeType ) datastring = "BANKACCOUNT,";
+				if( IncludeIdField) 
+					datastring += bvm . Id + ",";
 				datastring += bvm . CustNo + ",";
 				datastring += bvm . BankNo + ",";
 				datastring += bvm . AcType + ",";
 				datastring += bvm . IntRate + ",";
 				datastring += bvm . Balance + ",";
-				datastring += bvm . ODate + ",";
-				datastring += bvm . CDate;
+				if ( includeDateQuotemarks )
+				{
+					if ( UseShortDate )
+						datastring += "'" + bvm . ODate . ToShortDateString ( ) + "',"; 
+					else
+						datastring += "'" + bvm . ODate + "',"; 
+					if ( UseShortDate )
+						datastring += "'" + bvm . CDate . ToShortDateString ( );
+					else
+						datastring += "'" + bvm . CDate;
+				}
+				else
+				{
+					if ( UseShortDate )
+						datastring += bvm . ODate . ToShortDateString ( ) + ",";
+					else
+						datastring += bvm . ODate + ",";
+					if ( UseShortDate )
+						datastring += bvm . CDate . ToShortDateString ( ) ;
+					else
+						datastring += bvm . CDate;
+				}
 			}
 			else
 			{
-				datastring = "DETAILS,";
-				datastring += dvm . Id + ",";
+				if ( IncludeType ) datastring = "DETAILS,";
+				if ( IncludeIdField )
+					datastring += dvm . Id + ",";
 				datastring += dvm . CustNo + ",";
 				datastring += dvm . BankNo + ",";
 				datastring += dvm . AcType + ",";
 				datastring += dvm . IntRate + ",";
 				datastring += dvm . Balance + ",";
-				datastring += dvm . ODate + ",";
-				datastring += dvm . CDate;
+				if ( includeDateQuotemarks )
+				{
+					if ( UseShortDate )
+						datastring += "'" + dvm . ODate . ToShortDateString ( ) + "',";
+					else
+						datastring += "'" + dvm . ODate + "',";
+					if ( UseShortDate )
+						datastring += "'" + dvm . CDate . ToShortDateString ( ) + "',";
+					else
+						datastring += "'" + dvm . CDate + "',";
+				}
+				else
+				{
+					if ( UseShortDate )
+						datastring += dvm . ODate . ToShortDateString ( ) + ",";
+					else
+						datastring += dvm . ODate + ",";
+					if ( UseShortDate )
+						datastring += dvm . CDate . ToShortDateString ( ) + ",";
+					else
+						datastring += dvm . CDate + ",";
+				}
 			}
 			return datastring;
 		}
@@ -627,7 +801,7 @@ namespace WPFPages . Views
 			DetailsViewModel bvm = new DetailsViewModel ( );
 			char [ ] s = { ',' };
 			string [ ] data = input . Split ( s );
-			string donor  = data [ 0 ];
+			string donor = data [ 0 ];
 			if ( donor != "BANKACCOUNT" ) return null;
 			bvm . Id = int . Parse ( data [ 1 ] );
 			bvm . CustNo = data [ 2 ];
@@ -678,13 +852,13 @@ namespace WPFPages . Views
 			return dvm;
 		}
 
-		private void DoDragMove ( )
-		{//Handle the button NOT being the left mouse button
-		 // which will crash the DragMove Fn.....
-			try
-			{ this . DragMove ( ); }
-			catch { return; }
-		}
+		//===========================
+		#endregion DRAG AND DROP STUFF
+		//===========================
+
+		//===========================
+		#region DRAG AND DROP UTILITY HELPERS
+		//===========================
 
 		private void TopGrid_PreviewLeftMouseButtonUp ( object sender, MouseButtonEventArgs e )
 		{
@@ -723,6 +897,16 @@ namespace WPFPages . Views
 				TopGrid . SelectedIndex = currseltop;
 			}
 			TopGrid . Refresh ( );
+			if ( topGridIdentity == "BANK" )
+			{
+				uppercount . Text = BankRecords . Count . ToString ( );
+				lowercount . Text = DetRecords . Count . ToString ( );
+			}
+			else
+			{
+				lowercount . Text = BankRecords . Count . ToString ( );
+				uppercount . Text = DetRecords . Count . ToString ( );
+			}
 		}
 
 		private void Refresh_bottomgrid ( object sender, RoutedEventArgs e )
@@ -747,6 +931,16 @@ namespace WPFPages . Views
 				BottomGrid . SelectedIndex = currselbottom;
 			}
 			BottomGrid . Refresh ( );
+			if ( topGridIdentity == "BANK" )
+			{
+				uppercount . Text = BankRecords . Count . ToString ( );
+				lowercount . Text = DetRecords . Count . ToString ( );
+			}
+			else
+			{
+				lowercount . Text = BankRecords . Count . ToString ( );
+				uppercount . Text = DetRecords . Count . ToString ( );
+			}
 		}
 
 		private void BottomGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -760,12 +954,23 @@ namespace WPFPages . Views
 		{
 			if ( TopGrid . SelectedIndex == -1 ) return;
 			currseltop = TopGrid . SelectedIndex;
-			Debug . WriteLine ($"TopGrid = {currseltop}");
+			//			Debug . WriteLine ($"TopGrid = {currseltop}");
 		}
+		//===========================
+		#endregion DRAG AND DROP UTILITY HELPERS
+		//===========================
+
 
 		//===========================
-		#endregion DRAG AND DROP STUFF
+		#region GENERAL UTILS
 		//===========================
+		private void DoDragMove ( )
+		{//Handle the button NOT being the left mouse button
+		 // which will crash the DragMove Fn.....
+			try
+			{ this . DragMove ( ); }
+			catch { return; }
+		}
 
 		private void TopMost_Click ( object sender, RoutedEventArgs e )
 		{
@@ -908,7 +1113,7 @@ namespace WPFPages . Views
 		public void SetButtonGradientBackground ( Button btn )
 		{
 			// how to change button background to a style in Code
-			if ( btn == Upbutton  || btn == Dnbutton)
+			if ( btn == Upbutton || btn == Dnbutton )
 			{
 				if ( CurrentDb == "BANKACCOUNT" )
 				{
@@ -916,7 +1121,7 @@ namespace WPFPages . Views
 					btn . Template = tmp;
 					Brush br = Utils . GetDictionaryBrush ( "HeaderBrushBlue" );
 					btn . Background = br;
-//					btn . Content = "Filter";
+					//					btn . Content = "Filter";
 				}
 				else
 				{
@@ -944,6 +1149,9 @@ namespace WPFPages . Views
 				}
 			}
 		}
+		//===========================
+		#endregion GENERAL UTILS
+		//===========================
 
 	}
 }

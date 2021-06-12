@@ -189,15 +189,21 @@ namespace WPFPages
 		}
 		public static void SaveProperty ( string setting, string value )
 		{
-			if ( value . ToUpper ( ) . Contains ( "TRUE" ) )
-				Settings . Default [ setting ] = true;
-			else if ( value . ToUpper ( ) . Contains ( "FALSE" ) )
-				Settings . Default [ setting ] = false;
-			else
-				Settings . Default [ setting ] = value;
-			Settings . Default . Save ( );
-			Settings . Default . Upgrade ( );
-			ConfigurationManager . RefreshSection ( setting );
+			try
+			{
+				if ( value . ToUpper ( ) . Contains ( "TRUE" ) )
+					Settings . Default [ setting ] = true;
+				else if ( value . ToUpper ( ) . Contains ( "FALSE" ) )
+					Settings . Default [ setting ] = false;
+				else
+					Settings . Default [ setting ] = value;
+				Settings . Default . Save ( );
+				Settings . Default . Upgrade ( );
+				ConfigurationManager . RefreshSection ( setting );
+			}
+			catch (Exception ex){
+				Debug . WriteLine ($"Unable to save property {setting} of [{value}]\nError was {ex.Data}, {ex.Message}, Stack trace = \n{ex.StackTrace}");
+			}
 		}
 		public static string GetExportFileName ( string filespec )
 		// opens  the common file open dialog

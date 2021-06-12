@@ -11,12 +11,14 @@
 	  MinWidth="700"
         Title="Move accounts between Databases" 
 	  Height="562" 
-	  Width="512">
+	  Width="674">
 
 	<Window.Resources>
 		<!--<Style x:Key="BlueGridBackground" TargetType="DataGrid">
 			<
-			--><!--  create an elegant left to right light-> Dark gradient as a background  --><!--
+			-->
+		<!--  create an elegant left to right light-> Dark gradient as a background  -->
+		<!--
 			<LinearGradientBrush StartPoint="1.3,0" EndPoint="0.0,1">
 				<GradientStop Offset="1" Color="#333333" />
 				<GradientStop Offset="0.3" Color="#35F6FB" />
@@ -27,12 +29,12 @@
 	<Grid 
 	    
 
-	    Margin="0,0,27,17">
+	    Margin="0,0,21,17">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="10"/>
 			<RowDefinition Height="30"/>
 			<RowDefinition Height="*"/>
-			<RowDefinition Height="20"/>
+			<RowDefinition Height="35"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="80"/>
 			<RowDefinition Height="0"/>
@@ -40,6 +42,8 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="10"/>
 			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="200"/>
+			<ColumnDefinition Width="150"/>
 			<ColumnDefinition Width="10"/>
 		</Grid.ColumnDefinitions>
 
@@ -193,7 +197,7 @@
 				Foreground="White"
 				HorizontalAlignment="Left"
 				Margin="5,5,5,5"
-				Height="35"
+				Height="25"
 				VerticalAlignment="Top"
 				Width="350"
 				/>
@@ -201,7 +205,7 @@
 		</WrapPanel>
 		<DataGrid x:Name="BottomGrid" 
 			    AllowDrop="True"
-			    CanUserAddRows="True"
+			    CanUserAddRows="False"
 			    CanUserSortColumns="True"
 			    AutoGenerateColumns="True"
 			    Grid.Column="1"
@@ -307,83 +311,114 @@
 
 		</DataGrid>
 
-		<WrapPanel					
+		<!--<WrapPanel					
 				Orientation="Horizontal"
 				Grid.Column="0"
 				Grid.ColumnSpan="3"
 				Grid.Row="5"
 				VerticalAlignment="Center" 
 			Margin="0,0,-35,0" Height="50" 
-				>
-			<TextBlock
-				Grid.Column="0"
+				>-->
+		<TextBlock
+				Grid.Column="1"
 				Grid.ColumnSpan="2"
-				Grid.Row="3"
+				Grid.Row="5"
 				Grid.RowSpan="1"
 				Text="Double Click on an item in top list to move it to lower list, or you can Drag and Drop in either direction. " 
 				TextWrapping="Wrap"
-				Margin="15,0,55,5"
+				Margin="5,20,161,6"
 				FontWeight="Bold"
-				Height="72" Width="328"/>
+				Foreground="White" />
 
-			<Button x:Name="Select" 
+		<Button x:Name="Select" 
 					Background="{StaticResource HeaderBorderBrushRed}"			  
 					Click="Select_Click"
-					Content="Save Changes to Db's"
+					Content="Save to CSV file"
 					Foreground="White"
+				Grid.Column="2"
+				Grid.ColumnSpan="2"
+				Grid.Row="5"
 					Height="40"
-					Margin="-10,10,10,0"
-					HorizontalAlignment="Right"
+					Margin="78,0,0,0"
+					HorizontalAlignment="Left"
 					Template="{StaticResource HorizontalGradientTemplateRed}"
-					VerticalAlignment="Top"
+					VerticalAlignment="Center"
 					Width="150" />
 
-			<Button x:Name="cancelbutton" 
+		<Button x:Name="cancelbutton" 
 					Background="{StaticResource HeaderBorderBrushBlue}"			  
 					Click="Cancelbutton_Click"
 					Content="Close / Discard"
 					Foreground="White"
-					Grid.Column="2"
+					Grid.Column="3"
 					Grid.ColumnSpan="2"
-					Grid.Row="4"
-					Grid.RowSpan="1"
+					Grid.Row="5"
+					Grid.RowSpan="3"
 					Height="40"
-					Margin="0,11,0,0"
+					Margin="20,0,0,0"
 					HorizontalAlignment="Right"
 					Template="{StaticResource HorizontalGradientTemplateBlue}"
 					VerticalAlignment="Center"
 					Width="120"
 					/>
-		</WrapPanel>
+		<!--</WrapPanel>-->
 
 		<!--#region side buttons-->
 		<Button x:Name="Upbutton" 
-				  Background="{StaticResource HeaderBorderBrushBlue}"			  
+				Background="{StaticResource HeaderBorderBrushBlue}"			  
 				Click="Refresh_topgrid"	  
 				Content="v" 
-				  Foreground="White"
-				  Grid.Column="1" 
-				  Height="45"
-				  HorizontalAlignment="Right" 
-				  Margin="0,90,-20,0" 
-				  Grid.Row="2" 
+				Foreground="White"
+				Grid.Column="3" 
+				Grid.Row="2"
+				Grid.RowSpan="1"
+				Height="45"
+				HorizontalAlignment="Right" 
+				Margin="0,91,-10,0" 
 				Template="{StaticResource HorizontalGradientTemplateBlue}"
-				  VerticalAlignment="Top"
-				  Width="25"/>
+				VerticalAlignment="Top"
+				Width="25"/>
+
 		<Button x:Name="Dnbutton" 
 				Background="{StaticResource HeaderBorderBrushBlue}"			  
 				Click="Refresh_bottomgrid"	  
 				Content="^" 
 				Foreground="White"
-				Grid.Column="1" 
+				Grid.Column="3" 
+				Grid.Row="4"
+				Grid.RowSpan="1"
 				Height="45"
 				HorizontalAlignment="Right" 
+				Margin="0,71,-0,0" 
 				Template="{StaticResource HorizontalGradientTemplateBlue}"
-				VerticalContentAlignment="Center"
-				Margin="0,82,-10,0" 
-				Grid.Row="4" 
 				VerticalAlignment="Top"
-				Width="25" RenderTransformOrigin="0.533,0.96" Grid.ColumnSpan="2"/>
+				Width="26" Grid.ColumnSpan="2" />
+		<TextBlock x:Name="uppercount" 
+			     Text="Count"
+				Background="#BB0000"
+				Foreground="White"
+			     Grid.Column="3" 
+			     Height="25"
+			     HorizontalAlignment="Left" 
+			     TextAlignment="Center"
+			     Margin="68,-5,0,0"
+			     Grid.Row="1" 
+			     TextWrapping="Wrap" 
+			     VerticalAlignment="Top"
+			     Width="50"/>
+		<TextBlock x:Name="lowercount" 
+				Text="Count"
+				Background="#BB0000"
+				Foreground="White"
+				Grid.Column="3" 
+				Height="25"
+				HorizontalAlignment="Left" 
+				TextAlignment="Center"
+				Margin="66,8,0,0"
+				Grid.Row="3" 
+				TextWrapping="Wrap" 
+				VerticalAlignment="Top"
+				Width="50"/>
 		<!--#endregion side buttons-->
 	</Grid>
 </Window>
