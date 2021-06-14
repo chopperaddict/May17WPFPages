@@ -435,16 +435,7 @@
 			HorizontalAlignment="Left"
 			HorizontalContentAlignment="Left"
 			Width="auto">
-			<!--<Menu.Background>
-				-->
-			<!--create an elegant left to right light-> Dark gradient as a background-->
-			<!--
-				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
-					<GradientStop Color="#333333" Offset="1" />
-					<GradientStop Color="#35F6FB" Offset="0" />
-				</LinearGradientBrush>
-			</Menu.Background>-->
-
+	
 			<MenuItem  Header="_Linq Queries"
 				     Margin="2"
 				     FontWeight="Bold"
@@ -459,57 +450,45 @@
 					Background="#00FF00"
 						    VerticalAlignment="Top"
 					Click="Linq6_Click"
-					IsCheckable="false"
-					/>
+					IsCheckable="false"/>
+				
 					<MenuItem Header="A/c Type 1 Only"
 					Background="#35F6FB"
 					Click="Linq1_Click"
 					Foreground="{StaticResource Black1}"
 					Style="{StaticResource MenuItemBlue}"
-					IsCheckable="false"
-/>
+					IsCheckable="false"/>
 				
 					<MenuItem Header="A/c Type 2 Only"
 					Background="#35F6FB"
 					Click="Linq2_Click"
 					Foreground="{StaticResource Black1}"
 					Style="{StaticResource MenuItemBlue}"
-					IsCheckable="false"
-						    />
+					IsCheckable="false"/>
 				
 					<MenuItem Header="A/c Type 3 Only"
 					Background="#35F6FB"
 					Foreground="{StaticResource Black1}"
 					Style="{StaticResource MenuItemBlue}"
 					Click="Linq3_Click"
-					IsCheckable="false"
-						    />
+					IsCheckable="false"/>
 				
 					<MenuItem Header="A/c Type 4 Only"
 					Background="#35F6FB"
 					Click="Linq4_Click"
 					Foreground="{StaticResource Black1}"
 					Style="{StaticResource MenuItemBlue}"
-					IsCheckable="false"
-						    />
+					IsCheckable="false"/>
 				
 				<Separator />
 
 				<MenuItem Header="Multi A/C Holders"
 					Background="#FF0000"
 					Foreground="{StaticResource Black1}"
-					Style="{StaticResource MenuItemRed
-					}"
+					Style="{StaticResource MenuItemRed}"
 					Click="Linq5_Click"
-					IsCheckable="false"
-					/>
+					IsCheckable="false"/>
 
-					<!--<MenuItem Header="Create 'Join' of Bank and Details"
-					Background="#35F6FB"
-					Click="bankjoin_Click"
-					IsCheckable="false"
-					Foreground="Black"/>
-					<Separator />-->
 				</MenuItem>
 
 			<MenuItem  Header="Data Copy Utilities"
@@ -637,7 +616,26 @@
 
 			</MenuItem>
 
-				<MenuItem  Header="Close Viewer..."
+			<MenuItem  Header="Drag / Drop"
+				Click="Drag_Click"
+			     IsTabStop="False"
+				Width="90"
+				Foreground="{StaticResource White1}">
+
+				<!--<MenuItem  Header="Export Bank Account Db => CSV"
+					Click="ExportBankCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>-->
+			</MenuItem>
+
+
+			<MenuItem  Header="Close Viewer..."
 				    Click="Exit_Click"
 				     FontWeight="SemiBold"
 				     IsTabStop="False"
@@ -907,8 +905,7 @@
 			<!--b:DataGridBehaviour.FullRowSelect="true"-->
 			<!--#region BankAccount data Grid-->
 			<DataGrid Name="BankGrid"
-					AllowDrop="True"
-				    
+					AllowDrop="True"				    
 					AlternatingRowBackground="{StaticResource Blue4}"				    
 					AutoGenerateColumns="False"
 					BeginningEdit="BankGrid_BeginningEdit"
@@ -925,7 +922,9 @@
 					IsEnabled="true"
 					ItemsSource="{Binding}"				    
 					IsSynchronizedWithCurrentItem="True"			    
-			    
+					PreviewDragEnter="BankGrid_PreviewDragEnter"
+					PreviewMouseMove="BankGrid_PreviewMouseMove"
+				    PreviewMouseLeftButtonDown="BankGrid_PreviewMouseLeftButtondown"
 					PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtondown"
 					RowEditEnding="ViewerGrid_RowEditEnding"
 					RowHeight="22"
@@ -1095,6 +1094,8 @@
 				IsEnabled="true"
 				IsSynchronizedWithCurrentItem="False"
 				MouseRightButtonDown="CustomerGrid_MouseRightButtonDown"
+				PreviewMouseMove="CustomerGrid_PreviewMouseMove"
+				PreviewMouseLeftButtonDown="CustomerGrid_PreviewMouseLeftButtondown"
 				PreviewMouseDown="CustomerGrid_PreviewMouseDown"
 				RowEditEnding="ViewerGrid_RowEditEnding"
 				RowHeight="22"
@@ -1220,6 +1221,8 @@
 				IsEnabled="true"
 				IsSynchronizedWithCurrentItem="False"
 				MouseRightButtonDown="DetailsGrid_MouseRightButtonDown"
+				PreviewMouseMove="DetailsGrid_PreviewMouseMove"
+				    PreviewMouseLeftButtonDown="DetailsGrid_PreviewMouseLeftButtondown"
 				PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
 				RowEditEnding="ViewerGrid_RowEditEnding"
 				RowHeight="22"

@@ -52,7 +52,7 @@ namespace WPFPages . ViewModels
 			set { bankno = value; OnPropertyChanged ( BankNo . ToString ( ) ); }
 		}
 
-		public string CustNo
+		public  string CustNo
 		{
 			get { return custno; }
 			set { custno = value; OnPropertyChanged ( CustNo . ToString ( ) ); }
@@ -92,6 +92,11 @@ namespace WPFPages . ViewModels
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
+		public override string ToString ( )
+		{
+			return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
+			//return base . ToString ( );
+		}
 		#endregion STANDARD CLASS PROPERTIES SETUP
 
 		#region SETUP/DECLARATIONS

@@ -36,6 +36,7 @@ namespace WPFPages . Views
 		private bool keyshifted { get; set; }
 		private bool IsEditing { get; set; }
 		public static int bindex { get; set; }
+		public bool IsLeftButtonDown { get; set; }
 
 		private string _bankno = "";
 		private string _custno = "";
@@ -251,7 +252,7 @@ namespace WPFPages . Views
 			int currow = 0;
 			// if our saved row is null, it has already been checked in Cell_EndDedit processing
 			// and found no changes have been made, so we can abort this update
-			if ( bvmCurrent == null )	return;
+			if ( bvmCurrent == null ) return;
 
 			// This is now confirmed as being CHANGED DATA in the current row
 			// So we proceed and update SQL Db's' and notify all open viewers as well
@@ -614,6 +615,37 @@ namespace WPFPages . Views
 					SenderId = "BANKDBVIEW",
 					Row = grid . SelectedIndex
 				} );
+		}
+
+		private void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+			}
+		}
+
+		private void BankGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( BankGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					BankAccountViewModel bvm = new BankAccountViewModel ( );
+					bvm = BankGrid . SelectedItem as BankAccountViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					BankGrid,
+					dataObject,
+					DragDropEffects . Move );
+					IsLeftButtonDown = false;
+				}
+			}
 		}
 
 		#region Menu items

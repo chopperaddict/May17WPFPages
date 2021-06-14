@@ -33,7 +33,7 @@ namespace WPFPages
 			public string custno { get; set; }
 			public string bankno { get; set; }
 			public int actype { get; set; }
-			public decimal intrate{ get; set; }
+			public decimal intrate { get; set; }
 			public decimal balance { get; set; }
 			public DateTime odate { get; set; }
 			public DateTime cdate { get; set; }
@@ -163,9 +163,9 @@ namespace WPFPages
 			{
 				for ( int i = 0 ; i < repeat ; i++ )
 				{
-				Console . Beep ( freq, count );
+					Console . Beep ( freq, count );
 					//t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
-//					Thread . Sleep ( 100 );
+					//					Thread . Sleep ( 100 );
 				}
 				Thread . Sleep ( 200 );
 			}
@@ -187,6 +187,240 @@ namespace WPFPages
 			}
 			return t;
 		}
+
+		public static BankAccountViewModel CreateBankRecordFromString ( string type, string input )
+		{
+			int index = 0;
+			BankAccountViewModel bvm = new BankAccountViewModel ( );
+			char [ ] s = { ',' };
+			string [ ] data = input . Split ( s );
+			string donor = data [ 0 ];
+			try
+			{
+				DateTime dt;
+				if ( type == "BANK" || type == "DETAILS" )
+				{
+					// This WORKS CORRECTLY 12/6/21 when called from n SQLDbViewer DETAILS grid entry && BANK grid entry					
+					// this test confirms the data layout by finding the Odate field correctly
+					// else it drops thru to the Catch branch
+					dt = Convert . ToDateTime ( data [ 7 ] );
+					//We can have any type of record in the string recvd
+					index = 1;  // jump the data type string
+					bvm . Id = int . Parse ( data [ index++ ] );
+					bvm . CustNo = data [ index++ ];
+					bvm . BankNo = data [ index++ ];
+					bvm . AcType = int . Parse ( data [ index++ ] );
+					bvm . IntRate = decimal . Parse ( data [ index++ ] );
+					bvm . Balance = decimal . Parse ( data [ index++ ] );
+					bvm . ODate = Convert . ToDateTime ( data [ index++ ] );
+					bvm . CDate = Convert . ToDateTime ( data [ index ] );
+					return bvm;
+				}
+				else if ( type == "CUSTOMER" )
+				{
+					// this test confirms the data layout by finding the Odate field correctly
+					// else it drops thru to the Catch branch
+					dt = Convert . ToDateTime ( data [ 5 ] );
+					// We have a customer record !!
+					//Check to see if the data includes the data type in it
+					//As we have to parse it diffrently if not - see index....
+					index = 1;
+					bvm . Id = int . Parse ( data [ index++ ] );
+					bvm . CustNo = data [ index++ ];
+					bvm . BankNo = data [ index++ ];
+					bvm . AcType = int . Parse ( data [ index++ ] );
+					bvm . ODate = Convert . ToDateTime ( data [ index++ ] );
+					bvm . CDate = Convert . ToDateTime ( data [ index ] );
+				}
+				return bvm;
+			}
+			catch
+			{
+				//Check to see if the data includes the data type in it
+				//As we have to parse it diffrently if not - see index....
+				index = 0;
+				try
+				{
+					int x = int . Parse ( donor );
+					// if we get here, it IS a NUMERIC VALUE
+					index = 0;
+				}
+				catch ( Exception ex )
+				{
+					//its probably the Data Type string, so ignore it for our Data creation processing
+					index = 1;
+				}
+				//We have a CUSTOMER record
+				bvm . Id = int . Parse ( data [ index++ ] );
+				bvm . CustNo = data [ index++ ];
+				bvm . BankNo = data [ index++ ];
+				bvm . AcType = int . Parse ( data [ index++ ] );
+				bvm . ODate = Convert . ToDateTime ( data [ index++ ] );
+				bvm . CDate = Convert . ToDateTime ( data [ index ] );
+				return bvm;
+			}
+		}
+		public static DragviewModel CreateGridRecordFromString ( string input )
+		{
+			int index = 0;
+			string type = "";
+			//			BankAccountViewModel bvm = new BankAccountViewModel ( );
+			DragviewModel bvm = new DragviewModel ( );
+			char [ ] s = { ',' };
+			string [ ] data = input . Split ( s );
+			string donor = data [ 0 ];
+			try
+			{
+				DateTime dt;
+				type = data [ 0 ];
+				if ( type == "BANKACCOUNT" || type == "BANK" || type == "DETAILS" )
+				{
+					// This WORKS CORRECTLY 12/6/21 when called from n SQLDbViewer DETAILS grid entry && BANK grid entry					
+					// this test confirms the data layout by finding the Odate field correctly
+					// else it drops thru to the Catch branch
+					dt = Convert . ToDateTime ( data [ 7 ] );
+					//We can have any type of record in the string recvd
+					index = 1;  // jump the data type string
+					bvm . RecordType = type;
+					bvm . Id = int . Parse ( data [ index++ ] );
+					bvm . CustNo = data [ index++ ];
+					bvm . BankNo = data [ index++ ];
+					bvm . AcType = int . Parse ( data [ index++ ] );
+					bvm . IntRate = decimal . Parse ( data [ index++ ] );
+					bvm . Balance = decimal . Parse ( data [ index++ ] );
+					bvm . ODate = Convert . ToDateTime ( data [ index++ ] );
+					bvm . CDate = Convert . ToDateTime ( data [ index ] );
+					return bvm;
+				}
+				else if ( type == "CUSTOMER" )
+				{
+					// this test confirms the data layout by finding the Odate field correctly
+					// else it drops thru to the Catch branch
+					dt = Convert . ToDateTime ( data [ 5 ] );
+					// We have a customer record !!
+					//Check to see if the data includes the data type in it
+					//As we have to parse it diffrently if not - see index....
+					index = 1;
+					bvm . RecordType = type;
+					bvm . Id = int . Parse ( data [ index++ ] );
+					bvm . CustNo = data [ index++ ];
+					bvm . BankNo = data [ index++ ];
+					bvm . AcType = int . Parse ( data [ index++ ] );
+					bvm . ODate = Convert . ToDateTime ( data [ index++ ] );
+					bvm . CDate = Convert . ToDateTime ( data [ index ] );
+				}
+				return bvm;
+			}
+			catch
+			{
+				//Check to see if the data includes the data type in it
+				//As we have to parse it diffrently if not - see index....
+				index = 0;
+				try
+				{
+					int x = int . Parse ( donor );
+					// if we get here, it IS a NUMERIC VALUE
+					index = 0;
+				}
+				catch ( Exception ex )
+				{
+					//its probably the Data Type string, so ignore it for our Data creation processing
+					index = 1;
+				}
+				//We have a CUSTOMER record
+				bvm . RecordType = type;
+				bvm . Id = int . Parse ( data [ index++ ] );
+				bvm . CustNo = data [ index++ ];
+				bvm . BankNo = data [ index++ ];
+				bvm . AcType = int . Parse ( data [ index++ ] );
+				bvm . ODate = Convert . ToDateTime ( data [ index++ ] );
+				bvm . CDate = Convert . ToDateTime ( data [ index ] );
+				return bvm;
+			}
+		}
+		public static CustomerViewModel CreateCustomerRecordFromString ( string input )
+		{
+			int index = 0;
+			CustomerViewModel cvm = new CustomerViewModel ( );
+			char [ ] s = { ',' };
+			string [ ] data = input . Split ( s );
+			string donor = data [ 0 ];
+			//Check to see if the data includes the data type in it
+			//As we have to parse it diffrently if not - see index....
+			if ( donor . Length > 3 )
+				index = 1;
+			//We have the sender type in the string recvd
+			cvm . Id = int . Parse ( data [ index++ ] );
+			cvm . CustNo = data [ index++ ];
+			cvm . BankNo = data [ index++ ];
+			cvm . AcType = int . Parse ( data [ index++ ] );
+			cvm . ODate = DateTime . Parse ( data [ index++ ] );
+			cvm . CDate = DateTime . Parse ( data [ index ] );
+			return cvm;
+		}
+		public static DetailsViewModel CreateDetailsRecordFromString ( string input )
+		{
+			int index = 0;
+			DetailsViewModel bvm = new DetailsViewModel ( );
+			char [ ] s = { ',' };
+			string [ ] data = input . Split ( s );
+			string donor = data [ 0 ];
+			//Check to see if the data includes the data type in it
+			//As we have to parse it diffrently if not - see index....
+			if ( donor . Length > 3 )
+				index = 1;
+			bvm . Id = int . Parse ( data [ index++ ] );
+			bvm . CustNo = data [ index++ ];
+			bvm . BankNo = data [ index++ ];
+			bvm . AcType = int . Parse ( data [ index++ ] );
+			bvm . IntRate = decimal . Parse ( data [ index++ ] );
+			bvm . Balance = decimal . Parse ( data [ index++ ] );
+			bvm . ODate = DateTime . Parse ( data [ index++ ] );
+			bvm . CDate = DateTime . Parse ( data [ index ] );
+			return bvm;
+		}
+		public static string CreateFullCsvTextFromRecord ( BankAccountViewModel bvm, DetailsViewModel dvm, CustomerViewModel cvm = null, bool IncludeType=true)
+		{
+			if ( bvm == null && cvm == null && dvm == null ) return "";
+			string datastring = "";
+			if ( bvm != null )
+			{
+				// Handle a BANK Record
+				if ( IncludeType ) datastring = "BANKACCOUNT,";
+				datastring += bvm . Id + ",";
+				datastring += bvm . CustNo + ",";
+				datastring += bvm . BankNo + ",";
+				datastring += bvm . AcType . ToString ( ) + ",";
+				datastring += bvm . IntRate . ToString ( ) + ",";
+				datastring += bvm . Balance . ToString ( ) + ",";
+				datastring += "'" + bvm . CDate . ToString ( ) + "',";
+				datastring += "'" + bvm . ODate . ToString ( ) + "',";
+			}
+			else if ( dvm != null )
+			{
+				if ( IncludeType ) datastring = "DETAILS,";
+				datastring += dvm . Id + ",";
+				datastring += dvm . CustNo + ",";
+				datastring += dvm . BankNo + ",";
+				datastring += dvm . AcType . ToString ( ) + ",";
+				datastring += dvm . IntRate . ToString ( ) + ",";
+				datastring += dvm . Balance . ToString ( ) + ",";
+				datastring += "'" + dvm . CDate.ToString()  + "',";
+				datastring += dvm . ODate . ToString ( ) + ",";
+			}
+			else if ( cvm != null )
+			{
+				if ( IncludeType ) datastring = "CUSTOMER,";
+				datastring += cvm . Id + ",";
+				datastring += cvm . CustNo + ",";
+				datastring += cvm . BankNo + ",";
+				datastring += cvm . AcType . ToString ( ) + ",";
+				datastring += "'" + cvm . CDate . ToString ( ) + "',";
+				datastring += cvm . ODate . ToString ( ) + ",";
+			}
+			return datastring;
+		}
+
 		public static void SaveProperty ( string setting, string value )
 		{
 			try
@@ -201,8 +435,9 @@ namespace WPFPages
 				Settings . Default . Upgrade ( );
 				ConfigurationManager . RefreshSection ( setting );
 			}
-			catch (Exception ex){
-				Debug . WriteLine ($"Unable to save property {setting} of [{value}]\nError was {ex.Data}, {ex.Message}, Stack trace = \n{ex.StackTrace}");
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"Unable to save property {setting} of [{value}]\nError was {ex . Data}, {ex . Message}, Stack trace = \n{ex . StackTrace}" );
 			}
 		}
 		public static string GetExportFileName ( string filespec )
@@ -224,9 +459,9 @@ namespace WPFPages
 				ofd . Filter = "All Files (*.*) | *.*";
 				ofd . DefaultExt = ".CSV";
 			}
-//			string initfolder = ofd . InitialDirectory;
-//			if ( initfolder != "" && fnameonly != "" )
-//				filespec = initfolder + fnameonly;
+			//			string initfolder = ofd . InitialDirectory;
+			//			if ( initfolder != "" && fnameonly != "" )
+			//				filespec = initfolder + fnameonly;
 			ofd . FileName = filespec;
 			//if ( filespec == "" )
 			//	ofd . DefaultExt = ".XLS*" ;
@@ -299,7 +534,7 @@ namespace WPFPages
 			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
 			{
 				// list various Flags in Console
-				Debug . WriteLine ($"\nCTRL + F7 pressed..." );
+				Debug . WriteLine ( $"\nCTRL + F7 pressed..." );
 				Flags . PrintDbInfo ( );
 				e . Handled = true;
 				key1 = false;
@@ -464,11 +699,11 @@ namespace WPFPages
 			grid . SelectedItem = row;
 			//			grid . SetDetailsVisibilityForItem ( grid . SelectedItem, Visibility . Visible );
 			grid . SelectedIndex = row;
-			grid . SelectedItem = row; 
+			grid . SelectedItem = row;
 			Utils . ScrollRecordIntoView ( grid, row );
 			grid . UpdateLayout ( );
 			grid . Refresh ( );
-//			var v = grid .VerticalAlignment;
+			//			var v = grid .VerticalAlignment;
 		}
 
 		/// <summary>

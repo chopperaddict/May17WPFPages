@@ -31,7 +31,7 @@ namespace WPFPages . Views
 
 		// Get our personal Collection view of the Db
 		public ICollectionView DetviewerView { get; set; }
-
+		private bool IsLeftButtonDown { get; set; }
 		// items for CollectionView
 		public int CurrentItem { get; internal set; }
 		public Action CurrentChanged { get; internal set; }
@@ -1262,6 +1262,36 @@ namespace WPFPages . Views
 		private void Window_MouseDown ( object sender, MouseButtonEventArgs e )
 		{
 
+		}
+		private void DetGrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+			}
+		}
+		private void DetGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( DetGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					DetailsViewModel dvm = new DetailsViewModel ( );
+					dvm = DetGrid . SelectedItem as DetailsViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( null,  dvm, null, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					DetGrid,
+					dataObject,
+					DragDropEffects . Move );
+					IsLeftButtonDown = false;
+					e . Handled = true;
+				}
+			}
 		}
 
 		private void Minimize_click ( object sender, RoutedEventArgs e )

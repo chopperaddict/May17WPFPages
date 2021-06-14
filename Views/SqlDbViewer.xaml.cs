@@ -21,7 +21,7 @@ using System . Windows . Data;
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 using WPFPages . Views;
-using System . Collections;
+using System . IO;
 using System . Runtime . CompilerServices;
 using System . Windows . Shapes;
 using System . Windows . Media . Animation;
@@ -220,6 +220,8 @@ namespace WPFPages
 
 		public static bool RemoteChangeActive = false;
 
+		private bool IsLeftButtonDown { get; set; }
+
 		/// <summary>
 		///  A Delegate method we send in a call to SqlDbViewer to have it reset its grid.selectedIndex to our index
 		///  </summary>
@@ -413,11 +415,6 @@ namespace WPFPages
 				LinkRecords . IsChecked = true;
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . Topmost = false;
-
-			// Drag & Drop handlers
-			this . BankGrid . PreviewMouseLeftButtonDown += new MouseButtonEventHandler ( this . BankGrid_PreviewMouseLeftButtondown );
-			this . BankGrid . DragEnter += new DragEventHandler ( BankGrid_DragEnter );
-			//			this . BankGrid . Drop += new DragEventHandler ( BankGrid_Drop );
 		}
 
 		//private void BankGrid_Drop ( object sender, DragEventArgs e )
@@ -436,7 +433,7 @@ namespace WPFPages
 
 		//	}
 		//}
-		private void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		private void BankGrid_PreviewMouseLeftButtondownx ( object sender, MouseButtonEventArgs e )
 		{
 			// Ignore the click if the user has clicked on a scrollbar.
 			//if ( HitTestScrollBar ( sender, e ) )
@@ -1371,19 +1368,28 @@ namespace WPFPages
 
 			// Clear the previous global flag identifier
 			if ( this == Flags . SqlBankViewer )
+			{
 				Flags . SqlBankViewer = null;
-			if ( this == Flags . SqlCustViewer )
+				Flags . SqlBankGrid = null;
+			}
+			else if ( this == Flags . SqlCustViewer )
+			{
 				Flags . SqlCustViewer = null;
-			if ( this == Flags . SqlDetViewer )
+				Flags . SqlCustGrid = null;
+			}
+			else if ( this == Flags . SqlDetViewer )
+			{
 				Flags . SqlDetViewer = null;
+				Flags . SqlDetGrid = null;
+			}
 
+
+			CurrentDb = "BANKACCOUNT";
 			Flags . SqlBankViewer = this;
 			// We have to sort out the control structures BEFORE loading Customer Db Data and showing it
 			CleanViewerGridData ( );
 			// We have to Unsubscribe from previous Db Types Evet handlers BEFORE loading Customer Db Data and showing it
 			ClearCurrentFlags ( );
-
-			CurrentDb = "BANKACCOUNT";
 			//Reset our Datgrid pointer
 			CurrentDataGrid = BankGrid;
 			Flags . CurrentSqlViewer = this;
@@ -1455,19 +1461,28 @@ namespace WPFPages
 
 			// Clear the previous global flag identifier
 			if ( this == Flags . SqlBankViewer )
+			{
 				Flags . SqlBankViewer = null;
-			if ( this == Flags . SqlCustViewer )
+				Flags . SqlBankGrid = null;
+			}
+			else if ( this == Flags . SqlCustViewer )
+			{
 				Flags . SqlCustViewer = null;
-			if ( this == Flags . SqlDetViewer )
+				Flags . SqlCustGrid = null;
+			}
+			else if ( this == Flags . SqlDetViewer )
+			{
 				Flags . SqlDetViewer = null;
+				Flags . SqlDetGrid = null;
+			}
 
+			CurrentDb = "CUSTOMER";
 			Flags . SqlCustViewer = this;
 			// We have to sort out the control structures BEFORE loading Customer Db Data and showing it
 			CleanViewerGridData ( );
 			// We have to Unsubscribe from previous Db Types Evet handlers BEFORE loading Customer Db Data and showing it
 			ClearCurrentFlags ( );
 
-			CurrentDb = "CUSTOMER";
 			//Reset our Datgrid pointer
 			CurrentDataGrid = this . CustomerGrid;
 			Flags . SqlCustGrid = this . CustomerGrid;
@@ -1537,22 +1552,30 @@ namespace WPFPages
 			}
 			if ( Flags . CurrentSqlViewer != null )
 				Mouse . OverrideCursor = Cursors . Wait;
-
 			// Clear the previous global flag identifier
 			if ( this == Flags . SqlBankViewer )
+			{
 				Flags . SqlBankViewer = null;
-			if ( this == Flags . SqlCustViewer )
+				Flags . SqlBankGrid = null;
+			}
+			else if ( this == Flags . SqlCustViewer )
+			{
 				Flags . SqlCustViewer = null;
-			if ( this == Flags . SqlDetViewer )
+				Flags . SqlCustGrid = null;
+			}
+			else if ( this == Flags . SqlDetViewer )
+			{
 				Flags . SqlDetViewer = null;
+				Flags . SqlDetGrid = null;
+			}
 
+			CurrentDb = "DETAILS";
 			Flags . SqlDetViewer = this;
 			// We have to sort out the control structures BEFORE loading Details Db Data and showing it
 			CleanViewerGridData ( );
 			// We have to Unsubscribe from previous Db Types Evet handlers BEFORE loading Customer Db Data and showing it
 			ClearCurrentFlags ( );
 
-			CurrentDb = "DETAILS";
 			//Reset our Datgrid pointer
 			CurrentDataGrid = DetailsGrid;
 			Flags . SqlDetGrid = DetailsGrid;
@@ -5773,7 +5796,7 @@ namespace WPFPages
 					{
 						foreach ( var item in OriginalDetcollection )
 						{
-//							Debug . WriteLine ( $"{item . CustNo},  NewDetList {NewDetlist [ counter ] . CustNo}  -  {NewDetlist [ counter ] . BankNo}" );
+							//							Debug . WriteLine ( $"{item . CustNo},  NewDetList {NewDetlist [ counter ] . CustNo}  -  {NewDetlist [ counter ] . BankNo}" );
 							//item is the ORIGINAL DATA Record;
 							if ( item . CustNo == NewDetlist [ counter ] . CustNo . ToString ( ) && item . BankNo == NewDetlist [ counter ] . BankNo . ToString ( ) )
 							{
@@ -5822,7 +5845,7 @@ namespace WPFPages
 						else
 						{
 							Debug . WriteLine ( $"No Records added, they already exist in the destination Db....." );
-							MessageBox . Show ( $"The Details Db already has the selected Account records\nso no additions have been made.", "Update information");
+							MessageBox . Show ( $"The Details Db already has the selected Account records\nso no additions have been made.", "Update information" );
 						}
 					}
 				}
@@ -6067,10 +6090,6 @@ namespace WPFPages
 		}
 
 
-		private void BankGrid_DragEnter ( object sender, DragEventArgs e )
-		{
-			int y = 3;
-		}
 
 		private void BankGrid_DragLeave ( object sender, DragEventArgs e )
 		{
@@ -6094,10 +6113,10 @@ namespace WPFPages
 					return;
 				List<BankAccountViewModel> recs = new List<BankAccountViewModel> ( );
 				//select All the items first;
-				recs = SqlBankcollection .ToList ( );
-//				OrderBy ( CustNo => CustNo ) .
+				recs = SqlBankcollection . ToList ( );
+				//				OrderBy ( CustNo => CustNo ) .
 				//recs . Sort ( );
-				List <BankAccountViewModel> Banknolist = new List<BankAccountViewModel> ( );
+				List<BankAccountViewModel> Banknolist = new List<BankAccountViewModel> ( );
 				List<DetailsViewModel> NewDetlist = new List<DetailsViewModel> ( );
 				GetExportRecords getExportrec = new GetExportRecords ( CurrentDb, ref recs, ref NewDetlist );
 
@@ -6110,8 +6129,8 @@ namespace WPFPages
 				if ( SqlDetcollection == null )
 					return;
 				// Get a new List sorted by BankNo within CustNo
-				List<DetailsViewModel> recs = SqlDetcollection . OrderBy ( DetailsViewModel => DetailsViewModel . CustNo  )
-					.ThenBy(DetailsViewModel => DetailsViewModel .BankNo)
+				List<DetailsViewModel> recs = SqlDetcollection . OrderBy ( DetailsViewModel => DetailsViewModel . CustNo )
+					. ThenBy ( DetailsViewModel => DetailsViewModel . BankNo )
 					. ToList ( );
 				List<BankAccountViewModel> NewBanklist = new List<BankAccountViewModel> ( );
 				GetExportRecords getExportrec = new GetExportRecords ( CurrentDb, ref NewBanklist, ref recs );
@@ -6153,6 +6172,138 @@ namespace WPFPages
 				//bankfromCSV . IsEnabled = true;
 				//custfromCSV . IsEnabled = false;
 				//detfromCSV . IsEnabled = false;
+			}
+
+		}
+		private void BankGrid_PreviewDragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+		}
+		private void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+			}
+		}
+		private void CustomerGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+
+				//if ( CustomerGrid . SelectedItem != null )
+				//{
+				//	// We are dragging from the DETAILS grid
+				//	//Working string version
+				//	CustomerViewModel cvm = new CustomerViewModel ( );
+				//	cvm = CustomerGrid . SelectedItem as CustomerViewModel;
+				//	string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, false, true );
+				//	string dataFormat = DataFormats . UnicodeText;
+				//	DataObject dataObject = new DataObject ( dataFormat, str );
+				//	System . Windows . DragDrop . DoDragDrop (
+				//	CustomerGrid,
+				//	dataObject,
+				//	DragDropEffects . Move );
+				//}
+			}
+		}
+		private void DetailsGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+
+				//if ( DetailsGrid . SelectedItem != null )
+				//{
+				//	// We are dragging from the DETAILS grid
+				//	//Working string version
+				//	DetailsViewModel bvm = new DetailsViewModel ( );
+				//	dvm = DetailsGrid . SelectedItem as DetailsViewModel;
+				//	string str = GetExportRecords . CreateTextFromRecord ( null, dvm ,null, false , true);
+				//	string dataFormat = DataFormats . UnicodeText;
+				//	DataObject dataObject = new DataObject ( dataFormat, str );
+				//	System . Windows . DragDrop . DoDragDrop (
+				//	DetailsGrid,
+				//	dataObject,
+				//	DragDropEffects . Move );
+				//}
+			}
+		}
+
+		private void Drag_Click ( object sender, RoutedEventArgs e )
+		{
+			DragDropClient ddc = new DragDropClient ( );
+			ddc . Show ( );
+		}
+
+		private void BankGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( BankGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					BankAccountViewModel bvm = new BankAccountViewModel ( );
+					bvm = BankGrid . SelectedItem as BankAccountViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false);
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					BankGrid,
+					dataObject,
+					DragDropEffects . Move );
+					IsLeftButtonDown = false;
+				}
+			}
+
+		}
+
+		private void CustomerGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( CustomerGrid . SelectedItem != null )
+				{
+					// We are dragging from the CUSTOMER  grid
+					//Working string version
+					CustomerViewModel cvm = new CustomerViewModel ( );
+					cvm = CustomerGrid . SelectedItem as CustomerViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					CustomerGrid,
+					dataObject,
+					DragDropEffects . Move );
+					IsLeftButtonDown = false;
+				}
+			}
+		}
+
+		private void DetailsGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( DetailsGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					DetailsViewModel dvm = new DetailsViewModel ( );
+					dvm = DetailsGrid . SelectedItem as DetailsViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( null, dvm, null, true, false );
+					string dataFormat = DataFormats .Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					DetailsGrid,
+					dataObject,
+					DragDropEffects . Move );
+					IsLeftButtonDown = false;
+				}
 			}
 
 		}

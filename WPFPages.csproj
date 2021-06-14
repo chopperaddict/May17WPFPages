@@ -118,6 +118,9 @@
     <Compile Include="Views\DetailsDbView.xaml.cs">
       <DependentUpon>DetailsDbView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DragDropClient.xaml.cs">
+      <DependentUpon>DragDropClient.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GetExportRecords.xaml.cs">
       <DependentUpon>GetExportRecords.xaml</DependentUpon>
     </Compile>
@@ -220,6 +223,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DetailsDbView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DragDropClient.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

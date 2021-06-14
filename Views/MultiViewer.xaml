@@ -323,7 +323,14 @@
 
 			</MenuItem>
 
-			
+			<MenuItem  Header="Drag / Drop"
+				Click="Drag_Click"
+			     IsTabStop="False"
+				Width="81"
+				Foreground="{StaticResource White1}">
+			</MenuItem>
+
+
 			<MenuItem  Header="Close Viewer..."
 				    Click="Exit_Click"
 				     FontWeight="SemiBold"
@@ -800,6 +807,8 @@
 				IsSynchronizedWithCurrentItem="False"
 				Margin="0,10,0,0"
 				Padding="10"
+				PreviewMouseLeftButtonDown="Grids_PreviewMouseLeftButtondown "
+			    PreviewMouseMove="BankGrid_PreviewMouseMove"
 				PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="BankGrid_RowEditEnding"
 				RowHeight="22"
@@ -932,6 +941,8 @@
 				IsSynchronizedWithCurrentItem="False"
 				Margin="0,10,0,0"
 				Padding="10"
+				PreviewMouseLeftButtonDown="Grids_PreviewMouseLeftButtondown "
+				 PreviewMouseMove="CustomerGrid_PreviewMouseMove"
 				PreviewMouseRightButtonDown="CustGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="CustGrid_RowEditEnding"
 				RowHeight="22"
@@ -1089,6 +1100,8 @@
 				IsSynchronizedWithCurrentItem="False"
 				Margin="0,10,0,0"
 				Padding="10"
+				PreviewMouseLeftButtonDown="Grids_PreviewMouseLeftButtondown "
+				 PreviewMouseMove="DetailsGrid_PreviewMouseMove"
 				PreviewMouseRightButtonDown="DetGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="DetailsGrid_RowEditEnding"
 				ScrollViewer.ScrollChanged="DetGrid_ScrollChanged"

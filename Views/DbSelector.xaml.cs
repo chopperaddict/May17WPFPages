@@ -1322,5 +1322,73 @@ namespace WPFPages . Views
 				cdbv . Show ( );
 			}
 		}
+
+		private void DragDrop_Click ( object sender, RoutedEventArgs e )
+		{
+			DragDropClient ddc = new DragDropClient ( );
+			ddc . Show ( );
+		}
+
+		private void ReloadText_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void SaveData_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ClearGrid_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ClearText_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void LoadDragClient_Click ( object sender, RoutedEventArgs e )
+		{
+			DragDropClient ddc = new DragDropClient ( );
+			ddc . Show ( );
+		}
+
+		private void xxxt_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void LoadDragDrop ( object sender, RoutedEventArgs e )
+		{
+			if ( Flags . DragDropViewer == null ) {
+				DragDropClient ddc = new DragDropClient ( );
+				ddc . Show ( );
+				Flags . DragDropViewer . RemoteLoadGrid ( );
+			}
+			else
+				Flags . DragDropViewer . RemoteLoadGrid ( );
+		}
+
+		private void LoadBankDbView_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void LoadCustDbView_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void LoadDetailsDbView_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void LoadMultiView_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
 	}
 }

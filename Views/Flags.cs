@@ -121,7 +121,7 @@ namespace WPFPages
 		public static DbSelector DbSelectorOpen;// = null;
 		public static EditDb CurrentEditDbViewer;// = new EditDb ( );
 		public static SqlDbViewer CurrentSqlViewer;// = new SqlDbViewer();
-							   //		public static SqlDbViewer SqlUpdateOriginatorViewer = null;
+		public static DragDropClient DragDropViewer = null;
 
 		// pointers  to any open Viewers
 		public static SqlDbViewer CurrentBankViewer;

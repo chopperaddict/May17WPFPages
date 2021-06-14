@@ -23,6 +23,17 @@
 
 	<Window.Resources>
 
+		<!--<Style x:Key='{x:Static MenuItem.SeparatorStyleKey}' TargetType='Separator'>
+			<Setter Property='OverridesDefaultStyle' Value='true' />
+			<Setter Property='Template'>
+				<Setter.Value>
+					<ControlTemplate TargetType='{x:Type Separator}'>
+						<Border Width="30" Height="14" Margin='4' Background='{StaticResource Blue0}'/>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>-->
+
 		<!--<Style x:Key="FocusVisualStyle1">
 			<Setter Property="Control.Template">
 				<Setter.Value>
@@ -248,11 +259,14 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+
+
+			
 	</Window.Resources>
 
 	<Grid Margin="0,0,0,0" HorizontalAlignment="Stretch">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="10" />
+			<RowDefinition Height="30" />
 			<RowDefinition Height="83" />
 			<RowDefinition Height="45" />
 			<RowDefinition Height="*" />
@@ -270,6 +284,101 @@
 				<GradientStop Offset="0.972" Color="Gainsboro" />
 			</LinearGradientBrush>
 		</Grid.Background>
+
+		<Menu
+			Height="30"
+			HorizontalAlignment="Left"
+			HorizontalContentAlignment="Stretch"
+			Background="Transparent" 
+			Grid.ColumnSpan="4" 
+			Grid.Column="1">
+
+			<MenuItem  Header="Drag Client"
+					Background="{StaticResource Gray0}"
+					Foreground="{StaticResource White0}"
+					Margin="2"
+					FontWeight="DemiBold"
+					IsTabStop="False"
+					Height="25">
+
+				<MenuItem  Header="Show Drag Client Window"
+						Click="LoadDragClient_Click"
+					     MinWidth="200"
+						FontWeight="Bold"
+						Height="15"
+					     Padding="5,2,5,0"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemBlue}"
+						Background="{StaticResource Red0}"
+					     Foreground="{StaticResource Green1}"/>
+
+			</MenuItem>
+
+			<MenuItem  Header="Data Viewers"
+						Background="{StaticResource Gray0}"
+						Foreground="{StaticResource White0}"
+						Margin="2"
+						FontWeight="DemiBold"
+						IsTabStop="False"
+						Height="25">
+
+			<MenuItem  Header="Bank A/C Viewer"
+						Click="LoadBankDbView_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="15"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>
+
+				<MenuItem  Header="Customer vA/C Viewer"
+						Click="LoadCustDbView_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="15"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>
+
+				<MenuItem  Header="Details A/C Viewer"
+						Click="LoadDetailsDbView_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="15"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>
+
+				<Separator
+					Style="{StaticResource Menu_Separator}"
+					Height="6"
+					HorizontalAlignment="Left"					
+					ClipToBounds="True"
+					Width="170"
+					>
+					<!--<Seperator.LayoutTransform>
+					<RotateTransform CenterX="25" CenterY="25 Angle=45"/>
+					</Seperator.LayoutTransform>-->
+				</Separator>
+				<MenuItem  Header="Multi A/C Viewer"
+						Click="LoadMultiView_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="15"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>
+
+			</MenuItem>
+
+
+		</Menu>
+		
+
 
 		<!--  Top list for creating new viewers  -->
 		<ListBox
@@ -406,13 +515,13 @@
 					Height="30"
 					Margin="2,0,5,0"
 					HorizontalAlignment="Right"
-					Background="{StaticResource HeaderBrushBlue}"
+					Background="{StaticResource HeaderBrushGray}"
 					Content=""
 					FontSize="14"
 					Foreground="White"
 					IsTabStop="True"
 					TabIndex="3"
-					Template="{StaticResource HorizontalGradientTemplateBlue}" />
+					Template="{StaticResource HorizontalGradientTemplateGray}" />
 
 				<Button
 					x:Name="CloseApp"
@@ -420,14 +529,14 @@
 					Height="30"
 					Margin="2,2,5,2"
 					HorizontalAlignment="Right"
-					Background="{StaticResource HeaderBrushBlue}"
+					Background="{StaticResource HeaderBrushRed}"
 					Click="Closeapp_Click"
 					Content="Close Program"
 					FontSize="14"
 					Foreground="White"
 					IsTabStop="True"
 					TabIndex="1"
-					Template="{StaticResource HorizontalGradientTemplateBlue}" />
+					Template="{StaticResource HorizontalGradientTemplateRed}" />
 
 				<Button
 					x:Name="MultiViewer"
@@ -572,5 +681,7 @@
 				TabIndex="5"
 				Template="{StaticResource HorizontalGradientTemplateBlue}" />
 		</Grid>
+
+
 	</Grid>
 </Window>

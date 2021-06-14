@@ -35,7 +35,7 @@ namespace WPFPages . Views
 		private bool IsEditing { get; set; }
 		private bool keyshifted { get; set; }
 		public static int cindex { get; set; }
-
+		private bool  IsLeftButtonDown { get; set; }
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -767,6 +767,35 @@ namespace WPFPages . Views
 			else
 				return true;
 		}
+		private void CustGrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+			}
+		}
+		private void CustGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+{
+				if ( CustGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					CustomerViewModel cvm = new CustomerViewModel ( );
+					cvm = CustGrid . SelectedItem as CustomerViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					CustGrid,
+					dataObject,
+					DragDropEffects . Move );
+					IsLeftButtonDown = false;
+				}
+			}
+		}
 
 		private void LinkToMulti_Click ( object sender, RoutedEventArgs e )
 		{
@@ -889,8 +918,9 @@ namespace WPFPages . Views
 			else
 				LinkRecords . IsEnabled = false;
 		}
-		#endregion HANDLERS for linkage checkboxes, inluding Thread montior
 
+
+		#endregion HANDLERS for linkage checkboxes, inluding Thread montior
 
 	}
 }

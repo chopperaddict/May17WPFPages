@@ -2,6 +2,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<!--  SolidBrush Definitions  -->
 
+	<!--Standard menu item seperator-->
+	<Style x:Key="Menu_Separator" TargetType="{x:Type Separator}">
+		<Setter Property="Margin" Value="0,3,0,3" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Separator}">
+					<Grid>
+						<Rectangle Height="3" 
+								     Fill="{StaticResource Red0}"
+								     Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Menu}}}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 	<SolidColorBrush x:Key="White0" Color="#ffffff" />
 	<SolidColorBrush x:Key="White1" Color="#eeeeee" />
 	<SolidColorBrush x:Key="White2" Color="#dddddd" />
@@ -82,7 +98,7 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type MenuItem}">
 					<Border x:Name="Bd" 
-							  Padding="17,0,17,0" 
+							Padding="{TemplateBinding Padding}" 	  
 							  BorderBrush="{TemplateBinding BorderBrush}" 
 							  BorderThickness="{TemplateBinding BorderThickness}" 
 							  Background="{TemplateBinding Background}" 
@@ -100,6 +116,7 @@
 						<Trigger Property="IsHighlighted" Value="True">
 							<Setter Property="Height" TargetName="Bd" Value="25"/>
 							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
+							<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>
 							<Setter Property="Background" TargetName="Bd" Value="Orange"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource Black0}"/>
 						</Trigger>
@@ -141,7 +158,8 @@
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsHighlighted" Value="True">
 							<Setter Property="Height" TargetName="Bd" Value="25"/>
-							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
+							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Blue0}"/>
+							<!--<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>-->
 							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Blue2}"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
 						</Trigger>
@@ -185,6 +203,7 @@
 						<Trigger Property="IsHighlighted" Value="True">
 							<Setter Property="Height" TargetName="Bd" Value="25"/>
 							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Black0}"/>
+							<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>
 							<Setter Property="BorderThickness" TargetName="Bd" Value="1.5"/>
 							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Green0}"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
@@ -196,5 +215,50 @@
 		</Setter>
 	</Style>
 
+	<Style x:Key="MenuItemGray" TargetType="{x:Type MenuItem}">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Foreground" Value="Black" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalAlignment" Value="Bottom" />
+		<Setter Property="VerticalContentAlignment" Value="Bottom" />
+		<Setter Property="MinHeight" Value="25"/>
+		<!--<Setter Property="MinWidth" Value="{TemplateBinding MinWidth}"/>-->
+		<!--<Setter Property="Cursor" Value="Hand" />-->
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type MenuItem}">
+					<Border x:Name="Bd" 
+							  Padding="17,0,17,0" 
+							  BorderBrush="{TemplateBinding BorderBrush}" 
+							  BorderThickness="{TemplateBinding BorderThickness}" 
+							  Background="{TemplateBinding Background}" 
+							  SnapsToDevicePixels="True" 
+							  Uid="Border_38">
+						<ContentPresenter x:Name="ContentPresenter"  
+										Content="{TemplateBinding Header}" 
+										Grid.Column="1" 
+										ContentSource="Header" 
+										Margin="{TemplateBinding Padding}" 
+										RecognizesAccessKey="True"
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+										Uid="ContentPresenter_33"/>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsHighlighted" Value="True">
+							<Setter Property="Height" TargetName="Bd" Value="30"/>
+							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Black0}"/>
+							<Setter Property="Padding" TargetName="Bd"  Value="10,0,0,0"/>
+							<Setter Property="BorderThickness" TargetName="Bd" Value="1"/>
+							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Gray0}"/>
+							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White2}"/>
+							<!--<Setter Property="Fill" TargetName="Bd" Value="{StaticResource White0}"/>-->
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 </ResourceDictionary>

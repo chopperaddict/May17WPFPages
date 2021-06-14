@@ -166,6 +166,8 @@
 			Margin="0,0,0,8"
 			Padding="-10"
 			PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtonDown"
+			PreviewMouseMove="BankGrid_PreviewMouseMove"
+			PreviewMouseLeftButtonDown="BankGrid_PreviewMouseLeftButtondown"
 			RowEditEnding="ViewerGrid_RowEditEnding"
 			SelectionChanged="BankGrid_SelectionChanged"
 			SelectionMode="Single"
@@ -558,7 +560,9 @@
 				Grid.RowSpan="2"
 				Margin="0,4,0,0">
 
-				--><!--#region Text Fields--><!--
+				-->
+			<!--#region Text Fields-->
+			<!--
 
 				<TextBlock
 					x:Name="textBlock"
@@ -755,11 +759,13 @@
 					Text=" Counter"
 					TextAlignment="Center"
 					TextTrimming="WordEllipsis" />
-				--><!--#endregion Text Fields--><!--
+				-->
+			<!--#endregion Text Fields-->
+			<!--
 			</Canvas>-->
 
 		</Grid>
-	<!--#region buttons2-->
+		<!--#region buttons2-->
 		<Button
 			x:Name="SaveBttn"
 			Grid.Column="3"
@@ -810,31 +816,37 @@
 		<CheckBox
 			x:Name="LinkRecords"
 			Grid.Row="2"
-			Grid.Column="2"
+			Grid.Column="1"
 			IsTabStop="False"
-			Margin="13,9,105,95"
+			Margin="435,37,80,75"
 			Click="LinkRecords_Click"
-			Content="Link to &#x0a;ALL Viewers "
-			Foreground="Red" Grid.ColumnSpan="2" />
+			Content="Link to ALL Viewers "
+			Foreground="Red" 
+			Grid.ColumnSpan="2"
+			Width="150"/>
 		<CheckBox
 			x:Name="LinkToParent"
 			Grid.Row="2"
-			Grid.Column="2"
+			Grid.Column="1"
+			Grid.ColumnSpan="2"
 			IsTabStop="False"
-			Margin="13,45,105,59"
+			Margin="435,60,30,55"
 			Click="LinkToParent_Click"
-			Content="Link  => to &#x0a;Parent Viewer"
-			Foreground="Red" Grid.ColumnSpan="2" />
+			Content="Link  => to Parent Viewer"
+			Foreground="Red"
+			Width="200"/>
 		<CheckBox
 			  x:Name="LinkToMulti"
 			  Grid.Row="2"
-			  Grid.Column="2"
+			  Grid.Column="1"
+			Grid.ColumnSpan="2"
 			  IsTabStop="False"
-			  Margin="13,84,105,17"
+			  Margin="435,86,30,30"
 			  Click="LinkToMulti_Click"
-			  Content="Link  => to &#x0a;Multi Viewer"
+			  Content="Link  => to Multi Viewer"
 			  Foreground="Red"
-			  RenderTransformOrigin="0.49,1.56" Grid.ColumnSpan="2" />
+			Width="200"
+			  RenderTransformOrigin="0.49,1.56" />
 
 		<Button			
 			Background="{StaticResource HeaderBrushGray}"

@@ -138,7 +138,7 @@ namespace WPFPages . Views
 											bool IncludeIdField = true)
 
 					 * */
-					lineout = CreateTextFromRecord ( null, dvm, false, true ,true, false);
+					lineout = CreateTextFromRecord ( null, dvm, null, false, true, true, false );
 					output += lineout + "\n";
 					lineout = "";
 				}
@@ -152,7 +152,7 @@ namespace WPFPages . Views
 				{
 					// iterate through each column in our dataset
 					bvm = BottomGrid . Items [ i ] as BankAccountViewModel;
-					lineout = CreateTextFromRecord ( bvm, null, false, true, true, false );
+					lineout = CreateTextFromRecord ( bvm, null, null, false, true, true, false );
 					output += lineout + "\n";
 					lineout = "";
 				}
@@ -291,7 +291,7 @@ namespace WPFPages . Views
 				//Get all records matching this customer No 
 				BankAccountViewModel tmp = new BankAccountViewModel ( );
 				DataRecord = CreateTextFromRecord ( bvm, null );
-				dvm = CreateDetailsRecordFromString ( DataRecord );
+				dvm = Utils.CreateDetailsRecordFromString ( DataRecord );
 				DetRecords . Add ( dvm );
 
 				// iterate thru BANK upper grid and delete the record we have moded to lower grid
@@ -532,7 +532,7 @@ namespace WPFPages . Views
 					selindex = TopGrid . SelectedIndex;
 					// Massage it into a DetailsViewModel record so we can add it to lower DETAILS GRID
 					BankAccountViewModel bvm = new BankAccountViewModel ( );
-					bvm = CreateBankRecordFromString ( dataString );
+					bvm = Utils . CreateBankRecordFromString ( "BANK", dataString );
 					// Store Custno as our key
 					custno = bvm . CustNo;
 					BankRecords . Add ( bvm );
@@ -542,6 +542,7 @@ namespace WPFPages . Views
 					for ( int i = 0 ; i < TopGrid . Items . Count ; i++ )
 					{
 						dvm = TopGrid . Items [ i ] as DetailsViewModel;
+						if ( dvm == null ) return;
 						if ( dvm . CustNo == custno )
 						{
 							DetRecords . Remove ( dvm );
@@ -576,12 +577,6 @@ namespace WPFPages . Views
 					lowercount . Text = BankRecords . Count . ToString ( );
 					uppercount . Text = DetRecords . Count . ToString ( );
 				}
-				CreateTextFromRecord ( null,
-										       null,
-										       true,
-										       false,
-										       false,
-										        true );
 			}
 		}
 		private void TopGrid_Drop ( object sender, DragEventArgs e )
@@ -609,7 +604,7 @@ namespace WPFPages . Views
 					BankAccountViewModel bvm = new BankAccountViewModel ( );
 
 					// massage DETAILS data received from a string to a Bank record that we can add then to our bank list
-					bvm = CreateBankRecordFromString ( dataString );
+					bvm = Utils . CreateBankRecordFromString ("DETAILS",  dataString );
 					BankRecords . Add ( bvm );
 					string custno = bvm . CustNo . ToString ( );
 					int currsel = TopGrid . SelectedIndex;
@@ -640,7 +635,7 @@ namespace WPFPages . Views
 					// we have recieved a BANK data record to drop back into our DETAILS upper grid 
 					DetailsViewModel dvm = new DetailsViewModel ( );
 
-					dvm = CreateDetailsRecordFromString ( dataString );
+					dvm = Utils . CreateDetailsRecordFromString ( dataString );
 					DetRecords . Add ( dvm );
 					int currsel = TopGrid . SelectedIndex;
 					TopGrid . ItemsSource = null;
@@ -677,8 +672,8 @@ namespace WPFPages . Views
 		}
 
 		/// <summary>
-		/// Specialist Fn to create a CSV style comma delimited string forBANK or DETAILS records
-		/// It provides (optional) arguments to control  the output format:
+		///<para> Specialist Fn to create a CSV style comma delimited string for any BANK or DETAILS record
+		/// It provides (optional) arguments to control  the output format:</para>
 		/// <list type="bullet">
 		/// <item>
 		/// <description>Include Data Type - True/False.</description>
@@ -701,117 +696,118 @@ namespace WPFPages . Views
 		/// <param name="UseShortDate"></param>
 		/// <param name="IncludeIdField"></param>
 		/// <returns></returns>
-		private string CreateTextFromRecord ( BankAccountViewModel bvm,
-											DetailsViewModel dvm,
-											bool IncludeType = true,
-											bool includeDateQuotemarks = false,
-											bool UseShortDate = false , 
-											bool IncludeIdField = true)
+		public static  string CreateTextFromRecord ( BankAccountViewModel bvm,DetailsViewModel dvm,CustomerViewModel cvm = null,
+					bool IncludeType = true, bool includeDateQuotemarks = true, bool UseShortDate = false,bool IncludeIdField = true)
 		{
-			if ( bvm == null && dvm == null ) return "";
+			if ( bvm == null && cvm == null && dvm == null ) return "";
 			string datastring = "";
+			string odate = "", cdate = "";
 			if ( bvm != null )
 			{
 				// Handle a BANK Record
 				if ( IncludeType ) datastring = "BANKACCOUNT,";
-				if( IncludeIdField) 
-					datastring += bvm . Id + ",";
-				datastring += bvm . CustNo + ",";
-				datastring += bvm . BankNo + ",";
+				if ( IncludeIdField )
+					datastring += bvm . Id .ToString().Trim() + ",";
+				datastring += bvm . CustNo+ ",";
+				datastring += bvm . BankNo+ ",";
 				datastring += bvm . AcType + ",";
 				datastring += bvm . IntRate + ",";
 				datastring += bvm . Balance + ",";
+				odate = Utils . ConvertInputDate ( bvm . ODate . ToString ( ) . Trim ( ) );
+				cdate = Utils . ConvertInputDate ( bvm . CDate . ToString ( ) . Trim ( ) );
 				if ( includeDateQuotemarks )
 				{
 					if ( UseShortDate )
-						datastring += "'" + bvm . ODate . ToShortDateString ( ) + "',"; 
+						datastring += "'" + odate + "',";
 					else
-						datastring += "'" + bvm . ODate + "',"; 
+						datastring += "'" + odate + "',";
 					if ( UseShortDate )
-						datastring += "'" + bvm . CDate . ToShortDateString ( );
+						datastring += "'" + dvm . CDate . ToShortDateString ( ) + "'";
 					else
-						datastring += "'" + bvm . CDate;
+						datastring += "'" + cdate + "'";
 				}
 				else
-				{
+				{// Nonquotemarks
 					if ( UseShortDate )
-						datastring += bvm . ODate . ToShortDateString ( ) + ",";
+						datastring += odate + ",";
 					else
-						datastring += bvm . ODate + ",";
+						datastring += odate + ",";
 					if ( UseShortDate )
-						datastring += bvm . CDate . ToShortDateString ( ) ;
+						datastring += cdate;
 					else
-						datastring += bvm . CDate;
+						datastring += cdate;
 				}
 			}
-			else
+			else if ( dvm != null )
 			{
+				//This works - 12/6/21
 				if ( IncludeType ) datastring = "DETAILS,";
 				if ( IncludeIdField )
 					datastring += dvm . Id + ",";
-				datastring += dvm . CustNo + ",";
-				datastring += dvm . BankNo + ",";
+				datastring += dvm . CustNo+ ",";
+				datastring += dvm . BankNo+ ",";
 				datastring += dvm . AcType + ",";
-				datastring += dvm . IntRate + ",";
-				datastring += dvm . Balance + ",";
+				datastring += dvm . IntRate+ ",";
+				datastring += dvm . Balance  + ",";
+				odate = Utils . ConvertInputDate (dvm . ODate . ToString ( ) . Trim ( ) );
+				cdate = Utils . ConvertInputDate ( dvm . CDate . ToString ( ) . Trim ( ) );
 				if ( includeDateQuotemarks )
 				{
 					if ( UseShortDate )
-						datastring += "'" + dvm . ODate . ToShortDateString ( ) + "',";
+						datastring += "'" + odate + "',";
 					else
-						datastring += "'" + dvm . ODate + "',";
+						datastring += "'" + odate + "',";
 					if ( UseShortDate )
-						datastring += "'" + dvm . CDate . ToShortDateString ( ) + "',";
+						datastring += "'" + cdate + "'";
 					else
-						datastring += "'" + dvm . CDate + "',";
+						datastring += "'" + cdate + "'" ;
 				}
 				else
+				{// Nonquotemarks
+					if ( UseShortDate )
+						datastring +=  dvm . ODate . ToShortDateString ( ) . Trim ( ) + ",";
+					else
+						datastring += dvm . ODate . ToString ( ) . Trim ( ) + ",";
+					if ( UseShortDate )
+						datastring += dvm . CDate . ToShortDateString ( );
+					else
+						datastring += dvm . CDate . ToString ( ) . Trim ( );
+				}
+			}
+			else if ( cvm != null )
+			{
+				if ( IncludeType ) datastring = "CUSTOMER,";
+				if ( IncludeIdField )
+					datastring += cvm . Id . ToString ( ) . Trim ( ) + ",";
+				datastring += cvm . CustNo . ToString ( ) . Trim ( ) + ",";
+				datastring += cvm . BankNo . ToString ( ) . Trim ( ) + ",";
+				datastring += cvm . AcType . ToString ( ) . Trim ( ) + ",";
+				odate = Utils . ConvertInputDate (cvm . ODate . ToString ( ) . Trim ( ) );
+				cdate = Utils . ConvertInputDate ( cvm . CDate . ToString ( ) . Trim ( ) );
+				if ( includeDateQuotemarks )
 				{
 					if ( UseShortDate )
-						datastring += dvm . ODate . ToShortDateString ( ) + ",";
+						datastring += "'" + odate + "',";
 					else
-						datastring += dvm . ODate + ",";
+						datastring += "'" + odate + "',";
 					if ( UseShortDate )
-						datastring += dvm . CDate . ToShortDateString ( ) + ",";
+						datastring += "'" + dvm . CDate . ToShortDateString ( ) + "'";
 					else
-						datastring += dvm . CDate + ",";
+						datastring += "'" + cdate + "'";
+				}
+				else
+				{// Nonquotemarks
+					if ( UseShortDate )
+						datastring += odate + ",";
+					else
+						datastring += odate + ",";
+					if ( UseShortDate )
+						datastring += cdate;
+					else
+						datastring += cdate;
 				}
 			}
 			return datastring;
-		}
-		private BankAccountViewModel CreateBankRecordFromString ( string input )
-		{
-			BankAccountViewModel bvm = new BankAccountViewModel ( );
-			char [ ] s = { ',' };
-			string [ ] data = input . Split ( s );
-			string donor = data [ 0 ];
-			if ( donor != "DETAILS" ) return null;
-			bvm . Id = int . Parse ( data [ 1 ] );
-			bvm . CustNo = data [ 2 ];
-			bvm . BankNo = data [ 3 ];
-			bvm . AcType = int . Parse ( data [ 4 ] );
-			bvm . IntRate = decimal . Parse ( data [ 5 ] );
-			bvm . Balance = decimal . Parse ( data [ 6 ] );
-			bvm . ODate = DateTime . Parse ( data [ 7 ] );
-			bvm . CDate = DateTime . Parse ( data [ 8 ] );
-			return bvm;
-		}
-		private DetailsViewModel CreateDetailsRecordFromString ( string input )
-		{
-			DetailsViewModel bvm = new DetailsViewModel ( );
-			char [ ] s = { ',' };
-			string [ ] data = input . Split ( s );
-			string donor = data [ 0 ];
-			if ( donor != "BANKACCOUNT" ) return null;
-			bvm . Id = int . Parse ( data [ 1 ] );
-			bvm . CustNo = data [ 2 ];
-			bvm . BankNo = data [ 3 ];
-			bvm . AcType = int . Parse ( data [ 4 ] );
-			bvm . IntRate = decimal . Parse ( data [ 5 ] );
-			bvm . Balance = decimal . Parse ( data [ 6 ] );
-			bvm . ODate = DateTime . Parse ( data [ 7 ] );
-			bvm . CDate = DateTime . Parse ( data [ 8 ] );
-			return bvm;
 		}
 		/// <summary>
 		/// Creates a BankAccountViewModel record from a DetailsViewModel record directly
@@ -819,7 +815,7 @@ namespace WPFPages . Views
 		/// <param name="dvm"></param>
 		/// <returns></returns>
 		/// 
-		private BankAccountViewModel CreateBankRecord ( DetailsViewModel dvm )
+		public static  BankAccountViewModel CreateBankRecord ( DetailsViewModel dvm )
 		{
 			BankAccountViewModel bvm = new BankAccountViewModel ( );
 			bvm . Id = dvm . Id;
@@ -838,7 +834,7 @@ namespace WPFPages . Views
 		/// <param name="dvm"></param>
 		/// <returns></returns>
 		/// 
-		private DetailsViewModel CreateDetailsRecord ( BankAccountViewModel bvm )
+		public static DetailsViewModel CreateDetailsRecord ( BankAccountViewModel bvm )
 		{
 			DetailsViewModel dvm = new DetailsViewModel ( );
 			dvm . Id = bvm . Id;
@@ -854,6 +850,7 @@ namespace WPFPages . Views
 
 		//===========================
 		#endregion DRAG AND DROP STUFF
+
 		//===========================
 
 		//===========================

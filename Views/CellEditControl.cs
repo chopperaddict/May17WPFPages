@@ -111,7 +111,7 @@ namespace WPFPages . Views
 			var columnName = e . Column . Header . ToString ( );
 			// Only returns full depedecy name
 			//var x = getDataGridValueAt ( BankGrid, columnName );
-			int ColumnIndex = BankGrid . CurrentColumn . DisplayIndex;
+//			int ColumnIndex = BankGrid . CurrentColumn . DisplayIndex;
 
 			// This actually get the data from the selected cell as a string - and Works well
 			// Except dates will crash it

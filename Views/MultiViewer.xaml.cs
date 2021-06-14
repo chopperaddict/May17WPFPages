@@ -54,6 +54,7 @@ namespace WPFPages . Views
 
 		List<string> tmp3 = new List<string> ( );
 
+		public bool IsLeftButtonDown { get; set; }
 		#endregion DECLARATIONS
 
 		public struct scrollData
@@ -74,14 +75,9 @@ namespace WPFPages . Views
 		public MultiViewer ( )
 		{
 			InitializeComponent ( );
-
-
 			//CommandBinding myCommandBinding = new CommandBinding ( CustomCommands.myCommand, CustomCommands . ExecutedmyCommand, CustomCommands . CanExecutemyCommand );
-
 			// attach CommandBinding to root element
 //			this . CommandBindings . Add ( myCommandBinding );
-
-
 			this . Show ( );
 			this . WaitMessage . Visibility = Visibility . Visible;
 			this . Refresh ( );
@@ -93,7 +89,6 @@ namespace WPFPages . Views
 			WaitMessage . SelectedItem = 0;
 			WaitMessage . CurrentItem = 1;
 			WaitMessage . Refresh ( );
-			//			this . Show ( );
 			this . Refresh ( );
 		}
 		private async void Window_Loaded ( object sender, RoutedEventArgs e )
@@ -338,9 +333,9 @@ namespace WPFPages . Views
 		private void SubscribeToEvents ( )
 		{
 			this . MouseDown += delegate { DoDragMove ( ); };
-			this . BankGrid . MouseDown += delegate { DoDragMove ( ); };
-			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
-			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
+//			this . BankGrid . MouseDown += delegate { DoDragMove ( ); };
+//			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
+//			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
 
 			// An EditDb has changed the current index
 			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
@@ -2485,6 +2480,89 @@ namespace WPFPages . Views
 		private void ImportDetCSV_Click ( object sender, RoutedEventArgs e )
 		{
 
+		}
+		private void BankGrid_PreviewDragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+		}
+		private void Grids_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+			}
+		}	
+		private void Drag_Click ( object sender, RoutedEventArgs e )
+		{
+			DragDropClient ddc = new DragDropClient ( );
+			ddc. Show ( );
+		}
+
+		private void BankGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( BankGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					BankAccountViewModel bvm = new BankAccountViewModel ( );
+					bvm = BankGrid . SelectedItem as BankAccountViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+
+					System . Windows . DragDrop . DoDragDrop (
+					BankGrid,
+					dataObject,
+					DragDropEffects . Move );
+				}
+			}
+		}
+
+		private void CustomerGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( CustomerGrid . SelectedItem != null )
+				{
+					// We are dragging from the Customer grid
+					//Working string version
+					CustomerViewModel cvm = new CustomerViewModel ( );
+					cvm = CustomerGrid . SelectedItem as CustomerViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					CustomerGrid,
+					dataObject,
+					DragDropEffects . Move );
+				}
+			}
+		}
+
+		private void DetailsGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				if ( DetailsGrid . SelectedItem != null )
+				{
+					// We are dragging from the DETAILS grid
+					//Working string version
+					DetailsViewModel dvm = new DetailsViewModel ( );
+					dvm = DetailsGrid . SelectedItem as DetailsViewModel;
+					string str = GetExportRecords . CreateTextFromRecord ( null, dvm, null, true, false );
+					string dataFormat = DataFormats . Text;
+					DataObject dataObject = new DataObject ( dataFormat, str );
+					System . Windows . DragDrop . DoDragDrop (
+					BankGrid,
+					dataObject,
+					DragDropEffects . Move );
+				}
+			}
 		}
 	}
 	/* UNUSED METHODS

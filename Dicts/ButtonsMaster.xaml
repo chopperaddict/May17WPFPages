@@ -178,7 +178,15 @@
 			<Trigger Property="Button.IsMouseOver" Value="True">
 				<!--MouseOver handling-->
 				<Setter Property="FontWeight"  Value="Bold"/>
-				<!--<Setter Property="Foreground"  Value="White"/>-->
+				<Setter Property="Control.Foreground"  TargetName="border">
+					<Setter.Value>
+						<LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+							<GradientStop Color="White" Offset="0.454"/>
+							<GradientStop Color="Red" Offset="0.633"/>
+							<GradientStop Color="#FF000000" Offset="1"/>
+						</LinearGradientBrush>
+					</Setter.Value>
+				</Setter>
 				<Setter Property="Control.Foreground"  TargetName="border">
 					<Setter.Value>
 						<LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
@@ -227,6 +235,8 @@
 			</Trigger>-->
 		</ControlTemplate.Triggers>
 	</ControlTemplate>
+
+
 
 	<ControlTemplate x:Key="HorizontalGradientTemplateYellow" TargetType="{x:Type ButtonBase}">
 		<!-- NB - it is the Border that controls the buttons default colors
