@@ -45,12 +45,16 @@ namespace WPFPages . Views
 			Caller = caller;
 			try
 			{
+				object lockobj = new object ( );
 
 				if ( USEFULLTASK )
 				{
-					Custinternalcollection = new CustCollection ( );
-					await Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
-					return ( CustCollection ) null;
+					lock ( lockobj )
+					{
+						Custinternalcollection = new CustCollection ( );
+						 Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
+					}
+					return Custinternalcollection;
 				}
 				else
 				{

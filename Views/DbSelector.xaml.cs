@@ -1390,5 +1390,15 @@ namespace WPFPages . Views
 		{
 
 		}
+
+		private void Paths_Click ( object sender, RoutedEventArgs e )
+		{
+			RunSearchPaths rsp = new RunSearchPaths ( );
+			rsp . ShowDialog ( );
+		}
+
+		private void Execute_Click ( object sender, RoutedEventArgs e )
+		{
+		}
 	}
 }

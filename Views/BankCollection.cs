@@ -33,20 +33,6 @@ namespace WPFPages . Views
 		private readonly object LockBankLoadData = new object ( );
 		// Lock object
 
-		/// <summary>
-		/// Allows us to get a listb of all Db collections ?
-		/// </summary>
-		/// <returns></returns>
-		//public static List<BankCollection> GetDbInfo ( )
-		//{
-		//	List<BankCollection> Banks = new List<BankCollection> ( );
-		//	Banks . Add ( BankViewerDbcollection );
-		//	Banks . Add ( SqlViewerBankcollection );
-		//	Banks . Add ( EditDbBankcollection );
-		//	Banks . Add ( MultiBankcollection );
-		//	Banks . Add ( Bankinternalcollection );
-		//	return Banks;
-		//}
 
 		#region CONSTRUCTOR
 
@@ -67,14 +53,14 @@ namespace WPFPages . Views
 				//				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
 				{
+					// lock the process - JIC
 					lock ( lockobject )
 					{
 						Bankinternalcollection = null;
 						Bankinternalcollection = new BankCollection ( );
 						Bankinternalcollection . LoadBankTaskInSortOrderasync ( );
 					}
-					return ( BankCollection ) null;
-
+					return Bankinternalcollection;
 				}
 				else
 				{
@@ -276,27 +262,7 @@ namespace WPFPages . Views
 
 			await ProcessRequest ( );
 
-			//await LoadBankData ( );
-			//if ( Flags . IsMultiMode )
-			//{
-			//	// Loading  subset of multi accounts only
-			//	//				BankCollection bank = new BankCollection();
-			//	temp = await LoadBankTest (temp );
-			//	// Just return  the subset of data without updating our
-			//	// //Flags pointer or class Bankcollection pointer
-			//	return temp;
-			//}
-			//else
-			//{
-			//	// :Loading full total or data
-			//	Bankinternalcollection = LoadBank( mode);
-			//	SelectViewer ( mode , Bankinternalcollection );
-
-			//	// Set our globals etc
-			//	//				Bankcollection = Bankinternalcollection;
-			//	//				Flags . BankCollection = Bankcollection = Bankinternalcollection;
 			return Bankinternalcollection;
-			//			}
 		}
 
 		/// Handles the actual conneciton ot SQL to load the Details Db data required
@@ -304,7 +270,6 @@ namespace WPFPages . Views
 		/// <returns></returns>
 		public static void LoadBankData ( int mode = -1, bool isMultiMode = false )
 		{
-			//			BankCollection bptr = new BankCollection ( );
 			try
 			{
 				SqlConnection con;
@@ -360,27 +325,27 @@ namespace WPFPages . Views
 			int count = 0;
 			try
 			{
-				//				BankCollection bptr = new BankCollection ( );
-				//lock ( bptr . LockBankLoadData )
+				//object bptr = new object ( );
+				//lock ( bptr )
 				//{
-				//					BankCollection bc = new BankCollection ( );
-				for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
-				{
-					Bankinternalcollection . Add ( new BankAccountViewModel
+					//					BankCollection bc = new BankCollection ( );
+					for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
 					{
-						Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
-						BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
-						CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
-						AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
-						Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
-						IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
-						ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
-						CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
-					} );
-					count = i;
-				}
-				//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
-				//				}
+						Bankinternalcollection . Add ( new BankAccountViewModel
+						{
+							Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ),
+							BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+							CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ),
+							AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+							Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ),
+							IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+							ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ),
+							CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
+						} );
+						count = i;
+					}
+					//				Debug . WriteLine ( $"BANKACCOUNT : Sql data loaded into Bank ObservableCollection \"Bankinternalcollection\" [{count}] ...." );
+				//}
 			}
 			catch ( Exception ex )
 			{
@@ -496,7 +461,7 @@ namespace WPFPages . Views
 			SqlConnection con;
 			string ConString = "";
 			string commandline = "";
-			dtBank. Clear ( );
+			dtBank . Clear ( );
 
 			try
 			{
@@ -530,7 +495,7 @@ namespace WPFPages . Views
 		/// A specialist version  to reload data WITHOUT changing global version
 		/// </summary>
 		/// <returns></returns>
-		public  static BankCollection LoadBankCollectionDirect( BankCollection temp, DataTable dtBank )
+		public static BankCollection LoadBankCollectionDirect ( BankCollection temp, DataTable dtBank )
 		{
 			try
 			{

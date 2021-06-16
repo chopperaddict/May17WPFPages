@@ -26,6 +26,11 @@ using System . Runtime . CompilerServices;
 using System . Windows . Shapes;
 using System . Windows . Media . Animation;
 using System . Collections . ObjectModel;
+using System . Security . Permissions;
+using WPFPages;
+using static System . Windows . Forms . VisualStyles . VisualStyleElement . TrackBar;
+
+[assembly: SecurityPermissionAttribute ( SecurityAction . RequestMinimum, Flags = ( SecurityPermissionFlag ) UIPermissionClipboard . AllClipboard )]
 
 namespace WPFPages
 {
@@ -54,6 +59,7 @@ namespace WPFPages
 		private static RowData bvmCurrent = null;
 		private static CustRowData cvmCurrent = null;
 		private static RowData dvmCurrent = null;
+		private static Point _startPoint { get; set; }
 
 		public Stopwatch stopwatch = new Stopwatch ( );
 
@@ -159,31 +165,25 @@ namespace WPFPages
 		//***************** store the record data for whatever account type's record is the currently selected item
 		//so DbSelector can bind to it as well
 		private BankAccountViewModel currentBankSelectedRecord;
-
 		public BankAccountViewModel CurrentBankSelectedRecord
 		{ get { return currentBankSelectedRecord; } set { currentBankSelectedRecord = value; } }
-
 		private CustomerViewModel currentCustomerSelectedRecord;
-
 		public CustomerViewModel CurrentCustomerSelectedRecord
 		{ get { return currentCustomerSelectedRecord; } set { currentCustomerSelectedRecord = value; } }
-
 		private DetailsViewModel currentDetailsSelectedRecord;
-
 		public DetailsViewModel CurrentDetailsSelectedRecord
 		{ get { return currentDetailsSelectedRecord; } set { currentDetailsSelectedRecord = value; } }
-
 		#endregion FULL PROPERTIES
 
-		public EventHandlers EventHandler = null;
-		private bool SelectionhasChanged = false;
+//		public EventHandlers EventHandler = null;
+//		private bool SelectionhasChanged = false;
 
 		//Variables used when a cell is edited to se if we need to update via SQL
-		private object OriginalCellData = null;
+//		private object OriginalCellData = null;
 
-		private string OriginalDataType = "";
-		private int OrignalCellRow = 0;
-		private int OriginalCellColumn = 0;
+//		private string OriginalDataType = "";
+//		private int  = 0;
+//		private int OriginalCellColumn = 0;
 		//		private bool OnSelectionChangedInProgress = false;
 		public DataGridController dgControl;
 
@@ -191,13 +191,13 @@ namespace WPFPages
 		/// <summary>
 		/// Used to keep track of currently selected row in GridViwer
 		/// </summary>
-		private int _selectedRow;
+		//private int _selectedRow;
 
-		public int SelectedRow
-		{
-			get { return _selectedRow; }
-			set { _selectedRow = value; OnPropertyChanged ( SelectedRow . ToString ( ) ); }
-		}
+		//public int SelectedRow
+		//{
+		//	get { return _selectedRow; }
+		//	set { _selectedRow = value; OnPropertyChanged ( SelectedRow . ToString ( ) ); }
+		//}
 
 		public struct scrollData
 		{
@@ -470,6 +470,7 @@ namespace WPFPages
 			//DragDropEffects dragdropeffects = DragDropEffects . Move;
 
 		}
+
 		public DragDropEffects DragEffects = new DragDropEffects ( );
 
 		//private void ellipse_MouseMove ( object sender, MouseEventArgs e )
@@ -3905,19 +3906,12 @@ namespace WPFPages
 				}
 				else if ( sender == this . CustomerGrid )
 				{
-					//if ( ScrollData . Custtop > 5 )
-					//	scroll . ScrollToVerticalOffset ( ScrollData . Custtop - ( ScrollData.CustVisible/2) );
-					//else
 					scroll . ScrollToVerticalOffset ( ScrollData . Custtop );
 				}
 				else if ( sender == this . DetailsGrid )
 				{
-					//if ( ScrollData . Dettop > 5 )
-					//	scroll . ScrollToVerticalOffset ( ScrollData . Dettop - ( ScrollData . DetVisible / 2 ) );
-					//else
 					scroll . ScrollToVerticalOffset ( ScrollData . Dettop );
 					Console . WriteLine ( $"Setting Dettop to {ScrollData . Dettop}" );
-
 				}
 			}
 		}
@@ -6072,29 +6066,6 @@ namespace WPFPages
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-
-		private void DataGrid_DragEnter ( object sender, DragEventArgs e )
-		{
-			int x = 0;
-
-		}
-
-		private void DragDrop ( object sender, DragEventArgs e )
-		{
-			int z = 2;
-		}
-
-		private void Drag_Enter ( object sender, DragEventArgs e )
-		{
-			int y = 0;
-		}
-
-
-
-		private void BankGrid_DragLeave ( object sender, DragEventArgs e )
-		{
-			int o = 5;
-		}
 		private void CustomerGrid_MouseRightButtonDown ( object sender, MouseButtonEventArgs e )
 		{
 
@@ -6179,58 +6150,41 @@ namespace WPFPages
 		{
 			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
 		}
+
+		#region DRAG CODE
 		private void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
 		{
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
 			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
 				IsLeftButtonDown = true;
 			}
+
 		}
+
 		private void CustomerGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
 		{
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
 			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
 				IsLeftButtonDown = true;
-
-				//if ( CustomerGrid . SelectedItem != null )
-				//{
-				//	// We are dragging from the DETAILS grid
-				//	//Working string version
-				//	CustomerViewModel cvm = new CustomerViewModel ( );
-				//	cvm = CustomerGrid . SelectedItem as CustomerViewModel;
-				//	string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, false, true );
-				//	string dataFormat = DataFormats . UnicodeText;
-				//	DataObject dataObject = new DataObject ( dataFormat, str );
-				//	System . Windows . DragDrop . DoDragDrop (
-				//	CustomerGrid,
-				//	dataObject,
-				//	DragDropEffects . Move );
-				//}
 			}
 		}
 		private void DetailsGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
 		{
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
 			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
 				IsLeftButtonDown = true;
-
-				//if ( DetailsGrid . SelectedItem != null )
-				//{
-				//	// We are dragging from the DETAILS grid
-				//	//Working string version
-				//	DetailsViewModel bvm = new DetailsViewModel ( );
-				//	dvm = DetailsGrid . SelectedItem as DetailsViewModel;
-				//	string str = GetExportRecords . CreateTextFromRecord ( null, dvm ,null, false , true);
-				//	string dataFormat = DataFormats . UnicodeText;
-				//	DataObject dataObject = new DataObject ( dataFormat, str );
-				//	System . Windows . DragDrop . DoDragDrop (
-				//	DetailsGrid,
-				//	dataObject,
-				//	DragDropEffects . Move );
-				//}
 			}
 		}
 
@@ -6242,70 +6196,138 @@ namespace WPFPages
 
 		private void BankGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			Point mousePos = e . GetPosition ( null );
+			Vector diff = _startPoint - mousePos;
+
+			if ( e . LeftButton == MouseButtonState . Pressed &&
+			    Math . Abs ( diff . X ) > SystemParameters . MinimumHorizontalDragDistance ||
+			    Math . Abs ( diff . Y ) > SystemParameters . MinimumVerticalDragDistance )
 			{
-				if ( BankGrid . SelectedItem != null )
+				if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
 				{
-					// We are dragging from the DETAILS grid
-					//Working string version
-					BankAccountViewModel bvm = new BankAccountViewModel ( );
-					bvm = BankGrid . SelectedItem as BankAccountViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false);
-					string dataFormat = DataFormats . Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
-					BankGrid,
-					dataObject,
-					DragDropEffects . Move );
-					IsLeftButtonDown = false;
+					if ( BankGrid . SelectedItem != null )
+					{
+						// We are dragging from the DETAILS grid
+						//Working string version
+						BankAccountViewModel bvm = new BankAccountViewModel ( );
+						bvm = BankGrid . SelectedItem as BankAccountViewModel;
+						string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );
+						string dataFormat = DataFormats . Text;
+						DataObject dataObject = new DataObject ( dataFormat, str );
+						System . Windows . DragDrop . DoDragDrop (
+						BankGrid,
+						dataObject,
+						DragDropEffects . Copy );
+						IsLeftButtonDown = false;
+					}
 				}
 			}
-
 		}
 
 		private void CustomerGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			Point mousePos = e . GetPosition ( null );
+			Vector diff = _startPoint - mousePos;
+
+			if ( e . LeftButton == MouseButtonState . Pressed &&
+			    Math . Abs ( diff . X ) > SystemParameters . MinimumHorizontalDragDistance ||
+			    Math . Abs ( diff . Y ) > SystemParameters . MinimumVerticalDragDistance )
 			{
-				if ( CustomerGrid . SelectedItem != null )
+				if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
 				{
-					// We are dragging from the CUSTOMER  grid
-					//Working string version
-					CustomerViewModel cvm = new CustomerViewModel ( );
-					cvm = CustomerGrid . SelectedItem as CustomerViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
-					string dataFormat = DataFormats . Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
-					CustomerGrid,
-					dataObject,
-					DragDropEffects . Move );
-					IsLeftButtonDown = false;
+					if ( CustomerGrid . SelectedItem != null )
+					{
+						// We are dragging from the CUSTOMER  grid
+						//Working string version
+						CustomerViewModel cvm = new CustomerViewModel ( );
+						cvm = CustomerGrid . SelectedItem as CustomerViewModel;
+						string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
+						string dataFormat = DataFormats . Text;
+						DataObject dataObject = new DataObject ( dataFormat, str );
+						System . Windows . DragDrop . DoDragDrop (
+						CustomerGrid,
+						dataObject,
+						DragDropEffects . Copy );
+						IsLeftButtonDown = false;
+					}
 				}
 			}
 		}
 
 		private void DetailsGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			Point mousePos = e . GetPosition ( null );
+			Vector diff = _startPoint - mousePos;
+
+			if ( e . LeftButton == MouseButtonState . Pressed &&
+			    Math . Abs ( diff . X ) > SystemParameters . MinimumHorizontalDragDistance ||
+			    Math . Abs ( diff . Y ) > SystemParameters . MinimumVerticalDragDistance )
 			{
-				if ( DetailsGrid . SelectedItem != null )
+				if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
 				{
-					// We are dragging from the DETAILS grid
-					//Working string version
 					DetailsViewModel dvm = new DetailsViewModel ( );
-					dvm = DetailsGrid . SelectedItem as DetailsViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( null, dvm, null, true, false );
-					string dataFormat = DataFormats .Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
-					DetailsGrid,
-					dataObject,
-					DragDropEffects . Move );
-					IsLeftButtonDown = false;
+					if ( DetailsGrid . SelectedItem != null )
+					{
+						// We are dragging from the DETAILS grid
+						//Working Record  version
+
+						//string str = GetExportRecords . CreateTextFromRecord ( null, dvm,null, true, false );
+						//string dataFormat = DataFormats . Text;
+						//DataObject dataObject = new DataObject ( dataFormat, str );
+						//System . Windows . DragDrop . DoDragDrop (
+						//CustomerGrid,
+						//dataObject,
+						//DragDropEffects . Copy );
+
+						//return;
+						try
+						{
+							dvm = DetailsGrid . SelectedItem as DetailsViewModel;
+							var dataObject = new DataObject ( "DETAILS", dvm );
+							System . Windows . DragDrop . DoDragDrop (
+							DetailsGrid,
+							dataObject,
+							DragDropEffects . Copy );
+						}catch(Exception ex )
+						{
+							Debug . WriteLine ($"Drag DataObject Error :\n{ex.Message}, {ex.Data}");
+						}
+						IsLeftButtonDown = false;
+					}
 				}
 			}
-
 		}
+		public static  string getValidFormat ( object bvm )
+		{
+			DataObject dataObj = new DataObject ( bvm );
+			// Get an array of strings, each string denoting a data format
+			// that is available in the data object.  This overload of GetDataFormats
+			// accepts a Boolean parameter inidcating whether to include auto-convertible
+			// data formats, or only return native data formats.
+			string [ ] dataFormats = dataObj . GetFormats ( true /* Include auto-convertible? */);
+			// Get the number of native data formats present in the data object.
+			int numberOfDataFormats = dataFormats . Length;
+			if ( numberOfDataFormats == 1 )
+			{
+				Console . WriteLine ( $"DataObject : {dataFormats [ 0 ]}" );
+				return dataFormats [ 0 ];
+			}
+			// To enumerate the resulting array of data formats, and take some action when
+			// a particular data format is found, use a code structure similar to the following.
+			foreach ( string dataFormat in dataFormats )
+			{
+				Console . WriteLine ( $"DataObjects : {dataFormat}" );
+				if ( numberOfDataFormats == 1 )
+					return dataFormat;
+				//if ( dataFormat == DataFormats . Text )
+				//{
+				//	// Take some action if/when data in the Text data format is found.
+				//	break;
+				//}
+			}
+			return "";
+		}
+
+		#endregion DRAG CODE
 	}
 }

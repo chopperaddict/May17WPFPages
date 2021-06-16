@@ -95,6 +95,8 @@
       <DependentUpon>DataClasses1.dbml</DependentUpon>
     </Compile>
     <Compile Include="Observable.cs" />
+    <Compile Include="Page0.xaml.cs" />
+    <Compile Include="Page1.xaml.cs" />
     <Compile Include="ViewModels\LinqSupport.cs" />
     <Compile Include="Views\AllEventArgs.cs" />
     <Compile Include="Views\BankCollection.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Views\GetExportRecords.xaml.cs">
       <DependentUpon>GetExportRecords.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\IDropable.cs" />
     <Compile Include="Views\ImportDbData.cs" />
     <Compile Include="Views\new_DetCollection.cs" />
     <Compile Include="DateOnlyConverter.cs" />
@@ -147,7 +150,11 @@
     <Compile Include="Views\RowPopup.xaml.cs">
       <DependentUpon>RowPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\RunSearchPaths.xaml.cs">
+      <DependentUpon>RunSearchPaths.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SQLHandlers.cs" />
+    <Compile Include="Views\SupportMethods.cs" />
     <Compile Include="Views\ViewEditdb.cs" />
     <Compile Include="Views\ViewModelBase.cs" />
     <Compile Include="Views\DbSelector.xaml.cs">
@@ -202,6 +209,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Page0.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Page1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Page2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\CloseReturnButton.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
@@ -243,6 +262,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RowPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RunSearchPaths.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -320,6 +343,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Libraries\DataClasses1.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>

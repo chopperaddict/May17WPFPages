@@ -86,7 +86,7 @@
 
 			<MenuItem
 				Width="80"
-				Foreground="{StaticResource White1}"
+				Foreground="{StaticResource White0}"
 				Header="_Linq Queries">
 				<MenuItem
 					Background="#35F6FB"
@@ -124,7 +124,7 @@
 			<MenuItem
 				Width="60"
 				Click="Filter_Click"
-				Foreground="{StaticResource White1}"
+				Foreground="{StaticResource White0}"
 				Header="Filtering">
 				<!--<MenuItem Header="Setup Filter"
 					    Background="#35F6FB"
@@ -136,12 +136,12 @@
 			<MenuItem
 				Width="50"
 				Click="Options_Click"
-				Foreground="{StaticResource White2}"
+				Foreground="{StaticResource White1}"
 				Header="Options" />
 			<MenuItem
 				Width="50"
 				Click="Exit_Click"
-				Foreground="{StaticResource White2}"
+				Foreground="{StaticResource White1}"
 				Header="Exit..." />
 		</Menu>
 

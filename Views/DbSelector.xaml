@@ -332,7 +332,7 @@
 						Background="{StaticResource Cyan2}"
 						Foreground="{StaticResource Black0}"/>
 
-				<MenuItem  Header="Customer vA/C Viewer"
+				<MenuItem  Header="Customer A/C Viewer"
 						Click="LoadCustDbView_Click"
 						Margin="2"
 						FontWeight="Bold"
@@ -375,6 +375,36 @@
 
 			</MenuItem>
 
+			<MenuItem  Header="Execute System"
+					Background="{StaticResource Gray0}"
+					Foreground="{StaticResource White0}"
+					Margin="2"
+					FontWeight="DemiBold"
+					IsTabStop="False"
+					Height="25">
+
+				<MenuItem  Header="Execute File/Program"
+						Click="Execute_Click"
+					     MinWidth="200"
+						FontWeight="Bold"
+						Height="15"
+					     Padding="5,2,5,0"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemBlue}"
+						Background="{StaticResource Blue4}"
+					     Foreground="{StaticResource Black2}"/>
+
+				<MenuItem  Header="Maintain Search paths"
+						Click="Paths_Click"
+					     MinWidth="200"
+						FontWeight="Bold"
+						Height="15"
+					     Padding="5,2,5,0"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemBlue}"
+						Background="{StaticResource Blue4}"
+					     Foreground="{StaticResource Black2}"/>
+			</MenuItem>
 
 		</Menu>
 		

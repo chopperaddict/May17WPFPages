@@ -115,10 +115,10 @@
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsHighlighted" Value="True">
 							<Setter Property="Height" TargetName="Bd" Value="25"/>
-							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red0}"/>
-							<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>
-							<Setter Property="Background" TargetName="Bd" Value="Orange"/>
-							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource Black0}"/>
+							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Black0}"/>
+							<Setter Property="Padding" TargetName="Bd"  Value="2,0,5,5"/>
+							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Red0}"/>
+							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -203,7 +203,7 @@
 						<Trigger Property="IsHighlighted" Value="True">
 							<Setter Property="Height" TargetName="Bd" Value="25"/>
 							<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Black0}"/>
-							<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>
+							<Setter Property="Padding" TargetName="Bd"  Value="4,0,5,5"/>
 							<Setter Property="BorderThickness" TargetName="Bd" Value="1.5"/>
 							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Green0}"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>

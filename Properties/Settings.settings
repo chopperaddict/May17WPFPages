@@ -63,5 +63,8 @@
     <Setting Name="SqlDbViewer_dindex" Type="System.String" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="SearchPathStringFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Users\Ianch\</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

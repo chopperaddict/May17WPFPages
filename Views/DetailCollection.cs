@@ -34,7 +34,7 @@ namespace WPFPages . Views
 
 		public static DataTable dtDetails = new DataTable ( );
 
-		public static async Task<bool> LoadDet ( DetCollection dc, string caller, int ViewerType = 1, bool NotifyAll = false )
+		public static async Task<DetCollection> LoadDet ( DetCollection dc, string caller, int ViewerType = 1, bool NotifyAll = false )
 		{
 			bool result = false;
 			object lockobject = new object ( );
@@ -50,12 +50,13 @@ namespace WPFPages . Views
 					LoadDetailsTaskInSortOrderAsync ( internalcollection );
 					Debug . WriteLine ( $"Exiting lock of Details Load system" );
 				}
+				return internalcollection;
 			}
 			catch ( Exception ex )
 			{
 				Debug . WriteLine ( $"Erro in lock Details Load system : {ex . Message} + {ex . Data}" );
 			}
-			return false;
+			return null;
 		}
 
 		public static async Task<bool> LoadDetailsTaskInSortOrderAsync ( DetCollection internalcollection )

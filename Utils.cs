@@ -1,12 +1,15 @@
 ﻿#define SHOWWINDOWDATA
 using System;
+using System . Collections . Generic;
 using System . Configuration;
 using System . Diagnostics;
+using System . IO;
 using System . Runtime . InteropServices . WindowsRuntime;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
+using System . Windows . Controls . Primitives;
 using System . Windows . Forms . VisualStyles;
 using System . Windows . Input;
 using System . Windows . Media;
@@ -379,14 +382,14 @@ namespace WPFPages
 			bvm . CDate = DateTime . Parse ( data [ index ] );
 			return bvm;
 		}
-		public static string CreateFullCsvTextFromRecord ( BankAccountViewModel bvm, DetailsViewModel dvm, CustomerViewModel cvm = null, bool IncludeType=true)
+		public static string CreateFullCsvTextFromRecord ( BankAccountViewModel bvm, DetailsViewModel dvm, CustomerViewModel cvm = null, bool IncludeType = true )
 		{
 			if ( bvm == null && cvm == null && dvm == null ) return "";
 			string datastring = "";
 			if ( bvm != null )
 			{
 				// Handle a BANK Record
-				if ( IncludeType ) datastring = "BANKACCOUNT,";
+				if ( IncludeType ) datastring = "BANKACCOUNT";
 				datastring += bvm . Id + ",";
 				datastring += bvm . CustNo + ",";
 				datastring += bvm . BankNo + ",";
@@ -405,7 +408,7 @@ namespace WPFPages
 				datastring += dvm . AcType . ToString ( ) + ",";
 				datastring += dvm . IntRate . ToString ( ) + ",";
 				datastring += dvm . Balance . ToString ( ) + ",";
-				datastring += "'" + dvm . CDate.ToString()  + "',";
+				datastring += "'" + dvm . CDate . ToString ( ) + "',";
 				datastring += dvm . ODate . ToString ( ) + ",";
 			}
 			else if ( cvm != null )
@@ -420,515 +423,577 @@ namespace WPFPages
 			}
 			return datastring;
 		}
-
-		public static void SaveProperty ( string setting, string value )
+		public static string CreateDragDataFromRecord ( DragviewModel bvm )
 		{
-			try
-			{
-				if ( value . ToUpper ( ) . Contains ( "TRUE" ) )
-					Settings . Default [ setting ] = true;
-				else if ( value . ToUpper ( ) . Contains ( "FALSE" ) )
-					Settings . Default [ setting ] = false;
-				else
-					Settings . Default [ setting ] = value;
-				Settings . Default . Save ( );
-				Settings . Default . Upgrade ( );
-				ConfigurationManager . RefreshSection ( setting );
-			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"Unable to save property {setting} of [{value}]\nError was {ex . Data}, {ex . Message}, Stack trace = \n{ex . StackTrace}" );
-			}
-		}
-		public static string GetExportFileName ( string filespec )
-		// opens  the common file open dialog
-		{
-			OpenFileDialog ofd = new OpenFileDialog ( );
-			ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
-			ofd . CheckFileExists = false;
-			ofd . AddExtension = true;
-			ofd . Title = "Select name for Exported data file.";
-			if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
-				ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
-			else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
-				ofd . Filter = "Comma seperated data (*.csv) | *.csv";
-			else if ( filespec . ToUpper ( ) . Contains ( "*.*" ) )
-				ofd . Filter = "All Files (*.*) | *.*";
-			else if ( filespec == "" )
-			{
-				ofd . Filter = "All Files (*.*) | *.*";
-				ofd . DefaultExt = ".CSV";
-			}
-			//			string initfolder = ofd . InitialDirectory;
-			//			if ( initfolder != "" && fnameonly != "" )
-			//				filespec = initfolder + fnameonly;
-			ofd . FileName = filespec;
-			//if ( filespec == "" )
-			//	ofd . DefaultExt = ".XLS*" ;
-			//else
-			//	ofd . DefaultExt = $".{filespec . ToUpper ( )}" ;
-			ofd . ShowDialog ( );
-			string fnameonly = ofd . SafeFileName;
-			return ofd . FileName;
+			if ( bvm == null ) return "";
+			string datastring = "";
+			datastring = bvm .RecordType + ",";
+			datastring += bvm . Id + ",";
+			datastring += bvm . CustNo + ",";
+			datastring += bvm . BankNo + ",";
+			datastring += bvm . AcType . ToString ( ) + ",";
+			datastring += bvm . IntRate . ToString ( ) + ",";
+			datastring += bvm . Balance . ToString ( ) + ",";
+			datastring += "'" + bvm . CDate . ToString ( ) + "',";
+			datastring += "'" + bvm . ODate . ToString ( ) + "',";
+			return datastring;
 		}
 
-		public static string GetImportFileName ( string filespec )
-		// opens  the common file open dialog
+	public static void SaveProperty ( string setting, string value )
+	{
+		try
 		{
-			OpenFileDialog ofd = new OpenFileDialog ( );
-			ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
-			ofd . CheckFileExists = true;
-			if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
-				ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
-			else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
-				ofd . Filter = "Comma seperated data (*.csv) | *.csv";
-			else if ( filespec . ToUpper ( ) . Contains ( "*.*" ) || filespec == "" )
-				ofd . Filter = "All Files (*.*) | *.*";
-			ofd . AddExtension = true;
-			//if ( filespec == "" )
-			//	ofd . DefaultExt = ".XLS*" ;
-			//else
-			//	ofd . DefaultExt = $".{filespec . ToUpper ( )}" ;
-			ofd . ShowDialog ( );
-			return ofd . FileName;
-		}
-		public static string ConvertInputDate ( string datein )
-		{
-			string YYYMMDD = "";
-			string [ ] datebits;
-			// This filter will strip off the "Time" section of an excel date
-			// and return us a valid YYYY/MM/DD string
-			char [ ] ch = { '/', ' ' };
-			datebits = datein . Split ( ch );
-			if ( datebits . Length < 3 ) return datein;
-
-			// check input to see if it needs reversing ?
-			if ( datebits [ 0 ] . Length == 4 )
-				YYYMMDD = datebits [ 0 ] + "/" + datebits [ 1 ] + "/" + datebits [ 2 ];
+			if ( value . ToUpper ( ) . Contains ( "TRUE" ) )
+				Settings . Default [ setting ] = true;
+			else if ( value . ToUpper ( ) . Contains ( "FALSE" ) )
+				Settings . Default [ setting ] = false;
 			else
-				YYYMMDD = datebits [ 2 ] + "/" + datebits [ 1 ] + "/" + datebits [ 0 ];
-			return YYYMMDD;
+				Settings . Default [ setting ] = value;
+			Settings . Default . Save ( );
+			Settings . Default . Upgrade ( );
+			ConfigurationManager . RefreshSection ( setting );
 		}
-
-
-		public static void HandleCtrlFnKeys ( bool key1, KeyEventArgs e )
+		catch ( Exception ex )
 		{
-			if ( key1 && e . Key == Key . F5 )
-			{
-				// list Flags in Console
-				Utils . GetWindowHandles ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
-			{
-				// list various Flags in Console
-				Debug . WriteLine ( $"\nCTRL + F6 pressed..." );
-				Flags . UseBeeps = !Flags . UseBeeps;
-				e . Handled = true;
-				key1 = false;
-				Debug . WriteLine ( $"Flags.UseBeeps reset to  {Flags . UseBeeps }" );
-				return;
-			}
-			else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
-			{
-				// list various Flags in Console
-				Debug . WriteLine ( $"\nCTRL + F7 pressed..." );
-				Flags . PrintDbInfo ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F8 )     // CTRL + F8
-			{
-				Debug . WriteLine ( $"\nCTRL + F8 pressed..." );
-				EventHandlers . ShowSubscribersCount ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F9 )     // CTRL + F9
-			{
-				Debug . WriteLine ( "\nCtrl + F9 NOT Implemented" );
-				key1 = false;
-				return;
-
-			}
-			else if ( key1 && e . Key == Key . System )     // CTRL + F10
-			{
-				// Major  listof GV[] variables (Guids etc]
-				Debug . WriteLine ( $"\nCTRL + F10 pressed..." );
-				Flags . ListGridviewControlFlags ( 1 );
-				key1 = false;
-				e . Handled = true;
-				return;
-			}
-			else if ( key1 && e . Key == Key . F11 )  // CTRL + F11
-			{
-				// list various Flags in Console
-				Debug . WriteLine ( $"\nCTRL + F11 pressed..." );
-				Flags . PrintSundryVariables ( );
-				e . Handled = true;
-				key1 = false;
-				return;
-			}
+			Debug . WriteLine ( $"Unable to save property {setting} of [{value}]\nError was {ex . Data}, {ex . Message}, Stack trace = \n{ex . StackTrace}" );
 		}
-		private void CloseviewerWindow ( int index )
+	}
+	public static string GetExportFileName ( string filespec )
+	// opens  the common file open dialog
+	{
+		OpenFileDialog ofd = new OpenFileDialog ( );
+		ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
+		ofd . CheckFileExists = false;
+		ofd . AddExtension = true;
+		ofd . Title = "Select name for Exported data file.";
+		if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
+			ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
+		else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
+			ofd . Filter = "Comma seperated data (*.csv) | *.csv";
+		else if ( filespec . ToUpper ( ) . Contains ( "*.*" ) )
+			ofd . Filter = "All Files (*.*) | *.*";
+		else if ( filespec == "" )
 		{
-			//Close the specified viewer
-			if ( MainWindow . gv . window != null )
-			{
-				//Fn removes all record of it's very existence
-				MainWindow . gv . window [ index ] . Close ( );
-				Flags . CurrentSqlViewer = null;
-				MainWindow . gv . SqlViewerWindow = null;
-			}
+			ofd . Filter = "All Files (*.*) | *.*";
+			ofd . DefaultExt = ".CSV";
 		}
+		//			string initfolder = ofd . InitialDirectory;
+		//			if ( initfolder != "" && fnameonly != "" )
+		//				filespec = initfolder + fnameonly;
+		ofd . FileName = filespec;
+		//if ( filespec == "" )
+		//	ofd . DefaultExt = ".XLS*" ;
+		//else
+		//	ofd . DefaultExt = $".{filespec . ToUpper ( )}" ;
+		ofd . ShowDialog ( );
+		string fnameonly = ofd . SafeFileName;
+		return ofd . FileName;
+	}
 
-		/// <summary>
-		/// A Func that takes ANY 2 (of 3 [Bank,Customer,Details] Db type records and returns true if the CustNo and Bankno match
-		/// </summary>
-		/// <param name="obj1"></param>
-		/// <param name="obj2"></param>
-		/// <returns></returns>
-		public static bool CompareDbRecords ( object obj1, object obj2 )
+	public static string GetImportFileName ( string filespec )
+	// opens  the common file open dialog
+	{
+		OpenFileDialog ofd = new OpenFileDialog ( );
+		ofd . InitialDirectory = @"C:\Users\ianch\Documents\";
+		ofd . CheckFileExists = true;
+		if ( filespec . ToUpper ( ) . Contains ( "XL" ) )
+			ofd . Filter = "Excel Spreadsheets (*.xl*) | *.xl*";
+		else if ( filespec . ToUpper ( ) . Contains ( "CSV" ) )
+			ofd . Filter = "Comma seperated data (*.csv) | *.csv";
+		else if ( filespec . ToUpper ( ) . Contains ( "*.*" ) || filespec == "" )
+			ofd . Filter = "All Files (*.*) | *.*";
+		ofd . AddExtension = true;
+		//if ( filespec == "" )
+		//	ofd . DefaultExt = ".XLS*" ;
+		//else
+		//	ofd . DefaultExt = $".{filespec . ToUpper ( )}" ;
+		ofd . ShowDialog ( );
+		return ofd . FileName;
+	}
+	public static string ConvertInputDate ( string datein )
+	{
+		string YYYMMDD = "";
+		string [ ] datebits;
+		// This filter will strip off the "Time" section of an excel date
+		// and return us a valid YYYY/MM/DD string
+		char [ ] ch = { '/', ' ' };
+		datebits = datein . Split ( ch );
+		if ( datebits . Length < 3 ) return datein;
+
+		// check input to see if it needs reversing ?
+		if ( datebits [ 0 ] . Length == 4 )
+			YYYMMDD = datebits [ 0 ] + "/" + datebits [ 1 ] + "/" + datebits [ 2 ];
+		else
+			YYYMMDD = datebits [ 2 ] + "/" + datebits [ 1 ] + "/" + datebits [ 0 ];
+		return YYYMMDD;
+	}
+
+
+	public static void HandleCtrlFnKeys ( bool key1, KeyEventArgs e )
+	{
+		if ( key1 && e . Key == Key . F5 )
 		{
-			bool result = false;
-			BankAccountViewModel bvm = new BankAccountViewModel ( );
-			CustomerViewModel cvm = new CustomerViewModel ( );
-			DetailsViewModel dvm = new DetailsViewModel ( );
-			//bvm = null;
-			//cvm = null;
-			//dvm = null;
-			if ( obj1 == null || obj2 == null )
-				return result;
-			if ( obj1 . GetType ( ) == bvm . GetType ( ) )
-				bvm = obj1 as BankAccountViewModel;
-			if ( obj1 . GetType ( ) == cvm . GetType ( ) )
-				cvm = obj1 as CustomerViewModel;
-			if ( obj1 . GetType ( ) == dvm . GetType ( ) )
-				dvm = obj1 as DetailsViewModel;
+			// list Flags in Console
+			Utils . GetWindowHandles ( );
+			e . Handled = true;
+			key1 = false;
+			return;
+		}
+		else if ( key1 && e . Key == Key . F6 )  // CTRL + F6
+		{
+			// list various Flags in Console
+			Debug . WriteLine ( $"\nCTRL + F6 pressed..." );
+			Flags . UseBeeps = !Flags . UseBeeps;
+			e . Handled = true;
+			key1 = false;
+			Debug . WriteLine ( $"Flags.UseBeeps reset to  {Flags . UseBeeps }" );
+			return;
+		}
+		else if ( key1 && e . Key == Key . F7 )  // CTRL + F7
+		{
+			// list various Flags in Console
+			Debug . WriteLine ( $"\nCTRL + F7 pressed..." );
+			Flags . PrintDbInfo ( );
+			e . Handled = true;
+			key1 = false;
+			return;
+		}
+		else if ( key1 && e . Key == Key . F8 )     // CTRL + F8
+		{
+			Debug . WriteLine ( $"\nCTRL + F8 pressed..." );
+			EventHandlers . ShowSubscribersCount ( );
+			e . Handled = true;
+			key1 = false;
+			return;
+		}
+		else if ( key1 && e . Key == Key . F9 )     // CTRL + F9
+		{
+			Debug . WriteLine ( "\nCtrl + F9 NOT Implemented" );
+			key1 = false;
+			return;
 
-			if ( obj2 . GetType ( ) == bvm . GetType ( ) )
-				bvm = obj2 as BankAccountViewModel;
-			if ( obj2 . GetType ( ) == cvm . GetType ( ) )
-				cvm = obj2 as CustomerViewModel;
-			if ( obj2 . GetType ( ) == dvm . GetType ( ) )
-				dvm = obj2 as DetailsViewModel;
+		}
+		else if ( key1 && e . Key == Key . System )     // CTRL + F10
+		{
+			// Major  listof GV[] variables (Guids etc]
+			Debug . WriteLine ( $"\nCTRL + F10 pressed..." );
+			Flags . ListGridviewControlFlags ( 1 );
+			key1 = false;
+			e . Handled = true;
+			return;
+		}
+		else if ( key1 && e . Key == Key . F11 )  // CTRL + F11
+		{
+			// list various Flags in Console
+			Debug . WriteLine ( $"\nCTRL + F11 pressed..." );
+			Flags . PrintSundryVariables ( );
+			e . Handled = true;
+			key1 = false;
+			return;
+		}
+	}
+	private void CloseviewerWindow ( int index )
+	{
+		//Close the specified viewer
+		if ( MainWindow . gv . window != null )
+		{
+			//Fn removes all record of it's very existence
+			MainWindow . gv . window [ index ] . Close ( );
+			Flags . CurrentSqlViewer = null;
+			MainWindow . gv . SqlViewerWindow = null;
+		}
+	}
 
-			if ( bvm != null && cvm != null )
-			{
-				if ( bvm . CustNo == cvm . CustNo )
-					result = true;
-			}
-			else if ( bvm != null && dvm != null )
-			{
-				if ( bvm . CustNo == dvm . CustNo )
-					result = true;
-			}
-			else if ( cvm != null && dvm != null )
-			{
-				if ( cvm . CustNo == dvm . CustNo )
-					result = true;
-			}
-			result = false;
+	/// <summary>
+	/// A Func that takes ANY 2 (of 3 [Bank,Customer,Details] Db type records and returns true if the CustNo and Bankno match
+	/// </summary>
+	/// <param name="obj1"></param>
+	/// <param name="obj2"></param>
+	/// <returns></returns>
+	public static bool CompareDbRecords ( object obj1, object obj2 )
+	{
+		bool result = false;
+		BankAccountViewModel bvm = new BankAccountViewModel ( );
+		CustomerViewModel cvm = new CustomerViewModel ( );
+		DetailsViewModel dvm = new DetailsViewModel ( );
+		//bvm = null;
+		//cvm = null;
+		//dvm = null;
+		if ( obj1 == null || obj2 == null )
 			return result;
+		if ( obj1 . GetType ( ) == bvm . GetType ( ) )
+			bvm = obj1 as BankAccountViewModel;
+		if ( obj1 . GetType ( ) == cvm . GetType ( ) )
+			cvm = obj1 as CustomerViewModel;
+		if ( obj1 . GetType ( ) == dvm . GetType ( ) )
+			dvm = obj1 as DetailsViewModel;
+
+		if ( obj2 . GetType ( ) == bvm . GetType ( ) )
+			bvm = obj2 as BankAccountViewModel;
+		if ( obj2 . GetType ( ) == cvm . GetType ( ) )
+			cvm = obj2 as CustomerViewModel;
+		if ( obj2 . GetType ( ) == dvm . GetType ( ) )
+			dvm = obj2 as DetailsViewModel;
+
+		if ( bvm != null && cvm != null )
+		{
+			if ( bvm . CustNo == cvm . CustNo )
+				result = true;
+		}
+		else if ( bvm != null && dvm != null )
+		{
+			if ( bvm . CustNo == dvm . CustNo )
+				result = true;
+		}
+		else if ( cvm != null && dvm != null )
+		{
+			if ( cvm . CustNo == dvm . CustNo )
+				result = true;
+		}
+		result = false;
+		return result;
+	}
+
+	public static bool CheckRecordMatch (
+		BankAccountViewModel bvm,
+		CustomerViewModel cvm,
+		DetailsViewModel dvm )
+	{
+		bool result = false;
+		if ( bvm != null && cvm != null )
+		{
+			if ( bvm . CustNo == cvm . CustNo )
+				result = true;
+		}
+		else if ( bvm != null && dvm != null )
+		{
+			if ( bvm . CustNo == dvm . CustNo )
+				result = true;
+		}
+		else if ( cvm != null && dvm != null )
+		{
+			if ( cvm . CustNo == dvm . CustNo )
+				result = true;
+		}
+		return result;
+	}
+
+	public static void SetSelectedItemFirstRow ( object dataGrid, object selectedItem )
+	{
+		//If target datagrid Empty, throw exception
+		if ( dataGrid == null )
+		{
+			throw new ArgumentNullException ( "Target none" + dataGrid + "Cannot convert to DataGrid" );
+		}
+		//Get target DataGrid，If it is empty, an exception will be thrown
+		System . Windows . Controls . DataGrid dg = dataGrid as System . Windows . Controls . DataGrid;
+		if ( dg == null )
+		{
+			throw new ArgumentNullException ( "Target none" + dataGrid + "Cannot convert to DataGrid" );
+		}
+		//If the data source is empty, return
+		if ( dg . Items == null || dg . Items . Count < 1 )
+		{
+			return;
 		}
 
-		public static bool CheckRecordMatch (
-			BankAccountViewModel bvm,
-			CustomerViewModel cvm,
-			DetailsViewModel dvm )
-		{
-			bool result = false;
-			if ( bvm != null && cvm != null )
-			{
-				if ( bvm . CustNo == cvm . CustNo )
-					result = true;
-			}
-			else if ( bvm != null && dvm != null )
-			{
-				if ( bvm . CustNo == dvm . CustNo )
-					result = true;
-			}
-			else if ( cvm != null && dvm != null )
-			{
-				if ( cvm . CustNo == dvm . CustNo )
-					result = true;
-			}
-			return result;
-		}
+		dg . SelectedItem = selectedItem;
+		dg . CurrentColumn = dg . Columns [ 0 ];
+		dg . ScrollIntoView ( dg . SelectedItem, dg . CurrentColumn );
+	}
+	/// <summary>
+	/// MASTER UPDATE METHOD
+	/// This handles repositioning of a selected item in any grid perfectly
+	/// </summary>
+	/// <param name="grid"></param>
+	/// <param name="row"></param>
+	public static void SetUpGridSelection ( DataGrid grid, int row = 0 )
+	{
+		//			bool inprogress = false;
+		int scrollrow = 0;
+		if ( row == -1 ) row = 0;
+		// This triggers the selection changed event
+		grid . SelectedIndex = row;
+		grid . SelectedItem = row;
+		//			grid . SetDetailsVisibilityForItem ( grid . SelectedItem, Visibility . Visible );
+		grid . SelectedIndex = row;
+		grid . SelectedItem = row;
+		Utils . ScrollRecordIntoView ( grid, row );
+		grid . UpdateLayout ( );
+		grid . Refresh ( );
+		//			var v = grid .VerticalAlignment;
+	}
 
-		public static void SetSelectedItemFirstRow ( object dataGrid, object selectedItem )
+	/// <summary>
+	/// Metohd that almost GUARANTESS ot force a record into view in any DataGrid
+	/// /// This is called by method above - MASTER Updater Method
+	/// </summary>
+	/// <param name="dGrid"></param>
+	/// <param name="row"></param>
+	public static void ScrollRecordInGrid ( DataGrid dGrid, int row )
+	{
+		if ( dGrid . CurrentItem == null ) return;
+		dGrid . UpdateLayout ( );
+		dGrid . ScrollIntoView ( dGrid . Items . Count - 1 );
+		dGrid . UpdateLayout ( );
+		dGrid . ScrollIntoView ( row );
+		dGrid . UpdateLayout ( );
+		Utils . ScrollRecordIntoView ( dGrid, row );
+	}
+	public static int FindMatchingRecord ( string Custno, string Bankno, DataGrid Grid, string currentDb = "" )
+	{
+		int index = 0;
+		if ( currentDb == "BANKACCOUNT" )
 		{
-			//If target datagrid Empty, throw exception
-			if ( dataGrid == null )
+			foreach ( var item in Grid . Items )
 			{
-				throw new ArgumentNullException ( "Target none" + dataGrid + "Cannot convert to DataGrid" );
-			}
-			//Get target DataGrid，If it is empty, an exception will be thrown
-			System . Windows . Controls . DataGrid dg = dataGrid as System . Windows . Controls . DataGrid;
-			if ( dg == null )
-			{
-				throw new ArgumentNullException ( "Target none" + dataGrid + "Cannot convert to DataGrid" );
-			}
-			//If the data source is empty, return
-			if ( dg . Items == null || dg . Items . Count < 1 )
-			{
-				return;
-			}
-
-			dg . SelectedItem = selectedItem;
-			dg . CurrentColumn = dg . Columns [ 0 ];
-			dg . ScrollIntoView ( dg . SelectedItem, dg . CurrentColumn );
-		}
-		/// <summary>
-		/// MASTER UPDATE METHOD
-		/// This handles repositioning of a selected item in any grid perfectly
-		/// </summary>
-		/// <param name="grid"></param>
-		/// <param name="row"></param>
-		public static void SetUpGridSelection ( DataGrid grid, int row = 0 )
-		{
-			//			bool inprogress = false;
-			int scrollrow = 0;
-			if ( row == -1 ) row = 0;
-			// This triggers the selection changed event
-			grid . SelectedIndex = row;
-			grid . SelectedItem = row;
-			//			grid . SetDetailsVisibilityForItem ( grid . SelectedItem, Visibility . Visible );
-			grid . SelectedIndex = row;
-			grid . SelectedItem = row;
-			Utils . ScrollRecordIntoView ( grid, row );
-			grid . UpdateLayout ( );
-			grid . Refresh ( );
-			//			var v = grid .VerticalAlignment;
-		}
-
-		/// <summary>
-		/// Metohd that almost GUARANTESS ot force a record into view in any DataGrid
-		/// /// This is called by method above - MASTER Updater Method
-		/// </summary>
-		/// <param name="dGrid"></param>
-		/// <param name="row"></param>
-		public static void ScrollRecordInGrid ( DataGrid dGrid, int row )
-		{
-			if ( dGrid . CurrentItem == null ) return;
-			dGrid . UpdateLayout ( );
-			dGrid . ScrollIntoView ( dGrid . Items . Count - 1 );
-			dGrid . UpdateLayout ( );
-			dGrid . ScrollIntoView ( row );
-			dGrid . UpdateLayout ( );
-			Utils . ScrollRecordIntoView ( dGrid, row );
-		}
-		public static int FindMatchingRecord ( string Custno, string Bankno, DataGrid Grid, string currentDb = "" )
-		{
-			int index = 0;
-			if ( currentDb == "BANKACCOUNT" )
-			{
-				foreach ( var item in Grid . Items )
+				BankAccountViewModel cvm = item as BankAccountViewModel;
+				if ( cvm == null ) break;
+				if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
 				{
-					BankAccountViewModel cvm = item as BankAccountViewModel;
-					if ( cvm == null ) break;
-					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
-					{
-						break;
-					}
-					index++;
-				}
-				if ( index == Grid . Items . Count )
-					index = -1;
-				return index;
-			}
-			else if ( currentDb == "CUSTOMER" )
-			{
-				foreach ( var item in Grid . Items )
-				{
-					CustomerViewModel cvm = item as CustomerViewModel;
-					if ( cvm == null ) break;
-					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
-					{
-						break;
-					}
-					index++;
-				}
-				if ( index == Grid . Items . Count )
-					index = -1;
-				return index;
-			}
-			else if ( currentDb == "DETAILS" )
-			{
-				foreach ( var item in Grid . Items )
-				{
-					DetailsViewModel dvm = item as DetailsViewModel;
-					if ( dvm == null ) break;
-					if ( dvm . CustNo == Custno && dvm . BankNo == Bankno )
-					{
-						break;
-					}
-					index++;
-				}
-				if ( index == Grid . Items . Count )
-					index = -1;
-				return index;
-			}
-			return -1;
-		}
-
-
-		public static bool DataGridHasFocus ( DependencyObject instance )
-		{
-			//how to fibnd out whether a datagrid has focus or not to handle key previewers
-			IInputElement focusedControl = FocusManager . GetFocusedElement ( instance );
-			if ( focusedControl == null ) return true;
-			string compare = focusedControl . ToString ( );
-			if ( compare . ToUpper ( ) . Contains ( "DATAGRID" ) )
-				return true;
-			else
-				return false;
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="Dgrid"></param>
-		/// <param name="CurrentRecord"></param>
-		public static void ScrollRecordIntoView ( DataGrid Dgrid, int CurrentRecord )
-		{
-			// Works well 26/5/21
-			double currentTop = 0;
-			double currentBottom = 0;
-			if ( CurrentRecord == -1 ) return;
-			if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
-			{
-				currentTop = Flags . TopVisibleBankGridRow;
-				currentBottom = Flags . BottomVisibleBankGridRow;
-			}
-			else if ( Dgrid . Name == "BankGrid" || Dgrid . Name == "DataGrid2" )
-			{
-				currentTop = Flags . TopVisibleCustGridRow;
-				currentBottom = Flags . BottomVisibleCustGridRow;
-			}
-			else if ( Dgrid . Name == "DetailsGrid" || Dgrid . Name == "DetailsGrid" )
-			{
-				currentTop = Flags . TopVisibleDetGridRow;
-				currentBottom = Flags . BottomVisibleDetGridRow;
-			}     // Believe it or not, it takes all this to force a scrollinto view correctly
-
-			if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null ) return;
-
-			//update and scroll to bottom first
-			Dgrid . SelectedIndex = ( int ) CurrentRecord;
-			Dgrid . SelectedItem = ( int ) CurrentRecord;
-			Dgrid . UpdateLayout ( );
-			Dgrid . ScrollIntoView ( Dgrid . Items . Count - 1 );
-			Dgrid . UpdateLayout ( );
-			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
-			Dgrid . UpdateLayout ( );
-			Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
-		}
-
-		//		public NewFlags Flags = new NewFlags();
-		//************************************************************************************//
-		/// <summary>
-		///  checks an Enum in Flags.cs andf appends the correct sort 
-		///  order to the SQL command string it receives
-		/// </summary>
-		/// <param name="commandline"></param>
-		/// <returns></returns>
-		public static string GetDataSortOrder ( string commandline )
-		{
-			if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . DEFAULT )
-				commandline += "Custno, BankNo";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . ID )
-				commandline += "ID";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . BANKNO )
-				commandline += "BankNo, CustNo";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . CUSTNO )
-				commandline += "CustNo";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . ACTYPE )
-				commandline += "AcType";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . DOB )
-				commandline += "Dob";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . ODATE )
-				commandline += "Odate";
-			else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . CDATE )
-				commandline += "Cdate";
-			return commandline;
-		}
-
-		//************************************************************************************//
-		public static bool CheckForExistingGuid ( Guid guid )
-		{
-			bool retval = false;
-			for ( int x = 0 ; x < Flags . DbSelectorOpen . ViewersList . Items . Count ; x++ )
-			{
-				ListBoxItem lbi = new ListBoxItem ( );
-				//lbi.Tag = viewer.Tag;
-				lbi = Flags . DbSelectorOpen . ViewersList . Items [ x ] as ListBoxItem;
-				if ( lbi . Tag == null ) return retval;
-				Guid g = ( Guid ) lbi . Tag;
-				if ( g == guid )
-				{
-					retval = true;
 					break;
 				}
+				index++;
 			}
-			return retval;
+			if ( index == Grid . Items . Count )
+				index = -1;
+			return index;
 		}
-		//************************************************************************************//
-		public static void GetWindowHandles ( )
+		else if ( currentDb == "CUSTOMER" )
 		{
+			foreach ( var item in Grid . Items )
+			{
+				CustomerViewModel cvm = item as CustomerViewModel;
+				if ( cvm == null ) break;
+				if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
+				{
+					break;
+				}
+				index++;
+			}
+			if ( index == Grid . Items . Count )
+				index = -1;
+			return index;
+		}
+		else if ( currentDb == "DETAILS" )
+		{
+			foreach ( var item in Grid . Items )
+			{
+				DetailsViewModel dvm = item as DetailsViewModel;
+				if ( dvm == null ) break;
+				if ( dvm . CustNo == Custno && dvm . BankNo == Bankno )
+				{
+					break;
+				}
+				index++;
+			}
+			if ( index == Grid . Items . Count )
+				index = -1;
+			return index;
+		}
+		return -1;
+	}
+
+
+	public static bool DataGridHasFocus ( DependencyObject instance )
+	{
+		//how to fibnd out whether a datagrid has focus or not to handle key previewers
+		IInputElement focusedControl = FocusManager . GetFocusedElement ( instance );
+		if ( focusedControl == null ) return true;
+		string compare = focusedControl . ToString ( );
+		if ( compare . ToUpper ( ) . Contains ( "DATAGRID" ) )
+			return true;
+		else
+			return false;
+	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="Dgrid"></param>
+	/// <param name="CurrentRecord"></param>
+	public static void ScrollRecordIntoView ( DataGrid Dgrid, int CurrentRecord )
+	{
+		// Works well 26/5/21
+		double currentTop = 0;
+		double currentBottom = 0;
+		if ( CurrentRecord == -1 ) return;
+		if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
+		{
+			currentTop = Flags . TopVisibleBankGridRow;
+			currentBottom = Flags . BottomVisibleBankGridRow;
+		}
+		else if ( Dgrid . Name == "BankGrid" || Dgrid . Name == "DataGrid2" )
+		{
+			currentTop = Flags . TopVisibleCustGridRow;
+			currentBottom = Flags . BottomVisibleCustGridRow;
+		}
+		else if ( Dgrid . Name == "DetailsGrid" || Dgrid . Name == "DetailsGrid" )
+		{
+			currentTop = Flags . TopVisibleDetGridRow;
+			currentBottom = Flags . BottomVisibleDetGridRow;
+		}     // Believe it or not, it takes all this to force a scrollinto view correctly
+
+		if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null ) return;
+
+		//update and scroll to bottom first
+		Dgrid . SelectedIndex = ( int ) CurrentRecord;
+		Dgrid . SelectedItem = ( int ) CurrentRecord;
+		Dgrid . UpdateLayout ( );
+		Dgrid . ScrollIntoView ( Dgrid . Items . Count - 1 );
+		Dgrid . UpdateLayout ( );
+		Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
+		Dgrid . UpdateLayout ( );
+		Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
+	}
+
+	//		public NewFlags Flags = new NewFlags();
+	//************************************************************************************//
+	/// <summary>
+	///  checks an Enum in Flags.cs andf appends the correct sort 
+	///  order to the SQL command string it receives
+	/// </summary>
+	/// <param name="commandline"></param>
+	/// <returns></returns>
+	public static string GetDataSortOrder ( string commandline )
+	{
+		if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . DEFAULT )
+			commandline += "Custno, BankNo";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . ID )
+			commandline += "ID";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . BANKNO )
+			commandline += "BankNo, CustNo";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . CUSTNO )
+			commandline += "CustNo";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . ACTYPE )
+			commandline += "AcType";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . DOB )
+			commandline += "Dob";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . ODATE )
+			commandline += "Odate";
+		else if ( Flags . SortOrderRequested == ( int ) Flags . SortOrderEnum . CDATE )
+			commandline += "Cdate";
+		return commandline;
+	}
+
+	//************************************************************************************//
+	public static bool CheckForExistingGuid ( Guid guid )
+	{
+		bool retval = false;
+		for ( int x = 0 ; x < Flags . DbSelectorOpen . ViewersList . Items . Count ; x++ )
+		{
+			ListBoxItem lbi = new ListBoxItem ( );
+			//lbi.Tag = viewer.Tag;
+			lbi = Flags . DbSelectorOpen . ViewersList . Items [ x ] as ListBoxItem;
+			if ( lbi . Tag == null ) return retval;
+			Guid g = ( Guid ) lbi . Tag;
+			if ( g == guid )
+			{
+				retval = true;
+				break;
+			}
+		}
+		return retval;
+	}
+	//************************************************************************************//
+	public static void GetWindowHandles ( )
+	{
 #if SHOWWINDOWDATA
-			Console . WriteLine ( $"Current Windows\r\n" + "===============" );
-			foreach ( Window window in System . Windows . Application . Current . Windows )
+		Console . WriteLine ( $"Current Windows\r\n" + "===============" );
+		foreach ( Window window in System . Windows . Application . Current . Windows )
+		{
+			if ( window . Title != "" && window . Content != "" )
 			{
-				if ( window . Title != "" && window . Content != "" )
-				{
-					Console . WriteLine ( $"Title:  {window . Title },\r\nContent - {window . Content}" );
-					Console . WriteLine ( $"Name = [{window . Name}]\r\n" );
-				}
+				Console . WriteLine ( $"Title:  {window . Title },\r\nContent - {window . Content}" );
+				Console . WriteLine ( $"Name = [{window . Name}]\r\n" );
 			}
+		}
 #endif
-		}
-		public static bool FindWindowFromTitle ( string searchterm, ref Window handle )
+	}
+	public static bool FindWindowFromTitle ( string searchterm, ref Window handle )
+	{
+		bool result = false;
+		foreach ( Window window in System . Windows . Application . Current . Windows )
 		{
-			bool result = false;
-			foreach ( Window window in System . Windows . Application . Current . Windows )
+			if ( window . Title . ToUpper ( ) . Contains ( searchterm . ToUpper ( ) ) )
 			{
-				if ( window . Title . ToUpper ( ) . Contains ( searchterm . ToUpper ( ) ) )
-				{
-					handle = window;
-					result = true;
-					break;
-				}
+				handle = window;
+				result = true;
+				break;
 			}
-			return result;
 		}
+		return result;
+	}
 
-		//************************************************************************************//
-		public static Style GetDictionaryStyle ( string tempname )
+	//************************************************************************************//
+	public static Style GetDictionaryStyle ( string tempname )
+	{
+		Style ctmp = System . Windows . Application . Current . FindResource ( tempname ) as Style;
+		return ctmp;
+	}
+	//************************************************************************************//
+	//public static Template GetDictionaryTemplate ( string tempname )
+	//{
+	//	Template ctmp = System . Windows . Application . Current . FindResource ( tempname ) as Template;
+	//	return ctmp;
+	//}
+	//************************************************************************************//
+	public static ControlTemplate GetDictionaryControlTemplate ( string tempname )
+	{
+		ControlTemplate ctmp = System . Windows . Application . Current . FindResource ( tempname ) as ControlTemplate;
+		return ctmp;
+	}
+	//************************************************************************************//
+	public static Brush GetDictionaryBrush ( string brushname )
+	{
+		Brush brs = System . Windows . Application . Current . FindResource ( brushname ) as Brush;
+		return brs;
+	}
+	// Utility functions for sensing scrollbars when dragging from a grid etc
+	public static bool HitTestScrollBar ( object sender, MouseButtonEventArgs e )
+	{
+		//			HitTestResult hit = VisualTreeHelper . HitTest ( ( Visual ) sender, e . GetPosition ( ( IInputElement ) sender ) );
+		//			return hit . VisualHit . GetVisualAncestor<ScrollBar> ( ) != null;
+		object original = e . OriginalSource;
+
+		if ( !original . GetType ( ) . Equals ( typeof ( ScrollBar ) ) )
 		{
-			Style ctmp = System . Windows . Application . Current . FindResource ( tempname ) as Style;
-			return ctmp;
+			if ( original . GetType ( ) . Equals ( typeof ( DataGrid ) ) )
+			{
+				Console . WriteLine ( "DataGrid is clicked" );
+			}
+			else if ( FindVisualParent<ScrollBar> ( original as DependencyObject ) != null )
+			{
+				//scroll bar is clicked
+				return true;
+			}
+			return false; ;
 		}
-		//************************************************************************************//
-		//public static Template GetDictionaryTemplate ( string tempname )
-		//{
-		//	Template ctmp = System . Windows . Application . Current . FindResource ( tempname ) as Template;
-		//	return ctmp;
-		//}
-		//************************************************************************************//
-		public static ControlTemplate GetDictionaryControlTemplate ( string tempname )
+		return true;
+	}
+	public static parentItem FindVisualParent<parentItem> ( DependencyObject obj ) where parentItem : DependencyObject
+	{
+		DependencyObject parent = VisualTreeHelper . GetParent ( obj );
+		while ( parent != null && !parent . GetType ( ) . Equals ( typeof ( parentItem ) ) )
 		{
-			ControlTemplate ctmp = System . Windows . Application . Current . FindResource ( tempname ) as ControlTemplate;
-			return ctmp;
+			parent = VisualTreeHelper . GetParent ( parent );
 		}
-		//************************************************************************************//
-		public static Brush GetDictionaryBrush ( string brushname )
+		return parent as parentItem;
+	}
+
+
+		/// <summary>
+		/// Handles the making of any window to be draggable via a simple click/Drag inside them
+		/// Very useful method
+		/// </summary>
+		/// <param name="inst"></param>
+		public static void SetupWindowDrag ( Window inst )
 		{
-			Brush brs = System . Windows . Application . Current . FindResource ( brushname ) as Brush;
-			return brs;
+			inst . MouseDown += delegate
+			{
+				try
+				{ inst . DragMove ( ); }
+				catch { return; }
+			};
 		}
 
 	}

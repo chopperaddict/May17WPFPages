@@ -224,5 +224,17 @@ namespace WPFPages.Properties {
                 this["SqlDbViewer_dindex"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Ianch\\")]
+        public string SearchPathStringFileName {
+            get {
+                return ((string)(this["SearchPathStringFileName"]));
+            }
+            set {
+                this["SearchPathStringFileName"] = value;
+            }
+        }
     }
 }

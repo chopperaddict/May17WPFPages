@@ -912,7 +912,6 @@
 					BorderBrush="{StaticResource Blue3}"
 					BorderThickness="0"
 					CanUserAddRows="False"
-					CanUserSortColumns="True"
 					CellEditEnding="BankGrid_CellEditEnding"
 					ColumnHeaderHeight="25"
 					ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
@@ -920,11 +919,9 @@
 					Grid.ColumnSpan="4"
 					HorizontalAlignment="Stretch"
 					IsEnabled="true"
-					ItemsSource="{Binding}"				    
-					IsSynchronizedWithCurrentItem="True"			    
 					PreviewDragEnter="BankGrid_PreviewDragEnter"
 					PreviewMouseMove="BankGrid_PreviewMouseMove"
-				    PreviewMouseLeftButtonDown="BankGrid_PreviewMouseLeftButtondown"
+					PreviewMouseLeftButtonDown="BankGrid_PreviewMouseLeftButtondown"
 					PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtondown"
 					RowEditEnding="ViewerGrid_RowEditEnding"
 					RowHeight="22"
@@ -967,18 +964,22 @@
 
 				<DataGrid.Columns>
 					<DataGridTemplateColumn Header="Id" Width="40"
-									x:Name="ID">
+									x:Name="ID"
+									SortMemberPath="Id">
 						<DataGridTemplateColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock
-									Text="{Binding Id}"
-									HorizontalAlignment="Center"
+									Text="{Binding Id }"
+									HorizontalAlignment="Center"									
 									VerticalAlignment="Top" />
 							</DataTemplate>
+							
 						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>
 
-					<DataGridTextColumn Header="Customer #" Binding="{Binding CustNo,
+					<DataGridTextColumn Header="Customer #" 
+								  SortMemberPath="CustNo"
+								  Binding="{Binding CustNo,
 									Mode=TwoWay,
 									UpdateSourceTrigger=PropertyChanged}">
 					</DataGridTextColumn>
@@ -1262,11 +1263,11 @@
 					<DataGridTextColumn Header="Type" Width="40"
 									Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 					<DataGridTextColumn Header="Balance" Width="90"
-									SortMemberPath="Balance"
-									Binding="{Binding Balance,
+						SortMemberPath="Balance"
+						Binding="{Binding Balance,
 									Mode=TwoWay,
 									UpdateSourceTrigger=LostFocus,
-									StringFormat='£ ##,###,###.00'}" />
+						StringFormat='£ ##,###,###.00'}" />
 					<DataGridTextColumn Header="Interest" Width="60"
 									SortMemberPath="IntRate"
 									Binding="{Binding IntRate, Mode=TwoWay,
