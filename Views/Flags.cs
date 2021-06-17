@@ -134,6 +134,8 @@ namespace WPFPages
 		public static CustDbView CustDbEditor;
 		public static DetailsDbView DetDbEditor;
 
+		public static RunSearchPaths ExecuteViewer { get; set; }
+		public static string SingleSearchPath { get; set;}
 
 		public static bool EditDbChangeHandled = false;
 

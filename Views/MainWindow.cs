@@ -11,6 +11,7 @@ using System;
 using System . Data . SqlClient;
 using System . Data;
 using System . Diagnostics;
+using System . Configuration;
 
 namespace WPFPages
 {
@@ -74,24 +75,17 @@ namespace WPFPages
 			this . Topmost = true;
 			OntopChkbox . IsChecked = true;
 			gv = GridViewer . Viewer_instance;
-			//			NewFlags flags = new NewFlags ( );
-			//*Flags = NewFlags;
+			// Get this users \Documents folder and use it to save location for our Persistent Search paths
+			var defdocuments = Environment . GetFolderPath ( Environment . SpecialFolder . MyDocuments ) + @"\searchpaths.dat";
+			
+			Utils . SaveProperty ("SearchPathFile", defdocuments);
+			ConfigurationManager . RefreshSection ( "SearchPathFile" );
 
-			//----------------------------------------------------------------------------------------//
-			// Load the Bank account Observable collection (Bankcollection)
-			//			BankCollection.LoadBank ( BankCollection .Bankcollection );
-			//BankCollection . LoadBank ( );
-			//Debug . WriteLine ($"bc.Count = {BankCollection . Bankcollection . Count}");
-			////----------------------------------------------------------------------------------------//
-			//// Load the Customer account Observable collection (Custcollection)
-			//CustCollection . LoadCust ( CustCollection . Custcollection );
-			//Debug . WriteLine ( $"bc.Count = {CustCollection . Custcollection . Count}" );
-			////----------------------------------------------------------------------------------------//
-			//// Load the Details  account Observable collection (Detcollection)
-			//DetCollection .Detcollection = DetCollection . LoadDet ( DetCollection . Detcollection );
-			//Debug . WriteLine ( $"bc.Count = {DetCollection . Detcollection . Count}" );
-			//----------------------------------------------------------------------------------------//
-		}
+			// Save local Documents folder path for later use
+			string t = Environment . GetFolderPath ( Environment . SpecialFolder . MyDocuments ) + "\"";
+			Utils . SaveProperty ( "DocumentsPath", t);
+			ConfigurationManager . RefreshSection ( "DocumentsPath" );
+			}
 
 		private void OnClosing ( object sender, CancelEventArgs e )
 		{

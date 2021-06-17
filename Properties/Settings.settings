@@ -8,9 +8,6 @@
     <Setting Name="BankSysConnectionString" Type="System.String" Scope="User">
       <Value Profile="(Default)">Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False</Value>
     </Setting>
-    <Setting Name="Setting" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="backupbanksysstring" Type="System.String" Scope="User">
       <Value Profile="(Default)">Data Source=DINO-PC; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF';  Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</Value>
     </Setting>
@@ -21,9 +18,6 @@
   &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\ian1.mdf;Integrated Security=True;Connect Timeout=30</Value>
-    </Setting>
-    <Setting Name="Setting1" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF</Value>
     </Setting>
     <Setting Name="Previousconnstring" Type="System.String" Scope="User">
       <Value Profile="(Default)">Data Source=DINO-PC; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF';  Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</Value>
@@ -63,8 +57,11 @@
     <Setting Name="SqlDbViewer_dindex" Type="System.String" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="SearchPathStringFileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Users\Ianch\</Value>
+    <Setting Name="SearchPathFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Users\ianch\Documents\searchpaths.dat</Value>
+    </Setting>
+    <Setting Name="DocumentsPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

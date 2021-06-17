@@ -20,16 +20,6 @@
 	>
 	<Window.Resources>
 
-		<!--
-			This is how to "point" at data to automatically connect
-			fields to the data itself with no other actions needed
-		-->
-
-		<!--  This one is used in here  -->
-		<!--<local:BankCollection x:Key="BankData"/>-->
-
-		<!--<bank:BankAccountViewModel x:Key="BankViewData"/>-->
-
 		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
 			<Setter Property="Foreground" Value="White" />
@@ -45,6 +35,97 @@
 					<Setter Property="Background" Value="{StaticResource HeaderBorderBrushBlue}" />
 				</Trigger>
 			</Style.Triggers>
+		</Style>
+		
+		
+		<Style x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}" TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Grid>
+							<Rectangle x:Name="Border" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" SnapsToDevicePixels="True"/>
+							<Polygon x:Name="Arrow" Fill="Black" HorizontalAlignment="Right" Margin="8,8,3,3" Opacity="0.15" Points="0,10 10,10 10,0" Stretch="Uniform" VerticalAlignment="Bottom"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Stroke" TargetName="Border" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter Property="Fill" TargetName="Border" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Visibility" TargetName="Arrow" Value="Collapsed"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
+		<!--Not in use-->
+		<Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
+			<!--<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="BorderBrush" Value="#FF688CAF"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
+			<Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+			<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+			<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+			
+			<Setter Property="Template">
+				<Setter.Value>
+					
+					<ControlTemplate TargetType="{x:Type DataGrid}">
+						<Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" 
+							  BorderBrush="{TemplateBinding BorderBrush}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+							<ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
+								<ScrollViewer.Template>
+									<ControlTemplate TargetType="{x:Type ScrollViewer}">
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="Auto"/>
+												<ColumnDefinition Width="*"/>
+												<ColumnDefinition Width="Auto"/>
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto"/>
+												<RowDefinition Height="*"/>
+												<RowDefinition Height="Auto"/>
+											</Grid.RowDefinitions>
+											<Button Command="{x:Static DataGrid.SelectAllCommand}" Focusable="false" 
+												  Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" 
+												  Visibility="{Binding HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.All}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+											<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Column="1" Visibility="{Binding HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+											<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Grid.ColumnSpan="2" CanContentScroll="{TemplateBinding CanContentScroll}" Grid.Row="1"/>
+											<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" Orientation="Vertical" Grid.Row="1" ViewportSize="{TemplateBinding ViewportHeight}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+											<Grid Grid.Column="1" Grid.Row="2">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+													<ColumnDefinition Width="*"/>
+												</Grid.ColumnDefinitions>
+												<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" ViewportSize="{TemplateBinding ViewportWidth}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+											</Grid>
+										</Grid>
+									</ControlTemplate>
+								</ScrollViewer.Template>
+								<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+							</ScrollViewer>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			
+			<Style.Triggers>
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<Condition Property="IsGrouping" Value="true"/>
+						<Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+					</MultiTrigger.Conditions>
+					<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+
+				</MultiTrigger>
+			</Style.Triggers>-->
 		</Style>
 
 	</Window.Resources>
@@ -70,7 +151,7 @@
 			<!--  create an elegant left to right light-> Dark gradient as a background  -->
 			<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
 				<GradientStop Offset="1" Color="#333333" />
-				<GradientStop Offset="0.3" Color="#35F6FB" />
+				<GradientStop Offset="0.0" Color="#35F6FB" />
 			</LinearGradientBrush>
 		</Grid.Background>
 
@@ -147,7 +228,7 @@
 
 		<!--#endregion grid setup-->
 
-		<DataGrid
+		<DataGrid 
 			x:Name="BankGrid"
 			AlternatingRowBackground="{StaticResource Blue4}"
 			AutoGenerateColumns="False"
@@ -182,25 +263,39 @@
 			-->
 			<!--  DataGridCell.Selected="BankGrid_Selected"  -->
 			<!--  ItemsSource="{Binding Source={StaticResource BankData}}"  -->
-			<DataGrid.Background>
-				<!--  create an elegant left to right light-> Dark gradient as a background  -->
+			<!--<DataGrid.Background>
+				--><!--  create an elegant left to right light-> Dark gradient as a background  --><!--
 				<LinearGradientBrush StartPoint="1.3,0" EndPoint="0.0,1">
 					<GradientStop Offset="1" Color="#333333" />
 					<GradientStop Offset="0.3" Color="#35F6FB" />
 				</LinearGradientBrush>
-			</DataGrid.Background>
+			</DataGrid.Background>-->
 
 			<DataGrid.Resources>
+				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{DynamicResource Blue}" />-->
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#6578FD" />
-				<Style TargetType="DataGridCell">
+				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionForegroundBrushKey}" Color="#FFFFFF" />-->
+				<!--<Style x:Key="grid1" TargetType="DataGridCell">
+
 					<Style.Triggers>
-						<Trigger Property="DataGridCell.IsSelected" Value="True">
-							<Setter Property="FontWeight" Value="SemiBold" />
-							<Setter Property="Foreground" Value="White" />
-							<Setter Property="Background" Value="#6578FD" />
-						</Trigger>
+						--><!--=====================-->
+						<!--Window WITH Focus ....-->
+						<!--SINGLE SELECTED  Item-->
+						<!--=====================--><!--
+						<MultiTrigger>
+							--><!--// This is working 17/6/21--><!--
+							<MultiTrigger.Conditions>
+								<Condition Property="IsSelected" Value="true" />
+								<Condition Property="IsFocused" Value="true" />
+								--><!--<Condition Property="IsSelectionActive" Value="true" />--><!--
+							</MultiTrigger.Conditions>
+							<Setter Property="Background" Value="{StaticResource Red1}" />
+							<Setter Property="Foreground" Value="{StaticResource White0}" />
+							--><!--<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />--><!--
+						</MultiTrigger>
 					</Style.Triggers>
-				</Style>
+				</Style>-->
+	
 			</DataGrid.Resources>
 
 			<!--#region bank Columns-->
@@ -543,228 +638,8 @@
 					TextAlignment="Center"
 					TextTrimming="WordEllipsis" />
 
-
-			<!--HorizontalAlignment="Stretch"
-			RenderTransformOrigin="0.632,0.51"
-			VerticalAlignment="Stretch"
->
-			<Grid.RowDefinitions>
-				<RowDefinition Height="50" />
-				<RowDefinition Height="60*" />
-			</Grid.RowDefinitions>
-
-			<Canvas
-				x:Name="DataFields"
-				Grid.Column="1"
-				Grid.Row="0"
-				Grid.RowSpan="2"
-				Margin="0,4,0,0">
-
-				-->
-			<!--#region Text Fields-->
-			<!--
-
-				<TextBlock
-					x:Name="textBlock"
-					Canvas.Left="2"
-					Canvas.Top="25"
-					Foreground="White"
-					Height="25"
-					HorizontalAlignment="Center"
-					Padding="5,5,5,5"
-					VerticalAlignment="Center"
-					Text="Customer #" 
-					Width="70"
-					/>
-				<TextBox
-					x:Name="Custno"
-					Canvas.Left="86"
-					Canvas.Top="23"
-					Width="90"
-					Height="24"
-					Padding="5,3,0,0"
-					HorizontalAlignment="Center"
-					IsTabStop="True"
-					VerticalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					FontSize="12"
-					LostFocus="Edit_LostFocus"
-					Foreground="Black"
-					TabIndex="0"
-					Text="{Binding CustNo, UpdateSourceTrigger=LostFocus, FallbackValue=Cust  #}" />
-
-				<TextBlock
-					x:Name="textBlock_Copy"
-					Canvas.Left="-2"
-					Canvas.Top="50"
-					Width="70"
-					Height="25"
-					Padding="5,5,5,5"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center"
-					Foreground="White"
-					Text="Bank A/c #" />
-
-				<TextBox
-					x:Name="Bankno"
-					Canvas.Left="86"
-					Canvas.Top="50"
-					Width="90"
-					Height="24"
-					Padding="5,3,0,0"
-					HorizontalAlignment="Center"
-					IsTabStop="True"
-					VerticalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					FontSize="12"
-					Foreground="Red"
-					LostFocus="Edit_LostFocus"
-					RenderTransformOrigin="0.422,2.208"
-					TabIndex="1"
-					Text="{Binding BankNo, UpdateSourceTrigger=LostFocus, FallbackValue=Bank A/c #}" />
-
-				<TextBlock
-					x:Name="textBlock_Copy5"
-					Canvas.Left="2"
-					Canvas.Top="78"
-					Width="70"
-					Height="25"
-					Padding="5,5,5,5"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center"
-					Foreground="White"
-					Text="A/c Type" />
-
-				<TextBox
-					x:Name="acType"
-					Canvas.Left="86"
-					Canvas.Top="78"
-					Width="90"
-					Height="24"
-					Padding="5,3,0,0"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					IsTabStop="True"
-					FontSize="12"
-					Foreground="Black"
-					LostFocus="Edit_LostFocus"
-					SelectionChanged="SelectionChanged"
-					TabIndex="2"
-					Text="{Binding AcType, FallbackValue=AcType, UpdateSourceTrigger=LostFocus}"
-					TextAlignment="Center"
-					TextChanged="TextChanged" />
-
-				<TextBlock
-					x:Name="textBlock_Copy1"
-					Canvas.Left="214"
-					Canvas.Top="27"
-					Width="70"
-					Height="25"
-					Padding="5,5,5,5"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center"
-					Foreground="White"
-					RenderTransformOrigin="0.457,-0.36"
-					Text="A/c Balance" />
-
-				<TextBox
-					x:Name="balance"
-					Canvas.Left="194"
-					Canvas.Top="58"
-					Width="104"
-					Height="32"
-					Padding="5,3,0,0"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					IsTabStop="True"
-					FontSize="16"
-					FontWeight="DemiBold"
-					Foreground="Red"
-					LostFocus="Edit_LostFocus"
-					SelectionChanged="SelectionChanged"
-					TabIndex="3"
-					Text="{Binding Path=Balance, FallbackValue=Balance, UpdateSourceTrigger=LostFocus}"
-					TextAlignment="Center"
-					TextChanged="TextChanged" />
-
-
-				<TextBlock
-					x:Name="textBlock_Copy3"
-					Canvas.Left="313"
-					Canvas.Top="51"
-					Width="88"
-					Height="24"
-					Padding="5,5,5,5"
-					Foreground="White"
-					Text="Date Opened"
-					TextAlignment="Center" />
-
-				<TextBox
-					x:Name="odate"
-					Canvas.Left="406"
-					Canvas.Top="54"
-					Width="90"
-					Height="24"
-					Padding="5,3,0,0"
-					HorizontalContentAlignment="Center"
-					IsTabStop="True"
-					FontSize="12"
-					SelectionChanged="SelectionChanged"
-					LostFocus="Edit_LostFocus"
-					TabIndex="4"
-					Text="{Binding ODate, FallbackValue=ODate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}"
-					TextAlignment="Center"
-					TextChanged="TextChanged" />
-
-				<TextBlock
-					x:Name="textBlock_Copy4"
-					Canvas.Left="316"
-					Canvas.Top="77"
-					Width="70"
-					Height="25"
-					Padding="5,5,5,5"
-					Foreground="White"
-					Text="Close Date" />
-
-				<TextBox
-					x:Name="cdate"
-					Canvas.Left="406"
-					Canvas.Top="80"
-					Width="90"
-					Height="24"
-					Padding="5,3,0,0"
-					HorizontalContentAlignment="Center"
-					IsTabStop="True"
-					FontSize="12"
-					Foreground="Black"
-					LostFocus="Edit_LostFocus"
-					SelectionChanged="SelectionChanged"
-					TabIndex="5"
-					Text="{Binding CDate, FallbackValue=CDate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}"
-					TextAlignment="Center"
-					TextChanged="TextChanged" />
-				<TextBlock
-					x:Name="Count"
-					Canvas.Left="408"
-					Canvas.Top="8"
-					Width="88"
-					Height="24"
-					Padding="5,3,5,5"
-					Background="DarkGray"
-					FontSize="14"
-					FontWeight="DemiBold"
-					Foreground="Red"
-					Text=" Counter"
-					TextAlignment="Center"
-					TextTrimming="WordEllipsis" />
-				-->
-			<!--#endregion Text Fields-->
-			<!--
-			</Canvas>-->
-
 		</Grid>
+		
 		<!--#region buttons2-->
 		<Button
 			x:Name="SaveBttn"

@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<!--  SolidBrush Definitions  -->
 
+	<!--<SolidColorBrush x:Key="Red0" Color="Red" />-->
+
 	<!--Standard menu item seperator-->
 	<Style x:Key="Menu_Separator" TargetType="{x:Type Separator}">
 		<Setter Property="Margin" Value="0,3,0,3" />
@@ -10,7 +12,7 @@
 				<ControlTemplate TargetType="{x:Type Separator}">
 					<Grid>
 						<Rectangle Height="3" 
-								     Fill="{StaticResource Red0}"
+								     Fill="Red"
 								     Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Menu}}}" />
 					</Grid>
 				</ControlTemplate>

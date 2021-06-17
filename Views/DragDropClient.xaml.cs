@@ -65,15 +65,17 @@ namespace WPFPages . Views
 			this . Topmost = false;
 			dataGrid . ItemsSource = bvm;
 			addCr = true;
+			
 			SavePrompt . Visibility = Visibility . Collapsed;
+			ExecuteFile . Visibility = Visibility . Collapsed;
 			dataGrid . Visibility = Visibility . Visible;
 			textBox . Visibility = Visibility . Visible;
-			ExecuteFile . Visibility = Visibility . Collapsed;
 			this . MouseDown += delegate { DoDragMove ( ); };
 			AddToText . IsChecked = true;
 			CopyGridToText = true;
 			Flags . DragDropViewer = this;
 			OntopChkbox . IsChecked = true;
+			ExecuteFile . Visibility = Visibility . Collapsed;
 			this . Topmost = true;
 		}
 
@@ -203,7 +205,7 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void Textbox_Drop ( object sender, DragEventArgs e )
+		private void Textbox_PreviewDrop ( object sender, DragEventArgs e )
 		{
 			// This is  the method that actually adds the Dropped data to the TextBox
 			int Elements = 0;
@@ -301,7 +303,7 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 		private void SaveAll_Click ( object sender, RoutedEventArgs e )
 		{
 			string path = "";
-			if ( CombinedSaveName . Text . Contains ( "Enter Name for" ) || CombinedSaveName . Text == "" )
+			if ( execName . Text . Contains ( "Enter Name for" ) || execName . Text == "" )
 			{
 				MessageBox . Show ( "You must enter a name for the combined data to be saved to!", "Save dragged data Utility" );
 				return;
@@ -344,7 +346,7 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 		}
 		private void PreviewKeyDownCombo ( object sender, KeyEventArgs e )
 		{
-			if ( e . Key == Key . Enter )
+			if (e.OriginalSource == "" &&  e . Key == Key . Enter )
 			{
 				SaveAll_Click ( sender, null );
 				e . Handled = true;
@@ -512,7 +514,7 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 			//else
 			e . Effects = DragDropEffects . Copy;
 			//this line is CRITICAL - witohut it the TextBo does  not recognize a drop in progress
-			e . Handled = true;
+//			e . Handled = true;
 		}
 
 		private void DataGrid_ColumnReordered ( object sender, DataGridColumnEventArgs e )
@@ -700,19 +702,25 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 		private void searchpaths_Click ( object sender, RoutedEventArgs e )
 		{
 			// modify paths used by (QualifyingFileLocations ) delegate
+			if ( Flags . ExecuteViewer != null ) {
+				Flags . ExecuteViewer . BringIntoView ( );
+				Flags . ExecuteViewer . Focus ( );
+				return;
+			}
 			RunSearchPaths rsp = new RunSearchPaths (  );
-			rsp.ShowDialog();
+			rsp.Show();
+			rsp . BringIntoView (  );
+			rsp . Topmost = true;
 		}
 
 		private void Execute_Click ( object sender, RoutedEventArgs e )
 		{
 			ExecuteFile . Visibility = Visibility . Visible;
-			//Trying to disablespellchecker - doesn't work though
-			SpellCheck sc = execName . SpellCheck;
-			sc = null;
+			promptmessage . Visibility = Visibility . Collapsed;
 			ExecuteFile . BringIntoView ( );
+			ExecuteFile . Refresh ( );
+			ExecuteFile . UpdateLayout ( );
 			execName . Focus ( );
-
 		}
 
 		private void Exec_Click ( object sender, RoutedEventArgs e )
@@ -722,7 +730,11 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 
 		private void scratch_Click ( object sender, RoutedEventArgs e )
 		{
+			promptmessage . Visibility = Visibility . Visible;
 			ExecuteFile . Visibility = Visibility . Collapsed;
+			dataGrid . Visibility = Visibility . Visible;
+			textBox . Visibility = Visibility . Visible;
+			execName . Text = "";
 		}
 	}
 }

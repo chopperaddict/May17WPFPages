@@ -945,7 +945,15 @@ namespace WPFPages
 	//************************************************************************************//
 	public static Brush GetDictionaryBrush ( string brushname )
 	{
-		Brush brs = System . Windows . Application . Current . FindResource ( brushname ) as Brush;
+			Brush brs = null;
+			try
+			{
+				brs = System . Windows . Application . Current . FindResource ( brushname ) as Brush;
+			}
+			catch
+			{
+
+			}
 		return brs;
 	}
 	// Utility functions for sensing scrollbars when dragging from a grid etc

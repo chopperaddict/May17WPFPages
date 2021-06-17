@@ -639,7 +639,7 @@ namespace WPFPages . Views
 					string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );
 					string dataFormat = DataFormats . Text;
 					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
+					DragDrop . DoDragDrop (
 					BankGrid,
 					dataObject,
 					DragDropEffects . Move );

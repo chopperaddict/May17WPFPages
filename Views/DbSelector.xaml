@@ -44,6 +44,8 @@
 			</Setter>
 		</Style>-->
 
+		<SolidColorBrush x:Key="Red0" Color="Red" />
+
 		<!--  Style for full LISTBOXes (not listboxitems) on this form  -->
 		<Style x:Key="_styletest" TargetType="ListBox">
 			<Setter Property="Control.Background" Value="{StaticResource Gray2}" />
@@ -261,7 +263,7 @@
 		</Style>
 
 
-			
+
 	</Window.Resources>
 
 	<Grid Margin="0,0,0,0" HorizontalAlignment="Stretch">
@@ -292,16 +294,19 @@
 			Background="Transparent" 
 			Grid.ColumnSpan="4" 
 			Grid.Column="1">
-
+			
+			<!--Menu ONE Drag Client-->
 			<MenuItem  Header="Drag Client"
+				     Name ="menu1"
 					Background="{StaticResource Gray0}"
+					Click="LoadDragClient_Click"
 					Foreground="{StaticResource White0}"
 					Margin="2"
 					FontWeight="DemiBold"
 					IsTabStop="False"
 					Height="25">
 
-				<MenuItem  Header="Show Drag Client Window"
+				<!--<MenuItem  Header="Show Drag Client Window"
 						Click="LoadDragClient_Click"
 					     MinWidth="200"
 						FontWeight="Bold"
@@ -310,11 +315,13 @@
 						IsTabStop="False"
 						Style="{StaticResource MenuItemBlue}"
 						Background="{StaticResource Red0}"
-					     Foreground="{StaticResource Green1}"/>
+					     Foreground="{StaticResource Green1}"/>-->
 
 			</MenuItem>
 
+			<!--Menu TWO Data Viewers-->
 			<MenuItem  Header="Data Viewers"
+						Name ="menu2"
 						Background="{StaticResource Gray0}"
 						Foreground="{StaticResource White0}"
 						Margin="2"
@@ -322,7 +329,7 @@
 						IsTabStop="False"
 						Height="25">
 
-			<MenuItem  Header="Bank A/C Viewer"
+				<MenuItem  Header="Bank A/C Viewer"
 						Click="LoadBankDbView_Click"
 						Margin="2"
 						FontWeight="Bold"
@@ -358,11 +365,8 @@
 					HorizontalAlignment="Left"					
 					ClipToBounds="True"
 					Width="170"
-					>
-					<!--<Seperator.LayoutTransform>
-					<RotateTransform CenterX="25" CenterY="25 Angle=45"/>
-					</Seperator.LayoutTransform>-->
-				</Separator>
+					/>
+
 				<MenuItem  Header="Multi A/C Viewer"
 						Click="LoadMultiView_Click"
 						Margin="2"
@@ -375,7 +379,10 @@
 
 			</MenuItem>
 
+			<!--Menu THREE Exeute-->
+
 			<MenuItem  Header="Execute System"
+				     Name ="menu3"
 					Background="{StaticResource Gray0}"
 					Foreground="{StaticResource White0}"
 					Margin="2"
@@ -407,7 +414,10 @@
 			</MenuItem>
 
 		</Menu>
-		
+
+		<!--#region Execute program-->
+
+		<!--#endregion option checkboxes/buttons-->
 
 
 		<!--  Top list for creating new viewers  -->
@@ -603,45 +613,6 @@
 		</Grid>
 
 		<!--  List of (Lower) currently open viewers  -->
-		<ListBox
-			x:Name="ViewersList"
-			Grid.Row="3"
-			Grid.Column="1"
-			MinHeight="100"
-			HorizontalAlignment="stretch"
-			VerticalAlignment="Stretch"
-			HorizontalContentAlignment="Stretch"
-			VerticalContentAlignment="Stretch"
-			BorderBrush="Black"
-			BorderThickness="1"
-			Focusable="True"
-			GotFocus="Viewerslist_Focused"
-			IsTabStop="True"
-			ItemContainerStyle="{DynamicResource _ListBoxItemStyle2}"
-			Loaded="OnWindowLoaded"
-			MouseDoubleClick="ViewersList_Select"
-			PreviewKeyDown="IsEnterKey"
-			PreviewMouseDown="ViewersList_PreviewMouseDown"
-			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-			ScrollViewer.VerticalScrollBarVisibility="Disabled"
-			Style="{StaticResource _styletest}"
-			TabIndex="3"
-			Visibility="Visible">
-			<!--  MouseUp="ViewersList_Select"  -->
-
-			<ListBoxItem
-				HorizontalContentAlignment="Stretch"
-				Content="Currently Open Viewers"
-				FontWeight="SemiBold"
-				IsEnabled="false"
-				IsTabStop="false"
-				Style="{StaticResource _ListBoxItemStyle2}" />
-
-			<!--
-				The lastline above allows me to set the listbox
-				items exactly as I want them - See Style in Resources above
-			-->
-		</ListBox>
 
 		<Grid
 			Grid.Row="4"
@@ -711,6 +682,102 @@
 				TabIndex="5"
 				Template="{StaticResource HorizontalGradientTemplateBlue}" />
 		</Grid>
+		<ListBox
+			x:Name="ViewersList"
+			Grid.Row="3"
+			Grid.Column="1"
+			MinHeight="100"
+			HorizontalAlignment="stretch"
+			VerticalAlignment="Stretch"
+			HorizontalContentAlignment="Stretch"
+			VerticalContentAlignment="Stretch"
+			BorderBrush="Black"
+			BorderThickness="1"
+			Focusable="True"
+			GotFocus="Viewerslist_Focused"
+			IsTabStop="True"
+			ItemContainerStyle="{DynamicResource _ListBoxItemStyle2}"
+			Loaded="OnWindowLoaded"
+			MouseDoubleClick="ViewersList_Select"
+			PreviewKeyDown="IsEnterKey"
+			PreviewMouseDown="ViewersList_PreviewMouseDown"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			ScrollViewer.VerticalScrollBarVisibility="Disabled"
+			Style="{StaticResource _styletest}"
+			TabIndex="3"
+			Visibility="Visible">
+
+			<!--
+				The lastline above allows me to set the listbox
+				items exactly as I want them - See Style in Resources above
+			-->
+			<!--  MouseUp="ViewersList_Select"  -->
+
+			<ListBoxItem
+				HorizontalContentAlignment="Stretch"
+				Content="Currently Open Viewers"
+				FontWeight="SemiBold"
+				IsEnabled="false"
+				IsTabStop="false"
+				Style="{StaticResource _ListBoxItemStyle2}" />
+
+		</ListBox>
+		
+		<Canvas x:Name="ExecuteFile"
+			Background="{StaticResource Red2}"
+			  Grid.Row="1"
+			  Grid.Column="1"
+			  Grid.ColumnSpan="2"			  
+			  Height="110"
+			  Width="330"
+			  Margin="0,60,0,10"
+			  Visibility="Visible"
+			>
+			<TextBox x:Name="execName"
+					Height="24" 
+					Canvas.Left="12" 
+					Canvas.Top="64" 
+				   Padding="5,1,0,0"
+				   Width="212"
+				/>
+			<Button x:Name="DoIt" 
+					Click="Exec_Click"
+					Background="{StaticResource HeaderBorderBrushGreen}"
+					Content="Execute" 
+					Foreground="White"
+					Template="{StaticResource HorizontalGradientTemplateGreen}" 
+					Height="34" 
+					Canvas.Left="234" 
+					Canvas.Top="59" 
+				  Visibility="Visible"
+					Width="89" 
+				  IsDefault="True" />
+			<Button x:Name="Scratch" 
+					Click="scratch_Click"
+					Background="{StaticResource HeaderBorderBrushRed}"
+					Content="Cancel" 
+					Foreground="White"
+					Template="{StaticResource HorizontalGradientTemplateRed}" 
+					Height="34" 
+					Canvas.Left="234" 
+					Canvas.Top="17" 
+				  Visibility="Visible"
+					Width="89" />
+
+			<TextBlock x:Name="label" 
+				 Text="Enter the name of the file you wish to 'Display' or to have 'executed...'" 
+				 Canvas.Left="12" 
+				 Canvas.Top="15" 
+				 Width="212" 
+			     FontSize="12"
+				     FontWeight="DemiBold"
+				 TextOptions.TextHintingMode="Fixed"
+				 TextWrapping="Wrap"
+			     TextOptions.TextRenderingMode="ClearType"
+				  Visibility="Visible"
+				 Height="41"/>
+
+		</Canvas>
 
 
 	</Grid>

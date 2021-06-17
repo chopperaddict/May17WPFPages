@@ -46,18 +46,6 @@ namespace WPFPages.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Setting {
-            get {
-                return ((string)(this["Setting"]));
-            }
-            set {
-                this["Setting"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"Data Source=DINO-PC; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF';  Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False")]
         public string backupbanksysstring {
             get {
@@ -76,19 +64,6 @@ namespace WPFPages.Properties {
         public string LocalDataConnectionString {
             get {
                 return ((string)(this["LocalDataConnectionString"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\USERS\\IANCH\\APPDATA\\LOCAL\\MICROSOFT\\MICROSOFT SQL SERVER LOCAL DB\\INSTANCES\\MS" +
-            "SQLLOCALDB\\IAN1.MDF")]
-        public string Setting1 {
-            get {
-                return ((string)(this["Setting1"]));
-            }
-            set {
-                this["Setting1"] = value;
             }
         }
         
@@ -227,13 +202,25 @@ namespace WPFPages.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Ianch\\")]
-        public string SearchPathStringFileName {
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\ianch\\Documents\\searchpaths.dat")]
+        public string SearchPathFile {
             get {
-                return ((string)(this["SearchPathStringFileName"]));
+                return ((string)(this["SearchPathFile"]));
             }
             set {
-                this["SearchPathStringFileName"] = value;
+                this["SearchPathFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DocumentsPath {
+            get {
+                return ((string)(this["DocumentsPath"]));
+            }
+            set {
+                this["DocumentsPath"] = value;
             }
         }
     }

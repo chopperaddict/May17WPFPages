@@ -8,10 +8,10 @@
         Title="File Load/Run/Execute System" 
 	  Closing="Window_Closing"
 	  Height="450" 
-	  MinHeight="300"
-	  Width="654"
-	  MinWidth="550"
-	  WindowStartupLocation="CenterOwner"
+	  MinHeight="475"
+	  Width="694"
+	  MinWidth="720"
+	  WindowStartupLocation="CenterScreen"
 	  WindowState="Normal"
 	  WindowStyle="SingleBorderWindow">
 
@@ -24,7 +24,7 @@
 	</Window.Background>
 
 	<Window.Resources>
-		
+
 		<SolidColorBrush x:Key="ListBox.Static.Background" Color="#FFFFFFFF"/>
 		<SolidColorBrush x:Key="ListBox.Static.Border" Color="#FFABADB3"/>
 		<SolidColorBrush x:Key="ListBox.Disabled.Background" Color="#FFFFFFFF"/>
@@ -33,7 +33,8 @@
 		<ControlTemplate x:Key="ListView1" TargetType="{x:Type ListViewItem}">
 			<!-- NB - it is the Border that controls the buttons default colors
 			which lets us set Back/Foreground and border colors in the button itself
-			but still have mouseover etc working correctly, but still have our text "Content" display--><!--
+			but still have mouseover etc working correctly, but still have our text "Content" display-->
+			<!--
 			<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" 
 				   BorderThickness="{TemplateBinding BorderThickness}" 
 				   Background="{TemplateBinding Background}" 
@@ -50,10 +51,13 @@
 						VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 			</Border>
 			<ControlTemplate.Triggers>
-				--><!--This handles the button being set as IsDefault=true-->
-				<!--<Trigger Property="FrameworkElement.Tag" Value="True">
+				-->
+			<!--This handles the button being set as IsDefault=true-->
+			<!--<Trigger Property="FrameworkElement.Tag" Value="True">
 					<Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-					--><!--<Setter Property="Background" TargetName="border" Value="Green"/>--><!--
+					-->
+			<!--<Setter Property="Background" TargetName="border" Value="Green"/>-->
+			<!--
 					<Setter Property="Background" TargetName="border">
 						<Setter.Value>
 							<LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
@@ -64,9 +68,12 @@
 						</Setter.Value>
 					</Setter>
 					<Setter Property="BorderBrush" TargetName="border" Value="Black"/>
-				</Trigger>--><!--
+				</Trigger>-->
+			<!--
 				<Trigger Property="IsSelected" Value="True">
-					--><!--MouseOver handling--><!--
+					-->
+			<!--MouseOver handling-->
+			<!--
 					<Setter Property="FontWeight"  Value="Bold"/>
 					<Setter Property="ListViewItem.Foreground"  TargetName="border">
 						<Setter.Value>
@@ -94,36 +101,60 @@
 								<GradientStop Color="#FFdb6069" Offset="1"/>
 							</LinearGradientBrush>
 
-							--><!--<LinearGradientBrush StartPoint="1,0" EndPoint="0,1" >
+							-->
+			<!--<LinearGradientBrush StartPoint="1,0" EndPoint="0,1" >
 							<GradientStop Color="Gray" Offset="0"/>
 							<GradientStop Color="DarkOrange" Offset="1"/>
-						</LinearGradientBrush>--><!--
+						</LinearGradientBrush>-->
+			<!--
 						</Setter.Value>
 					</Setter>
 				</Trigger>
-				--><!--<Trigger Property="ToggleButton.IsChecked" Value="True">
-					--><!--Handles any checkbox style checked option--><!--
+				-->
+			<!--<Trigger Property="ToggleButton.IsChecked" Value="True">
+					-->
+			<!--Handles any checkbox style checked option-->
+			<!--
 					<Setter Property="Background" TargetName="border" Value="#FFBCDDEE"/>
 					<Setter Property="BorderBrush" TargetName="border" Value="#FF245A83"/>
-				</Trigger>--><!--
+				</Trigger>-->
+			<!--
 				<Trigger Property="IsEnabled" Value="False">
-					--><!--Handles disabled status--><!--
+					-->
+			<!--Handles disabled status-->
+			<!--
 					<Setter Property="Background" TargetName="border" Value="Gray"/>
 					<Setter Property="BorderBrush" TargetName="border" Value="Red"/>
 					<Setter Property="Foreground" Value="White"/>
 				</Trigger>
-				--><!--<Trigger Property="ContentPresenter" Value="Reset">
 				-->
-				<!--Handles disabled status-->
-				<!--
+			<!--<Trigger Property="ContentPresenter" Value="Reset">
+				-->
+			<!--Handles disabled status-->
+			<!--
 				<Setter Property="Background" TargetName="border" Value="Green"/>
 				<Setter Property="BorderBrush" TargetName="border" Value="White"/>
 				<Setter Property="Foreground" Value="White"/>
-			</Trigger>--><!--
+			</Trigger>-->
+			<!--
 			</ControlTemplate.Triggers>-->
 		</ControlTemplate>
 
-		<Style x:Key ="LvMouseOverStyle" TargetType="ListViewItem" >
+		<Style x:Key ="LviMouseOverStyle" TargetType="ListViewItem" >
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="true">
+					<Setter Property="Background" Value="Red" />
+					<Setter Property="Foreground" Value="White" />
+				</Trigger>
+				<Trigger Property="IsSelected" Value="true">
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="BorderBrush" Value="White"/>
+					<Setter Property="Foreground" Value="Blue" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+		<Style x:Key ="LvMouseOverStyle" TargetType="{x:Type ListView}" >
 			<Style.Triggers>
 				<Trigger Property="IsMouseOver" Value="true">
 					<Setter Property="Background" Value="Red" />
@@ -145,18 +176,33 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="10"/>
 			<RowDefinition Height="*"/>
-			<RowDefinition Height="45"/>
+			<RowDefinition Height="65"/>
 			<RowDefinition Height="5"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="10"/>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="65"/>
-			<ColumnDefinition Width="65"/>
+			<ColumnDefinition Width="63"/>
+			<ColumnDefinition Width="63"/>
 			<ColumnDefinition Width="65"/>
 			<ColumnDefinition Width="95"/>
 			<ColumnDefinition Width="10"/>
 		</Grid.ColumnDefinitions>
+
+		<TextBlock 
+			FontWeight="Normal"
+			FontSize="11"
+			Foreground="White"
+			   Grid.Column="1" 
+			   Grid.ColumnSpan="1"
+			   Grid.Row="2"
+			   Margin="0,2,10,0" 
+			   Text="You can use the Test Button to try just the selected path or to use the full path search -->" 
+			   TextWrapping="Wrap" 
+			   VerticalAlignment="Top" 
+			   />
+
 
 		<ListView x:Name="listView" 
 			    Margin="0,10,0,10"
@@ -164,114 +210,129 @@
 			    Foreground="White"
 			    Grid.Row="1"
 			    Grid.Column="1"
-			    Grid.ColumnSpan="5"	
+			    Grid.ColumnSpan="6"	
+			    ItemsSource="{Binding Path}"
 				SelectionMode="Single"
 			    >
-			<!--Style="{StaticResource ListViewStyle1}"-->
-
 			<ListView.Resources>
 				<ControlTemplate x:Key="SelectedTemplate" TargetType="ListViewItem">
 					<Border SnapsToDevicePixels="true" 
-                    BorderBrush="{TemplateBinding BorderBrush}" 
-                    BorderThickness="{TemplateBinding BorderThickness}" 
-                    Background="{TemplateBinding Background}"
-                    CornerRadius="5" x:Name="border">
+						  BorderBrush="{TemplateBinding BorderBrush}" 
+						  BorderThickness="{TemplateBinding BorderThickness}" 
+						  Background="{TemplateBinding Background}"
+						  CornerRadius="5" x:Name="border">
+
+						<!--// This works 17/6/21-->
 						<ContentControl 
-                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                    Margin="2,2,2,2" 
-                    VerticalAlignment="Stretch"
-                    Content="{TemplateBinding Content}" />
+							  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+							  Margin="12,6,2,2" 
+							  VerticalAlignment="Stretch"
+							  Content="{TemplateBinding Content}" />
 					</Border>
 				</ControlTemplate>
-				<Style TargetType="ListViewItem">
-					<Setter Property="Background" Value="{StaticResource Blue3}"/>
+
+
+				<Style TargetType="{x:Type ListViewItem}">
+					<Setter Property="Background" Value="{StaticResource Blue1}"/>
 					<Setter Property="Height" Value="30"/>
 					<Setter Property="FontWeight" Value="Bold"/>
+
+					<!--#region Style triggers-->
+
 					<Style.Triggers>
+
+						<!--=====================-->
+						<!--Window WITH Focus ....-->
+						<!--SINGLE SELECTED  Item-->
+						<!--=====================-->
 						<MultiTrigger>
+							<!--// This is working 17/6/21-->
 							<MultiTrigger.Conditions>
 								<Condition Property="IsSelected" Value="true" />
+								<Condition Property="Selector.IsFocused" Value="true" />
 								<Condition Property="Selector.IsSelectionActive" Value="true" />
 							</MultiTrigger.Conditions>
-							<Setter Property="Background" Value="{StaticResource Blue0}" />
+							<Setter Property="Background" Value="{StaticResource Red1}" />
 							<Setter Property="Foreground" Value="{StaticResource White0}" />
 							<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
 						</MultiTrigger>
+
+						<!--=====================-->
+						<!--Window WITH Focus ....-->
+						<!--       UNSELECTED  Items-->
+						<!--=====================-->
 						<MultiTrigger>
+							<!--// This is working 17/6/21-->
+							<MultiTrigger.Conditions>
+								<Condition Property="IsSelected" Value="false" />
+								<Condition Property="Selector.IsSelectionActive" Value="true" />
+							</MultiTrigger.Conditions>
+							<Setter Property="Background" Value="{StaticResource Blue4}" />
+							<Setter Property="Foreground" Value="{StaticResource White0}" />
+							<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
+						</MultiTrigger>
+
+						<!--=====================-->
+						<!--Window WITHOUT Focus .-->
+						<!--       SELECTED  Item             -->
+						<!--======================-->
+						<MultiTrigger>
+							<!--// This is working 17/6/21-->
 							<MultiTrigger.Conditions>
 								<Condition Property="IsSelected" Value="true" />
 								<Condition Property="Selector.IsSelectionActive" Value="false" />
 							</MultiTrigger.Conditions>
-							<Setter Property="Background" Value="{StaticResource Blue0}" />
+							<Setter Property="Background" Value="{StaticResource Blue3}" />
 							<Setter Property="Foreground" Value="{StaticResource White0}" />
 							<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
 						</MultiTrigger>
+
+						<!--=====================-->
+						<!--Window WITHOUT Focus ....-->
+						<!--     UNSELECTED  items -->
+						<!--=====================-->
 						<MultiTrigger>
+							<!--// This is working 17/6/21-->
 							<MultiTrigger.Conditions>
-								<Condition Property="IsMouseOver" Value="true" />
-								<!--<Condition Property="Selector.IsSelectionActive" Value="false" />-->
+								<Condition Property="IsSelected" Value="false" />
+								<Condition Property="Selector.IsSelectionActive" Value="false" />
 							</MultiTrigger.Conditions>
-							<Setter Property="Background" Value="{StaticResource Red0}" />
-							<Setter Property="Foreground" Value="{StaticResource White0}" />
+							<Setter Property="Background" Value="{StaticResource Blue4}" />
+							<Setter Property="Foreground" Value="{StaticResource Gray1}" />
 							<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
 						</MultiTrigger>
+
+
 					</Style.Triggers>
 				</Style>
+				<!--#endregion Style triggers-->
+
 			</ListView.Resources>
-
-			<!--<ListViewItem Selected="ListView_Selected"
-					Background="{StaticResource Gray}"	
-				     Foreground="{StaticResource White0}"
-					  
-					  >-->
-
-			<ListViewItem
-				Background="Blue"
-				Foreground="White"
-				Content="{Binding SearchPaths}"
-				Style="{StaticResource LvMouseOverStyle}">
-				
-			</ListViewItem>
-				>
-				<!--<DataTemplate>
-					<TextBlock Text="{Binding Path}"
-							     FontWeight="Bold"
-						     Height="25"
-						     HorizontalAlignment="Center"
-						     VerticalAlignment="Bottom"
-						     Padding="10,5,20,0"	
-						     Width="800"
-						     />
-					--><!--Background="{StaticResource HeaderBorderBrushRed}"	
-						     Foreground="{StaticResource White0}"--><!--
-				</DataTemplate>-->
-			<!--</ListView.ItemTemplate>-->
-			<!--Background="{StaticResource HeaderBorderBrushRed}"	
-			    Foreground="{StaticResource White0}"-->
-
-			<!--<ListView.View>
-				<GridView>
-					<GridViewColumn Header="Name" Width="400"  DisplayMemberBinding="{Binding Path}">
-					<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding searches}"
-									     Background="Beige"
-									     Foreground="Black"
-									     />
-
-							</DataTemplate>
-					</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-				</GridView>
-			</ListView.View>-->
 		</ListView>
+
+		<!--#region buttons-->
+		<Button
+				x:Name="Test"
+				Click="Test1_Click"
+				Content="Test"
+				Background="{StaticResource HeaderBrushGreen}"
+				Foreground="White"
+				Grid.Column="2" 
+				Grid.Row="2"
+				Height="35"
+				HorizontalAlignment="Right"
+				IsEnabled="True"
+				Margin="0,0,0,10"
+				Template="{StaticResource HorizontalGradientTemplateGreen}"
+				VerticalAlignment="Bottom"
+				Width="60" />
 
 		<Button x:Name="CancelBtn" 			  
 			  Background="{StaticResource HeaderBorderBrushRed}"	
 			  Click="CloseBtn_Click"
 			  Content="Cancel/Close" 
 			  Foreground="White"
-			  Grid.Column="5"
+			  Grid.Column="6"
 			  Grid.ColumnSpan="1"
 			  Grid.Row="2"
 			  Grid.RowSpan="1"
@@ -281,29 +342,28 @@
 			  Template="{StaticResource HorizontalGradientTemplateRed}"
 			  VerticalAlignment="Bottom" 
 			  Width="90" />
+
 		<Button
-			  x:Name="Remove_Item"
-			  Click="Remove_Click"
-			  Content="Remove"
+			  x:Name="Search"
+			  Click="Search_Click"
+			  Content="Search"
 			  Background="{StaticResource HeaderBrushGreen}"
 			  Foreground="White"
-			  Grid.Column="4" 
+			  Grid.Column="3" 
 			  Grid.Row="2"
 			  Height="35"
 			  HorizontalAlignment="Right"
 			  IsEnabled="True"
-			  Margin="0,0,0,10"
 			  Template="{StaticResource HorizontalGradientTemplateGreen}"
-			  VerticalAlignment="Bottom"
-			  Width="60" />
-
+			  VerticalAlignment="Top"
+			  Width="60" Margin="0,20,0,0" />
 		<Button
 				x:Name="Save"
 				Click="Save_Click"
 				Content="Save"
 				Background="{StaticResource HeaderBrushGreen}"
 				Foreground="White"
-				Grid.Column="3" 
+				Grid.Column="4" 
 				Grid.Row="2"
 				Height="35"
 				HorizontalAlignment="right"
@@ -313,34 +373,98 @@
 				VerticalAlignment="Bottom"
 				Width="60" />
 
-		<TextBox x:Name="TxtSearchPath" 
-			   Grid.Column="1" 
-			   Grid.ColumnSpan="1"
-			   HorizontalAlignment="Stretch" 
-			   Margin="0,9,0,0" 
-			   Grid.Row="2" 
-			   Text="" 
-			   TextWrapping="NoWrap" 
-			   VerticalAlignment="Top" 
-			   Width="324"/>
-
 		<Button
-			  x:Name="Search"
-			  Click="Search_Click"
-			  Content="Search"
+			  x:Name="Remove_Item"
+			  Click="Remove_Click"
+			  Content="Remove"
 			  Background="{StaticResource HeaderBrushGreen}"
 			  Foreground="White"
-			  Grid.Column="2" 
-			  Grid.ColumnSpan="1" 
+			  Grid.Column="5" 
 			  Grid.Row="2"
 			  Height="35"
-			  HorizontalAlignment="Left"
+			  HorizontalAlignment="Right"
 			  IsEnabled="True"
-			  Margin="0,0,0,0"
+			  Margin="0,0,0,10"
 			  Template="{StaticResource HorizontalGradientTemplateGreen}"
-			  VerticalAlignment="Top"
+			  VerticalAlignment="Bottom"
 			  Width="60" />
 
+
+		<TextBox x:Name="TxtSearchPath" 
+			   Foreground="{StaticResource Gray1}"
+			   Text="Enter qualified path here and Click Save to add to list..."
+			   Grid.Column="1" 
+			   Grid.ColumnSpan="1"
+			   Grid.Row="2"
+			   Height="22"
+			   Margin="0,35,10,0" 			   
+			   TextWrapping="NoWrap" 
+			   VerticalAlignment="Top"
+			   KeyDown="TxtSearchPath_Entry" 
+			   />
+		<Canvas x:Name="ExecuteFile"
+			  Background="{StaticResource Red2}"
+				Margin="160,100,10,131"			  
+				Visibility="Visible" Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="1"
+			>
+			<TextBox x:Name="execName"
+		  Height="24" 
+		  Canvas.Left="12" 
+		  Canvas.Top="78" 
+		  Padding="5,1,0,0"
+		  Width="212"
+				/>
+			<Button x:Name="DoIt" 
+		  Click="Exec_Click"
+		  Background="{StaticResource HeaderBorderBrushGreen}"
+		  Content="Execute" 
+		  Foreground="White"
+		  Template="{StaticResource HorizontalGradientTemplateGreen}" 
+		  Height="34" 
+		  Canvas.Left="234" 
+		  Canvas.Top="59" 
+		  Visibility="Visible"
+		  Width="89" 
+		  IsDefault="True" />
+			<Button x:Name="Scratch" 
+		  Click="scratch_Click"
+		  Background="{StaticResource HeaderBorderBrushRed}"
+		  Content="Cancel" 
+		  Foreground="White"
+		  Template="{StaticResource HorizontalGradientTemplateRed}" 
+		  Height="34" 
+		  Canvas.Left="234" 
+		  Canvas.Top="17" 
+		  Visibility="Visible"
+		  Width="89" />
+
+			<TextBlock x:Name="label" 
+		  Text="Enter the name of the file you wish to 'Display' or to have 'executed...'" 
+		  Canvas.Left="12" 
+		  Canvas.Top="15" 
+		  Width="212" 
+		  FontSize="12"
+		  FontWeight="DemiBold"
+		  TextOptions.TextHintingMode="Fixed"
+		  TextWrapping="Wrap"
+		  TextOptions.TextRenderingMode="ClearType"
+		  Visibility="Visible"
+		  Height="41"/>
+
+			<CheckBox x:Name="checkBox" 
+		  Content="Test with selected path only " 
+		  Canvas.Left="12" 
+		  Canvas.Top="54"
+		  Click="CheckBox_Click"
+		  FontWeight="DemiBold"
+		  Foreground="White"/>
+
+		</Canvas>
+		<!--#endregion buttons-->
+
+		<!--#region Canvas1-->
+
+		<!--#endregion Canvas-->
 
 	</Grid>
 </Window>

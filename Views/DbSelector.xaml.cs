@@ -103,6 +103,7 @@ namespace WPFPages . Views
 			this . MouseDown += delegate { DoDragMove ( ); };
 			//			Utils . GetWindowHandles ( );
 			OntopChkbox . IsChecked = false;
+			ExecuteFile . Visibility = Visibility . Collapsed;
 			this . Topmost = true;
 		}
 
@@ -1373,32 +1374,72 @@ namespace WPFPages . Views
 
 		private void LoadBankDbView_Click ( object sender, RoutedEventArgs e )
 		{
+			BankDbView bdv = new BankDbView ( );
+			bdv . Show ( );
 
 		}
 
 		private void LoadCustDbView_Click ( object sender, RoutedEventArgs e )
 		{
-
+			CustDbView cdv = new CustDbView ( );
+			cdv . Show ( );
 		}
 
 		private void LoadDetailsDbView_Click ( object sender, RoutedEventArgs e )
 		{
-
+			DetailsDbView dbv = new DetailsDbView ( );
+			dbv . Show ( );
 		}
 
 		private void LoadMultiView_Click ( object sender, RoutedEventArgs e )
 		{
-
+			MultiViewer mv = new MultiViewer ( );
+			mv . Show ( );
 		}
 
 		private void Paths_Click ( object sender, RoutedEventArgs e )
 		{
+			if ( Flags . ExecuteViewer != null )
+			{
+				Flags . ExecuteViewer . BringIntoView ( );
+				Flags . ExecuteViewer . Focus ( );
+				return;
+			}
 			RunSearchPaths rsp = new RunSearchPaths ( );
-			rsp . ShowDialog ( );
+			rsp . Show ( );
 		}
-
+		private void ToggleEnable ( bool value) {
+			BankViewer . IsEnabled = value;
+			CustViewer . IsEnabled = value;
+			SelectBtn . IsEnabled = value;
+			MultiViewer . IsEnabled = value;
+			MultiViewer . IsEnabled = value;
+			ViewerDelete . IsEnabled = value;
+			ViewerDeleteAll . IsEnabled = value;
+			SelectViewerBtn . IsEnabled = value;
+			sqlSelector . IsEnabled = value;
+			ViewersList . IsEnabled = value;
+			menu1 . IsEnabled = value;
+			menu2 . IsEnabled = value;
+			menu3 . IsEnabled = value;
+		}
 		private void Execute_Click ( object sender, RoutedEventArgs e )
 		{
+			ToggleEnable ( false );
+			ExecuteFile . Visibility = Visibility . Visible;
+			ExecuteFile . BringIntoView ( );
+			execName . Focus ( );
+		}
+
+		private void Exec_Click ( object sender, RoutedEventArgs e )
+		{
+			SupportMethods . ProcessExecuteRequest ( this, null, null, execName . Text );
+		}
+
+		private void scratch_Click ( object sender, RoutedEventArgs e )
+		{
+			ToggleEnable ( true);
+			ExecuteFile . Visibility = Visibility . Collapsed;
 		}
 	}
 }

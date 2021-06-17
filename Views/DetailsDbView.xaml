@@ -244,7 +244,7 @@
 				  <!--create an elegant left to right light-> Dark gradient as a background-->  
 				<LinearGradientBrush StartPoint="1.3,1" EndPoint="0.0,0">
 					<GradientStop Offset="0.453" Color="#DDFFDD" />
-					<GradientStop Offset="1" Color="#FF00FF00" />
+					<GradientStop Offset="1" Color="#99FF00" />
 				</LinearGradientBrush>
 			</DataGrid.Background>
 
@@ -255,10 +255,10 @@
 					<Style.Triggers>
 						<Trigger Property="DataGridCell.IsSelected" Value="True">
 							<Setter Property="FontWeight" Value="DemiBold" />
-							<Setter Property="Foreground" Value="{StaticResource Red0}"/>
-							<Setter Property="Background" Value="#cccccc" />
+							<Setter Property="Foreground" Value="{StaticResource White0}"/>
+							<Setter Property="Background" Value="{StaticResource Green0}" />
 							<Setter Property="VerticalAlignment" Value="Center" />
-							<Setter Property="Height" Value="32" />
+							<Setter Property="Height" Value="20" />
 						</Trigger>
 					</Style.Triggers>
 				</Style>

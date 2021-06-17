@@ -33,9 +33,13 @@ namespace WPFPages . Views
 
 		List<string> SearchPaths = new List<string> ( );
 		List<Searchpath> searches = new List<Searchpath> ( );
+
+		public bool TestSelectedPath { get; set; }
 		public RunSearchPaths ( )
 		{
 			InitializeComponent ( );
+			Flags . ExecuteViewer = this;
+
 			SearchPaths = LoadSearchPaths ( );
 			foreach ( var item in SearchPaths )
 			{
@@ -46,13 +50,15 @@ namespace WPFPages . Views
 				//lvi . Content = item;
 				//listView . Items . Add ( lvi );
 			}
+			Utils . SetupWindowDrag ( this );
 			//			Searchpath sp = new Searchpath ( );
 			listView . Items . Clear ( );
-			//listView . ItemsSource = null;
 			listView . ItemsSource = SearchPaths;
-			//listView . DataContext = SearchPaths;
-			TxtSearchPath . Focus ( );
-			Utils . SetupWindowDrag ( this );
+			ExecuteFile . Visibility = Visibility . Collapsed;
+			listView . SelectedIndex = 0;
+			listView . SelectedItem = 0;
+			listView . Refresh ( );
+			listView . Focus ( );
 		}
 
 		/// <summary>
@@ -61,8 +67,8 @@ namespace WPFPages . Views
 		private void SaveSearchPathStrings ( )
 		{
 			string temp = "";
-			string path = ( string ) Properties . Settings . Default [ "SearchPathStringFileName" ];
-			path = path + @"\SearchPaths.dat";
+			string path = ( string ) Properties . Settings . Default [ "SearchPathFile" ];
+///			path = path + @"\SearchPaths.dat";
 //			StringBuilder sb = new StringBuilder ( );
 			foreach ( string item in listView . Items )
 			{
@@ -82,8 +88,8 @@ namespace WPFPages . Views
 		private List<string> LoadSearchPaths ( )
 		{
 			SearchPaths . Clear ( );
-			string path = ( string ) Properties . Settings . Default [ "SearchPathStringFileName" ];
-			path = path + @"\SearchPaths.dat";
+			string path = ( string ) Properties . Settings . Default [ "SearchPathFile" ];
+//			path = path + @"\SearchPaths.dat";
 			string input = File . ReadAllText ( path );
 			string [ ] lines1 = input . Split ( '\n' );
 			int indx = 0;
@@ -104,6 +110,7 @@ namespace WPFPages . Views
 
 		private void CloseBtn_Click ( object sender, RoutedEventArgs e )
 		{
+			Flags . ExecuteViewer = null;
 			Close ( );
 		}
 
@@ -158,6 +165,57 @@ namespace WPFPages . Views
 		{
 			this . Background = Utils . GetDictionaryBrush ( "HeaderBrushGray" );
 			this . Foreground = Utils . GetDictionaryBrush ( "HeaderBrushWhite" );
+		}
+
+		private void Test1_Click ( object sender, RoutedEventArgs e )
+		{
+			ExecuteFile . Visibility = Visibility . Visible;
+			ExecuteFile . BringIntoView ( );
+			ExecuteFile . Refresh (  );
+			execName . Focus ( );
+		}
+
+		private void CancelBtn_Click ( object sender, RoutedEventArgs e )
+		{
+			ExecuteFile . Visibility = Visibility . Collapsed;
+		}
+
+		private void SaveBoth_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void Exec_Click ( object sender, RoutedEventArgs e )
+		{
+			if( TestSelectedPath )
+
+				Flags . SingleSearchPath = listView . SelectedItem?.ToString();
+			SupportMethods . ProcessExecuteRequest ( this, null, null, execName . Text );
+			Flags . SingleSearchPath = "";
+		}
+
+		private void scratch_Click ( object sender, RoutedEventArgs e )
+		{
+			ExecuteFile . Visibility = Visibility . Collapsed;
+		}
+
+		private void CheckBox_Click ( object sender, RoutedEventArgs e )
+		{
+			if(checkBox . IsChecked == true)
+				TestSelectedPath = true;
+			else
+				TestSelectedPath = false;
+		}
+
+		private void TxtSearchPath_Entry ( object sender, RoutedEventArgs e )
+		{
+			if ( TxtSearchPath . Text . Contains ( "Enter qualified path here and" ) )
+			{
+				TxtSearchPath . Text = "";
+				byte r = 0, g = 0, b = 0;
+				SolidColorBrush sb = new SolidColorBrush ( Colors . Black );
+				TxtSearchPath . Foreground = sb;
+			}
 		}
 	}
 }

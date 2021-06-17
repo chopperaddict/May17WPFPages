@@ -7,6 +7,7 @@ using System . Text;
 using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
+using System . Windows . Controls . Primitives;
 using System . Windows . Input;
 
 namespace WPFPages . Views
@@ -28,10 +29,10 @@ namespace WPFPages . Views
 			// Get the search paths from disk file
 			List<string> AdditionalFolders = new List<string> ( );
 			// Get searchpaths files own path
-			string Str = ( string ) Properties . Settings . Default [ "SearchPathStringFileName" ];
+			string Str = ( string ) Properties . Settings . Default [ "SearchPathFile" ];
 
 			//Read in our search strings list into string[]
-			string [ ] paths = File . ReadAllLines ( Str + @"\searchpaths.dat" );
+			string [ ] paths = File . ReadAllLines ( Str );
 			// now put them into List<string> collection
 			foreach ( var item in paths )
 			{
@@ -78,6 +79,11 @@ namespace WPFPages . Views
 			//Using a TextBox as input ?
 			if ( command == "" )
 			{
+				if ( textBox == null )
+				{
+					MessageBox . Show ( $"Please enter a file name to be executed ?", "Input data Invalid");
+					return false;
+				}
 				// YES - so Parse the line that was dbl.clicked in the Textbox to get the command to be executed
 				int caretpos = textBox . CaretIndex;
 				var line = textBox . GetLineIndexFromCharacterIndex ( caretpos );
@@ -126,81 +132,139 @@ namespace WPFPages . Views
 			if ( currentline . Length == 0 ) return false;
 
 			// how to save the user specified search paths to settings.settings
-			//Utils . SaveProperty ( "SearchPathStringFileName", Environment . GetFolderPath ( Environment . SpecialFolder . MyDocuments ) );
+			//Utils . SaveProperty ( "SearchPathFile", Environment . GetFolderPath ( Environment . SpecialFolder . MyDocuments ) );
 			//ConfigurationManager . RefreshSection ( "SearchPathStringFileName" );
 
-			// Get searchpaths files own path
-			string Str = ( string ) Properties . Settings . Default [ "SearchPathStringFileName" ];
-
-
-			//Read in our search strings list into string[]
-			string [ ] paths = File . ReadAllLines ( Str + @"\searchpaths.dat" );
-			//List<string> tmp = new List<string> ( );
-			//foreach ( var item in paths )
-			//{
-			//	if(item.Length > 4)
-			//	tmp . Add ( item );
-			//}
-
-			//Get this apps current directory
-			string fullPath = GetCurrentApplicationFullPath ( );
-			//Add current App Path to our list as well.  gotta increase the array by 1 element first !
-			Array . Resize ( ref paths, paths . Length + 1 );
-			paths [ paths . Length-1 ] = fullPath;
-			//tmp . Add ( fullPath );
-
-			//Finally, convert it back to an array so wecan access it ore easily.
-			//paths = tmp . ToArray ( );
-
-			var test = linetext;
-			//check for path backslashes. If none found, we use our path search
-			//function to try to identify the path automaticlly - Clever eh ?
-			if ( linetext . Contains ( "\\" ) == false )
+			string test = "";
+			if ( Flags . SingleSearchPath != "" )
 			{
-				// Add it to our search string collection
+				test = Flags . SingleSearchPath + linetext;
+			}
+			else
+			{
+				// Get searchpaths files own path
+				string Str = ( string ) Properties . Settings . Default [ "SearchPathFile" ];
+
+				//Read in our search strings list into string[]
+				string [ ] paths = File . ReadAllLines ( Str );
+
+				//Get this apps current directory
+				string fullPath = GetCurrentApplicationFullPath ( );
+				//Add current App Path to our list as well.  gotta increase the array by 1 element first !
+				Array . Resize ( ref paths, paths . Length + 1 );
+				paths [ paths . Length - 1 ] = fullPath;
+
+				test = linetext;
+				//check for path backslashes. If none found, we use our path search
+				//function to try to identify the path automaticlly - Clever eh ?
+				if ( linetext . Contains ( "\\" ) == false )
+				{
+					// Add it to our search string collection
+					try
+					{
+						//Setup our delegate
+						QualifyingFileLocations FindPathHandler = SupportMethods . qualifiers;
+						// pass the delegate method thru to our search for executable path method
+						// It contains all the specialist paths we want to have searched
+						// WORKS VERY WELL 15/6/21
+						test = FindExecutePath ( linetext, SupportMethods . qualifiers );
+					}
+					catch ( Exception ex )
+					{
+						Debug . WriteLine ( $"Failure in Utils.FindExecutePath()\n{ex . Message}, {ex . Data}" );
+						return false;
+					}
+				}
+				// if only original string is returned, we just execute that and hope....
+				// otherwise, we use the qualified path we have found for the user
+				if ( test == "" )
+					test = linetext;
+			}
+
+			// Finally, lets try to execute the command received
+			// Clever stuff here  :-
+			// See if any args have been passed, and split the off the command line
+			//and send them as Args
+			string  args = "";
+			string root = "";
+
+			root = test;
+
+			bool UseProcess = true;
+
+			if ( UseProcess )
+			{
+
+				Process ExternalProcess = new Process ( );
+				ExternalProcess . StartInfo . FileName = test . Trim ( );
+				ExternalProcess . StartInfo . Arguments = args . Trim ( );
 				try
 				{
-					//Setup our delegate
-					QualifyingFileLocations FindPathHandler = SupportMethods . qualifiers;
-					// pass the delegate method thru to our search for executable path method
-					// It contains all the specialist paths we want to have searched
-					// WORKS VERY WELL 15/6/21
-					test = FindExecutePath ( linetext, SupportMethods . qualifiers );
+					ExternalProcess . Start ( );
+//					ExternalProcess . WaitForExit ( );
 				}
 				catch ( Exception ex )
 				{
-					Debug . WriteLine ( $"Failure in Utils.FindExecutePath()\n{ex . Message}, {ex . Data}" );
-					return false;
+					Debug . WriteLine ( $"ExternalProcess error : {ex . Message}, {ex . Data}" );
+					if ( ex . Message . Contains ( "cannot find the file" ) )
+					{
+						if ( Flags . SingleSearchPath != "" )
+							MessageBox . Show ( $"Error executing the (Full specified command) \n \"{ test}\"\n\nThe System was unable to Execute this file.", "File Execution Error !" );
+						else
+							MessageBox . Show ( $"Error executing the (command) shown below\n \"{ linetext }\"\n\nThe System was unable to Execute this file.", "File Execution Error !" );
+					}
+					else
+						MessageBox . Show ( $"Error executing the (Command) shown below\n \"{ linetext }\"\n\nSee the Debug output for more information.", "File Execution Error !" );
+
+				}
+				finally
+				{
+					ExternalProcess . Close ( );
+					result = true;
 				}
 			}
-			// if only original string is returned, we just execute that and hope....
-			// otherwise, we use the qualified path we have found for the user
-			if ( test == "" )
-				test = linetext;
+			else
+			{
+				Process p = null;
+				try
+				{
+					if ( args . Trim ( ) . Length > 0 )
+					{
+						p = Process . Start ( root, args );
+					}
+					else
+					{
+						p = Process . Start ( root );
+					}
+				}
 
-			// Finally, lets try to execute the command received
-			Process ExternalProcess = new Process ( );
-			ExternalProcess . StartInfo . FileName = test . Trim ( );
-			ExternalProcess . StartInfo . WindowStyle = ProcessWindowStyle . Normal;
-			ExternalProcess . EnableRaisingEvents = false;
-			try
-			{
-				ExternalProcess . Start ( );
+				catch ( Exception ex )
+				{
+					string s = args . Length > 0 ? $"Args =  [{ args} ] failed..." : " failed...";
+					Debug . WriteLine ( $"Execute process of [{root}]{s}\nErro info is shown below :\n" );
+					Debug . WriteLine ( $"Process failed :- {ex . Message}, {ex . Data}" );
+				}
 			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"ExternalProcess error : {ex . Message}, {ex . Data}" );
-				if ( ex . Message . Contains ( "cannot find the file" ) )
-					MessageBox . Show ( $"Error executing the (command) shown below\n \"{ linetext }\"\n\nthe System was unable to Execute this file.", "File Execution Error !" );
-				else
-					MessageBox . Show ( $"Error executing the (Command) shown below\n \"{ linetext }\"\n\nSee the Debug output for more information.", "File Execution Error !" );
+			//if ( p == null )
+			//{
+			//	string s = args . Length > 0 ? $"Args =  [{ args} ]" : "";
+			//	MessageBox . Show ( $"Error encountered. Either the filenameis incorrect or the\nselected Path does not include it\n\nComand line received was \n[{root}] {s}" );
+			//}
+			//else
+			//{
+			//	string s = args . Length > 0 ? $"Args =  [{ args} ] succeeded..." : " succeeded...";
+			//	Debug . WriteLine ( $"Execute process of [{root}]{s}" );
+			//}
+			return result;
+			//else
+			//{
+			//				ExternalProcess . StartInfo . Arguments = "";
+			//				ExternalProcess . StartInfo . FileName = test . Trim ( );
+			//}
+			//			ExternalProcess . StartInfo . RedirectStandardInput = true;
 
-			}
-			finally
-			{
-				ExternalProcess . Close ( );
-				result = true;
-			}
+			//ExternalProcess . StartInfo . WindowStyle = ProcessWindowStyle . Normal;
+			//ExternalProcess . EnableRaisingEvents = false;
 			//e . Handled = true;
 			return result;
 		}
