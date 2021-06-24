@@ -5,6 +5,7 @@ using System . Diagnostics;
 using System . IO;
 using System . Linq;
 using System . Runtime . CompilerServices;
+using System . Runtime . InteropServices . ComTypes;
 using System . Runtime . Serialization;
 using System . Text;
 using System . Threading;
@@ -17,6 +18,8 @@ using System . Windows . Input;
 using System . Windows . Media;
 using System . Windows . Media . Imaging;
 using System . Windows . Shapes;
+using Newtonsoft . Json;
+using Newtonsoft . Json . Linq;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
@@ -37,8 +40,8 @@ namespace WPFPages . Views
 		public override string ToString ( )
 		{
 			//-WORKING WELL 13 / 6 / 21
-			return RecordType + ", " + CustNo + ", " + BankNo + ", " + AcType . ToString ( ) + ", " + IntRate . ToString ( ) + ", " + Balance . ToString ( ) + ", " + ODate . ToString ( ) + ", " + CDate . ToString ( );
-			//return base . ToString ( );
+			//return RecordType + ", " + CustNo + ", " + BankNo + ", " + AcType . ToString ( ) + ", " + IntRate . ToString ( ) + ", " + Balance . ToString ( ) + ", " + ODate . ToString ( ) + ", " + CDate . ToString ( );
+			return base . ToString ( );
 		}
 
 		public DragviewModel ( )
@@ -735,6 +738,87 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 			dataGrid . Visibility = Visibility . Visible;
 			textBox . Visibility = Visibility . Visible;
 			execName . Text = "";
+		}
+
+
+		private void DataGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
+			cm . PlacementTarget = menuhost1 as Grid;
+			cm . IsOpen = true;
+		}
+
+		private void EditJson_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextSave_Click ( object sender, RoutedEventArgs e )
+		{
+			//bvm is List<DragviewModel>
+			string path1 = @"C:\\Users\\Ianch\\Documents\\Dragdropbinarydata.json";
+			string path2 = @"C:\\Users\\Ianch\\Documents\\Dragdropstringdata.json";
+
+			// this is the best way to save persistent data in Json format
+			//Save data (DragviewModel[]) as binary to disk file
+			JsonSupport.JsonSerialize ( bvm, path1 );
+
+			//Save data (DragviewModel[]) as text string to disk file to see differences
+			string jsonresult = JsonConvert . SerializeObject ( bvm );
+			JsonSupport . JsonSerialize ( jsonresult, path2 );
+			bvm . Clear ( );
+			dataGrid . ItemsSource = null;
+			dataGrid . Items . Clear ( );
+			dataGrid . UpdateLayout ( );
+			dataGrid . Refresh ( );
+			Thread . Sleep ( 1000 );
+			//Read Json (binary) data from disk
+			using ( StreamReader reader = File . OpenText ( path1 ) )
+			{
+				JToken o = JToken . ReadFrom ( new JsonTextReader ( reader ) );
+				var array = o . ToObject<DragviewModel [ ]> ( );
+				foreach ( var item in array )
+				{
+					bv = item as DragviewModel;
+					bvm . Add ( bv );
+				}
+				dataGrid . ItemsSource = bvm;
+				dataGrid . UpdateLayout ( );
+				dataGrid . SelectedIndex = 0;
+				//				IList<string> data = o.Select( char =>)
+			};
+			// Read string data back
+			string data = JsonSupport . JsonDeserialize ( path2 ) . ToString ( );
+			Console . WriteLine ( $"JSON (string) data returned from disk file \n{data}" );
+		}
+
+		private void ContextClose_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
+		}
+
+		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextDisplayJsonData_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextSettings_Click ( object sender, RoutedEventArgs e )
+		{
+			Setup setup = new Setup ( );
+			setup . Show ( );
+			setup . BringIntoView ( );
+			setup . Topmost = true;
+			this . Focus ( );
 		}
 	}
 }

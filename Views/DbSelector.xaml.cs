@@ -712,7 +712,13 @@ namespace WPFPages . Views
 			}
 
 			// select the 1st entry in the lower (New Viewer) list
-			sqlSelector . SelectedIndex = 2;
+			string StartupWindow = ( string ) Properties . Settings . Default [ "StartupWindow" ];
+			if ( StartupWindow == "Bank Db Viewer" )
+				sqlSelector . SelectedIndex = 0;
+			else if ( StartupWindow == "Customer Db Viewer" )
+				sqlSelector . SelectedIndex = 1;
+			else if ( StartupWindow == "Details Db Viewer" )
+				sqlSelector . SelectedIndex = 2;
 			this . BringIntoView ( );
 			OntopChkbox . IsChecked = false;
 			this . Topmost = false;
@@ -1440,6 +1446,40 @@ namespace WPFPages . Views
 		{
 			ToggleEnable ( true);
 			ExecuteFile . Visibility = Visibility . Collapsed;
+		}
+
+		private void ContextClose_Click ( object sender, RoutedEventArgs e )
+		{
+			Close (  );
+		}
+
+		private void ContextSave_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextSettings_Click ( object sender, RoutedEventArgs e )
+		{
+			Setup setup = new Setup ( );
+			setup . Show ( );
+			setup . BringIntoView ( );
+			setup . Topmost = true;
+			this . Focus ( );
+		}
+
+		private void ContextDisplayJsonData_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
+		{
+
 		}
 	}
 }

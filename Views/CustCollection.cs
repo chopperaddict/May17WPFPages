@@ -52,7 +52,7 @@ namespace WPFPages . Views
 					lock ( lockobj )
 					{
 						Custinternalcollection = new CustCollection ( );
-						 Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
+						Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
 					}
 					return Custinternalcollection;
 				}
@@ -92,7 +92,7 @@ namespace WPFPages . Views
 			}
 		}
 
-		private static async Task <CustCollection> ProcessRequest ( int ViewerType )
+		private static async Task<CustCollection> ProcessRequest ( int ViewerType )
 		{
 			object lockobject = new object ( );
 
@@ -103,7 +103,7 @@ namespace WPFPages . Views
 					Custinternalcollection = null;
 					Custinternalcollection = new CustCollection ( );
 					CustCollection cc = new CustCollection ( );
-					cc.LoadCustomerTaskInSortOrderAsync ( );
+					cc . LoadCustomerTaskInSortOrderAsync ( );
 				}
 				return ( CustCollection ) null;
 			}
@@ -134,13 +134,13 @@ namespace WPFPages . Views
 		public async Task<CustCollection> LoadCustomerTaskInSortOrderAsync ( bool b = false, int row = 0, bool NotifyAll = false )
 		{
 
-			if ( dtCust. Rows . Count > 0 )
+			if ( dtCust . Rows . Count > 0 )
 				dtCust . Clear ( );
 
 			if ( Custinternalcollection . Items . Count > 0 )
 				Custinternalcollection . ClearItems ( );
 
-				#region process code to load data
+			#region process code to load data
 
 			Task t1 = Task . Run (
 					async ( ) =>
@@ -165,7 +165,7 @@ namespace WPFPages . Views
 			t1 . ContinueWith (
 				( Custinternalcollection ) =>
 				{
-//					Debug . WriteLine ( $"CUSTOMERS : Task.Run() Completed : Status was [ {Custinternalcollection . Status} ]." );
+					//					Debug . WriteLine ( $"CUSTOMERS : Task.Run() Completed : Status was [ {Custinternalcollection . Status} ]." );
 				}, CancellationToken . None, TaskContinuationOptions . OnlyOnRanToCompletion, TaskScheduler . FromCurrentSynchronizationContext ( )
 			);
 			//This will iterate through ALL of the Exceptions that may have occured in the previous Tasks
@@ -205,10 +205,11 @@ namespace WPFPages . Views
 		public async Task<bool> LoadCustDataSql ( DataTable dt = null, int mode = -1, bool isMultiMode = false )
 		//Load data from Sql Server
 		{
+			object bptr = new object ( );
 
 			SqlConnection con;
-				string ConString = "";
-				ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
+			string ConString = "";
+			ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 			Debug . WriteLine ( $"Making new SQL connection in CUSTCOLLECTION" );
 			con = new SqlConnection ( ConString );
 			//if ( con== null )
@@ -245,9 +246,11 @@ namespace WPFPages . Views
 					//CustCollection bptr = new CustCollection ( );
 					//					lock ( bptr . LockCustReadData )
 					//					{
-					sda . Fill ( dtCust );
-					//					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
-					//					}
+					lock ( bptr )
+					{
+						sda . Fill ( dtCust );
+					}                                       //					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
+										//					}
 				}
 			}
 			catch ( Exception ex )
@@ -265,61 +268,63 @@ namespace WPFPages . Views
 		}
 
 		//**************************************************************************************************************************************************************//
-		private static async Task<CustCollection> LoadCustomerCollection (  )
-
+		private static async Task<CustCollection> LoadCustomerCollection ( )
 		{
+			object bptr = new object ( );
 			int count = 0;
-//			CustCollection bptr = new CustCollection ( );
+			//			CustCollection bptr = new CustCollection ( );
 			//			lock ( bptr . LockCustLoadData )
 			//			{
-			try
+			lock ( bptr )
 			{
-				for ( int i = 0 ; i < dtCust . Rows . Count ; i++ )
+				try
 				{
-					Custinternalcollection . Add ( new CustomerViewModel
+					for ( int i = 0 ; i < dtCust . Rows . Count ; i++ )
 					{
-						Id = Convert . ToInt32 ( dtCust . Rows [ i ] [ 0 ] ),
-						CustNo = dtCust . Rows [ i ] [ 1 ] . ToString ( ),
-						BankNo = dtCust . Rows [ i ] [ 2 ] . ToString ( ),
-						AcType = Convert . ToInt32 ( dtCust . Rows [ i ] [ 3 ] ),
-						FName = dtCust . Rows [ i ] [ 4 ] . ToString ( ),
-						LName = dtCust . Rows [ i ] [ 5 ] . ToString ( ),
-						Addr1 = dtCust . Rows [ i ] [ 6 ] . ToString ( ),
-						Addr2 = dtCust . Rows [ i ] [ 7 ] . ToString ( ),
-						Town = dtCust . Rows [ i ] [ 8 ] . ToString ( ),
-						County = dtCust . Rows [ i ] [ 9 ] . ToString ( ),
-						PCode = dtCust . Rows [ i ] [ 10 ] . ToString ( ),
-						Phone = dtCust . Rows [ i ] [ 11 ] . ToString ( ),
-						Mobile = dtCust . Rows [ i ] [ 12 ] . ToString ( ),
-						Dob = Convert . ToDateTime ( dtCust . Rows [ i ] [ 13 ] ),
-						ODate = Convert . ToDateTime ( dtCust . Rows [ i ] [ 14 ] ),
-						CDate = Convert . ToDateTime ( dtCust . Rows [ i ] [ 15 ] )
-					} );
-					count = i;
-				}
-				//Debug . WriteLine ( $"CUSTOMER : Sql data loaded into Customer ObservableCollection \"Custinternalcollection\" [{count}] ...." );
-			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
-				Custinternalcollection = null;
-			}
-			finally
-			{
-				if ( Notify && count > 0 )
-				{
-					EventControl . TriggerCustDataLoaded ( null,
-						new LoadedEventArgs
+						Custinternalcollection . Add ( new CustomerViewModel
 						{
-							 CallerType = "SQLSERVER",
-							CallerDb = Caller,
-							DataSource = Custinternalcollection,
-							RowCount = Custinternalcollection . Count
+							Id = Convert . ToInt32 ( dtCust . Rows [ i ] [ 0 ] ),
+							CustNo = dtCust . Rows [ i ] [ 1 ] . ToString ( ),
+							BankNo = dtCust . Rows [ i ] [ 2 ] . ToString ( ),
+							AcType = Convert . ToInt32 ( dtCust . Rows [ i ] [ 3 ] ),
+							FName = dtCust . Rows [ i ] [ 4 ] . ToString ( ),
+							LName = dtCust . Rows [ i ] [ 5 ] . ToString ( ),
+							Addr1 = dtCust . Rows [ i ] [ 6 ] . ToString ( ),
+							Addr2 = dtCust . Rows [ i ] [ 7 ] . ToString ( ),
+							Town = dtCust . Rows [ i ] [ 8 ] . ToString ( ),
+							County = dtCust . Rows [ i ] [ 9 ] . ToString ( ),
+							PCode = dtCust . Rows [ i ] [ 10 ] . ToString ( ),
+							Phone = dtCust . Rows [ i ] [ 11 ] . ToString ( ),
+							Mobile = dtCust . Rows [ i ] [ 12 ] . ToString ( ),
+							Dob = Convert . ToDateTime ( dtCust . Rows [ i ] [ 13 ] ),
+							ODate = Convert . ToDateTime ( dtCust . Rows [ i ] [ 14 ] ),
+							CDate = Convert . ToDateTime ( dtCust . Rows [ i ] [ 15 ] )
 						} );
+						count = i;
+					}
+					//Debug . WriteLine ( $"CUSTOMER : Sql data loaded into Customer ObservableCollection \"Custinternalcollection\" [{count}] ...." );
 				}
-			}
-			//			} // End Lock
-//			Custinternalcollection = null;
+				catch ( Exception ex )
+				{
+					Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
+					Custinternalcollection = null;
+				}
+				finally
+				{
+					if ( Notify && count > 0 )
+					{
+						EventControl . TriggerCustDataLoaded ( null,
+							new LoadedEventArgs
+							{
+								CallerType = "SQLSERVER",
+								CallerDb = Caller,
+								DataSource = Custinternalcollection,
+								RowCount = Custinternalcollection . Count
+							} );
+					}
+				}
+			} // End Lock
+			  //			Custinternalcollection = null;
 			return Custinternalcollection;
 		}
 		public async static Task<CustCollection> LoadCustomerTest ( bool Notify = true )
@@ -441,7 +446,7 @@ namespace WPFPages . Views
 			return true;
 		}
 
-	#region EXPORT FUNCTIONS TO READ/WRITE CSV files
+		#region EXPORT FUNCTIONS TO READ/WRITE CSV files
 		public static DataTable LoadCustExportData ( )
 		{
 			DataTable dt = new DataTable ( );
@@ -458,16 +463,16 @@ namespace WPFPages . Views
 				{
 					if ( Flags . IsMultiMode )
 					{
-					//	// Create a valid Query Command string including any active sort ordering
-					//	commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
-					//		+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
-					//		+ $" GROUP BY CUSTNO"
-					//		+ $" HAVING COUNT(*) > 1) ORDER BY ";
-					//	commandline = Utils . GetDataSortOrder ( commandline );
-					//}
-					//else if ( Flags . FilterCommand != "" )
-					//{
-					//	commandline = Flags . FilterCommand;
+						//	// Create a valid Query Command string including any active sort ordering
+						//	commandline = $"SELECT * FROM SECACCOUNTS WHERE CUSTNO IN "
+						//		+ $"(SELECT CUSTNO FROM SECACCOUNTS  "
+						//		+ $" GROUP BY CUSTNO"
+						//		+ $" HAVING COUNT(*) > 1) ORDER BY ";
+						//	commandline = Utils . GetDataSortOrder ( commandline );
+						//}
+						//else if ( Flags . FilterCommand != "" )
+						//{
+						//	commandline = Flags . FilterCommand;
 					}
 					else
 					{
@@ -486,11 +491,11 @@ namespace WPFPages . Views
 				MessageBox . Show ( $"DETAILS : ERROR in LoadCustDataSql(): Failed to load Customer Details - {ex . Message}, {ex . Data}" );
 			}
 			finally
-			{con . Close ( );}
+			{ con . Close ( ); }
 			return dt;
 		}
 
-		public static int  ExportCustData ( string path, string dbType )
+		public static int ExportCustData ( string path, string dbType )
 		{
 			int count = 0;
 			string output = "";
@@ -524,7 +529,7 @@ namespace WPFPages . Views
 		{
 			string tmp = "", s = "";
 			string [ ] dob, odat, cdat, revstr;
-			if( dbType == "CUSTOMER" )
+			if ( dbType == "CUSTOMER" )
 			{
 				char [ ] ch = { ' ' };
 				char [ ] ch2 = { '/' };
@@ -535,7 +540,7 @@ namespace WPFPages . Views
 				string doB = dob [ 0 ];
 				// now reverse it  to YYYY/MM/DD format as this is what SQL understands
 				revstr = doB . Split ( ch2 );
-				doB= revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
+				doB = revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
 
 				s = $"{objRow [ "Odate" ] . ToString ( )}', '";
 				odat = s . Split ( ch );
@@ -553,28 +558,28 @@ namespace WPFPages . Views
 				cdate = revstr [ 2 ] + "/" + revstr [ 1 ] + "/" + revstr [ 0 ];
 				string acTypestr = objRow [ "AcType" ] . ToString ( ) . Trim ( );
 
-				tmp = $"{objRow [ "Id" ] . ToString ( )}, " 
-					+ $"{objRow [ "BankNo" ] . ToString ( )}, " 
+				tmp = $"{objRow [ "Id" ] . ToString ( )}, "
+					+ $"{objRow [ "BankNo" ] . ToString ( )}, "
 					+ $"{objRow [ "CustNo" ] . ToString ( )}, "
-					+ $"{acTypestr}, " 
+					+ $"{acTypestr}, "
 					+ $"'{objRow [ "Fname" ] . ToString ( )}', "
-					+ $"'{objRow [ "Lname" ] . ToString ( )}', " 
-					
-					+ $"'{objRow [ "Addr1" ] . ToString ( )}', " 
+					+ $"'{objRow [ "Lname" ] . ToString ( )}', "
+
+					+ $"'{objRow [ "Addr1" ] . ToString ( )}', "
 					+ $"'{objRow [ "Addr2" ] . ToString ( )}', "
-					+ $"'{objRow [ "Town" ] . ToString ( )}', " 
-					+ $"'{objRow [ "County" ] . ToString ( )}', " 
+					+ $"'{objRow [ "Town" ] . ToString ( )}', "
+					+ $"'{objRow [ "County" ] . ToString ( )}', "
 					+ $"'{objRow [ "Pcode" ] . ToString ( )}', "
-					+ $"'{objRow [ "Phone" ] . ToString ( )}', " 
-					+ $"'{objRow [ "Mobile" ] . ToString ( )}', " 
+					+ $"'{objRow [ "Phone" ] . ToString ( )}', "
+					+ $"'{objRow [ "Mobile" ] . ToString ( )}', "
 					+ $"'{doB}', "
-					+ $"'{odate}', " 
+					+ $"'{odate}', "
 					+ $"'{cdate}'\r\n";
 			}
 			return tmp;
 		}
 		#endregion EXPORT FUNCTIONS TO READ/WRITE CSV files
 
-		}
+	}
 }
 

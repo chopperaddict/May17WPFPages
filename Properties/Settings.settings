@@ -63,5 +63,11 @@
     <Setting Name="DocumentsPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="DefaultTextviewer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Notepad++.exe</Value>
+    </Setting>
+    <Setting Name="StartupWindow" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Bank Db Viewer</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

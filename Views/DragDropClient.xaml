@@ -29,9 +29,53 @@
 					<x:Type TypeName="DragDropEffects" />
 				</ObjectDataProvider.MethodParameters>
 		</ObjectDataProvider>-->
+
+		<ContextMenu x:Key="ContextMenu1">
+			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/text-message.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<!--<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>-->
+			<Separator Style="{StaticResource Menu_Separator}"/>
+			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/symlink_directory_30px.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<!--<MenuItem Header="Create JSON output file from this Db Grid"  Click="ContextCreateJsonOutput_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox.png"  />
+				</MenuItem.Icon>
+			</MenuItem>-->
+
+			<Separator Style="{StaticResource Menu_Separator}"/>
+
+			<MenuItem Header="                                 Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/phone-lock.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
+
+
 	</Window.Resources>
 
-	<Grid	>
+	<Grid x:Name="menuhost1"	>
 
 		<!--#region Grid setup-->
 		<Grid.RowDefinitions>
@@ -52,9 +96,6 @@
 
 		<!--#endregion Grid setup-->
 
-		<!--#region Main DataGrid-->
-
-		<!--#endregion Main DataGrid-->
 
 		<!--#region  SaveData Panel-->
 
@@ -283,23 +324,23 @@
 				AcceptsReturn="True" 
 				AcceptsTab="True" 
 				AutoWordSelection="True"
+				DragEnter="TextBox_DragEnter"
 				GiveFeedback="textBox_GiveFeedback"
 				Grid.Row="3"
 				Grid.RowSpan="1"
 				Grid.Column="1"
 				Grid.ColumnSpan="3"
 				HorizontalContentAlignment="Stretch" 
-				IsMouseCaptureWithinChanged="TextBox_IsMouseCaptureWithinChanged"
-				MouseDoubleClick="TextBox_MouseDoubleClick"
-				IsTabStop="False" 
 				HorizontalScrollBarVisibility="Auto" 			
+				IsMouseCaptureWithinChanged="TextBox_IsMouseCaptureWithinChanged"
+				IsTabStop="False" 
 				Margin="0,10,0,0"
-				VerticalScrollBarVisibility="Auto" 
-				Visibility="Visible"
-				DragEnter="TextBox_DragEnter"
+				MouseDoubleClick="TextBox_MouseDoubleClick"
 				PreviewDrop="Textbox_PreviewDrop"
 				PreviewDragOver="TextBox_PreviewDragOver" 
-			   TextChanged="textBox_TextChanged"
+				TextChanged="textBox_TextChanged"
+				VerticalScrollBarVisibility="Auto" 
+				Visibility="Visible"
 			     >
 
 			<TextBox.Resources>
@@ -397,6 +438,7 @@
 			    HorizontalAlignment="Left" 
 			    IsChecked="True"
 			    Margin="122,39,0,6"/>
+		
 		<DataGrid x:Name="dataGrid" 
 			    AlternatingRowBackground="#44ff00" 			    
 			    Background="#FFADD4B2" 
@@ -414,6 +456,7 @@
 			    Margin="0,0,0,0"
 				AllowDrop="True"
 			    PreviewDrop="DataGrid_PreviewDrop"
+			    PreviewMouseRightButtonDown="DataGrid_PreviewMouseRightButtonDown"
 			    SelectionChanged="DataGrid_SelectionChanged"
 			    ScrollViewer.CanContentScroll="True" 
 			    CanUserSortColumns="True"
@@ -423,9 +466,63 @@
 			   VerticalAlignment="Stretch" 
 			    Visibility="Visible"
 			    >
-
 			<!--This handles the currently Selected Row's color scheme -->
 			<DataGrid.Resources>
+
+				<ContextMenu x:Key="ContextMenu1">
+					<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
+						<MenuItem.Icon>
+							<Image Source="/Icons/text-message.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
+						<MenuItem.Icon>
+							<Image Source="/Icons/mailbox-receive-message.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator Style="{StaticResource Menu_Separator}"/>
+					<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
+						<MenuItem.Icon>
+							<Image Source="/Icons/symlink_directory_30px.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+						<MenuItem.Icon>
+							<Image Source="/Icons/wifi.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator Style="{StaticResource Menu_Separator}"/>
+
+					<MenuItem Header="Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
+						<MenuItem.Icon>
+							<Image Source="/Icons/phone-lock.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+						<MenuItem.Icon>
+							<Image Source="/Icons/document-delete_48x48.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+
+				<ContextMenu x:Key="CMenu1">
+					<MenuItem Header="Edit" Click="ContextEdit_Click">
+						<MenuItem.Icon>
+							<Image Source="/Icons/mailbox-receive-message.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Save as JSON File"  Click="ContextSave_Click" >
+						<MenuItem.Icon>
+							<Image Source="/Icons/wifi.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Exit" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+						<MenuItem.Icon>
+							<Image Source="/Icons/document-delete_48x48.png"  />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#00ff00" />
 				<Style TargetType="{x:Type DataGridCell}">
 					<Style.Triggers>

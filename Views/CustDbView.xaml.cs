@@ -34,6 +34,7 @@ namespace WPFPages . Views
 		private bool LoadingDbData = false;
 		private bool IsEditing { get; set; }
 		private bool keyshifted { get; set; }
+		private static Point _startPoint { get; set; }
 		public static int cindex { get; set; }
 		private bool  IsLeftButtonDown { get; set; }
 		private string _bankno = "";
@@ -769,6 +770,10 @@ namespace WPFPages . Views
 		}
 		private void CustGrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			if ( Utils . HitTestHeaderBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
 			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
@@ -921,6 +926,89 @@ namespace WPFPages . Views
 
 
 		#endregion HANDLERS for linkage checkboxes, inluding Thread montior
+		private async void CustGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
+			cm . PlacementTarget = this . CustGrid as DataGrid;
+			cm . IsOpen = true;
+		}
+
+		private void CustGrid_DragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+		}
+
+		private void ContextClose_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
+		}
+
+		private void ContextSave_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private async void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		{
+			CustomerViewModel cvm = new CustomerViewModel ( );
+			int currsel = 0;
+			DataGridRow RowData = new DataGridRow ( );
+			cvm = this . CustGrid . SelectedItem as CustomerViewModel;
+			currsel = this . CustGrid . SelectedIndex;
+			RowInfoPopup rip = new RowInfoPopup ( "CUSTOMER", CustGrid );
+			rip . Topmost = true;
+			rip . DataContext = RowData;
+			rip . BringIntoView ( );
+			rip . Focus ( );
+			rip . ShowDialog ( );
+
+			//If data has been changed, update everywhere
+			// Update the row on return in case it has been changed
+			if ( rip . IsDirty )
+			{
+				this . CustGrid . ItemsSource = null;
+				this . CustGrid . Items . Clear ( );
+				await CustCollection . LoadCust( CustDbViewcollection, "CUSTDBVIEW", 1, true );
+				this . CustGrid . ItemsSource = CustviewerView;
+				// Notify everyone else of the data change
+				EventControl . TriggerViewerDataUpdated ( CustviewerView,
+					new LoadedEventArgs
+					{
+						CallerType = "CUSTBVIEW",
+						CallerDb = "CUSTOMER",
+						DataSource = CustviewerView,
+						RowCount = this . CustGrid . SelectedIndex
+					} );
+			}
+			else
+				this . CustGrid . SelectedItem = RowData . Item;
+
+			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+			this . CustGrid . SelectedIndex = currsel;
+			Count . Text = $"{this . CustGrid . SelectedIndex} / { this . CustGrid . Items . Count . ToString ( )}";
+			// This is essential to get selection activated again
+			this . CustGrid . Focus ( );
+
+		}
+
+		private void ContextSettings_Click ( object sender, RoutedEventArgs e )
+		{
+			Setup setup = new Setup ( );
+			setup . Show ( );
+			setup . BringIntoView ( );
+			setup . Topmost = true;
+			this . Focus ( );
+		}
+
+		private void ContextDisplayJsonData_Click ( object sender, RoutedEventArgs e )
+		{
+			JsonSupport . CreateShowJsonText ( "CUSTOMER", CustDbViewcollection);
+		}
+
+		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
 
 	}
 }

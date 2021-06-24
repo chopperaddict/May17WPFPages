@@ -11,6 +11,7 @@ using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
+using Newtonsoft . Json;
 using WPFPages . ViewModels;
 
 namespace WPFPages . Views
@@ -28,16 +29,18 @@ namespace WPFPages . Views
 
 		private bool IsDirty = false;
 		static bool Startup = true;
-		private static bool LinktoParent = false;
-		private static bool LinktoMultiParent = false;
+		private bool LinktoParent = false;
+		private bool LinkToAllRecords = false;
+		private bool LinktoMultiParent = false;
 		private bool Triggered = false;
 		private bool LoadingDbData = false;
 		private bool RowHasBeenEdited { get; set; }
 		private bool keyshifted { get; set; }
 		private bool IsEditing { get; set; }
-		public static int bindex { get; set; }
+		public int bindex { get; set; }
 		public bool IsLeftButtonDown { get; set; }
 
+		private Point _startPoint { get; set; }
 		private string _bankno = "";
 		private string _custno = "";
 		private string _actype = "";
@@ -49,7 +52,7 @@ namespace WPFPages . Views
 		private Thread t1;
 
 		// Crucial structure for use when a Grid row is being edited
-		private static RowData bvmCurrent = null;
+		private RowData bvmCurrent = null;
 		public BankDbView ( )
 		{
 			Startup = true;
@@ -102,15 +105,16 @@ namespace WPFPages . Views
 			this . Focus ( );
 			// Reset linkage setting
 			Flags . LinkviewerRecords = tmp;
-			Flags . LinkviewerRecords = tmp;
 			if ( Flags . LinkviewerRecords )
 			{
 				LinkRecords . IsChecked = true;
-				LinktoParent = false;
+				LinkToAllRecords = true;
+				LinktoParent = true;
 			}
 			else
 			{
 				LinkRecords . IsChecked = false;
+				LinkToAllRecords = false;
 				LinktoParent = false;
 			}
 			LinktoMultiParent = false;
@@ -126,7 +130,7 @@ namespace WPFPages . Views
 		{
 			Triggered = true;
 			// Handle Selection change in another windowif linkage is ON
-			if ( IsEditing )
+			if ( IsEditing || LinkRecords . IsChecked == false )
 			{
 				//IsEditing = false;
 				return;
@@ -365,7 +369,9 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 			Startup = true;
 			DataFields . DataContext = this . BankGrid . SelectedItem;
-			if ( Flags . LinkviewerRecords && Triggered == false )
+
+			if ( LinkToAllRecords )// && Triggered == false )
+					       //if ( Flags . LinkviewerRecords && Triggered == false )
 			{
 				//				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
 				TriggerViewerIndexChanged ( this . BankGrid );
@@ -451,11 +457,9 @@ namespace WPFPages . Views
 			SQLHandlers sqlh = new SQLHandlers ( );
 			await sqlh . UpdateDbRow ( "BANKACCOUNT", bvm );
 
+			BankViewcollection = null;
 			BankCollection bank = new BankCollection ( );
 			BankViewcollection = await bank . ReLoadBankData ( );
-			this . BankGrid . ItemsSource = null;
-			this . BankGrid . ItemsSource = BankViewcollection;
-			this . BankGrid . Refresh ( );
 
 			//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
 			//			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
@@ -470,9 +474,13 @@ namespace WPFPages . Views
 				} );
 
 			//Gotta reload our data because the update clears it down totally to null
-			this . BankGrid . SelectedIndex = CurrentSelection;
-			this . BankGrid . SelectedItem = CurrentSelection;
-			this . BankGrid . Refresh ( );
+			//this . BankGrid . SelectedIndex = CurrentSelection;
+			//this . BankGrid . SelectedItem = CurrentSelection;
+			//this . BankGrid . Refresh ( );
+
+			//this . BankGrid . ItemsSource = null;
+			//this . BankGrid . ItemsSource = BankViewcollection;
+			//this . BankGrid . Refresh ( );
 
 			SaveBttn . IsEnabled = false;
 			IsDirty = false;
@@ -548,21 +556,28 @@ namespace WPFPages . Views
 		private void LinkRecords_Click ( object sender, RoutedEventArgs e )
 		{
 			bool reslt = false;
-			if ( IsLinkActive ( reslt ) == false )
-			{
-				LinkToParent . IsEnabled = false;
-				LinkToParent . IsChecked = false;
-				SqlParentViewer = null;
-				LinkRecords . IsChecked = false;
-			}
-			else
-				LinktoParent = !LinktoParent;
-
+			//if ( IsLinkActive ( reslt ) == false )
+			//{
+			//	LinkToParent . IsEnabled = false;
+			//	LinkToParent . IsChecked = false;
+			//	SqlParentViewer = null;
+			//	LinkRecords . IsChecked = false;
+			//}
+			//else
+			//{
+			//	LinktoParent = !LinktoParent;
+			//}
 			// force viewers to change records in line with each other
 			if ( LinkRecords . IsChecked == true )
+			{
 				Flags . LinkviewerRecords = true;
+				LinkToAllRecords = true;
+			}
 			else
-				Flags . LinkviewerRecords = false;
+			{
+				//				Flags . LinkviewerRecords = false;
+				LinkToAllRecords = false;
+			}
 			if ( Flags . SqlBankViewer != null )
 				Flags . SqlBankViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			if ( Flags . SqlCustViewer != null )
@@ -576,7 +591,7 @@ namespace WPFPages . Views
 			if ( Flags . DetDbEditor != null )
 				Flags . DetDbEditor . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			LinkRecords . Refresh ( );
-			if ( Flags . LinkviewerRecords == true )
+			if ( LinkToAllRecords == true )
 			{
 				LinktoParent = false;
 				LinkToParent . IsEnabled = false;
@@ -619,6 +634,10 @@ namespace WPFPages . Views
 
 		private void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
 		{
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			if ( Utils . HitTestHeaderBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
 			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
@@ -747,61 +766,36 @@ namespace WPFPages . Views
 		private void LinkToParent_Click ( object sender, RoutedEventArgs e )
 		{
 			bool reslt = false;
-			if ( IsLinkActive ( reslt ) == false )
+			if ( LinkToParent . IsEnabled == false ) return;
+
+			if ( LinkToAllRecords == true )
 			{
 				LinkToParent . IsEnabled = false;
 				LinkToParent . IsChecked = false;
-				SqlParentViewer = null;
-				LinkRecords . IsChecked = false;
+				LinktoParent = false;
+				return;
 			}
 			else
-				LinktoParent = !LinktoParent;
+			{
+				// NOT  linked to All Viewers
+				if ( LinkToParent . IsChecked == true )
+				{
+					LinkRecords . IsEnabled = false;
+					LinktoParent = true;
+				}
+				else
+				{
+					LinkRecords . IsEnabled = true;
+					LinktoParent = false;
+				}
+			}
 		}
 
 		private async void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			// handle flags to let us know WE have triggered the selectedIndex change
-			MainWindow . DgControl . SelectionChangeInitiator = 2; // tells us it is a EditDb initiated the record change
-			if ( e . ChangedButton == MouseButton . Right )
-			{
-				DataGridRow RowData = new DataGridRow ( );
-				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
-				if ( row == -1 ) row = 0;
-				RowInfoPopup rip = new RowInfoPopup ( "BANKACCOUNT", BankGrid, RowData );
-				rip . Topmost = true;
-				rip . DataContext = RowData;
-				rip . BringIntoView ( );
-				rip . Focus ( );
-				rip . ShowDialog ( );
-
-				//If data has been changed, update everywhere
-				// Update the row on return in case it has been changed
-				if ( rip . IsDirty )
-				{
-					this . BankGrid . ItemsSource = null;
-					this . BankGrid . Items . Clear ( );
-					await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
-					this . BankGrid . ItemsSource = BankviewerView;
-					// Notify everyone else of the data change
-					EventControl . TriggerViewerDataUpdated ( BankviewerView,
-						new LoadedEventArgs
-						{
-							CallerType = "BANKBVIEW",
-							CallerDb = "BANKACCOUNT",
-							DataSource = BankviewerView,
-							RowCount = this . BankGrid . SelectedIndex
-						} );
-				}
-				else
-					this . BankGrid . SelectedItem = RowData . Item;
-
-				// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
-				Utils . SetUpGridSelection ( this . BankGrid, row );
-				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
-				// This is essential to get selection activated again
-				this . BankGrid . Focus ( );
-			}
-
+			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
+			cm . PlacementTarget = this . BankGrid as DataGrid;
+			cm . IsOpen = true;
 		}
 
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
@@ -927,25 +921,38 @@ namespace WPFPages . Views
 			while ( true )
 			{
 				int AllLinks = 0;
-				Thread . Sleep ( 2000 );
+				Thread . Sleep ( 5000 );
 
-				bool reslt = false;
-				if ( IsLinkActive ( reslt ) )
+				//				if( LinkToParent )
+				bool reslt = LinktoParent;
+				if ( LinkToAllRecords == false && LinkToAllRecords == false )
 				{
-					AllLinks++;
+					// Link to  ALL is UNCHECKED, so make sure Parent link is ENABLED
+					//if( LinktoParent )
+					//{
+					//AllLinks++;
 					Application . Current . Dispatcher . Invoke ( ( ) =>
 					{
 						ResetLinkages ( "LINKTOPARENT", true );
 					} );
+					//}
+					//else
+					//{
+					//	Application . Current . Dispatcher . Invoke ( ( ) =>
+					//	{
+					//		ResetLinkages ( "LINKTOPARENT", false );
+					//	} );
+					//}
 				}
 				else
 				{
+					// Link to  ALL is CHECKED, so make sure Parent link is DISABLED and Unchecked
 					Application . Current . Dispatcher . Invoke ( ( ) =>
 					{
 						ResetLinkages ( "LINKTOPARENT", false );
 					} );
-				}
 
+				}
 				if ( IsMultiLinkActive ( reslt ) == false )
 				{
 					Application . Current . Dispatcher . Invoke ( ( ) =>
@@ -984,7 +991,8 @@ namespace WPFPages . Views
 				else
 				{
 					LinktoParent = false;
-					SqlParentViewer = null;
+					LinkToParent . IsEnabled = false;
+					//SqlParentViewer = null;
 				}
 			}
 			if ( linktype == "MULTILINKTOPARENT" )
@@ -1003,9 +1011,12 @@ namespace WPFPages . Views
 				}
 			}
 			if ( linktype == "ALLLINKS" && value )
-				LinkRecords . IsEnabled = true;
-			else
-				LinkRecords . IsEnabled = false;
+			{
+				if ( LinkToAllRecords == true )
+					LinkRecords . IsEnabled = true;
+			}//
+			 //else
+			 //	LinkRecords . IsEnabled = false;
 			#endregion HANDLERS for linkage checkboxes, inluding Thread montior
 
 		}
@@ -1017,6 +1028,105 @@ namespace WPFPages . Views
 		private void Minimize_click ( object sender, RoutedEventArgs e )
 		{
 			this . WindowState = WindowState . Normal;
+		}
+
+		private void BankGrid_DragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+		}
+
+		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private async void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		{
+			// handle flags to let us know WE have triggered the selectedIndex change
+			//MainWindow . DgControl . SelectionChangeInitiator = 2; // tells us it is a EditDb initiated the record change
+			BankAccountViewModel bvm = new BankAccountViewModel ( );
+			int currsel = 0;
+			DataGridRow RowData = new DataGridRow ( );
+			bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+			currsel = this . BankGrid . SelectedIndex;
+			//int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
+			//if ( row == -1 ) row = 0;
+			RowInfoPopup rip = new RowInfoPopup ( "BANKACCOUNT", BankGrid );
+			rip . Topmost = true;
+			rip . DataContext = RowData;
+			rip . BringIntoView ( );
+			rip . Focus ( );
+			rip . ShowDialog ( );
+
+			//If data has been changed, update everywhere
+			// Update the row on return in case it has been changed
+			if ( rip . IsDirty )
+			{
+				this . BankGrid . ItemsSource = null;
+				this . BankGrid . Items . Clear ( );
+				await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
+				this . BankGrid . ItemsSource = BankviewerView;
+				// Notify everyone else of the data change
+				EventControl . TriggerViewerDataUpdated ( BankviewerView,
+					new LoadedEventArgs
+					{
+						CallerType = "BANKBVIEW",
+						CallerDb = "BANKACCOUNT",
+						DataSource = BankviewerView,
+						RowCount = this . BankGrid . SelectedIndex
+					} );
+			}
+			else
+				this . BankGrid . SelectedItem = RowData . Item;
+
+			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+			this . BankGrid . SelectedIndex = currsel;
+			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+			// This is essential to get selection activated again
+			this . BankGrid . Focus ( );
+		}
+
+		private async  void ContextSave_Click ( object sender, RoutedEventArgs e )
+		{
+			//============================================//
+			//MENU ITEM 'Save current Grid Db data as JSON File'
+			//============================================//
+			object DbData = new object ( );
+			string resultString = "", path = "";
+			string jsonresult = "";
+			// Get default text files viewer application from App resources
+			string program = ( string ) Properties . Settings . Default [ "DefaultTextviewer" ];
+
+			//HOW to save current Collectionview as a Json (binary) data from disk
+			// this is the best way to save persistent data in Json format
+			//Save data (XXXXViewModel[]) as binary to disk file
+			path = @"C:\\Users\\Ianch\\Documents\\BankCollectiondata.json";
+			jsonresult = JsonConvert . SerializeObject ( BankViewcollection );
+			JsonSupport . JsonSerialize ( jsonresult, path );
+			MessageBox . Show ( $"The data from this Database has been saved\nfor you in 'Json' format successfully ...\n\nFile is : {path}", "Data Persistence System" );
+		}
+
+		private void ContextDisplayJsonData_Click ( object sender, RoutedEventArgs e )
+		{
+			//============================================//
+			//MENU ITEM 'Read and display JSON File'
+			//============================================//
+			JsonSupport . CreateShowJsonText ( "BANKACCOUNT", BankViewcollection );
+
+		}
+
+		private void ContextSettings_Click ( object sender, RoutedEventArgs e )
+		{
+			Setup setup = new Setup ( );
+			setup . Show ( );
+			setup . BringIntoView ( );
+			setup . Topmost = true;
+			this . Focus (  );
+		}
+
+		private void ContextClose_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
 		}
 
 		//			BankAccountViewModel bank = new BankAccountViewModel();

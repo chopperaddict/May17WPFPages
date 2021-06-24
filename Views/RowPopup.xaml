@@ -10,6 +10,8 @@
         MinHeight="370"
         MinWidth="362" 
 	  KeyDown="Window_KeyDown"
+	  WindowStartupLocation="CenterScreen"
+	  WindowStyle="ToolWindow"
         >
 
 	<Grid  x:Name="MainGrid">
@@ -398,7 +400,7 @@
 						    Width ="180">
 
 					<TextBlock
-						    Text="{Binding Path=  Item.Id}"
+						    Text="{Binding Path=  Id}"
 						    Height="20"
 						    Width="100"
 						    FontSize="14"
@@ -408,7 +410,7 @@
 						    Margin="5,5,5,5"
 					    />
 					<TextBox x:Name="bankno1"
-							    Text="{Binding Path=Item.BankNo, UpdateSourceTrigger=LostFocus }"
+							    Text="{Binding Path=BankNo, UpdateSourceTrigger=LostFocus }"
 							    Height="20"
 							    Width="100"
 							    FontSize="14"
@@ -420,7 +422,7 @@
 							    Margin="5,5,5,5"
 						    />
 					<TextBlock x:Name="custno1"
-							    Text="{Binding Path=Item.CustNo }"
+							    Text="{Binding Path=CustNo }"
 							    Height="20"
 							    Width="100"
 							    FontSize="14"
@@ -431,7 +433,7 @@
 						    />
 					<TextBox
 						x:Name="actype1"
-							    Text="{Binding Path= Item.AcType }"
+							    Text="{Binding Path= AcType }"
 							    Height="20"
 							    Width="20"
 							    FontSize="14"
@@ -445,7 +447,7 @@
 						    />
 					<TextBox
 						x:Name="balance1"
-							    Text="{Binding Path=  Item.Balance, UpdateSourceTrigger=LostFocus}"
+							    Text="{Binding Path=  Balance, UpdateSourceTrigger=LostFocus}"
 							    Height="20"
 							    Width="100"
 							    FontSize="14"
@@ -460,7 +462,7 @@
 						    />
 					<TextBox
 						x:Name="intrate1"
-						    Text="{Binding Path=  Item.IntRate, UpdateSourceTrigger=LostFocus }"
+						    Text="{Binding Path=  IntRate, UpdateSourceTrigger=LostFocus }"
 						    Height="20"
 						    Width="40"
 						    FontSize="14"
@@ -473,7 +475,7 @@
 						    Padding="5,0,5,0"
 					    />
 					<TextBox x:Name="odate1"
-						Text="{Binding Path=  Item.ODate, StringFormat='dd/MM/yyyy'}"
+						Text="{Binding Path=  ODate, StringFormat='dd/MM/yyyy'}"
 						Height="20"
 						Width="90"
 						FontSize="14"
@@ -487,7 +489,7 @@
 					/>
 					<TextBox
 						x:Name="cdate1"
-						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
+						    Text="{Binding Path=  CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
 						    Height="20"
 						    Width="90"
 						    FontSize="14"
@@ -530,7 +532,7 @@
 
 					<!--#region Customer Data Fields (CustData)-->
 					<TextBlock
-						    Text="{Binding Path=  Item.Id}"
+						    Text="{Binding Path=  Id}"
 						    Height="20"
 						    Width="100"
 						    FontSize="14"
@@ -540,7 +542,7 @@
 						    Margin="5,5,5,5"
 					    />
 					<TextBox x:Name="bankno"
-							    Text="{Binding Path=Item.BankNo, UpdateSourceTrigger=LostFocus }"
+							    Text="{Binding Path=BankNo, UpdateSourceTrigger=LostFocus }"
 							    Height="20"
 							    Width="100"
 							    FontSize="14"
@@ -552,7 +554,7 @@
 							    Margin="5,5,5,5"
 						    />
 					<TextBlock	x:Name="custno"
-							    Text="{Binding Path=Item.CustNo }"
+							    Text="{Binding Path=CustNo }"
 							    Height="20"
 							    Width="150"
 							    FontSize="14"
@@ -563,7 +565,7 @@
 						    />
 					<TextBox
 						x:Name="actype"
-						Text="{Binding Path= Item.AcType, UpdateSourceTrigger=LostFocus }"
+						Text="{Binding Path= AcType, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="20"
 						FontSize="14"
@@ -577,7 +579,7 @@
 					/>
 					<TextBox
 						x:Name="fname"
-						Text="{Binding Path= Item.FName , UpdateSourceTrigger=LostFocus}"
+						Text="{Binding Path= FName , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="150"
 						FontSize="14"
@@ -591,7 +593,7 @@
 					/>
 					<TextBox
 						x:Name="lname"
-						Text="{Binding Path= Item.LName , UpdateSourceTrigger=LostFocus}"
+						Text="{Binding Path= LName , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="150"
 						FontSize="14"
@@ -605,7 +607,7 @@
 					/>
 					<TextBox
 						x:Name="addr1"
-						Text="{Binding Path= Item.Addr1, UpdateSourceTrigger=LostFocus }"
+						Text="{Binding Path= Addr1, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="180"
 						FontSize="14"
@@ -619,7 +621,7 @@
 					/>
 					<TextBox
 						x:Name="addr2"
-						Text="{Binding Path= Item.Addr2, UpdateSourceTrigger=LostFocus }"
+						Text="{Binding Path= Addr2, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="180"
 						FontSize="14"
@@ -633,7 +635,7 @@
 					/>
 					<TextBox
 						x:Name="town"
-						Text="{Binding Path= Item.Town , UpdateSourceTrigger=LostFocus}"
+						Text="{Binding Path= Town , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="180"
 						FontSize="14"
@@ -647,7 +649,7 @@
 					/>
 					<TextBox
 						x:Name="county"
-						Text="{Binding Path= Item.County , UpdateSourceTrigger=LostFocus}"
+						Text="{Binding Path= County , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="180"
 						FontSize="14"
@@ -661,7 +663,7 @@
 					/>
 					<TextBox
 						x:Name="pcode"
-						Text="{Binding Path= Item.PCode, UpdateSourceTrigger=LostFocus }"
+						Text="{Binding Path= PCode, UpdateSourceTrigger=LostFocus }"
 						Height="20"
 						Width="90"
 						FontSize="14"
@@ -675,7 +677,7 @@
 					/>
 					<TextBox
 						x:Name="phone"
-						Text="{Binding Path= Item.Phone, UpdateSourceTrigger=LostFocus}"
+						Text="{Binding Path= Phone, UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="100"
 						FontSize="14"
@@ -689,7 +691,7 @@
 					/>
 					<TextBox
 						x:Name="mobile"
-						Text="{Binding Path= Item.Mobile , UpdateSourceTrigger=LostFocus}"
+						Text="{Binding Path= Mobile , UpdateSourceTrigger=LostFocus}"
 						Height="20"
 						Width="120"
 						FontSize="14"
@@ -702,7 +704,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBlock x:Name="dob"
-						Text="{Binding Path=  Item.Dob, StringFormat='dd/MM/yyyy'}"
+						Text="{Binding Path=  Dob, StringFormat='dd/MM/yyyy'}"
 						Height="20"
 						Width="80"
 						FontSize="14"
@@ -713,7 +715,7 @@
 						Padding="5,0,5,0"
 					/>
 					<TextBox x:Name="odate"
-						Text="{Binding Path=  Item.ODate, StringFormat='dd/MM/yyyy'}"
+						Text="{Binding Path=  ODate, StringFormat='dd/MM/yyyy'}"
 						Height="20"
 						Width="90"
 						FontSize="14"
@@ -727,7 +729,7 @@
 					/>
 					<TextBox
 						x:Name="cdate"
-						    Text="{Binding Path=  Item.CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
+						    Text="{Binding Path=  CDate, StringFormat='dd/MM/yyyy' , UpdateSourceTrigger=LostFocus}"
 						    Height="20"
 						    Width="100"
 						    FontSize="14"

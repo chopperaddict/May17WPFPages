@@ -45,8 +45,8 @@ namespace WPFPages . Views
 
 		private static bool loaded = false;
 
-		public bool FilterResult = false;
-		public bool isMultiMode = false;
+		//public bool FilterResult = false;
+		//public bool isMultiMode = false;
 
 		#endregion PRIVATE Variables declarations
 

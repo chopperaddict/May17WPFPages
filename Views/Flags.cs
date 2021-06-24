@@ -30,47 +30,24 @@ namespace WPFPages
 		public static CustCollection CustCollection = null;
 		public static BankCollection BankCollection = null;
 
-//		public static SqlConnection con = null;
+		//		public static SqlConnection con = null;
 
-
+		public static object DbData = null;
+		public static string DbSaveJsonPath = "";
 		private record Myrecord;
 		private struct AllFlags
 		{
 
 			DataGrid SqlBankGrid;
-			//			SqlDbViewer SqlBankViewer;
 			DataGrid CurrentEditDbViewerBankGrid;
 			DataGrid SqlCustGrid;
-			//			SqlDbViewer SqlCustViewer;
 			DataGrid CurrentEditDbViewerCustomerGrid;
 			DataGrid SqlDetGrid;
-			//			SqlDbViewer SqlDetViewer;
-			//			DataGrid CurrentEditDbViewerDetailsGrid;
-			//			List< DataGrid > CurrentEditDbViewerBankGridLis2;
-			//			List< DataGrid > CurrentEditDbViewerCustomerGridList;
-			//			List< DataGrid > CurrentEditDbViewerDetailsGridList;
-			//			EditDb ActiveEditGrid;
 			bool isMultiMode;
 			string MultiAccountCommandString;
-			//			bool isEditDbCaller;
-			//			bool SqlDataChanged;
-			//			bool EditDbDataChanged;
-			//			EditDb BankEditDb;
-			//			EditDb CustEditDb;
-			//			EditDb DetEditDb;
-			//			DbSelector DbSelectorOpen;
-			//			EditDb CurrentEditDbViewer;
-			//			SqlDbViewer CurrentSqlViewer;
-			//			SqlDbViewer SqlUpdateOriginatorViewer;
-			//			bool EditDbChangeHandled;
-			//			bool IsFiltered;
-			//			string FilterCommand;
-			//			bool EventHandlerDebug;
 			bool IsMultiMode;
-			//			SqlDbViewer ActiveSqlViewer;
 			bool SqlViewerIsLoading;
 			bool SqlViewerIndexIsChanging;
-			//			DataGrid ActiveSqlGrid;
 			int SqlBankCurrentIndex;
 			int SqlCustCurrentIndex;
 			int SqlDetCurrentIndex;

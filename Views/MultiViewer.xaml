@@ -1,24 +1,82 @@
 ﻿<Window 
-	x:Class="WPFPages.Views.MultiViewer"
-	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	  xmlns:local="clr-namespace:WPFPages.Views" 
-	mc:Ignorable="d"
-	Closing="Window_Closing"
+		x:Class="WPFPages.Views.MultiViewer"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:WPFPages.Views" 
+		mc:Ignorable="d"
 	
-	  Loaded="Window_Loaded"
-	MinHeight="600"
-	MinWidth="980"
-	PreviewKeyDown="Window_PreviewKeyDown"
-	  Title="MultiViewer" Height="850" Width="1000"
-	WindowStartupLocation="CenterScreen"
-	WindowStyle="None">
+		Closing="Window_Closing"	
+		Loaded="Window_Loaded"
+		MinHeight="600"
+		MinWidth="980"
+	
+		PreviewKeyDown="Window_PreviewKeyDown"
+		Title="MultiViewer" Height="850" Width="1000"
+		WindowStartupLocation="CenterScreen"
+		WindowStyle="None">
 
 	<Window.Resources>
 
 		<!--<local:DateOnlyConverter x:Key="dateOnlyConverter"/>-->
+
+		<ContextMenu x:Key="ContextMenu1">
+			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/text-message.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/symlink_directory_30px.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+
+			<MenuItem Header="                                 Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/phone-lock.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
+
+		<ContextMenu x:Key="CMenu1">
+			<MenuItem Header="Edit" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Save as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Exit" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
+
+		<!--#region Grid headers formatting-->
+
 		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
 			<Setter Property="Foreground" Value="White" />
@@ -67,6 +125,9 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
+		<!--#endregion Grid headers formatting-->
+		
+		<!--#region menu formatting-->
 		<!--Styles for menuitems-->
 		<Style x:Key="MenuItemRed" TargetType="{x:Type MenuItem}">
 			<Setter Property="Background" Value="Transparent" />
@@ -151,7 +212,8 @@
 			</Setter>
 		</Style>
 
-
+		<!--#endregion menu formatting-->
+		
 	</Window.Resources>
 
 	<Grid>
@@ -800,6 +862,7 @@
 				CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleBlue}"
 				DataGridCell.Selected="BankGrid_Selected"
+				PreviewDragEnter="BankGrid_PreviewDragEnter"
 				GotFocus="BankGrid_GotFocus"
 				Grid.Row="3"
 				Grid.Column="1"
@@ -808,6 +871,7 @@
 				Margin="0,10,0,0"
 				Padding="10"
 				PreviewMouseLeftButtonDown="Grids_PreviewMouseLeftButtondown "
+				PreviewMouseLeftButtonUp="Grids_PreviewMouseLeftButtonup"
 			    PreviewMouseMove="BankGrid_PreviewMouseMove"
 				PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="BankGrid_RowEditEnding"
@@ -935,6 +999,7 @@
 				BeginningEdit="CustomerGrid_BeginningEdit"
 			    CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
+				PreviewDragEnter="BankGrid_PreviewDragEnter"
 				GotFocus="CustGrid_GotFocus"
 				Grid.Row="4"
 				Grid.Column="1"
@@ -942,6 +1007,7 @@
 				Margin="0,10,0,0"
 				Padding="10"
 				PreviewMouseLeftButtonDown="Grids_PreviewMouseLeftButtondown "
+				PreviewMouseLeftButtonUp="Grids_PreviewMouseLeftButtonup"
 				 PreviewMouseMove="CustomerGrid_PreviewMouseMove"
 				PreviewMouseRightButtonDown="CustGrid_PreviewMouseRightButtonDown"
 				RowEditEnding="CustGrid_RowEditEnding"
@@ -1093,6 +1159,7 @@
 				BeginningEdit="DetailsGrid_BeginningEdit"
 			     CanUserAddRows="False"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleGreen}"
+				PreviewDragEnter="BankGrid_PreviewDragEnter"
 				GotFocus="DetGrid_GotFocus"
 				Grid.Row="5"
 				Grid.Column="1"
@@ -1103,6 +1170,7 @@
 				PreviewMouseLeftButtonDown="Grids_PreviewMouseLeftButtondown "
 				 PreviewMouseMove="DetailsGrid_PreviewMouseMove"
 				PreviewMouseRightButtonDown="DetGrid_PreviewMouseRightButtonDown"
+				PreviewMouseLeftButtonUp="Grids_PreviewMouseLeftButtonup"
 				RowEditEnding="DetailsGrid_RowEditEnding"
 				ScrollViewer.ScrollChanged="DetGrid_ScrollChanged"
 				SelectionChanged="DetGrid_SelectionChanged"

@@ -223,5 +223,29 @@ namespace WPFPages.Properties {
                 this["DocumentsPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Notepad++.exe")]
+        public string DefaultTextviewer {
+            get {
+                return ((string)(this["DefaultTextviewer"]));
+            }
+            set {
+                this["DefaultTextviewer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Bank Db Viewer")]
+        public string StartupWindow {
+            get {
+                return ((string)(this["StartupWindow"]));
+            }
+            set {
+                this["StartupWindow"] = value;
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
 	<!--  xmlns:local="clr-namespace:WPFPages.Dicts">  -->
 
 	<!--  This is a Standard DEFAULT Button Template  -->
-	<!--<Style x:Key="FocusVisual">
+	<Style x:Key="FocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
@@ -10,7 +10,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>-->
+    </Style>
 	<SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD" />
 	<SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070" />
 	<SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />

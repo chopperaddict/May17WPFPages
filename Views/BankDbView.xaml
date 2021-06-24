@@ -5,7 +5,6 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:WPFPages.Views"
 	mc:Ignorable="d"
-	d:DataContext="{d:DesignInstance Type=local:BankCollection}"
 	Closing="Window_Closing"
 	DataContext="BankviewerView"
 	Height="450"
@@ -18,7 +17,61 @@
 	Title="Bank A/c Editor"
 	Width="800"
 	>
+	<!--d:DataContext="{d:DesignInstance Type=local:BankCollection}"-->
 	<Window.Resources>
+		<ContextMenu x:Key="ContextMenu1">
+			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/text-message.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/symlink_directory_30px.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+
+			<MenuItem Header="                                 Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/phone-lock.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
+
+		<ContextMenu x:Key="CMenu1">
+			<MenuItem Header="Edit" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Save as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Exit" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
 
 		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
@@ -61,7 +114,30 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
-		
+
+		<!--<Style x:Key="UnfocusedSelection" TargetType="DataGridRow">
+		--><!--<Style TargetType="DataGridRow">--><!--
+			<Style.Triggers>
+				--><!--=====================
+						Window WITH Focus ....
+						SINGLE SELECTED  Item
+						=====================--><!--
+				<MultiTrigger>
+					--><!--// This is working 17/6/21--><!--
+					<MultiTrigger.Conditions>
+						<Condition Property="IsSelected" Value="true" />
+						<Condition Property="IsFocused" Value="false" />
+						--><!--<Condition Property="SelectionActive" Value="false" />--><!--
+					</MultiTrigger.Conditions>
+					<Setter Property="Background" Value="{StaticResource Red1}" />
+					<Setter Property="Foreground" Value="{StaticResource White0}" />
+					<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
+				</MultiTrigger>
+			</Style.Triggers>
+		</Style>-->
+
+
+
 		<!--Not in use-->
 		<Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
 			<!--<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
@@ -165,60 +241,56 @@
 			HorizontalAlignment="Left"
 			Background="Transparent">
 
-			<MenuItem
+			<!--// Menu Header-->
+			<MenuItem Header="_Linq Queries"
 				Width="80"
-				Foreground="{StaticResource White0}"
-				Header="_Linq Queries">
-				<MenuItem
-					Background="#35F6FB"
-					Click="Linq1_Click"
-					Foreground="Black"
-					Header="A/c Type 1 Only"
-					IsCheckable="false" />
-				<MenuItem
-					Background="#35F6FB"
-					Click="Linq2_Click"
-					Foreground="Black"
-					Header="A/c Type 2 Only"
-					IsCheckable="False" />
-				<MenuItem
-					Background="#35F6FB"
-					Click="Linq3_Click"
-					Foreground="Black"
-					Header="A/c Type 3 Only"
-					IsCheckable="False" />
-				<MenuItem
-					Background="#35F6FB"
-					Click="Linq4_Click"
-					Foreground="Black"
-					Header="A/c Type 4 Only"
-					IsCheckable="False" />
-				<MenuItem
-					Background="#35F6FB"
-					Click="Linq5_Click"
-					Foreground="Black"
-					Header="Multi A/C Holders"
-					IsCheckable="False" />
+				Foreground="{StaticResource White0}">
+
+				<!--// Seperate menu items in DropDown-->
+				<MenuItem Header="A/c Type 1 Only"
+						Background="#35F6FB"
+						Click="Linq1_Click"
+						Foreground="Black"						
+						IsCheckable="false" />
+				<MenuItem Header="A/c Type 2 Only"
+						Background="#35F6FB"
+						Click="Linq2_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<MenuItem Header="A/c Type 3 Only"
+						Background="#35F6FB"
+						Click="Linq3_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<MenuItem Header="A/c Type 4 Only"
+						Background="#35F6FB"
+						Click="Linq4_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
 				<Separator />
+				
+				<MenuItem
+						Background="#35F6FB"
+						Click="Linq5_Click"
+						Foreground="Black"
+						Header="Multi A/C Holders"
+						IsCheckable="False" />
+				
 			</MenuItem>
 
+			<!--// Seperate menu items at top level -->
 			<MenuItem
 				Width="60"
 				Click="Filter_Click"
 				Foreground="{StaticResource White0}"
-				Header="Filtering">
-				<!--<MenuItem Header="Setup Filter"
-					    Background="#35F6FB"
-					    Click="Filter_Click"
-					    Foreground="Black"
-					    IsCheckable="false"/>-->
-			</MenuItem>
+				Header="Filtering"/>
 
 			<MenuItem
 				Width="50"
 				Click="Options_Click"
 				Foreground="{StaticResource White1}"
 				Header="Options" />
+			
 			<MenuItem
 				Width="50"
 				Click="Exit_Click"
@@ -231,15 +303,19 @@
 		<DataGrid 
 			x:Name="BankGrid"
 			AlternatingRowBackground="{StaticResource Blue4}"
+			AlternationCount="3"
 			AutoGenerateColumns="False"
 			BeginningEdit="BankGrid_BeginningEdit"	   
 			CanUserAddRows="False"
 			CellEditEnding="BankGrid_CellEditEnding"
 			ColumnHeaderStyle="{StaticResource HeaderStyleBlue}"
+			CanUserResizeColumns="True"
+			CanUserSortColumns="True"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
 			Grid.Row="1"
 			Grid.RowSpan="1"
+			DragEnter="BankGrid_DragEnter"
 			HorizontalAlignment="Stretch"
 			HorizontalContentAlignment="Center"
 			IsSynchronizedWithCurrentItem="False"
@@ -273,29 +349,9 @@
 
 			<DataGrid.Resources>
 				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{DynamicResource Blue}" />-->
-				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#6578FD" />
-				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionForegroundBrushKey}" Color="#FFFFFF" />-->
-				<!--<Style x:Key="grid1" TargetType="DataGridCell">
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#6598FD" />
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrush}" Color="#FFFFFF" />
 
-					<Style.Triggers>
-						--><!--=====================-->
-						<!--Window WITH Focus ....-->
-						<!--SINGLE SELECTED  Item-->
-						<!--=====================--><!--
-						<MultiTrigger>
-							--><!--// This is working 17/6/21--><!--
-							<MultiTrigger.Conditions>
-								<Condition Property="IsSelected" Value="true" />
-								<Condition Property="IsFocused" Value="true" />
-								--><!--<Condition Property="IsSelectionActive" Value="true" />--><!--
-							</MultiTrigger.Conditions>
-							<Setter Property="Background" Value="{StaticResource Red1}" />
-							<Setter Property="Foreground" Value="{StaticResource White0}" />
-							--><!--<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />--><!--
-						</MultiTrigger>
-					</Style.Triggers>
-				</Style>-->
-	
 			</DataGrid.Resources>
 
 			<!--#region bank Columns-->

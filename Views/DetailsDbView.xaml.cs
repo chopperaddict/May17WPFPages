@@ -39,6 +39,7 @@ namespace WPFPages . Views
 		#endregion CollectionView stuff
 		//		DetViewer.GetEnumerator();
 
+		private static Point _startPoint { get; set; }
 		private bool IsDirty = false;
 		private bool Startup = true;
 		private static bool LinktoParent = false;
@@ -1265,6 +1266,10 @@ namespace WPFPages . Views
 		}
 		private void DetGrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			if ( Utils . HitTestHeaderBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
 			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
@@ -1299,6 +1304,98 @@ namespace WPFPages . Views
 			this . WindowState = WindowState . Normal;
 		}
 
+		private void DetGrid_DragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+		}
+
+		private async void DettGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
+			cm . PlacementTarget = this . DetGrid as DataGrid;
+			cm . IsOpen = true;
+		}
+
+		private void ContextClose_Click ( object sender, RoutedEventArgs e )
+		{
+			Close ( );
+		}
+
+		private void ContextSettings_Click ( object sender, RoutedEventArgs e )
+		{
+			Setup setup = new Setup ( );
+			setup . Show ( );
+			setup . BringIntoView ( );
+			setup . Topmost = true;
+			this . Focus ( );
+		}
+
+		private void ContextDisplayJsonData_Click ( object sender, RoutedEventArgs e )
+		{
+			JsonSupport . CreateShowJsonText ( "DETAILS", DetViewerDbcollection );
+		}
+
+		private void ContextSave_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private async void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		{
+			DetailsViewModel dvm = new DetailsViewModel ( );
+			int currsel = 0;
+			DataGridRow RowData = new DataGridRow ( );
+			dvm = this . DetGrid . SelectedItem as DetailsViewModel;
+			currsel = this . DetGrid . SelectedIndex;
+			RowInfoPopup rip = new RowInfoPopup ( "DETAILS", DetGrid );
+			rip . Topmost = true;
+			rip . DataContext = RowData;
+			rip . BringIntoView ( );
+			rip . Focus ( );
+			rip . ShowDialog ( );
+
+			//If data has been changed, update everywhere
+			// Update the row on return in case it has been changed
+			if ( rip . IsDirty )
+			{
+				this . DetGrid . ItemsSource = null;
+				this . DetGrid . Items . Clear ( );
+				await DetCollection .LoadDet ( DetViewerDbcollection, 1, true );
+				this . DetGrid . ItemsSource = DetviewerView;
+				// Notify everyone else of the data change
+				EventControl . TriggerViewerDataUpdated ( DetviewerView,
+					new LoadedEventArgs
+					{
+						CallerType = "DETDBVIEW",
+						CallerDb = "DETAILS",
+						DataSource = DetviewerView,
+						RowCount = this . DetGrid . SelectedIndex
+					} );
+			}
+			else
+				this . DetGrid . SelectedItem = RowData . Item;
+
+			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+			this . DetGrid . SelectedIndex = currsel;
+			Count . Text = $"{this . DetGrid . SelectedIndex} / { this . DetGrid . Items . Count . ToString ( )}";
+			// This is essential to get selection activated again
+			this . DetGrid . Focus ( );
+		}
+
+		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
+		{
+
+		}
+
+		private void DetGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
+			cm . PlacementTarget = this . 
+				DetGrid as DataGrid;
+			cm . IsOpen = true;
+
+
+		}
 	}
 }
 

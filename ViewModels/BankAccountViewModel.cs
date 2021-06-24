@@ -52,7 +52,7 @@ namespace WPFPages . ViewModels
 			set { bankno = value; OnPropertyChanged ( BankNo . ToString ( ) ); }
 		}
 
-		public  string CustNo
+		public string CustNo
 		{
 			get { return custno; }
 			set { custno = value; OnPropertyChanged ( CustNo . ToString ( ) ); }
@@ -92,25 +92,31 @@ namespace WPFPages . ViewModels
 			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
 		}
 
+		public  string ToString ( bool full = false )
+		{
+			if ( full )
+				return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
+			else
+				return base . ToString ( );
+		}
 		public override string ToString ( )
 		{
-			return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
-			//return base . ToString ( );
+			return base . ToString ( );
 		}
 		#endregion STANDARD CLASS PROPERTIES SETUP
 
 		#region SETUP/DECLARATIONS
 
-		public static EditDb EditdbWndBank = null;
-		public static EditDb EditdbWndBankCust = null;
-		public static EditDb EditdbWndBankDet = null;
+		//public  EditDb EditdbWndBank = null;
+		//public  EditDb EditdbWndBankCust = null;
+		//public  EditDb EditdbWndBankDet = null;
 
 		//**********************
 		// dbEdit db viewer GLOBALS
 		//**********************
 		//public static List<DataGrid> CurrentEditDbViewerCustomerGridList = new List<DataGrid> ( );
 		//public static List<DataGrid> CurrentEditDbViewerDetailsGridList = new List<DataGrid> ( );
-		public static DataGrid ActiveEditDbViewer = null;
+		public static  DataGrid ActiveEditDbViewer = null;
 
 
 		#endregion SETUP/DECLARATIONS

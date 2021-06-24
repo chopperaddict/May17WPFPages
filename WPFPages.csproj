@@ -61,6 +61,9 @@
     <Reference Include="Microsoft.Win32.SystemEvents, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Win32.SystemEvents.5.0.0\lib\net461\Microsoft.Win32.SystemEvents.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System">
       <HintPath>..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
@@ -128,6 +131,7 @@
     </Compile>
     <Compile Include="Views\IDropable.cs" />
     <Compile Include="Views\ImportDbData.cs" />
+    <Compile Include="Views\JsonSupport.cs" />
     <Compile Include="Views\new_DetCollection.cs" />
     <Compile Include="DateOnlyConverter.cs" />
     <Compile Include="SalaryConvertor.cs" />
@@ -147,11 +151,17 @@
     <Compile Include="ViewModels\DetailsViewModel.cs" />
     <Compile Include="Views\LinqResults.cs" />
     <Compile Include="Views\MainWindowViewModel.cs" />
+    <Compile Include="Views\Progressbar.xaml.cs">
+      <DependentUpon>Progressbar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RowPopup.xaml.cs">
       <DependentUpon>RowPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RunSearchPaths.xaml.cs">
       <DependentUpon>RunSearchPaths.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setup.xaml.cs">
+      <DependentUpon>Setup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SQLHandlers.cs" />
     <Compile Include="Views\SupportMethods.cs" />
@@ -261,11 +271,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Progressbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RowPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RunSearchPaths.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Setup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -345,6 +363,41 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <None Include="Icons\calls-record.icns" />
+    <None Include="Icons\cloud.icns" />
+    <None Include="Icons\delete-text-message.icns" />
+    <None Include="Icons\delete-text-message2.icns" />
+    <None Include="Icons\download-to-laptop.icns" />
+    <None Include="Icons\fax.icns" />
+    <None Include="Icons\laptop-wifi.icns" />
+    <None Include="Icons\mailbox-receive-message.icns" />
+    <None Include="Icons\mailbox-receive-message2.icns" />
+    <None Include="Icons\mailbox.icns" />
+    <None Include="Icons\message.icns" />
+    <None Include="Icons\new-text-message.icns" />
+    <None Include="Icons\new-text-message2.icns" />
+    <None Include="Icons\phone-lock.icns" />
+    <None Include="Icons\phone-wifi.icns" />
+    <None Include="Icons\phone-wifi2.icns" />
+    <None Include="Icons\receive-text-message.icns" />
+    <None Include="Icons\received-calls.icns" />
+    <None Include="Icons\rss.icns" />
+    <None Include="Icons\send-message.icns" />
+    <None Include="Icons\send-message2.icns" />
+    <None Include="Icons\send-text-message.icns" />
+    <None Include="Icons\sent-calls.icns" />
+    <None Include="Icons\show-text-message.icns" />
+    <None Include="Icons\SMS.icns" />
+    <None Include="Icons\SMS2.icns" />
+    <None Include="Icons\SMS3.icns" />
+    <None Include="Icons\text-message.icns" />
+    <None Include="Icons\wifi.icns" />
+    <None Include="Icons\wifi2.icns" />
     <None Include="Libraries\DataClasses1.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>DataClasses1.designer.cs</LastGenOutput>
@@ -369,6 +422,9 @@
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="ian1.mdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -376,6 +432,37 @@
       <DependentUpon>ian1.mdf</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Icons\document-delete_48x48.png" />
+    <Resource Include="Icons\calls-record.png" />
+    <Resource Include="Icons\cloud.png" />
+    <Resource Include="Icons\delete-text-message.png" />
+    <Resource Include="Icons\delete-text-message2.png" />
+    <Resource Include="Icons\download-to-laptop.png" />
+    <Resource Include="Icons\fax.png" />
+    <Resource Include="Icons\laptop-wifi.png" />
+    <Resource Include="Icons\mailbox-receive-message.png" />
+    <Resource Include="Icons\mailbox-receive-message2.png" />
+    <Resource Include="Icons\mailbox.png" />
+    <Resource Include="Icons\message.png" />
+    <Resource Include="Icons\new-text-message.png" />
+    <Resource Include="Icons\new-text-message2.png" />
+    <Resource Include="Icons\phone-lock.png" />
+    <Resource Include="Icons\phone-wifi.png" />
+    <Resource Include="Icons\phone-wifi2.png" />
+    <Resource Include="Icons\receive-text-message.png" />
+    <Resource Include="Icons\received-calls.png" />
+    <Resource Include="Icons\rss.png" />
+    <Resource Include="Icons\send-message.png" />
+    <Resource Include="Icons\send-message2.png" />
+    <Resource Include="Icons\send-text-message.png" />
+    <Resource Include="Icons\sent-calls.png" />
+    <Resource Include="Icons\show-text-message.png" />
+    <Resource Include="Icons\SMS.png" />
+    <Resource Include="Icons\SMS2.png" />
+    <Resource Include="Icons\SMS3.png" />
+    <Resource Include="Icons\text-message.png" />
+    <Resource Include="Icons\wifi.png" />
+    <Resource Include="Icons\wifi2.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

@@ -28,10 +28,9 @@ namespace WPFPages . Views
 		CustomerViewModel cvm = new CustomerViewModel ( );
 		DetailsViewModel dvm = new DetailsViewModel ( );
 
-		public RowInfoPopup ( string callerType, DataGrid parentGrid, DataGridRow RowData )
+		public RowInfoPopup ( string callerType, DataGrid parentGrid)
 		{
 			ParentGrid = parentGrid;
-			dgr = RowData;
 			try
 			{
 				//store the tyoe of Db we are working with
@@ -49,7 +48,7 @@ namespace WPFPages . Views
 					LeftCustBorder . Visibility = Visibility . Hidden;
 					LeftBankBorder . Visibility = Visibility . Visible;
 					//					BankAccountViewModel bvm = new BankAccountViewModel();
-					//					DataContext = bvm.BankAccountObs;
+					BankData.DataContext = bvm;
 					this . Height = 400;
 				}
 
@@ -63,7 +62,7 @@ namespace WPFPages . Views
 					LeftCustBorder . Visibility = Visibility . Visible;
 					LeftBankBorder . Visibility = Visibility . Hidden;
 					//					CustomerViewModel cvm = new CustomerViewModel ( );
-					//					DataContext = cvm . CustomersObs;
+					CustData . DataContext = cvm;
 					this . Height = 597;
 				}
 
@@ -77,7 +76,7 @@ namespace WPFPages . Views
 					LeftCustBorder . Visibility = Visibility . Hidden;
 					LeftBankBorder . Visibility = Visibility . Visible;
 					//					DetailsViewModel dvm = new DetailsViewModel ( );
-					//					DataContext = Detcollection;
+					BankData . DataContext = dvm;
 					this . Height = 400;
 				}
 				this . MouseDown += delegate { DoDragMove ( ); };

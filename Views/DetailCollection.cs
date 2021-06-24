@@ -125,6 +125,7 @@ namespace WPFPages . Views
 		//**************************************************************************************************************************************************************//
 		public static async Task<DataTable> LoadDetailsDataSql ( bool isMultiMode = false )
 		{
+			object bptr = new object ( );
 			Stopwatch st = new Stopwatch ( );
 
 			st . Start ( );
@@ -166,8 +167,10 @@ namespace WPFPages . Views
 					SqlCommand cmd = new SqlCommand ( commandline, con );
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 
-					DetCollection bptr = new DetCollection ( );
-					sda . Fill ( dtDetails );
+					lock ( bptr )
+					{
+						sda . Fill ( dtDetails );
+					}
 					st . Stop ( );
 				}
 			}
@@ -186,43 +189,47 @@ namespace WPFPages . Views
 		//**************************************************************************************************************************************************************//
 		public static async Task<bool> LoadDetCollection ( DetCollection internalcollection )
 		{
+			object bptr = new object ( );
 			int count = 0;
-			try
+			lock ( bptr )
 			{
-				for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
+				try
 				{
-					internalcollection . Add ( new DetailsViewModel
+					for ( int i = 0 ; i < dtDetails . Rows . Count ; i++ )
 					{
-						Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
-						BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
-						CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
-						AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
-						Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
-						IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
-						ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
-						CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
-					} );
-					count = i;
-				}
-			}
-			catch ( Exception ex )
-			{
-				Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
-				MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
-				return false;
-			}
-			finally
-			{
-				if ( Notify )
-				{
-					EventControl . TriggerDetDataLoaded ( null,
-						new LoadedEventArgs
+						internalcollection . Add ( new DetailsViewModel
 						{
-							CallerType = "SQLSERVER",
-							CallerDb = Caller,
-							DataSource = internalcollection,
-							RowCount = internalcollection . Count
+							Id = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 0 ] ),
+							BankNo = dtDetails . Rows [ i ] [ 1 ] . ToString ( ),
+							CustNo = dtDetails . Rows [ i ] [ 2 ] . ToString ( ),
+							AcType = Convert . ToInt32 ( dtDetails . Rows [ i ] [ 3 ] ),
+							Balance = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 4 ] ),
+							IntRate = Convert . ToDecimal ( dtDetails . Rows [ i ] [ 5 ] ),
+							ODate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 6 ] ),
+							CDate = Convert . ToDateTime ( dtDetails . Rows [ i ] [ 7 ] )
 						} );
+						count = i;
+					}
+				}
+				catch ( Exception ex )
+				{
+					Debug . WriteLine ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+					MessageBox . Show ( $"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex . Message}] : {ex . Data} ...." );
+					return false;
+				}
+				finally
+				{
+					if ( Notify )
+					{
+						EventControl . TriggerDetDataLoaded ( null,
+							new LoadedEventArgs
+							{
+								CallerType = "SQLSERVER",
+								CallerDb = Caller,
+								DataSource = internalcollection,
+								RowCount = internalcollection . Count
+							} );
+					}
 				}
 			}
 			return true;
@@ -263,7 +270,7 @@ namespace WPFPages . Views
 			return dtDetails;
 		}
 
-		public static DetCollection LoadDetailsCollectionDirect ( DetCollection collection , DataTable dtDetails)
+		public static DetCollection LoadDetailsCollectionDirect ( DetCollection collection, DataTable dtDetails )
 		{
 			int count = 0;
 			try

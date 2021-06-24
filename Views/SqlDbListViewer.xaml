@@ -1,0 +1,1527 @@
+﻿<Window x:Class="WPFPages.Views.SqlDbListViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+        mc:Ignorable="d"
+        Title="SqlDbListViewer" Height="450" Width="870">
+	<Window.Resources>
+
+		<Style x:Key="ButtonFocusVisual">
+			<Setter Property="Control.Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Rectangle Margin="2"
+							     SnapsToDevicePixels="true"
+							     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+							     StrokeThickness="1" StrokeDashArray="1 2"/>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!--<dd:SqlBankcollection x:Key="SqlBankcollection"/>-->
+
+
+		<Style x:Key="HWhiteBlackGradientBackgroundStyle" TargetType="{x:Type Button}"  >
+			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="DemiBold" />
+
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+						<GradientStop Color="AliceBlue" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+
+			<Setter Property="Foreground">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+						<GradientStop Color="AliceBlue" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="Red" Offset="0" />
+								<GradientStop Color="White" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+					<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+
+				<Trigger Property="IsEnabled" Value="True">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Black" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+					<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+
+		<Style x:Key="ButtonStyle9" TargetType="{x:Type Button}">
+			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
+			<!--<Setter Property="Background" Value="Yellow"/>-->
+			<!--<Setter Property="Foreground" Value="MediumBlue"/>-->
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+						<GradientStop Color="White" Offset="1" />
+						<GradientStop Color="Black" Offset="0" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="Foreground">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+						<GradientStop Color="White" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+
+			<Setter Property="BorderBrush" Value="Red"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Padding" Value="1"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Grid>
+							<Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+								<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+							</Border>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="false">
+
+								<Setter Property="Background">
+									<Setter.Value>
+										<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+											<GradientStop Color="White" Offset="0" />
+											<GradientStop Color="DarkGray" Offset="1" />
+										</LinearGradientBrush>
+									</Setter.Value>
+								</Setter>
+
+								<Setter Property="Foreground">
+									<Setter.Value>
+										<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+											<GradientStop Color="AliceBlue" Offset="1" />
+											<GradientStop Color="Red" Offset="0" />
+										</LinearGradientBrush>
+									</Setter.Value>
+								</Setter>
+
+								<!--<Setter Property="Background" Value="Green"/>-->
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+
+		<Style x:Key="ToggleBkGrndOnmouseover" TargetType="Button">
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="Red" Offset="0" />
+								<GradientStop Color="DarkOrange" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+		<!--Another Ellipse as a button-->
+		<Style x:Key="ellip" TargetType="Button">
+			<Setter Property="OverridesDefaultStyle" Value="true" />
+			<Setter Property="Width" Value="200" />
+			<Setter Property="Height" Value="25" />
+			<Setter Property="Background" Value="Green" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="FontWeight" Value="Medium" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="HorizontalContentAlignment" Value="Right" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Content" Value="Black Text" />
+			<!--Set to true to not get any properties from the themes.-->
+			<!--<Setter Property="OverridesDefaultStyle" Value="True" />-->
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Grid
+							Height="80"
+							Width="180">
+							<Ellipse
+								Grid.Row="0"
+								Grid.Column="0"
+								Width="180"
+								Height="77"
+								Fill="LightGreen" />
+							<ContentPresenter HorizontalAlignment="Center"
+										VerticalAlignment="Center" />
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!--How to OVERRIDE the default styling (of a button in this case)
+		 so that we can still set Back/Foreground and border colors in the button itself
+		but still have mouseover etc working correctly-->
+
+		<Style x:Key="GridColumnHeadersStyle" TargetType="DataGridColumnHeader">
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="Foreground" Value="{StaticResource Black0}" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint=".8,1" EndPoint=".1,0.93">
+						<GradientStop Color="Red" Offset="3.1" />
+						<GradientStop Color="DarkOrange" Offset="0.5" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<!--This handles the button being set on Mouse over -->
+				<Trigger Property="IsEnabled" Value="True">
+					<Setter Property="Foreground"  Value="{StaticResource Black1}" />
+					<Setter Property="FontWeight"  Value="Bold" />
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint=".5,0.63" EndPoint=".5,1">
+								<GradientStop Color="Green" Offset="0" />
+								<GradientStop Color="White" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+		<Style x:Key="RedToBlack" TargetType="DataGridColumnHeader">
+			<!--<Setter Property="OverridesDefaultStyle" Value="true" />-->
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="Foreground" Value="{StaticResource Black0}" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0.5" EndPoint=".5,.6">
+						<GradientStop Color="Red" Offset="1" />
+						<GradientStop Color="DarkOrange" Offset="0" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<!--These do nothing at all, but the do demonstrate how to use
+			the {Binding xxx} to pass user defined values thru-->
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+						<GradientStop Color="Red" Offset="0" />
+						<GradientStop Color="#FFFFD190" Offset="1" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+								<GradientStop Color="#F9A68B" Offset="0" />
+								<GradientStop Color="#6B1D04" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+
+		<Style x:Key="gradientblue" TargetType="TextBox">
+			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
+			<Setter Property="Foreground" Value="Black" />
+			<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushBlue}" />-->
+			<!--<Setter Property="BorderThickness" Value="1" />-->
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<!--<Setter Property="HorizontalContentAlignment" Value="Center" />-->
+			<!--<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />-->
+			<!--<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property= "Background" Value="{StaticResource HeaderBorderBrushBlue}" />
+				</Trigger>
+			</Style.Triggers>-->
+		</Style>
+
+		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
+			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushBlue}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property= "Background" Value="{StaticResource HeaderBorderBrushBlue}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+		<Style x:Key="HeaderStyleGreen" TargetType="DataGridColumnHeader">
+			<Setter Property="Background" Value="{StaticResource HeaderBrushGreen}" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushGreen}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="true">
+					<Setter Property= "Background" Value="{StaticResource HeaderBorderBrushGreen}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+		<Style x:Key="HeaderStyleYellow" TargetType="DataGridColumnHeader">
+			<Setter Property="Background" Value="{StaticResource HeaderBrushYellow}" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="true">
+					<Setter Property= "Background" Value="{StaticResource HeaderBorderBrushYellow}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+
+		<Style x:Key="tb1" TargetType="{x:Type TextBlock}"  >
+			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
+			<!--<Setter Property="FontSize" Value="12" />-->
+			<Setter Property="FontWeight" Value="DemiBold" />
+
+			<!--// Does not appear to do anything - Strange ?-->
+			<!--<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+						<GradientStop Color="LightYellow" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>-->
+			<!--// Works Well, if commented out, the Gradient set below disappear - Strange ?-->
+			<Setter Property="Foreground">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+						<GradientStop Color="AliceBlue" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+
+			<Style.Triggers>
+				<!--// MOUSEOVER - Working Well ???-->
+				<Trigger Property="IsMouseOver" Value="True">
+					<!--// BACKGROUND NOT WORKING - remains the same-->
+					<!--<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="Black" Offset="0" />
+								<GradientStop Color="White" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>-->
+					<!--/ FOREGROUND works well - set Foreground to this gradient !!!-->
+					<!--<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>-->
+				</Trigger>
+
+				<Trigger Property="IsFocused" Value="True">
+					<!--// BACKGROUND NOT WORKING - remains the same-->
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="Black" Offset="0" />
+								<GradientStop Color="White" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+					<!--/ FOREGROUND works well - set Foreground to this gradient !!!-->
+					<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Black" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+
+				<!--// ENABLED	Unkown ??-->
+				<!--
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>-->
+
+				<!--// Works just fine !!!-->
+				<!--?? Sets the default back/Fore ground colors-->
+				<Trigger Property="IsEnabled" Value="True">
+					<!--// BACKGGROUND Not working-->
+					<!--<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+								<GradientStop Color="Green" Offset="0" />
+								<GradientStop Color="Black" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>-->
+					<!--// Works well - sets the default row colors setup-->
+					<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="Black" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+			</Style.Triggers>
+			<!-- END x:Key="tb1" TargetType="{x:Type TextBlock}"  > END -->
+		</Style>
+
+		<Style x:Key="lvblue" TargetType="{x:Type TextBox}"  >
+			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
+			<!--<Setter Property="FontSize" Value="12" />-->
+			<Setter Property="FontWeight" Value="DemiBold" />
+			<Setter Property="Background" Value="{StaticResource Blue4}" />
+
+			<!--// Does not appear to do anything - Strange ?-->
+			<!--<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+						<GradientStop Color="LightYellow" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>-->
+			<!--// Works Well, if commented out, the Gradient set below disappear - Strange ?-->
+			<!--<Setter Property="Foreground">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+						<GradientStop Color="AliceBlue" Offset="0" />
+						<GradientStop Color="Black" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>-->
+
+			<Style.Triggers>
+				<!--// MOUSEOVER - Working Well ???-->
+				<Trigger Property="IsMouseOver" Value="True">
+					<!--// BACKGROUND MOUSEOVER WORKING - Just the TEXTBOX bleow the mouse changes-->
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="White" Offset="0" />
+								<GradientStop Color="White" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+					<!--// FOREGROUND MOUSEOVER WORKING - Just the TEXTBOX bleow the mouse changes-->
+					<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="Red" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+
+				<Trigger Property="IsFocused" Value="True">
+					<!--// BOTH WORKING - the Selected TextBOX (ONLY) changes - -->
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+								<GradientStop Color="Black" Offset="0" />
+								<GradientStop Color="White" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+					<!--/ FOREGROUND works well - set Foreground to this gradient !!!-->
+					<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="1" />
+								<GradientStop Color="Black" Offset="0" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>
+
+				<!--// ENABLED	Unkown ??-->
+				<!--
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+								<GradientStop Color="AliceBlue" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>
+				</Trigger>-->
+
+				<!--// Works just fine !!!-->
+				<!--?? Sets the default back/Fore ground colors-->
+				<Trigger Property="IsEnabled" Value="True">
+					<!--// BACKGGROUND Not working-->
+					<!--<Setter Property="Background">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+								<GradientStop Color="Green" Offset="0" />
+								<GradientStop Color="Black" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>-->
+					<!--// Works well - sets the default row colors setup-->
+					<!--<Setter Property="Foreground">
+						<Setter.Value>
+							<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+								<GradientStop Color="Black" Offset="0" />
+								<GradientStop Color="Red" Offset="1" />
+							</LinearGradientBrush>
+						</Setter.Value>
+					</Setter>-->
+				</Trigger>
+
+			</Style.Triggers>
+
+			<!--  END <Style x:Key="lvblue" TargetType="{x:Type TextBox}"  > END -->
+		</Style>
+
+
+		<ControlTemplate x:Key="GroupItemTemplate">
+			<Expander 
+				Header="{Binding Name}"  
+				IsExpanded ="True" 
+				VerticalAlignment="Bottom" 
+				VerticalContentAlignment="Bottom">
+				<ItemsPresenter/>
+				<!-- Header Panel of the Expander control -->
+				<!--<Expander Header="{Binding Name}" IsExpanded="True">-->
+					<!--<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding Name}" 
+						                           FontWeight="Bold" Foreground="Gray" FontSize="14"/>
+						<TextBlock Text="    " 
+											Foreground="Silver" FontStyle="Italic" FontSize="14"/>
+						<TextBlock Text="{Binding ItemCount}" 
+										Foreground="Red" FontWeight="Bold" FontStyle="Italic" FontSize="14" Width="30" HorizontalAlignment="Center"
+						                           Margin="4,0,0,0"/>
+						<TextBlock Text=" accounts(s)" 
+											Foreground="Silver" FontStyle="Italic" FontSize="14"/>
+					</StackPanel>-->
+				<!--</Expander>-->
+
+				<!-- Items panel to hold items inside the Expander control -->
+				<!--<ItemsPresenter />-->
+			</Expander>
+		</ControlTemplate>
+
+	</Window.Resources>
+	
+	<Grid GotFocus="Window_GotFocus"
+		Visibility="Visible">
+		<!--#region SETUP ONLY-->
+		<Grid.RowDefinitions>
+			<RowDefinition Height="5" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="25" />
+			<RowDefinition Height="57" />
+			<RowDefinition Height="65" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="50" />
+			<RowDefinition Height="5" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="10" />
+			<ColumnDefinition Width="3.5*" />
+			<ColumnDefinition Width="110" />
+			<ColumnDefinition Width="175" />
+			<ColumnDefinition Width="10" />
+		</Grid.ColumnDefinitions>
+		<Grid.Background>
+			<!--create an elegant left to right light-> Dark gradient as a background-->
+			<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+				<GradientStop Color="#333333" Offset="0" />
+				<GradientStop Color="LightGray" Offset="0.97" />
+			</LinearGradientBrush>
+		</Grid.Background>
+
+		<!--#endregion SETUP ONLY-->
+
+		<Grid Grid.Row="4"
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="2" Margin="0,0,3,0">
+
+			<ListView x:Name="LvBankGrid"		
+				SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				AllowDrop="True"
+				BorderThickness="0"
+				Foreground="{StaticResource Black1}"
+				GotFocus="DetailsGrid_GotFocus"
+				Grid.ColumnSpan="4"
+				HorizontalAlignment="Stretch"
+ 			    HorizontalContentAlignment="Stretch"
+				IsEnabled="true"
+				IsSynchronizedWithCurrentItem="True"
+				Loaded="OnWindowLoaded"
+				PreviewMouseRightButtonUp="BankGrid_MouseRightButtonDown"
+				PreviewMouseMove="BankGrid_PreviewMouseMove"
+				PreviewMouseLeftButtonDown="BankGrid_PreviewMouseLeftButtondown"
+				PreviewMouseLeftButtonUp="BankGrid_PreviewMouseLeftButtonup"
+				PreviewMouseDown="DetailsGrid_PreviewMouseDown_1"
+				SelectionChanged="ItemsView_OnSelectionChanged"
+				SelectionMode="Single"
+				TabIndex="3"
+				TargetUpdated="DetailsGrid_TargetUpdated"
+				VerticalAlignment="Stretch"
+				VirtualizingPanel.ScrollUnit="Pixel"
+				Visibility="Collapsed"		
+			      VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+				>
+
+				<!--=======================-->
+				<!--Chowdury.com code-->
+				<!--=======================-->
+				<!--<ListView.GroupStyle>
+					<GroupStyle>
+						<GroupStyle.ContainerStyle>
+							<Style TargetType="{x:Type GroupItem}">
+								<Setter Property="Template" Value="{StaticResource GroupItemTemplate}"/>
+							</Style>
+						</GroupStyle.ContainerStyle>
+					</GroupStyle>
+				</ListView.GroupStyle>-->
+
+				
+				<!--<ListView.ItemContainerStyle>
+					<Style x:Name ="lvSelection" TargetType="ListViewItem">
+						<Style.Triggers>
+							<Trigger Property="IsSelected" Value="True">
+								<Trigger.Setters>
+									--><!--Background Works Fine--><!--
+									<Setter Property="Background" Value="{StaticResource Blue3}"/>
+									--><!--Foreground works Fine--><!--
+									<Setter Property="Foreground" Value="{StaticResource White0}"/>
+									<Setter Property="BorderBrush" Value="{StaticResource Black0}"/>
+									<Setter Property="BorderThickness" Value="2"/>
+									<Setter Property="FontSize" Value="23"/>
+									<Setter Property="FontStyle" Value="Italic"/>
+									<Setter Property="FontWeight" Value="Bold"/>
+									--><!--<Setter Property="Height" Value="33"/>--><!--
+								</Trigger.Setters>
+							</Trigger>
+							<Trigger Property="IsSelected" Value="False">
+								<Trigger.Setters>
+									--><!--Background Works Fine--><!--
+									<Setter Property="Background" Value="{StaticResource Blue4}"/>
+									--><!--Foreground works Fine--><!--
+									<Setter Property="Foreground" Value="{StaticResource Black1}"/>
+									<Setter Property="FontSize" Value="23"/>
+									<Setter Property="BorderThickness" Value="0"/>
+									<Setter Property="BorderBrush" Value="Transparent"/>
+									<Setter Property="FontStyle" Value="Normal"/>
+									<Setter Property="Height" Value="24"/>
+								</Trigger.Setters>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Trigger.Setters>
+									--><!--Background Works Fine--><!--
+									<Setter Property="Background" Value="{StaticResource Red3}"/>
+									--><!--Foreground works Fine--><!--
+									<Setter Property="Foreground" Value="{StaticResource Black0}"/>
+									<Setter Property="BorderThickness" Value="1"/>
+									<Setter Property="BorderBrush" Value="{StaticResource Black0}"/>
+									<Setter Property="FontStyle" Value="Normal"/>
+									<Setter Property="FontWeight" Value="DemiBold"/>
+									<Setter Property="Height" Value="24"/>
+								</Trigger.Setters>
+							</Trigger>
+						</Style.Triggers>
+					</Style>					
+				</ListView.ItemContainerStyle>-->
+				
+				<ListView.Resources>
+					<!--<Style TargetType="{x:Type ListViewItem}">
+						<Style.Triggers>
+							<Trigger Property="IsSelected" Value="True">
+								<Trigger.Setters>
+									--><!--Background Works Fine--><!-- 
+									<Setter Property="Background" Value="{StaticResource Blue3}"/>
+									--><!--Foreground works Fine--><!--
+									<Setter Property="Foreground" Value="{StaticResource White0}"/>
+									<Setter Property="BorderBrush" Value="{StaticResource Black0}"/>
+									<Setter Property="BorderThickness" Value="2"/>
+									<Setter Property="FontSize" Value="23"/>
+									<Setter Property="FontStyle" Value="Italic"/>
+									<Setter Property="FontWeight" Value="Bold"/>
+									<Setter Property="Height" Value="33"/>
+								</Trigger.Setters>
+							</Trigger>
+							<Trigger Property="IsSelected" Value="False">
+								<Trigger.Setters>
+									--><!--Background Works Fine--><!--
+									<Setter Property="Background" Value="{StaticResource Blue4}"/>
+									--><!--Foreground works Fine--><!--
+									<Setter Property="Foreground" Value="{StaticResource Black1}"/>
+									<Setter Property="FontSize" Value="23"/>
+									<Setter Property="BorderThickness" Value="0"/>
+									<Setter Property="BorderBrush" Value="Transparent"/>
+									<Setter Property="FontStyle" Value="Normal"/>
+									<Setter Property="Height" Value="24"/>
+								</Trigger.Setters>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Trigger.Setters>
+									--><!--Background Works Fine--><!--
+									<Setter Property="Background" Value="{StaticResource Red3}"/>
+									--><!--Foreground works Fine--><!--
+									<Setter Property="Foreground" Value="{StaticResource Black0}"/>
+									<Setter Property="BorderThickness" Value="1"/>
+									<Setter Property="BorderBrush" Value="{StaticResource Black0}"/>
+									<Setter Property="FontStyle" Value="Normal"/>
+									<Setter Property="FontWeight" Value="DemiBold"/>
+									<Setter Property="Height" Value="24"/>
+								</Trigger.Setters>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<Style TargetType="{x:Type GridViewColumnHeader}">
+						<Setter Property="HorizontalContentAlignment" Value="Center" />
+						<Setter Property="Background" Value="Yellow" />
+						<Setter Property="Foreground" Value="Black" />
+						<Setter Property="FontWeight" Value="DemiBold" />
+						--><!--<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />--><!--
+					</Style>-->
+					
+					<!--=======================-->
+					<!--Chowdury.com code-->
+					<!--=======================-->
+
+					<!--<ControlTemplate x:Key="GroupItemTemplate">
+						<Expander IsExpanded="True" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom">
+							--><!-- Header Panel of the Expander control --><!--
+							<Expander.Header>
+								<StackPanel Orientation="Horizontal">
+									<TextBlock Text="{Binding Name}" 
+						                           FontWeight="Bold" Foreground="Gray" FontSize="14"/>
+									<TextBlock Text="    " 
+											Foreground="Silver" FontStyle="Italic" FontSize="14"/>
+									<TextBlock Text="{Binding ItemCount}" 
+										Foreground="Red" FontWeight="Bold" FontStyle="Italic" FontSize="14" Width="30" HorizontalAlignment="Center"
+						                           Margin="4,0,0,0"/>
+									<TextBlock Text=" accounts(s)" 
+											Foreground="Silver" FontStyle="Italic" FontSize="14"/>
+								</StackPanel>
+							</Expander.Header>
+
+							--><!-- Items panel to hold items inside the Expander control -->
+							<!--<ItemsPresenter />--><!--
+						</Expander>
+					</ControlTemplate>-->
+
+				</ListView.Resources>
+
+				<!--<ListView.View>-->
+
+					<!--#region GridViewColumn setup-->
+					<!--<GridView >
+						
+						<GridViewColumn Header="Id" >
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Id}" 
+										     IsEnabled="False"
+										     Foreground="Blue" 
+										     Cursor="No" 
+										     FontSize="11" 
+										     Width="25"/>
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						
+						--><!--<GridViewColumn Header="Cust #   " Width="90"	 >
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding CustNo}" 
+										     FontWeight="DemiBold"
+										     HorizontalAlignment="Right"
+										     Cursor="Arrow" 
+										     FontSize="14" 
+										     Width="80"/>
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>--><!--
+
+						<GridViewColumn Header="Bank #" >
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding BankNo}" 
+									     Cursor="No" 
+									     FontSize="14" 
+									     Width="80"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn Header="Balance" >
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Balance}" 
+										     Cursor="No" 
+										     FontSize="12" 
+										     FontWeight="Bold"
+										     HorizontalAlignment="Center"
+										     Width="60"/>
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn Header="Type " >
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding AcType}" 
+										     Cursor="No" 
+										     FontSize="12" 
+										     Width="20"/>
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn Header="Int %" >
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+									<TextBlock Text="{Binding IntRate}" 
+										     Cursor="No" 
+										     FontSize="14" 
+										     Width="50"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn Header="Opened" >
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding ODate}" 
+									     Cursor="No" 
+									     FontSize="12" 
+									     Width="160"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn Header="Closed" >
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+									<TextBlock Text="{Binding CDate}" 
+										     Cursor="No" 
+										     FontSize="12" 
+										     Width="160"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+					</GridView>-->
+	<!--#endregion GridViewColumn setup-->
+
+				<!--</ListView.View>-->
+				
+				
+				<!--<ListView.GroupStyle>
+					<GroupStyle>
+						<GroupStyle.ContainerStyle>
+							<Style TargetType="{x:Type GroupItem}">
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate>
+											<Expander IsExpanded="True">
+												<Expander.Header>
+													<StackPanel Orientation="Horizontal">
+														<TextBlock FontWeight="Bold" FontSize="14" Text="{Binding Name}  " Width="85"/>
+														<TextBlock 
+															     FontSize="16"
+															     FontWeight="Bold"
+															     Text="{Binding ItemCount}" 
+															     Foreground="{StaticResource Red0}" 
+															     Width="20" 
+															     HorizontalAlignment="Center"/>
+														<TextBlock FontWeight="Normal" FontSize="14" Text=" Account(s)"/>
+													</StackPanel>
+												</Expander.Header>
+												
+												<ItemsPresenter  />
+												
+											</Expander>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</GroupStyle.ContainerStyle>
+					</GroupStyle>
+				</ListView.GroupStyle>-->
+				
+				<!--//Default Grouping code only-->
+				<!--<ListView.GroupStyle>
+					<GroupStyle>
+						<GroupStyle.HeaderTemplate>
+							<DataTemplate>
+								<TextBlock FontWeight="Bold" FontSize="14" Text="{Binding Name}"/>
+							</DataTemplate>
+						</GroupStyle.HeaderTemplate>
+					</GroupStyle>
+				</ListView.GroupStyle>-->
+			</ListView>
+
+			<!--</ListView>-->
+
+		</Grid>
+
+
+		<Canvas
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			Grid.Row="1"
+			>
+			<Canvas.Background>
+				<!--create an elegant left to right light-> Dark gradient as a background-->
+				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
+					<GradientStop Color="#333333" Offset="0" />
+					<GradientStop Color="LightGray" Offset="0.97" />
+				</LinearGradientBrush>
+			</Canvas.Background>
+
+
+		</Canvas>
+		<Menu
+			Background="Transparent"
+			Grid.Column="1"
+			Grid.ColumnSpan="2"
+			Grid.Row="1"
+			Height="30"
+			Margin="0,3"
+			HorizontalAlignment="Left"
+			HorizontalContentAlignment="Left"
+			Width="auto">
+
+			<MenuItem  Header="_Linq Queries"
+				     Margin="2"
+				     FontWeight="Bold"
+				     IsTabStop="False"
+					Width="100"
+				    Foreground="{StaticResource Black0}">
+
+				<MenuItem Header="Show All records in this Db"
+				     FontWeight="Bold"
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemGreen}"
+					Background="LightBlue"
+					 VerticalAlignment="Top"
+					Padding="3,0,0,0"
+					Click="Linq6_Click"
+					IsCheckable="false"
+						    Width="200"/>
+
+				<MenuItem Header="List Type 1 A/c's Only"
+					Background="#35F6FB"
+					Click="Linq1_Click"
+					Padding="3,0,0,0"
+					Foreground="{StaticResource Black1}"
+					Style="{StaticResource MenuItemBlue}"
+					IsCheckable="false"/>
+
+				<MenuItem Header="List Type 2 A/c's Only"
+					Background="#35F6FB"
+					Click="Linq2_Click"
+					Foreground="{StaticResource Black1}"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemBlue}"
+					IsCheckable="false"/>
+
+				<MenuItem Header="List Type 3 A/c's Only"
+					Background="#35F6FB"
+					Foreground="{StaticResource Black1}"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemBlue}"
+					Click="Linq3_Click"
+					IsCheckable="false"/>
+
+				<MenuItem Header="List Type 4 /c's Only"
+					Background="#35F6FB"
+					Click="Linq4_Click"
+					Foreground="{StaticResource Black1}"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemBlue}"
+					IsCheckable="false"/>
+
+				<Separator />
+
+				<MenuItem Header="Multi A/C Holders"
+					Background="#FF0000"
+					Foreground="{StaticResource Black1}"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemRed}"
+					Click="Linq5_Click"
+					IsCheckable="false"/>
+
+			</MenuItem>
+
+			<MenuItem  Header="Data Copy Utilities"
+				    Click="Filter_Click"
+				     FontWeight="DemiBold"
+     				     IsTabStop="False"
+					Width="130"
+				     Margin="2"
+				    Foreground="{StaticResource Black1}">
+
+				<MenuItem Header="Copy Multi Bank a/c's to Details Db"
+				    x:Name="ExportBank"
+					Click="Exportselected_Click"
+					IsCheckable="false"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemGreen}"
+				    Width="280"/>
+
+				<MenuItem Header="Copy Multi Details a/c's to Bank Db"
+				    x:Name="ExportDetails"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					Click="Exportselected_Click"
+					Padding="3,0,0,0"
+					IsCheckable="false"
+				    Width="280"/>
+
+				<Separator
+					Background="Gray"
+					Foreground="Gray"
+					Height="8"
+					HorizontalAlignment="Left"/>
+
+				<MenuItem Header="Copy Bank a/c's to Details Db"
+				    x:Name="ExportFullBank"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					Padding="3,0,0,0"
+					Click="Exportany_Click"
+					IsCheckable="false"
+				    Width="280"/>
+
+				<MenuItem Header="Copy Details a/c's to Bank Db"
+				    x:Name="ExportFullDetails"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					Padding="3,0,0,0"
+					Click="Exportany_Click"
+					IsCheckable="false"
+				    Width="280"/>
+
+			</MenuItem>
+
+			<MenuItem  Header="Options"
+				Click="Options_Click"
+				     IsTabStop="False"
+				Width="70"
+				Foreground="{StaticResource White2}">
+
+				<MenuItem  Header="Export Bank Account Db =&gt; CSV"
+					Click="ExportBankCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Padding="3,0,0,0"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Export Customers Db =&gt; CSV"
+					Click="ExportCustCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Padding="3,0,0,0"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Export Details Db =&gt; CSV"
+					Click="ExportDetCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Padding="3,0,0,0"
+					Width="290"
+					Margin="2"/>
+				<Separator/>
+				<MenuItem  Header="Import Bank Account Db from CSV"
+				     x:Name="bankfromCSV"
+					Click="ImportBankCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="White"
+					Background="#FF0000"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemRed}"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Import Customers Db from CSV"
+				     x:Name="custfromCSV"
+					Click="ImportCustCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="White"
+					Background="#FF0000"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemRed}"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Import Details Db from CSV"
+				     x:Name="detfromCSV"
+					Click="ImportDetCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="White"
+					Background="#FF0000"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Padding="3,0,0,0"
+					Style="{StaticResource MenuItemRed}"
+					Width="290"
+					Margin="2"/>
+
+			</MenuItem>
+
+			<MenuItem  Header="Drag / Drop"
+				Click="Drag_Click"
+			     IsTabStop="False"
+				Width="90"
+				Foreground="{StaticResource White1}">
+
+				<!--<MenuItem  Header="Export Bank Account Db => CSV"
+					Click="ExportBankCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					Background="#00FF00"
+					Style="{StaticResource MenuItemGreen}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>-->
+
+			</MenuItem>
+
+
+			<MenuItem  Header="Close Viewer..."
+				    Click="Exit_Click"
+				     FontWeight="SemiBold"
+				     IsTabStop="False"
+				     Margin="2,0"
+					Width="97"
+				    Foreground="{StaticResource White1}"/>
+			<!--<MenuItem Header="Setup Filter"
+					    Background="#35F6FB"
+					    Click="Filter_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>-->
+
+			<!--</MenuItem>-->
+
+		</Menu>
+
+		<!--#region Checkboxes-->
+		<WrapPanel
+				Grid.Column="1"
+				Grid.Row="1"
+				Grid.RowSpan="1"
+				Grid.ColumnSpan="4"
+				HorizontalAlignment="Right"
+				Margin="10,10,0,-5"
+				Orientation="Horizontal">
+			<CheckBox
+				x:Name="TopMostOption"
+				Content="Keep on Top"
+				IsChecked="False"
+				FontWeight="Bold"
+				Foreground="{StaticResource White3}"
+				Margin="15,-3,45,0"
+				Width="121"
+				Height="35"
+				Click="TopMost_Click" />
+			<CheckBox
+				x:Name="LinkRecords"
+				Content="Link ALL Viewers"
+				FontWeight="Bold"
+				Foreground="{StaticResource White3}"
+				IsChecked="False"
+				Margin="-45,-3,48,0"
+				Width="121"
+				Height="35"
+				Click="LinkRecords_Click " />
+		</WrapPanel>
+
+		<!--#region  buttonbar-->
+
+		<TextBlock x:Name="ViewerBanner"
+				Grid.Row="2"
+				Grid.Column="1"
+				Grid.RowSpan="1" Grid.ColumnSpan="3"
+				Foreground="Red"
+				Background="Aqua"
+				TextAlignment="Center"
+				FontWeight="Bold"
+				Text="SQL DATABASE VIEWER - This Grid allows full editing capability, and will update the SQL source in real time" />
+
+		<Button
+				Background="{StaticResource HeaderBrushGray}"
+				Click="Minimize_click"
+				Content="-v-"
+				Foreground="White"
+				Grid.Column="3"
+				Grid.Row="1"
+				Height="20"
+			HorizontalAlignment="Right"
+				MouseDown="Window_MouseDown"
+				Opacity="50"
+				Template="{StaticResource HorizontalGradientTemplateGray}"
+				VerticalContentAlignment="Top"
+				Visibility="Visible"
+				Width="20"/>
+
+		<Grid
+			Grid.Row="3"
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="300"/>
+				<ColumnDefinition Width="200"/>
+			</Grid.ColumnDefinitions>
+
+			<WrapPanel
+				Grid.Column="0"
+				Grid.ColumnSpan="1"
+				Grid.Row="1"
+				Grid.RowSpan="1"
+				HorizontalAlignment="Left"
+				Margin="0,11,0,0"
+				Orientation="Horizontal">
+				<!--#region Buttons-->
+
+				<!--Open new Db viewer Button-->
+
+				<!--Filter to multi a/c Button-->
+				<Button x:Name="Edit" Width="75" Height="35" 
+				Background="{StaticResource HeaderBrushGray}"
+				Click="Edit_Click"
+				Content="Edit"
+				FontWeight="DemiBold"
+				Foreground="White"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"
+				IsEnabled="true"
+				  Margin="0,0,0,0"
+				MouseDown="Window_MouseDown"
+				Template="{StaticResource HorizontalGradientTemplateGray}"
+ />
+				<Button
+				x:Name="Filters"
+				Background="{StaticResource HeaderBrushGray}"
+				Click="SetFilter_Click"
+				Content="Filtering"
+				FontWeight="DemiBold"
+				Foreground="White"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"
+				Height="35"
+				IsEnabled="true"
+				  Margin="5,0,0,0"
+				MouseDown="Window_MouseDown"
+				Template="{StaticResource HorizontalGradientTemplateGray}"
+				Width="75" />
+
+				<!--Multi Account Button-->
+				<Button x:Name="Multiaccounts" Width="125" Height="35" 
+				IsEnabled="true"
+				Focusable="True"
+				Click="Multiaccs_Click"
+				FontWeight="DemiBold"
+				Background="{StaticResource HeaderBrushGray}"
+				Foreground="White"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"				Template="{StaticResource HorizontalGradientTemplateGray}"
+				  Margin="5,0,0,0"
+				MouseDown="Window_MouseDown"
+				Content="Multiple A/c's Only"/>
+
+			</WrapPanel>
+
+			<!--Right hand button group-->
+			<WrapPanel
+				Grid.Column="1"
+				Grid.ColumnSpan="1"
+				Grid.RowSpan="1"
+				HorizontalAlignment="Right"
+				Margin="0,-1,-347,0"
+				Orientation="Horizontal">
+
+				<Border 
+				Width="5" Height="35" 
+				IsEnabled="true"
+				Background="{StaticResource Orange1}"
+				  Grid.Row="0"
+				  Grid.Column="0"
+				  Grid.ColumnSpan="1"				
+				  Margin="-75,14,-40,0"
+				BorderBrush="Black"
+				BorderThickness="1" />
+				<!--#endregion Buttons-->
+
+				<!--Bank Account Button-->
+				<Button x:Name="ShowBank" Width="130" Height="35" 
+				IsEnabled="true"
+				Focusable="True"
+				   Tag="true;"
+				Click="ShowBank_Click"
+				Content="Bank A/c's (0)"
+				  Margin="-2,12,0,0"
+				MouseDown="Window_MouseDown"
+				Background="{StaticResource HeaderBrushBlue}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateBlue}" />
+
+				<!--Customer Account Button-->
+				<Button x:Name="ShowCust" Width="145" Height="35"
+				IsEnabled="true"
+				Focusable="True"
+				Click="ShowCust_Click"
+				  Background="{StaticResource HeaderBrushYellow}"
+				Foreground="White"
+				  Margin="10,12,0,0"
+				Template="{StaticResource HorizontalGradientTemplateYellow}"
+				MouseDown="Window_MouseDown"
+				Content="Customer A/c's (0)" />
+
+				<!--Details Account Button-->
+				<Button x:Name="ShowDetails" 
+				  Margin="6,12,0,0"
+				  Width="125" Height="35" 
+				IsEnabled="true"
+				Focusable="True"
+				Click="ShowDetails_Click"
+				MouseDown="Window_MouseDown"
+				  Background="{StaticResource HeaderBrushGreen}"
+				Foreground="White"
+				Template="{StaticResource HorizontalGradientTemplateGreen}"
+				Content="Details A/c's  (0)"/>
+
+				<Border 
+				  Margin="6,12,0,0"
+				Width="5" Height="35" 
+				IsEnabled="true"
+				Background="{StaticResource Orange1}"
+				BorderBrush="Black"
+				BorderThickness="1" />
+
+				<Button
+					x:Name="RefreshBtn"
+				  Margin="10,12,15,0"
+					Background="{StaticResource HeaderBrushGray}"
+					Foreground="White"
+					Click="Refresh_Click"
+					Content="Refresh"
+				IsEnabled="True"
+					Height="35"
+					HorizontalAlignment="Center"
+					Template="{StaticResource HorizontalGradientTemplateGray}"
+					VerticalAlignment="Center"
+					Width="81"/>
+			</WrapPanel>
+		</Grid>
+		<!--#endregion  buttonbar-->
+
+		<!--<Grid
+			Grid.Column="1"
+			Grid.Row="5"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="1"
+			>
+			<WrapPanel
+				x:Name="WaitMessage"
+				Background="ForestGreen"
+				Height="200"
+				Orientation="Vertical"
+				Width="600"
+				Visibility="Visible" Margin="155,80,25,-83" >
+
+				<TextBlock
+					FontSize="26"
+					Foreground="White"
+					Height="87"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					VerticalAlignment="Top"
+					Margin="80,52,62,0"
+					Text="Please wait, Connecting to SQL Server to Load Database data...."
+					TextWrapping="Wrap"
+					Width="450"/>
+			</WrapPanel>
+
+
+		</Grid>-->
+
+		<Grid
+			Grid.Row="6"
+			Grid.Column="0"
+			Grid.ColumnSpan="4"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Center"
+			Height="45"
+			>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="120"/>
+				<ColumnDefinition Width="160"/>
+			</Grid.ColumnDefinitions>
+
+			<TextBlock
+				x:Name="Count"
+				Background="DarkGray"				
+				FontSize="14"
+				FontWeight="DemiBold"
+				Foreground="Red"
+				Grid.Row="1"
+				Grid.Column="1"
+				Height="30"
+				Padding="5"
+				Text="Count"
+				TextAlignment="Center"
+				VerticalAlignment="Center"
+				Width="100"
+				/>
+
+			<!--Close Window Button-->
+			<Button x:Name="CloseViewer"
+					Background="{StaticResource HeaderBrushRed}"
+					Click="CloseViewer_Click"
+					Content="Close Viewer"
+					Focusable="True"
+					FontSize="11"
+					Foreground="White"
+					Grid.Row="1"
+					Grid.Column="2"
+					Height="40" 
+					IsEnabled="true"
+					Margin="55,0,0,0"
+					MouseDown="Window_MouseDown"
+					Template="{StaticResource HorizontalGradientTemplateRed}"
+					Width="105" />
+
+		</Grid>
+
+		<TextBlock
+			
+				x:Name="StatusBar"
+				Background="Beige"
+				Foreground="Black"
+				Grid.Column="1"
+				Grid.Row="6"
+				Height="30"
+				HorizontalAlignment="Stretch"
+				Margin="0,5,5,5"
+				Padding="6"
+				Text="Status comments "
+				TextAlignment="Center"
+				VerticalAlignment="Center"
+				/>
+		<!--Style="{StaticResource gradientblue}"-->
+
+	</Grid>
+</Window>

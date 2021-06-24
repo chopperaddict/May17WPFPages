@@ -1749,7 +1749,7 @@ namespace WPFPages . Views
 			{
 				DataGridRow RowData;
 				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
-				RowInfoPopup rip = new RowInfoPopup ( "BANKACCOUNT", DataGrid1, RowData );
+				RowInfoPopup rip = new RowInfoPopup ( "BANKACCOUNT", DataGrid1);
 				rip . DataContext = RowData;
 				e . Handled = true;
 				rip . ShowDialog ( );
@@ -1773,7 +1773,7 @@ namespace WPFPages . Views
 			{
 				DataGridRow RowData;
 				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
-				rip = new RowInfoPopup ( "CUSTOMER", DataGrid2, RowData );
+				rip = new RowInfoPopup ( "CUSTOMER", DataGrid2);
 				//PopupActive = true;
 				rip . DataContext = RowData;
 				e . Handled = true;
@@ -1800,7 +1800,7 @@ namespace WPFPages . Views
 			{
 				DataGridRow RowData;
 				int row = DataGridSupport . GetDataGridRowFromTree ( e, out RowData );
-				RowInfoPopup rip = new RowInfoPopup ( "DETAILS", this . DetailsGrid, RowData );
+				RowInfoPopup rip = new RowInfoPopup ( "DETAILS", this . DetailsGrid);
 				rip . DataContext = RowData;
 				e . Handled = true;
 				rip . ShowDialog ( );

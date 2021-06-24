@@ -33,6 +33,7 @@ namespace WPFPages . Views
 		public int currseltop { get; set; }
 		public int currselbottom { get; set; }
 		public string topGridIdentity { get; set; }
+		private static Point _startPoint { get; set; }
 		//List<BankAccountViewModel> BankMoved = new List<BankAccountViewModel> ( );
 		//List<DetailsViewModel> DetMoved = new List<DetailsViewModel> ( );
 
@@ -864,9 +865,15 @@ namespace WPFPages . Views
 		}
 		private void TopGrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			// set a flag os our drag knows the mousemove is OK as left button is also down
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) ) return;
+			if ( Utils . HitTestHeaderBar ( sender, e ) ) return;
+			_startPoint = e . GetPosition ( null );
+			// Make sure the left mouse button is pressed down so we are really moving a record
 			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
 				LeftMouseButtonIsDown = true;
+			}
 			else
 				LeftMouseButtonIsDown = false;
 		}
