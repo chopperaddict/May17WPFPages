@@ -79,7 +79,8 @@ namespace WPFPages . Views
 					BankData . DataContext = dvm;
 					this . Height = 400;
 				}
-				this . MouseDown += delegate { DoDragMove ( ); };
+				//			this . MouseDown += delegate { DoDragMove ( ); };
+				Utils.SetupWindowDrag(this);
 			}
 			catch ( Exception ex )
 			{

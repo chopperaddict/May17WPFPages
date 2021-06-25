@@ -37,7 +37,7 @@
 					<Image Source="/Icons/symlink_directory_30px.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
 				<MenuItem.Icon>
 					<Image Source="/Icons/wifi.png"  />
 				</MenuItem.Icon>

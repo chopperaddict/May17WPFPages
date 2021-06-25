@@ -245,27 +245,6 @@ namespace WPFPages . Views
 					Debug . WriteLine ( $"Process failed :- {ex . Message}, {ex . Data}" );
 				}
 			}
-			//if ( p == null )
-			//{
-			//	string s = args . Length > 0 ? $"Args =  [{ args} ]" : "";
-			//	MessageBox . Show ( $"Error encountered. Either the filenameis incorrect or the\nselected Path does not include it\n\nComand line received was \n[{root}] {s}" );
-			//}
-			//else
-			//{
-			//	string s = args . Length > 0 ? $"Args =  [{ args} ] succeeded..." : " succeeded...";
-			//	Debug . WriteLine ( $"Execute process of [{root}]{s}" );
-			//}
-			return result;
-			//else
-			//{
-			//				ExternalProcess . StartInfo . Arguments = "";
-			//				ExternalProcess . StartInfo . FileName = test . Trim ( );
-			//}
-			//			ExternalProcess . StartInfo . RedirectStandardInput = true;
-
-			//ExternalProcess . StartInfo . WindowStyle = ProcessWindowStyle . Normal;
-			//ExternalProcess . EnableRaisingEvents = false;
-			//e . Handled = true;
 			return result;
 		}
 		public static string GetCurrentApplicationFullPath ( )

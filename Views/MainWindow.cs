@@ -100,7 +100,8 @@ namespace WPFPages
 		private void Loaded_click ( object sender, RoutedEventArgs e )
 		{
 			MainPageHolder . NavigationService . Navigate ( MainWindow . _Blank );
-			this . MouseDown += delegate { DoDragMove ( ); };
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 		}
 		private void DoDragMove ( )
 		{

@@ -94,7 +94,8 @@ namespace WPFPages . Views
 			}
 			TopMostOption . IsChecked = true;
 			this . Topmost = true;
-			this . MouseDown += delegate { DoDragMove ( ); };
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 		}
 		private void Cancelbutton_Click ( object sender, RoutedEventArgs e )
 		{

@@ -172,17 +172,17 @@
 	</Style>
 
 	<Style x:Key="MenuItemGreen" TargetType="{x:Type MenuItem}">
-		<Setter Property="Background" Value="Transparent" />
-		<Setter Property="Foreground" Value="Black" />
+		<!--<Setter Property="Background" Value="Transparent" />-->
+		<!--<Setter Property="Foreground" Value="Black" />-->
 		<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
-		<Setter Property="BorderThickness" Value="1.5" />
-		<Setter Property="SnapsToDevicePixels" Value="True" />
-		<Setter Property="HorizontalContentAlignment" Value="Center" />
-		<Setter Property="VerticalAlignment" Value="Bottom" />
-		<Setter Property="VerticalContentAlignment" Value="Bottom" />
-		<Setter Property="MinHeight" Value="25" />
+		<!--<Setter Property="BorderThickness" Value="1.5" />-->
+		<!--<Setter Property="SnapsToDevicePixels" Value="True" />-->
+		<!--<Setter Property="HorizontalContentAlignment" Value="Center" />-->
+		<!--<Setter Property="VerticalAlignment" Value="Bottom" />
+		<Setter Property="VerticalContentAlignment" Value="Bottom" />-->
+		<!--<Setter Property="MinHeight" Value="25" />-->
 		<!--<Setter Property="Cursor" Value="Hand" />-->
-		<Setter Property="Template">
+		<!--<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type MenuItem}">
 					<Border x:Name="Bd" 
@@ -209,12 +209,12 @@
 							<Setter Property="BorderThickness" TargetName="Bd" Value="1.5"/>
 							<Setter Property="Background" TargetName="Bd" Value="{StaticResource Green0}"/>
 							<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
-							<!--<Setter Property="Fill" TargetName="Bd" Value="{StaticResource White0}"/>-->
+							--><!--<Setter Property="Fill" TargetName="Bd" Value="{StaticResource White0}"/>--><!--
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
 			</Setter.Value>
-		</Setter>
+		</Setter>-->
 	</Style>
 
 	<Style x:Key="MenuItemGray" TargetType="{x:Type MenuItem}">

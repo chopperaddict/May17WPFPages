@@ -97,9 +97,10 @@ namespace WPFPages . Views
 			dindex = int . Parse ( ndx );
 			this . DetGrid . SelectedIndex = dindex < 0 ? 0 : dindex;
 
-			this . MouseDown += delegate { DoDragMove ( ); };
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 			// An EditDb has changed the current index 
-			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
+			EventControl. EditIndexChanged += EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index 
 			EventControl . MultiViewerIndexChanged += EventControl_EditIndexChanged;
 			// Another viewer has changed the current index 

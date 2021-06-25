@@ -38,7 +38,7 @@
 					<Image Source="/Icons/symlink_directory_30px.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
 				<MenuItem.Icon>
 					<Image Source="/Icons/wifi.png"  />
 				</MenuItem.Icon>
@@ -300,17 +300,6 @@
 				Width="60" 
 				    Foreground="{StaticResource White1}">
 
-				<MenuItem  Header="Trigger My Own Command"
-				     Command="{Binding myCommandBinding}"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-				<!--<Button Grid.ColumnSpan="2" Grid.Row="4" Command="{Binding InformationCommand}">Info</Button>-->
 			</MenuItem>
 			
 			<MenuItem  Header="Options" 
@@ -337,7 +326,7 @@
 					HorizontalAlignment="Left"
 					HorizontalContentAlignment="Left"
 					Width="290"
-					Margin="2"				     />
+					Margin="2"/>
 				<MenuItem  Header="Export Details Db => CSV"
 					Click="ExportDetCSV_Click"
 					FontWeight="DemiBold"
@@ -358,8 +347,7 @@
 					HorizontalAlignment="Left"
 					HorizontalContentAlignment="Left"
 					Width="290"
-					Margin="2"
-					/>
+					Margin="2"/>
 				<MenuItem  Header="Import Customers Db from CSV"
 					Click="ImportCustCSV_Click"
 					FontWeight="DemiBold"
@@ -369,8 +357,7 @@
 					HorizontalContentAlignment="Left"
 					Style="{StaticResource MenuItemRed}"
 					Width="290"
-					Margin="2"
-					/>
+					Margin="2"/>
 				<MenuItem  Header="Import Details Db from CSV"
 					Click="ImportDetCSV_Click"
 					FontWeight="DemiBold"
@@ -380,8 +367,7 @@
 					HorizontalContentAlignment="Left"
 					Style="{StaticResource MenuItemRed}"
 					Width="290"
-					Margin="2"
-					/>
+					Margin="2"/>
 
 			</MenuItem>
 
@@ -389,8 +375,8 @@
 				Click="Drag_Click"
 			     IsTabStop="False"
 				Width="81"
-				Foreground="{StaticResource White1}">
-			</MenuItem>
+				Foreground="{StaticResource White1}"/>
+
 
 
 			<MenuItem  Header="Close Viewer..."

@@ -2,24 +2,24 @@
 #define TASK1
 
 using System;
-using System . Collections;
-using System . Collections . Generic;
-using System . ComponentModel;
-using System . Threading . Tasks;
-using System . Windows . Controls;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 
-using WPFPages . Views;
+using WPFPages.Views;
 
-namespace WPFPages . ViewModels
+namespace WPFPages.ViewModels
 {
 	public partial class DetailsViewModel// : Observable
 	{
-		#region CONSTRUCTORS
 
+#region CONSTRUCTORS
 		// CONSTRUCTOR
-		public DetailsViewModel ( )
+		public DetailsViewModel()
 		{
-
+			integervalues = new Internalclass();
 		}
 
 		#endregion CONSTRUCTORS
@@ -36,65 +36,71 @@ namespace WPFPages . ViewModels
 		private decimal intrate;
 		private DateTime odate;
 		private DateTime cdate;
+		private Internalclass integervalues;
 
+		public Internalclass Integervalues
+		{
+			get { return integervalues; }
+			set { integervalues = value; OnPropertyChanged(integervalues.ToString()); }
+		}
 		public int Id
 		{
 			get { return id; }
-			set { id = value; OnPropertyChanged ( Id . ToString ( ) ); }
+			set { id = value; OnPropertyChanged(Id.ToString()); }
 		}
 
 		public string CustNo
 		{
 			get { return custno; }
-			set { custno = value; OnPropertyChanged ( CustNo . ToString ( ) ); }
+			set { custno = value; OnPropertyChanged(CustNo.ToString()); }
 		}
 
 		public string BankNo
 		{
 			get { return bankno; }
-			set { bankno = value; OnPropertyChanged ( BankNo . ToString ( ) ); }
+			set { bankno = value; OnPropertyChanged(BankNo.ToString()); }
 		}
 
 		public int AcType
 		{
 			get { return actype; }
-			set { actype = value; OnPropertyChanged ( AcType . ToString ( ) ); }
+			set { actype = value; OnPropertyChanged(AcType.ToString()); }
 		}
 
 		public decimal Balance
 		{
 			get { return balance; }
-			set { balance = value; OnPropertyChanged ( Balance . ToString ( ) ); }
+			set { balance = value; OnPropertyChanged(Balance.ToString()); }
 		}
 
 		public decimal IntRate
 		{
 			get { return intrate; }
-			set { intrate = value; OnPropertyChanged ( IntRate . ToString ( ) ); }
+			set { intrate = value; OnPropertyChanged(IntRate.ToString()); }
 		}
 
 		public DateTime ODate
 		{
 			get { return odate; }
-			set { odate = value; OnPropertyChanged ( ODate . ToString ( ) ); }
+			set { odate = value; OnPropertyChanged(ODate.ToString()); }
 		}
 
 		public DateTime CDate
 		{
 			get { return cdate; }
-			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
+			set { cdate = value; OnPropertyChanged(CDate.ToString()); }
 		}
 
 		#endregion properties
 
 		#region PropertyChanged
 		public event PropertyChangedEventHandler PropertyChanged;
-		protected void OnPropertyChanged ( string PropertyName )
+		protected void OnPropertyChanged(string PropertyName)
 		{
-			if ( null != PropertyChanged )
+			if (null != PropertyChanged)
 			{
-				PropertyChanged ( this,
-					new PropertyChangedEventArgs ( PropertyName ) );
+				PropertyChanged(this,
+					new PropertyChangedEventArgs(PropertyName));
 			}
 		}
 		#endregion PropertyChanged

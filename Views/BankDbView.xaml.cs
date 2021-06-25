@@ -82,7 +82,8 @@ namespace WPFPages . Views
 			bindex = int . Parse ( ndx );
 			this . BankGrid . SelectedIndex = bindex < 0 ? 0 : bindex;
 
-			this . MouseDown += delegate { DoDragMove ( ); };
+//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 			// An EditDb has changed the current index 
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
 			// A Multiviewer has changed the current index 

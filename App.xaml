@@ -7,7 +7,6 @@
 	<Application.Resources>
 
 
-
 		<!--NB - You cannot have resources declared in here if you use the ResourceDirectory system as below
 		but you can have multiple Resourcedictionary files listed here, so you can subdivide
 		your styles etc as required

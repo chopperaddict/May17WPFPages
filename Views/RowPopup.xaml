@@ -501,7 +501,19 @@
 						    Margin="5,5,5,5"
 						    Padding="5,0,5,0"
 					    />
-
+									<TextBox x:Name="dob1"
+						Text="{Binding Path=  Dob}"
+						Height="20"
+						Width="90"
+						FontSize="14"
+						Foreground="Black"
+						Background="Bisque"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						Margin="5,5,5,5"
+						Padding="5,0,5,0"
+					/>
+	
 				</StackPanel>
 				<!--#endregion Right Column Bank Data Fields (BankData)-->
 

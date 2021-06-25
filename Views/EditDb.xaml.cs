@@ -798,8 +798,9 @@ namespace WPFPages . Views
 			EventControl . RecordDeleted += OnDeletion;
 
 			// set up our windows dragging
-			this . MouseDown += delegate { DoDragMove ( ); };
-			this . Topmost = false;
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
+			this. Topmost = false;
 			IsDirty = false;
 			Startup = false;
 		}

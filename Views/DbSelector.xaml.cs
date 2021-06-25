@@ -100,7 +100,8 @@ namespace WPFPages . Views
 			}
 			sqlSelector . SelectedIndex = 2;
 			sqlSelector . Focus ( );
-			this . MouseDown += delegate { DoDragMove ( ); };
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 			//			Utils . GetWindowHandles ( );
 			OntopChkbox . IsChecked = false;
 			ExecuteFile . Visibility = Visibility . Collapsed;
@@ -722,12 +723,10 @@ namespace WPFPages . Views
 			this . BringIntoView ( );
 			OntopChkbox . IsChecked = false;
 			this . Topmost = false;
-			//Send commands to SqlDbViewer !!!!!
-			//			EventHandlers . SendViewerCommand ( 103 , ">>> Ended OnWindowLoaded()" , Flags . CurrentSqlViewer );
 		}
 
 		//*****************************************************************************************//
-		private void DoDragMove ( )
+		public  void DoDragMove ( )
 		{//Handle the button NOT being the left mouse button
 		 // which will crash the DragMove Fn.....
 			try

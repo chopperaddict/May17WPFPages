@@ -6,7 +6,19 @@
 	  xmlns:data="clr-namespace:WPFPages"
 	  mc:Ignorable="d"
 	  DataContext="{Binding RelativeSource={RelativeSource Self}}"
-		Title="Database Edit/View Utility"
+		MinHeight="450"
+		MinWidth="867"
+		Loaded="OnWindowLoaded"	
+		PreviewKeyDown="Window_PreviewKeyDown"
+		Title="Database Edit/View Utility" 
+		Height="450" Width="867"
+		WindowStartupLocation="CenterScreen"
+		Closed="Window_Closed"
+		WindowStyle="ThreeDBorderWindow">
+
+
+
+	<!--Title="Database Edit/View Utility"Title="Database Edit/View Utility"
 		Height="550" Width="867"
 		MinHeight="450" MinWidth="867"
 		Left="1050"
@@ -18,24 +30,163 @@
 		GotFocus="Window_GotFocus"
 		MouseDown="Window_MouseDown"
 		PreviewKeyDown="Window_PreviewKeyDown"
-		Closed="Window_Closed">
-	<!--d:DataContext="{d:DesignInstance Type=local:BankAccount}"-->
+		Closed="Window_Closed">-->
 
-	<!--Never gets called - I use Mousedown to achieve this
-	GotFocus ="Window_GotFocus"-->
-	<!--<Style x:Key="HWhiteBlackGradientBackgroundStyle" TargetType="Button" >-->
 
 	<Window.Resources>
 
+		<!--<Style x:Key="Cm1" TargetType="{x:Type Menu}">
+			<Setter Property="Background" Value="{StaticResource Red3}"/>
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="Green"/>
+					<Setter Property="Foreground" Value="Blue"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+
+		-->
 		<!--<dd:SqlBankcollection x:Key="SqlBankcollection"/>-->
+		<!--
+		<Style x:Key="Mitem1" TargetType="MenuItem">
+			<Setter Property="Height" Value="35"/>
+		</Style>-->
 
 		<ContextMenu x:Key="ContextMenu1">
-			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" 
-				    Foreground="{StaticResource Black2}">
-				<MenuItem.Icon>
-					<Image Source="/Icons/text-message.png"  />
-				</MenuItem.Icon>
+			<MenuItem 
+				Name ="linq1" Header="Linq Queries"  
+				    Foreground="{StaticResource White0}"
+					Background="Blue">
+
+				<!--Style="{StaticResource Mitem1}"-->
+				<MenuItem Header="AC Type 1 Only" 
+					    Click="Linq1_Click"
+				    Foreground="{StaticResource Red0}"
+				    Background="{StaticResource Blue1}"/>
+				<MenuItem Header="AC Type 2 Only" 
+					    Click="Linq2_Click"
+				    Foreground="{StaticResource Red1}"
+				    Background="{StaticResource Blue3}"/>
+				<MenuItem Header="AC Type 3 Only" 
+					    Click="Linq3_Click"
+				    Foreground="{StaticResource Red2}"
+				    Background="{StaticResource Blue3}"/>
+				<MenuItem Header="AC Type 4 Only" 
+					    Click="Linq4_Click"
+				    Foreground="{StaticResource Red3}"
+				    Background="{StaticResource Blue3}"/>
+
+				<Separator Style="{StaticResource Menu_Separator}"/>
+
+				<MenuItem Header="Multiple A/c holders Only" 
+					    Click="Linq5_Click"
+				    Foreground="{StaticResource White0}"
+				    Background="Blue"/>
+				<MenuItem Header="Show All A/c's" 
+					    Click="Linq6_Click"
+				    Foreground="{StaticResource White0}"
+				    Background="Blue"/>
+
+
+				<!--<MenuItem.Resources>
+					<LinearGradientBrush x:Key="DarkBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+						<GradientBrush.GradientStops>
+							<GradientStopCollection>
+								<GradientStop Color="#939393" Offset="0.0"/>
+								<GradientStop Color="#717171" Offset="0.05"/>
+								<GradientStop Color="#606060" Offset="1.0"/>
+							</GradientStopCollection>
+						</GradientBrush.GradientStops>
+					</LinearGradientBrush>
+
+					<LinearGradientBrush x:Key="Clicked" StartPoint="0.5,0" EndPoint="0.5,1">
+						<GradientBrush.GradientStops>
+							<GradientStopCollection>
+								<GradientStop Color="#363636" Offset="0.0"/>
+								<GradientStop Color="#393939" Offset="1.0"/>
+							</GradientStopCollection>
+						</GradientBrush.GradientStops>
+					</LinearGradientBrush>
+
+
+					<Style x:Key="{x:Type Menu}" TargetType="Menu">
+						<Setter Property="OverridesDefaultStyle" Value="True"/>
+						<Setter Property="SnapsToDevicePixels" Value="True"/>
+						<Setter Property="Foreground" Value="White"/>
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="Menu">
+									<Border x:Name="MainMenu" Background="#535353">
+										<StackPanel ClipToBounds="True" Orientation="Horizontal" IsItemsHost="True"/>
+									</Border>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+					</Style>
+
+					<ControlTemplate x:Key="MenuItemControlTemplate1" TargetType="{x:Type MenuItem}">
+						<Border x:Name="templateRoot" 
+								  BorderBrush="#535353" 
+								  CornerRadius="3" 
+								  BorderThickness="1" 
+								  Background="{TemplateBinding Background}" 
+								  SnapsToDevicePixels="True">
+							<Grid VerticalAlignment="Center">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+
+								<ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+								<Popup x:Name="PART_Popup"  AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
+									<Border x:Name="SubMenuBorder" BorderBrush="#595959" BorderThickness="1" Background="#3A3A3A" Padding="2">
+										<ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+											<Grid RenderOptions.ClearTypeHint="Enabled">
+												<Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+													<Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
+												</Canvas>
+												<ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+											</Grid>
+										</ScrollViewer>
+									</Border>
+								</Popup>
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsSuspendingPopupAnimation" Value="True">
+								<Setter Property="PopupAnimation" TargetName="PART_Popup" Value="None"/>
+							</Trigger>
+
+							<Trigger Property="IsHighlighted" Value="True">
+								<Setter Property="Background" TargetName="templateRoot" Value="Blue"/>
+								<Setter Property="BorderBrush" TargetName="templateRoot" Value="#2C2C2C"/>
+								<Setter Property="BorderThickness" TargetName="templateRoot" Value="5"></Setter>
+							</Trigger>
+
+							<Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
+								<Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
+								<Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
+							</Trigger>
+							<Trigger Property="IsKeyboardFocusWithin" Value="True">
+								<Setter TargetName="templateRoot" Property="Background" Value="Red" />
+								<Setter Property="Header" Value="Test" />
+								<Setter Property="BorderBrush" Value="#2C2C2C"></Setter>
+								<Setter Property="BorderThickness" Value="1"></Setter>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="templateRoot" Property="Background" Value="Red" />
+								<Setter Property="Header" Value="Test" />
+								<Setter Property="BorderBrush" Value="#2C2C2C"></Setter>
+								<Setter Property="BorderThickness" Value="5"></Setter>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</MenuItem.Resources>-->
+
 			</MenuItem>
+
 			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click"
 				>
 				<MenuItem.Icon>
@@ -49,7 +200,7 @@
 					<Image Source="/Icons/symlink_directory_30px.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" 
+			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" 
 				    Background="{StaticResource Green3}" Foreground="{StaticResource Black4}">
 				<MenuItem.Icon>
 					<Image Source="/Icons/wifi.png"  />
@@ -69,7 +220,7 @@
 				</MenuItem.Icon>
 			</MenuItem>
 
-			<ContextMenu.Resources>
+			<!--<ContextMenu.Resources>
 				<Style x:Key="Cm1" TargetType="{x:Type MenuItem}">
 					<Setter Property="Background" Value="{StaticResource Red3}"/>
 					<Style.Triggers>
@@ -79,7 +230,7 @@
 						</Trigger>
 					</Style.Triggers>
 				</Style>
-			</ContextMenu.Resources>
+			</ContextMenu.Resources>-->
 		</ContextMenu>
 
 
@@ -428,7 +579,10 @@
 
 
 	<Grid GotFocus="Window_GotFocus"
-		Visibility="Visible">
+		Visibility="Visible" ForceCursor="True" OverridesDefaultStyle="True" UseLayoutRounding="True">
+		<Grid.FocusVisualStyle>
+			<Style/>
+		</Grid.FocusVisualStyle>
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="5" />
@@ -455,22 +609,6 @@
 			</LinearGradientBrush>
 		</Grid.Background>
 
-
-		<!--<Canvas
-			Grid.Column="1"
-			Grid.ColumnSpan="3"
-			Grid.Row="1"
-			>
-			<Canvas.Background>
-				-->
-		<!--create an elegant left to right light-> Dark gradient as a background-->
-		<!--
-				<LinearGradientBrush EndPoint="0,1" StartPoint="1,0">
-					<GradientStop Color="#333333" Offset="0" />
-					<GradientStop Color="LightGray" Offset="0.97" />
-				</LinearGradientBrush>
-			</Canvas.Background>
-		</Canvas>-->
 
 
 		<!--<Menu
@@ -691,27 +829,18 @@
 
 			-->
 		<!--// Seperate menu item at top level -->
-		<!--
-			<MenuItem  Header="Close Viewer..."
-				    Click="Exit_Click"
-				     FontWeight="SemiBold"
-				     IsTabStop="False"
-				     Margin="2,0"
-					Width="97"
-				    Foreground="{StaticResource White1}">
-			</MenuItem>
 
-		</Menu>-->
+		<!--</Menu>-->
 
 		<!--#region Checkboxes-->
 		<WrapPanel
 			Background="Transparent"
 				Grid.Column="1"
 				Grid.Row="1"
-				Grid.RowSpan="1"
+				Grid.RowSpan="2"
 				Grid.ColumnSpan="4"
 				HorizontalAlignment="Right"
-				Margin="10,10,0,-5"
+				Margin="0,9,0,21"
 				Orientation="Horizontal">
 			<CheckBox
 				x:Name="TopMostOption"
@@ -1323,6 +1452,9 @@
 					<DataGridTextColumn Header="A/c Opened"
 									Binding ="{Binding Path=ODate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
 									StringFormat='dd/MM/yyyy'}" />
+					<DataGridTextColumn Header="TestClass"
+									Binding ="{Binding Path=Integervalues.AGE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									/>
 					<!--the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string-->
 					<DataGridTemplateColumn Header="A/c Closed" Width="80" SortMemberPath="CDate">
 						<DataGridTemplateColumn.CellTemplate>
@@ -1402,23 +1534,132 @@
 				TextAlignment="Center"
 				VerticalAlignment="Center"
 				/>
-		<Menu
-			Background="Gray"
-			Foreground="White"
+
+
+		<!--#region Menu Bar-->
+		<Menu  			
+			Background="Transparent"
 			Grid.Column="1"
 			Grid.Row="1"
-			Height="30" Margin="0,0,0,0"
-			>
-			<MenuItem x:Name="M1" Header="MenuItem1">
-				<MenuItem Header="MenuItem2"/>
-				<MenuItem Header="MenuItem3"/>
+			Height="30" 
+			IsHitTestVisible="True"
+			HorizontalAlignment="Left"
+			Width="auto">
+
+			<MenuItem  Header="_Linq Queries" 
+					Margin="5"
+				     Width="80" 
+				    >
+				<!--Foreground="{StaticResource White0}"-->
+				<MenuItem Header="A/c Type 1 Only"
+					    Click="Linq1_Click"
+					    Foreground="Black"
+					    IsCheckable="false"/>
+				<!--Background="#35F6FB"-->
+				<MenuItem Header="A/c Type 2 Only"
+					Click="Linq2_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 3 Only"
+					Click="Linq3_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="A/c Type 4 Only"
+					Click="Linq4_Click"
+					Foreground="Black"
+					IsCheckable="False"/>
+				<MenuItem Header="Multi A/C Holders"
+					Click="Linq5_Click"
+					IsCheckable="False"
+					Foreground="Black"/>
+				<Separator />
+				<MenuItem Header="Show All Records"
+					Click="Linq6_Click"
+					IsCheckable="False"
+					Foreground="Black"/>
 			</MenuItem>
-			<MenuItem x:Name="M2" Header="MenuItem1-1">
-				<MenuItem Header="MenuItem1-2"/>
-				<MenuItem Header="MenuItem1-3"/>
-			</MenuItem>
-			<MenuItem Header="dfdsdff"/>
+
+			<!--<MenuItem  Header="Filtering" 
+				Width="60" 
+				    Foreground="{StaticResource White1}">-->
+
+			<!--</MenuItem>-->
+
+			<!--<MenuItem  Header="Options" 
+				    Click="Options_Click"
+					Width="50" 
+				    Foreground="{StaticResource White2}">
+
+				<MenuItem  Header="Export Bank Account Db => CSV"
+					Click="ExportBankCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				--><!--Style="{StaticResource MenuItemGreen}"--><!--
+				<MenuItem  Header="Export Customers Db => CSV"
+					Click="ExportCustCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Export Details Db => CSV"
+					Click="ExportDetCSV_Click"
+					FontWeight="DemiBold"
+					Foreground="{StaticResource Black1}"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				<Separator/>
+				<MenuItem  Header="Import Bank Account Db from CSV"
+					Click="ImportBankCSV_Click"
+					FontWeight="DemiBold"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				<MenuItem  Header="Import Customers Db from CSV"
+					Click="ImportCustCSV_Click"
+					FontWeight="DemiBold"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+				--><!--Foreground="White"
+					Background="#FF0000"--><!--
+				<MenuItem  Header="Import Details Db from CSV"
+					Click="ImportDetCSV_Click"
+					FontWeight="DemiBold"
+					HorizontalAlignment="Left"
+					HorizontalContentAlignment="Left"
+					Width="290"
+					Margin="2"/>
+
+			</MenuItem>-->
+
+			<MenuItem  Header="Drag / Drop"
+				Click="Drag_Click"
+			     IsTabStop="False"
+				Width="81"
+				Foreground="{StaticResource White1}"/>
+
+
+
+			<MenuItem  Header="Close Viewer..."
+				    Click="Exit_Click"
+				     FontWeight="SemiBold"
+				     Margin="2,0"
+					Width="97"
+				    Foreground="{StaticResource White1}"/>
 		</Menu>
+
+		<!--#endregion Menu Bar-->
+
 
 	</Grid>
 </Window>

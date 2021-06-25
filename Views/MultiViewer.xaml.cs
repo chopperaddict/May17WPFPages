@@ -339,13 +339,14 @@ namespace WPFPages . Views
 
 		private void SubscribeToEvents ( )
 		{
-			this . MouseDown += delegate { DoDragMove ( ); };
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 			//			this . BankGrid . MouseDown += delegate { DoDragMove ( ); };
 			//			this . CustomerGrid . MouseDown += delegate { DoDragMove ( ); };
 			//			this . DetailsGrid . MouseDown += delegate { DoDragMove ( ); };
 
 			// An EditDb has changed the current index
-			EventControl . EditIndexChanged += EventControl_ViewerIndexChanged;
+			EventControl. EditIndexChanged += EventControl_ViewerIndexChanged;
 			// This is THIS  Multiviewer so we do NOT suscribe to it, Only other windows do so
 			//EventControl . MultiViewerIndexChanged += EventControl_MultiViewerIndexChanged;
 			// Another SqlDbviewer has changed the current index

@@ -73,8 +73,9 @@ namespace WPFPages . Views
 			ExecuteFile . Visibility = Visibility . Collapsed;
 			dataGrid . Visibility = Visibility . Visible;
 			textBox . Visibility = Visibility . Visible;
-			this . MouseDown += delegate { DoDragMove ( ); };
-			AddToText . IsChecked = true;
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
+			AddToText. IsChecked = true;
 			CopyGridToText = true;
 			Flags . DragDropViewer = this;
 			OntopChkbox . IsChecked = true;

@@ -322,8 +322,8 @@ namespace WPFPages
 			//			NotifyViewer SendCommand = DbSelector . MyNotification;
 			//			Utils . GetWindowHandles ( );
 			// Handle window dragging
-			this . MouseDown += delegate { DoDragMove ( ); };
-			this . Show ( );
+			Utils.SetupWindowDrag(this);
+			this. Show ( );
 		}
 		/// <summary>
 		/// MAIN STARTUP CALL from DbSelector
@@ -364,8 +364,9 @@ namespace WPFPages
 			ResetMenuBarStatus ( );
 
 			// Handle window dragging
-			this . MouseDown += delegate { DoDragMove ( ); };
-			RefreshBtn . IsEnabled = true;
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
+			RefreshBtn. IsEnabled = true;
 			//This DOES call handler in DbSelector !!
 			dgControl = new DataGridController ( );
 			Flags . CurrentSqlViewer = this;
@@ -434,6 +435,7 @@ namespace WPFPages
 			if ( Flags . LinkviewerRecords )
 				LinkRecords . IsChecked = true;
 			Mouse . OverrideCursor = Cursors . Arrow;
+			
 			this . Topmost = false;
 		}
 
@@ -5310,7 +5312,7 @@ namespace WPFPages
 		{ }
 
 		private void Exit_Click ( object sender, RoutedEventArgs e )
-		{ Close ( ); }
+		{ CloseViewer_Click(sender, e); }
 
 		/// <summary>
 		/// Generic method to send Index changed Event trigger so that
@@ -6364,46 +6366,7 @@ namespace WPFPages
 				jsonresult = JsonConvert . SerializeObject ( SqlDetcollection );
 				JsonSupport . JsonSerialize ( jsonresult, path );
 			}
-			//StatusBar . Text = "Please wait, This process can take a little while !!";
-			////Create JSON file in PRETTY FORMAT ??
-			//Mouse . OverrideCursor = Cursors . Wait;
-
-			//resultString = JsonSupport.CreateFormattedJsonOutput ( jsonresult, "xxxxx" );
-
-			//path = @"C:\tmp\dboutput.json";
-			//File . WriteAllText ( path, resultString);
-			//Mouse . OverrideCursor = Cursors . Arrow;
-			//StatusBar . Text = "Process completed successfully...";
-			//this . Refresh ( );
-
-			//Process ExternalProcess = new Process ( );
-			//ExternalProcess . StartInfo . FileName = program. Trim ( );
-			//ExternalProcess . StartInfo . Arguments = path . Trim ( );
-			//try
-			//{
-			//	ExternalProcess . Start ( );
-			//	//ExternalProcess . WaitForExit ( );
-			//}
-			//catch ( Exception ex )
-			//{
-			//	Debug . WriteLine ( $"ExternalProcess error : {ex . Message}, {ex . Data}" );
-			//	if ( ex . Message . Contains ( "cannot find the file" ) )
-			//	{
-			//		if ( Flags . SingleSearchPath != "" )
-			//			MessageBox . Show ( $"Error executing the (Full specified command) \n \"{ program}\"\n\nThe System was unable to Execute this file.", "File Execution Error !" );
-			//		else
-			//			MessageBox . Show ( $"Error executing the (command) shown below\n \"{ program} {path}\"\n\nThe System was unable to Execute this file.", "File Execution Error !" );
-			//	}
-			//	else
-			//		MessageBox . Show ( $"Error executing the (Command) shown below\n \"{ program} {path}\"\n\nSee the Debug output for more information.", "File Execution Error !" );
-
-			//}
-			//finally
-			//{
-			//	ExternalProcess . Close ( );
-			//}
-				//			SqlBankcollection = JsonConvert . DeserializeObject<BankCollection> ( resultString );
-			MessageBox . Show ( $"The data from this Database has been saved\nfor you in 'Json' format successfully ...\n\nFile is : {path}", "Data Persistence System" );
+				MessageBox . Show ( $"The data from this Database has been saved\nfor you in 'Json' format successfully ...\n\nFile is : {path}", "Data Persistence System" );
 		}
 
 		private void ContextEdit_Click ( object sender, RoutedEventArgs e )
@@ -6510,7 +6473,7 @@ namespace WPFPages
 			//============================================//
 			//MENU ITEM 'Exit this Viewer'
 			//============================================//
-			this . Close ( );
+			CloseViewer_Click(sender, e); 
 		}
 		/// <summary>
 		/// Show the content of the currently  selected record in Standard Json format
@@ -6572,11 +6535,11 @@ namespace WPFPages
 			//// this is the best way to save persistent data in Json format
 			////using tmp folder for interim file that we will then display
 			if ( CurrentDb == "BANKACCOUNT" )
-				JsonSupport.CreateShowJsonText ( CurrentDb, SqlBankcollection);
+				JsonSupport.CreateShowJsonText ( CurrentDb, SqlBankcollection, "BankAccountViewModel");
 			else if ( CurrentDb == "CUSTOMER" )
-				JsonSupport . CreateShowJsonText ( CurrentDb, SqlCustcollection );
+				JsonSupport . CreateShowJsonText ( CurrentDb, SqlCustcollection,"CustomerViewModel");
 			else if ( CurrentDb == "DETAILS" )
-				JsonSupport . CreateShowJsonText ( CurrentDb, SqlDetcollection );
+				JsonSupport . CreateShowJsonText ( CurrentDb, SqlDetcollection , "DetailsViewModel");
 
 		}
 		#endregion JSON support function

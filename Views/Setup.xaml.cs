@@ -22,10 +22,11 @@ namespace WPFPages . Views
 		public Setup ( )
 		{
 			InitializeComponent ( );
-			this . MouseDown += delegate { DoDragMove ( ); };
+			//			this . MouseDown += delegate { DoDragMove ( ); };
+			Utils.SetupWindowDrag(this);
 			Connstring.Text = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];
 			Connstring . Text = Connstring . Text . Trim ( );
-			//StartupWindow . Text = ( string ) Properties . Settings . Default [ "StartupWindow" ];
+			StartupWindow . Text = ( string ) Properties . Settings . Default [ "StartupWindow" ];
 			
 		}
 		private void DoDragMove ( )

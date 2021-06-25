@@ -47,7 +47,7 @@
 					<Image Source="/Icons/symlink_directory_30px.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
 				<MenuItem.Icon>
 					<Image Source="/Icons/wifi.png"  />
 				</MenuItem.Icon>
@@ -96,6 +96,9 @@
 
 		<!--#endregion Grid setup-->
 
+		<!--#region Main DataGrid-->
+
+		<!--#endregion Main DataGrid-->
 
 		<!--#region  SaveData Panel-->
 
@@ -324,23 +327,23 @@
 				AcceptsReturn="True" 
 				AcceptsTab="True" 
 				AutoWordSelection="True"
-				DragEnter="TextBox_DragEnter"
 				GiveFeedback="textBox_GiveFeedback"
 				Grid.Row="3"
 				Grid.RowSpan="1"
 				Grid.Column="1"
 				Grid.ColumnSpan="3"
 				HorizontalContentAlignment="Stretch" 
-				HorizontalScrollBarVisibility="Auto" 			
 				IsMouseCaptureWithinChanged="TextBox_IsMouseCaptureWithinChanged"
-				IsTabStop="False" 
-				Margin="0,10,0,0"
 				MouseDoubleClick="TextBox_MouseDoubleClick"
-				PreviewDrop="Textbox_PreviewDrop"
-				PreviewDragOver="TextBox_PreviewDragOver" 
-				TextChanged="textBox_TextChanged"
+				IsTabStop="False" 
+				HorizontalScrollBarVisibility="Auto" 			
+				Margin="0,10,0,0"
 				VerticalScrollBarVisibility="Auto" 
 				Visibility="Visible"
+				DragEnter="TextBox_DragEnter"
+				PreviewDrop="Textbox_PreviewDrop"
+				PreviewDragOver="TextBox_PreviewDragOver" 
+			   TextChanged="textBox_TextChanged"
 			     >
 
 			<TextBox.Resources>
@@ -438,7 +441,6 @@
 			    HorizontalAlignment="Left" 
 			    IsChecked="True"
 			    Margin="122,39,0,6"/>
-		
 		<DataGrid x:Name="dataGrid" 
 			    AlternatingRowBackground="#44ff00" 			    
 			    Background="#FFADD4B2" 
@@ -486,7 +488,7 @@
 							<Image Source="/Icons/symlink_directory_30px.png"  />
 						</MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+					<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
 						<MenuItem.Icon>
 							<Image Source="/Icons/wifi.png"  />
 						</MenuItem.Icon>
@@ -536,7 +538,8 @@
 					</Style.Triggers>
 				</Style>
 			</DataGrid.Resources>
-			<DataGrid.RowBackground>
+			
+		<DataGrid.RowBackground>
 				<StaticResource ResourceKey="Green4"/>
 			</DataGrid.RowBackground>
 

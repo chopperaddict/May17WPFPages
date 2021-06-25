@@ -100,6 +100,7 @@
     <Compile Include="Observable.cs" />
     <Compile Include="Page0.xaml.cs" />
     <Compile Include="Page1.xaml.cs" />
+    <Compile Include="ViewModels\DetailsViewModel.Internalclass.cs" />
     <Compile Include="ViewModels\LinqSupport.cs" />
     <Compile Include="Views\AllEventArgs.cs" />
     <Compile Include="Views\BankCollection.cs" />

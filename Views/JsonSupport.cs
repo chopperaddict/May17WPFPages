@@ -73,7 +73,7 @@ namespace WPFPages . Views
 			int rows = 0;
 			int fiddle = 0, maxrows = 0;
 			double current = 0; maxrows = 0; 
-			string Output = "{\r\n";
+			string Output = "";
 			// using a stringbuilder improves speed by around 1000 % - honestly !!!
 			// it is now almost instant
 			StringBuilder sb = new StringBuilder ( );
@@ -93,17 +93,18 @@ namespace WPFPages . Views
 				//Single record output only !! OK - 23/6/21
 				temp = tmp1 [ 2 ];
 				tmp3 = temp . Split ( ',' );
-				Output += $"\t";
+				Output += "{";
+				Output += "\n\"{Title}\":{\n";
 				for ( int i = 1 ; i < tmp3 . Length ; i++ )
 				{
 					if ( tmp3 [ i ] . Length == 0 ) continue;
 					if ( i == tmp3 . Length - 1 )
 					{
 						Output += tmp3 [ i ] . Substring ( 0, tmp3 [ i ] . Length - 2 );
-						Output += "\r\n}\r\n";
+						Output += "\n}\r\n";
 					}
 					else
-						Output += tmp3 [ i ] + "\r\n\t";
+						Output += tmp3 [ i ] + "\n\t";
 
 				}
 				return Output;
@@ -114,27 +115,33 @@ namespace WPFPages . Views
 			tmp2 = temp . Split ( ',' );
 			maxrows = tmp1 . Length;
 			// get 1% value
-			fiddle = maxrows / 100;	// eg 4900 recs =490
+			fiddle = maxrows / 100; // eg 4900 recs =490		
 			for ( int outer = 0 ; outer < maxrows - 1 ; outer++ )
 			{
 				temp = tmp1 [ outer ];
 				tmp3 = temp . Split ( ',' );
 				if ( tmp3 . Length <= 1 ) continue;
-				Output += $"\t{tmp3 [ 0 ]}\r\n";
-				if ( outer >= 1 ) Output += "\t";
+				if(outer == 1) Output += "{" + $"\n\t\"{Title}\": [\n";
+				Output += "\t{\n";
+//				Output += "\n";
+				Output += $"\t\t{tmp3 [ 0 ]},\n";
+//				if ( outer >= 1 ) Output += "\t";
 				for ( int i = 1 ; i < tmp3 . Length ; i++ )
 				{
 					if ( tmp3 [ i ] . Length == 0 ) continue;
 					if ( i == tmp3 . Length - 2 )
 					{
-						Output += tmp3 [ i ] . Substring ( 0, tmp3 [ i ] . Length - 1 );
-						Output += "\r\n}\r\n{";
+						Output += "\t\t" + tmp3 [ i ] . Substring ( 0, tmp3 [ i ] . Length - 1 );
+						Output += "\t\n";
 					}
 					else
-						Output += tmp3 [ i ] + "\r\n\t";
+						Output += "\t\t" + tmp3 [ i ] + ",\n";
 				}
-				Output += "\n";
-				sb . Append ( Output );
+				if (rows + 3 < maxrows)
+					Output += "\t},\n";
+				else
+					Output += "\t}\n";
+				sb. Append ( Output );
 				Output = "";
 				rows++;
 				current = rows;
@@ -151,9 +158,9 @@ namespace WPFPages . Views
 				}
 			}
 			if(Output.Length > 0)
-				Output = Output . Substring ( 0, Output . Length - 2 ) + "\r\n";
+				Output = Output . Substring ( 0, Output . Length - 3 ) + "\t]\n}\n";
 			else
-				Output = "\r\n";
+				Output =  "\t]\n}\r\n";
 			sb . Append ( Output );
 			return sb . ToString ( ); ;
 		}
@@ -187,6 +194,7 @@ namespace WPFPages . Views
 				path = @"C:\\tmp\\BankTempdata.json";
 				jsonresult = JsonConvert . SerializeObject ( collection );
 				JsonSupport . JsonSerialize ( jsonresult, path );
+				if (Title == "") Title = "BankAccount";
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
