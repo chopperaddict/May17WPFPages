@@ -94,9 +94,9 @@ namespace WPFPages . ViewModels
 
 		public  string ToString ( bool full = false )
 		{
-			if ( full )
-				return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
-			else
+//			if ( full )
+//				return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
+//			else
 				return base . ToString ( );
 		}
 		public override string ToString ( )

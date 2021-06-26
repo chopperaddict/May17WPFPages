@@ -783,22 +783,30 @@ namespace WPFPages . Views
 		}
 		private void CustGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
-{
-				if ( CustGrid . SelectedItem != null )
+			Point mousePos = e.GetPosition(null);
+			Vector diff = _startPoint - mousePos;
+
+			if (e.LeftButton == MouseButtonState.Pressed &&
+			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+			{
+				if (IsLeftButtonDown && e.LeftButton == MouseButtonState.Pressed)
 				{
-					// We are dragging from the DETAILS grid
-					//Working string version
-					CustomerViewModel cvm = new CustomerViewModel ( );
-					cvm = CustGrid . SelectedItem as CustomerViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
-					string dataFormat = DataFormats . Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
-					CustGrid,
-					dataObject,
-					DragDropEffects . Move );
-					IsLeftButtonDown = false;
+					if (CustGrid.SelectedItem != null)
+					{
+						// We are dragging from the DETAILS grid
+						//Working string version
+						CustomerViewModel cvm = new CustomerViewModel();
+						cvm = CustGrid.SelectedItem as CustomerViewModel;
+						string str = GetExportRecords.CreateTextFromRecord(null, null, cvm, true, false);
+						string dataFormat = DataFormats.Text;
+						DataObject dataObject = new DataObject(dataFormat, str);
+						System.Windows.DragDrop.DoDragDrop(
+						CustGrid,
+						dataObject,
+						DragDropEffects.Move);
+						IsLeftButtonDown = false;
+					}
 				}
 			}
 		}
@@ -1003,14 +1011,38 @@ namespace WPFPages . Views
 
 		private void ContextDisplayJsonData_Click ( object sender, RoutedEventArgs e )
 		{
-			JsonSupport . CreateShowJsonText ( "CUSTOMER", CustDbViewcollection);
+			JsonSupport . CreateShowJsonText (false, "CUSTOMER", CustDbViewcollection);
 		}
 
 		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
 		{
-
+			//============================================//
+			//MENU ITEM 'Read and display JSON File'
+			//============================================//
+			string Output = "";
+			this.Refresh();
+			////We need to save current Collectionview as a Json (binary) data to disk
+			//// this is the best way to save persistent data in Json format
+			////using tmp folder for interim file that we will then display
+			CustomerViewModel bvm = this.CustGrid.SelectedItem as CustomerViewModel;
+			Output = JsonSupport.CreateShowJsonText(true, "CUSTOMER", bvm, "CustomerViewModel");
+			MessageBox.Show(Output, "Currently selected record in JSON format", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 		}
 
+		private void ViewJsonRecord_Click(object sender, RoutedEventArgs e)
+		{
+			//============================================//
+			//MENU ITEM 'Read and display JSON File'
+			//============================================//
+			string Output = "";
+			this.Refresh();
+			////We need to save current Collectionview as a Json (binary) data to disk
+			//// this is the best way to save persistent data in Json format
+			////using tmp folder for interim file that we will then display
+			CustomerViewModel bvm = this.CustGrid.SelectedItem as CustomerViewModel;
+			Output = JsonSupport.CreateShowJsonText(true, "CUSTOMER", bvm, "CustomerViewModel");
+			MessageBox.Show(Output, "Currently selected record in JSON format", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+		}
 	}
 }
 

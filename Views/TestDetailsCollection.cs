@@ -1,43 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
+using System.Data;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Security.AccessControl;
-using System.Security.Cryptography;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using WPFPages.Libraries;
 using WPFPages.ViewModels;
+using System.Windows;
 
-// Used by DetailsDbViewer
 namespace WPFPages.Views
 {
-	public class DetailCollection : ObservableCollection<DetailsViewModel>
+	public class TestDetailsCollection : ObservableCollection<DetailsViewModel>
 	{
 		public static bool Notify = false;
 		public static string Caller = "";
 
-		public DetailCollection()
+		public TestDetailsCollection()
 		{
 		}
 
-		public ObservableCollection<DetailsViewModel> DetCollection = new ObservableCollection<DetailsViewModel>();
-		public ObservableCollection<DetailsViewModel.Internalclass> DetInternalCollection = new ObservableCollection<DetailsViewModel.Internalclass>();
+		public ObservableCollection<DetailsViewModel> TestDetCollection = new ObservableCollection<DetailsViewModel>();
 
 		// working entity to load data into
-		public static DetCollection internalcollection = null;
-		public static DetailsViewModel.Internalclass DetInternalcollection = null;
+		public static TestDetailsCollection internalcollection = null;
 
 
 		public static DataTable dtDetails = new DataTable();
 
-		public static async Task<DetCollection> LoadDet(DetCollection dc, string caller, int ViewerType = 1, bool NotifyAll = false)
+		public static async Task<TestDetailsCollection> LoadDet(TestDetailsCollection dc, string caller, int ViewerType = 1, bool NotifyAll = false)
 		{
 			bool result = false;
 			object lockobject = new object();
@@ -49,7 +42,7 @@ namespace WPFPages.Views
 				lock (lockobject)
 				{
 					internalcollection = null;
-					internalcollection = new DetCollection();
+					internalcollection = new TestDetailsCollection();
 
 					LoadDetailsTaskInSortOrderAsync(internalcollection);
 					Debug.WriteLine($"Exiting lock of Details Load system");
@@ -63,7 +56,7 @@ namespace WPFPages.Views
 			return null;
 		}
 
-		public static async Task<bool> LoadDetailsTaskInSortOrderAsync(DetCollection internalcollection)
+		public static async Task<bool> LoadDetailsTaskInSortOrderAsync(TestDetailsCollection internalcollection)
 		{
 			//			NotifyAll = NotifyAll;
 			bool result = false;
@@ -76,18 +69,18 @@ namespace WPFPages.Views
 			Task t1 = Task.Run(
 				async () =>
 				{
-					Debug.WriteLine($"DETCOLLECTION : Calling LOADDETAILSDATASQL()");
+					Debug.WriteLine($"TestDetailsCollection : Calling LOADDETAILSDATASQL()");
 					await LoadDetailsDataSql();
-					Debug.WriteLine($"DETCOLLECTION : Completed LOADDETAILSDATASQL()");
+					Debug.WriteLine($"TestDetailsCollection : Completed LOADDETAILSDATASQL()");
 				}
 				);
 			t1.ContinueWith
 			(
 				async (result) =>
 				{
-					Debug.WriteLine($"DETCOLLECTION : Calling LOADDETCOLLECTION()");
+					Debug.WriteLine($"TestDetailsCollection : Calling LOADDETCOLLECTION()");
 					await LoadDetCollection(internalcollection);
-					Debug.WriteLine($"DETCOLLECTION : Completed LOADDETCOLLECTION()");
+					Debug.WriteLine($"TestDetailsCollection : Completed LOADDETCOLLECTION()");
 				}, TaskScheduler.FromCurrentSynchronizationContext()
 			 ); ;
 
@@ -109,15 +102,15 @@ namespace WPFPages.Views
 				(Detinternalcollection) =>
 				{
 					AggregateException ae = t1.Exception.Flatten();
-					Debug.WriteLine($"Exception in DetCollection data processing \n");
+					Debug.WriteLine($"Exception in TestDetailsCollection data processing \n");
 					foreach (var item in ae.InnerExceptions)
 					{
-						Debug.WriteLine($"DetCollection : Exception : {item.Message}, : {item.Data}");
+						Debug.WriteLine($"TestDetailsCollection : Exception : {item.Message}, : {item.Data}");
 					}
 				}, CancellationToken.None, TaskContinuationOptions.NotOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext()
 			);
 
-			//			Debug . WriteLine ($"DETAILS : END OF PROCESSING & Error checking functionality\nDETAILS : *** Detcollection total = {Detcollection.Count} ***\n\n");
+			//			Debug . WriteLine ($"DETAILS : END OF PROCESSING & Error checking functionality\nDETAILS : *** TestDetailsCollection total = {TestDetailsCollection.Count} ***\n\n");
 			#endregion Success//Error reporting/handling
 
 			return true;
@@ -191,7 +184,7 @@ namespace WPFPages.Views
 		}
 
 		//**************************************************************************************************************************************************************//
-		public static async Task<bool> LoadDetCollection(DetCollection internalcollection)
+		public static async Task<bool> LoadDetCollection(TestDetailsCollection internalcollection)
 		{
 			object bptr = new object();
 			int count = 0;
@@ -211,15 +204,15 @@ namespace WPFPages.Views
 							IntRate = Convert.ToDecimal(dtDetails.Rows[i][5]),
 							ODate = Convert.ToDateTime(dtDetails.Rows[i][6]),
 							CDate = Convert.ToDateTime(dtDetails.Rows[i][7]),
-//							Integervalues = dtDetails.Rows[i][8] as DetailsViewModel.Internalclass
+							//							Integervalues = dtDetails.Rows[i][8] as DetailsViewModel.Internalclass
 						});
 						count = i;
 					}
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex.Message}] : {ex.Data} ....");
-					MessageBox.Show($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex.Message}] : {ex.Data} ....");
+					Debug.WriteLine($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"TestDetailsCollection\" : [{ex.Message}] : {ex.Data} ....");
+					MessageBox.Show($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"TestDetailsCollection\" : [{ex.Message}] : {ex.Data} ....");
 					return false;
 				}
 				finally
@@ -259,7 +252,7 @@ namespace WPFPages.Views
 					SqlCommand cmd = new SqlCommand(commandline, con);
 					SqlDataAdapter sda = new SqlDataAdapter(cmd);
 
-					DetCollection bptr = new DetCollection();
+					TestDetailsCollection bptr = new TestDetailsCollection();
 					sda.Fill(dtDetails);
 				}
 			}
@@ -275,7 +268,7 @@ namespace WPFPages.Views
 			return dtDetails;
 		}
 
-		public static DetCollection LoadDetailsCollectionDirect(DetCollection collection, DataTable dtDetails)
+		public static TestDetailsCollection LoadDetailsCollectionDirect(TestDetailsCollection collection, DataTable dtDetails)
 		{
 			int count = 0;
 			try
@@ -298,8 +291,8 @@ namespace WPFPages.Views
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex.Message}] : {ex.Data} ....");
-				MessageBox.Show($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"DetCollection\" : [{ex.Message}] : {ex.Data} ....");
+				Debug.WriteLine($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"TestDetailsCollection\" : [{ex.Message}] : {ex.Data} ....");
+				MessageBox.Show($"DETAILS : ERROR in  LoadDetCollection() : loading Details into ObservableCollection \"TestDetailsCollection\" : [{ex.Message}] : {ex.Data} ....");
 				return null;
 			}
 			finally
@@ -440,5 +433,6 @@ namespace WPFPages.Views
 			return tmp;
 		}
 		#endregion EXPORT FUNCTIONS TO READ/WRITE CSV files
+
 	}
 }

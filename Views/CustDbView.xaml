@@ -37,6 +37,15 @@
 					<Image Source="/Icons/symlink_directory_30px.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
+			<MenuItem Header="View currently selected record in JSON Format"  
+				    Background="{StaticResource Green3}"
+				    FontSize="16"
+				    Click="ViewJsonRecord_Click"
+				   >
+				<MenuItem.Icon>
+					<Image Source="/Icons/symlink_directory_30px.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
 			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
 				<MenuItem.Icon>
 					<Image Source="/Icons/wifi.png"  />

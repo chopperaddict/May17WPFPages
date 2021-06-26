@@ -646,28 +646,35 @@ namespace WPFPages . Views
 			}
 		}
 
-		private void BankGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		private void BankGrid_PreviewMouseMove(object sender, MouseEventArgs e)
 		{
-			if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+			Point mousePos = e.GetPosition(null);
+			Vector diff = _startPoint - mousePos;
+
+			if (e.LeftButton == MouseButtonState.Pressed &&
+			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
 			{
-				if ( BankGrid . SelectedItem != null )
+				if (IsLeftButtonDown && e.LeftButton == MouseButtonState.Pressed)
 				{
-					// We are dragging from the DETAILS grid
-					//Working string version
-					BankAccountViewModel bvm = new BankAccountViewModel ( );
-					bvm = BankGrid . SelectedItem as BankAccountViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );
-					string dataFormat = DataFormats . Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					DragDrop . DoDragDrop (
-					BankGrid,
-					dataObject,
-					DragDropEffects . Move );
-					IsLeftButtonDown = false;
+					if (BankGrid.SelectedItem != null)
+					{
+						// We are dragging from the DETAILS grid
+						//Working string version
+						BankAccountViewModel bvm = new BankAccountViewModel();
+						bvm = BankGrid.SelectedItem as BankAccountViewModel;
+						string str = GetExportRecords.CreateTextFromRecord(bvm, null, null, true, false);
+						string dataFormat = DataFormats.Text;
+						DataObject dataObject = new DataObject(dataFormat, str);
+						DragDrop.DoDragDrop(
+						BankGrid,
+						dataObject,
+						DragDropEffects.Move);
+						IsLeftButtonDown = false;
+					}
 				}
 			}
 		}
-
 		#region Menu items
 
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
@@ -1038,6 +1045,17 @@ namespace WPFPages . Views
 
 		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
 		{
+			//============================================//
+			//MENU ITEM 'Read and display JSON File'
+			//============================================//
+			string Output = "";
+			this.Refresh();
+			////We need to save current Collectionview as a Json (binary) data to disk
+			//// this is the best way to save persistent data in Json format
+			////using tmp folder for interim file that we will then display
+			BankAccountViewModel bvm = this.BankGrid.SelectedItem as BankAccountViewModel;
+			Output = JsonSupport.CreateShowJsonText(true, "BANKACCOUNT", bvm, "BankAccountViewModel");
+			MessageBox.Show(Output, "Currently selected record in JSON format", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 
 		}
 
@@ -1112,7 +1130,7 @@ namespace WPFPages . Views
 			//============================================//
 			//MENU ITEM 'Read and display JSON File'
 			//============================================//
-			JsonSupport . CreateShowJsonText ( "BANKACCOUNT", BankViewcollection );
+			JsonSupport . CreateShowJsonText ( false, "BANKACCOUNT", BankViewcollection );
 
 		}
 

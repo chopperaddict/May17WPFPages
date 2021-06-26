@@ -2604,52 +2604,68 @@ namespace WPFPages . Views
 
 		private void CustomerGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			// Make sure the left mouse button is pressed down so we are really moving a record
-			if ( e . LeftButton == MouseButtonState . Pressed )
+			Point mousePos = e.GetPosition(null);
+			Vector diff = _startPoint - mousePos;
+
+			if (e.LeftButton == MouseButtonState.Pressed &&
+			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
 			{
-				if ( CustomerGrid . SelectedItem != null )
+				// Make sure the left mouse button is pressed down so we are really moving a record
+				if (e.LeftButton == MouseButtonState.Pressed)
 				{
-					if ( ScrollBarMouseMove )
+					if (CustomerGrid.SelectedItem != null)
 					{
-						return;
+						if (ScrollBarMouseMove)
+						{
+							return;
+						}
+						// We are dragging from the Customer grid
+						//Working string version
+						CustomerViewModel cvm = new CustomerViewModel();
+						cvm = CustomerGrid.SelectedItem as CustomerViewModel;
+						string str = GetExportRecords.CreateTextFromRecord(null, null, cvm, true, false);
+						string dataFormat = DataFormats.Text;
+						DataObject dataObject = new DataObject(dataFormat, str);
+						System.Windows.DragDrop.DoDragDrop(
+						CustomerGrid,
+						dataObject,
+						DragDropEffects.Move);
 					}
-					// We are dragging from the Customer grid
-					//Working string version
-					CustomerViewModel cvm = new CustomerViewModel ( );
-					cvm = CustomerGrid . SelectedItem as CustomerViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( null, null, cvm, true, false );
-					string dataFormat = DataFormats . Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
-					CustomerGrid,
-					dataObject,
-					DragDropEffects . Move );
 				}
 			}
 		}
 
 		private void DetailsGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			// Make sure the left mouse button is pressed down so we are really moving a record
-			if ( e . LeftButton == MouseButtonState . Pressed )
+			Point mousePos = e.GetPosition(null);
+			Vector diff = _startPoint - mousePos;
+
+			if (e.LeftButton == MouseButtonState.Pressed &&
+			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
 			{
-				if ( DetailsGrid . SelectedItem != null )
+				// Make sure the left mouse button is pressed down so we are really moving a record
+				if (e.LeftButton == MouseButtonState.Pressed)
 				{
-					if ( ScrollBarMouseMove )
+					if (DetailsGrid.SelectedItem != null)
 					{
-						return;
+						if (ScrollBarMouseMove)
+						{
+							return;
+						}
+						// We are dragging from the DETAILS grid
+						//Working string version
+						DetailsViewModel dvm = new DetailsViewModel();
+						dvm = DetailsGrid.SelectedItem as DetailsViewModel;
+						string str = GetExportRecords.CreateTextFromRecord(null, dvm, null, true, false);
+						string dataFormat = DataFormats.Text;
+						DataObject dataObject = new DataObject(dataFormat, str);
+						System.Windows.DragDrop.DoDragDrop(
+						BankGrid,
+						dataObject,
+						DragDropEffects.Move);
 					}
-					// We are dragging from the DETAILS grid
-					//Working string version
-					DetailsViewModel dvm = new DetailsViewModel ( );
-					dvm = DetailsGrid . SelectedItem as DetailsViewModel;
-					string str = GetExportRecords . CreateTextFromRecord ( null, dvm, null, true, false );
-					string dataFormat = DataFormats . Text;
-					DataObject dataObject = new DataObject ( dataFormat, str );
-					System . Windows . DragDrop . DoDragDrop (
-					BankGrid,
-					dataObject,
-					DragDropEffects . Move );
 				}
 			}
 		}
@@ -2802,11 +2818,11 @@ namespace WPFPages . Views
 			//using tmp folder for interim file that we will then display
 
 			if ( CurrentDb == "BANKACCOUNT" )
-				JsonSupport . CreateShowJsonText ( CurrentDb, MBankcollection );
+				JsonSupport . CreateShowJsonText (false, CurrentDb, MBankcollection );
 			else if ( CurrentDb == "CUSTOMER" )
-				JsonSupport . CreateShowJsonText ( CurrentDb, MCustcollection );
+				JsonSupport . CreateShowJsonText (false, CurrentDb, MCustcollection );
 			else if ( CurrentDb == "DETAILS" )
-				JsonSupport . CreateShowJsonText ( CurrentDb, MDetcollection );
+				JsonSupport . CreateShowJsonText (false, CurrentDb, MDetcollection );
 		}
 
 		private async void ContextCreateJsonOutput_Click ( object sender, RoutedEventArgs e )

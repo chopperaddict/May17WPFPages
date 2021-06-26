@@ -357,7 +357,14 @@ namespace WPFPages . Views
 		}
 		private void BottomGrid_PreviewMouseMove ( object sender, System . Windows . Input . MouseEventArgs e )
 		{
-			if ( LeftMouseButtonIsDown == false )
+			Point mousePos = e.GetPosition(null);
+			Vector diff = _startPoint - mousePos;
+
+			if (e.LeftButton == MouseButtonState.Pressed &&
+			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+			{
+				if ( LeftMouseButtonIsDown == false )
 			{
 				// Dragging must have neded as well if button is up
 				DraggingInProgress = false;
@@ -371,38 +378,46 @@ namespace WPFPages . Views
 			{
 				if ( BottomGrid . SelectedItem != null )
 				{
-					if ( topGridIdentity == "BANK" )
-					{
-						// We are dragging from the DETAILS grid
-						//Working string version
-						DraggingInProgress = true;
-						string str = CreateTextFromRecord ( null, BottomGrid . SelectedItem as DetailsViewModel );
-						string dataFormat = DataFormats . UnicodeText;
-						DataObject dataObject = new DataObject ( dataFormat, str );
-						DragDrop . DoDragDrop (
-						TopGrid,
-						dataObject,
-						DragDropEffects . Move );
-					}
-					else if ( topGridIdentity == "DET" )
-					{
-						// We are dragging from the BANK grid
-						// We are dragging from the lower BANK grid in this case
-						DraggingInProgress = true;
-						string str = CreateTextFromRecord ( BottomGrid . SelectedItem as BankAccountViewModel, null );
-						string dataFormat = DataFormats . UnicodeText;
-						DataObject dataObject = new DataObject ( dataFormat, str );
-						DragDrop . DoDragDrop (
-						TopGrid,
-						dataObject,
-						DragDropEffects . Move );
+						if (topGridIdentity == "BANK")
+						{
+							// We are dragging from the DETAILS grid
+							//Working string version
+							DraggingInProgress = true;
+							string str = CreateTextFromRecord(null, BottomGrid.SelectedItem as DetailsViewModel);
+							string dataFormat = DataFormats.UnicodeText;
+							DataObject dataObject = new DataObject(dataFormat, str);
+							DragDrop.DoDragDrop(
+							TopGrid,
+							dataObject,
+							DragDropEffects.Move);
+						}
+						else if (topGridIdentity == "DET")
+						{
+							// We are dragging from the BANK grid
+							// We are dragging from the lower BANK grid in this case
+							DraggingInProgress = true;
+							string str = CreateTextFromRecord(BottomGrid.SelectedItem as BankAccountViewModel, null);
+							string dataFormat = DataFormats.UnicodeText;
+							DataObject dataObject = new DataObject(dataFormat, str);
+							DragDrop.DoDragDrop(
+							TopGrid,
+							dataObject,
+							DragDropEffects.Move);
+						}
 					}
 				}
 			}
 		}
 		private void TopGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
 		{
-			if ( LeftMouseButtonIsDown == false )
+			Point mousePos = e.GetPosition(null);
+			Vector diff = _startPoint - mousePos;
+
+			if (e.LeftButton == MouseButtonState.Pressed &&
+			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+			{
+				if ( LeftMouseButtonIsDown == false )
 			{
 				// Dragging must have neded as well if button is up
 				DraggingInProgress = false;
@@ -411,37 +426,38 @@ namespace WPFPages . Views
 			if ( DraggingInProgress )
 				return;
 
-			// Make sure the left mouse button is pressed down so we are really moving a record
-			if ( e . LeftButton == MouseButtonState . Pressed )
-			{
-				// ensure we have a record selected in Top Grid
-				if ( TopGrid . SelectedItem != null )
+				// Make sure the left mouse button is pressed down so we are really moving a record
+				if (e.LeftButton == MouseButtonState.Pressed)
 				{
-					if ( topGridIdentity == "BANK" )
+					// ensure we have a record selected in Top Grid
+					if (TopGrid.SelectedItem != null)
 					{
-						// We are dragging from the upper BANK grid
-						// to the lower DETAILS grid
-						DraggingInProgress = true;
-						string str = CreateTextFromRecord ( TopGrid . SelectedItem as BankAccountViewModel, null );
-						string dataFormat = DataFormats . UnicodeText;
-						DataObject dataObject = new DataObject ( dataFormat, str );
-						DragDrop . DoDragDrop (
-						TopGrid,
-						dataObject,
-						DragDropEffects . Move );
-					}
-					else if ( topGridIdentity == "DET" )
-					{
-						// We are dragging from the upper DETAILS grid
-						// to the lower BANK grid
-						DraggingInProgress = true;
-						string str = CreateTextFromRecord ( null, TopGrid . SelectedItem as DetailsViewModel );
-						string dataFormat = DataFormats . UnicodeText;
-						DataObject dataObject = new DataObject ( dataFormat, str );
-						DragDrop . DoDragDrop (
-						TopGrid,
-						dataObject,
-						DragDropEffects . Move );
+						if (topGridIdentity == "BANK")
+						{
+							// We are dragging from the upper BANK grid
+							// to the lower DETAILS grid
+							DraggingInProgress = true;
+							string str = CreateTextFromRecord(TopGrid.SelectedItem as BankAccountViewModel, null);
+							string dataFormat = DataFormats.UnicodeText;
+							DataObject dataObject = new DataObject(dataFormat, str);
+							DragDrop.DoDragDrop(
+							TopGrid,
+							dataObject,
+							DragDropEffects.Move);
+						}
+						else if (topGridIdentity == "DET")
+						{
+							// We are dragging from the upper DETAILS grid
+							// to the lower BANK grid
+							DraggingInProgress = true;
+							string str = CreateTextFromRecord(null, TopGrid.SelectedItem as DetailsViewModel);
+							string dataFormat = DataFormats.UnicodeText;
+							DataObject dataObject = new DataObject(dataFormat, str);
+							DragDrop.DoDragDrop(
+							TopGrid,
+							dataObject,
+							DragDropEffects.Move);
+						}
 					}
 				}
 			}

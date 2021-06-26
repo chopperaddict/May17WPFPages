@@ -36,11 +36,11 @@
 					<Image Source="/Icons/text-message.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<!--<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
+			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
 				<MenuItem.Icon>
 					<Image Source="/Icons/mailbox-receive-message.png" />
 				</MenuItem.Icon>
-			</MenuItem>-->
+			</MenuItem>
 			<Separator Style="{StaticResource Menu_Separator}"/>
 			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
 				<MenuItem.Icon>

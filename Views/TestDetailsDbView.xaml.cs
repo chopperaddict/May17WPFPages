@@ -1,36 +1,45 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using WPFPages.Properties;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using WPFPages.ViewModels;
 
 namespace WPFPages.Views
 {
 	/// <summary>
-	/// Interaction logic for DetailsDbView.xaml
+	/// Interaction logic for TestDetailsDbView.xaml
 	/// </summary>
-	public partial class DetailsDbView : Window
+	public partial class TestDetailsDbView : Window
 	{
-		public DetCollection DetViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
+		public TestDetailsDbView()
+		{
+			InitializeComponent();
+			//Type calltype = typeof ( callerWin );
+		}
+
+		public TestDetailsCollection TestDetDbcollection = null;// = new TestDetailsCollection ( );//. TestDetDbcollection ;
 
 		// Crucial structure for use when a Grid row is being edited
 		private static RowData bvmCurrent = null;
 
 		#region CollectionView stuff
-		public CollectionViewSource DetViewSource { get; set; }
+		public CollectionViewSource TestDetViewSource { get; set; }
 
 		// Get our personal Collection view of the Db
-		public ICollectionView DetviewerView { get; set; }
+		public ICollectionView TestDetviewerView { get; set; }
 		private bool IsLeftButtonDown { get; set; }
 		// items for CollectionView
 		public int CurrentItem { get; internal set; }
@@ -66,15 +75,6 @@ namespace WPFPages.Views
 		public DataChangeArgs dca = new DataChangeArgs();
 
 		private Thread t1;
-		public DetailsDbView(SqlDbViewer sqldbv = null, MultiViewer mv = null, DbSelector dbs = null)
-		{
-			Startup = true;
-			InitializeComponent();
-			//Type calltype = typeof ( callerWin );
-			MultiParentViewer = mv;
-			SqlParentViewer = sqldbv;
-			DbsParentViewer = dbs;
-		}
 		#region Mouse support
 		private void DoDragMove()
 		{//Handle the button NOT being the left mouse button
@@ -108,13 +108,12 @@ namespace WPFPages.Views
 			EventControl.ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl.DetDataLoaded += EventControl_DetDataLoaded;
 
-			await DetailCollection.LoadDet(DetViewerDbcollection, "DETAILSDBVIEW", 2, true);
+			await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
 
 			SaveBttn.IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
 			bool tmp = Flags.LinkviewerRecords;
 
-			Flags.DetDbEditor = this;
 			// Set window to TOPMOST
 			OntopChkbox.IsChecked = true;
 			this.Topmost = true;
@@ -145,6 +144,13 @@ namespace WPFPages.Views
 		private void EventControl_EditIndexChanged(object sender, IndexChangedArgs e)
 		{
 			// Handle selection change by other windows if linkage is ON
+
+			//TESTING - bypassed 26/6/21
+			return;
+
+
+
+
 			Triggered = true;
 			if (IsEditing)
 			{
@@ -181,14 +187,16 @@ namespace WPFPages.Views
 
 			LoadingDbData = true;
 
-			// This (DetviewerView) is simply an ICollectionView of the data received in e.DataSource from SQL load methods
+			// This (TestDetviewerView) is simply an ICollectionView of the data received in e.DataSource from SQL load methods
 			// So now we have an independent reference to the "Base" data that can be manipulated in any way we wish
 			// without effecting any other Viewer's window content
-			DetviewerView = CollectionViewSource.GetDefaultView(e.DataSource as DetCollection);
-			DetViewerDbcollection = e.DataSource as DetCollection;
-			DetviewerView.Refresh();
+			TestDetDbcollection = e.DataSource as TestDetailsCollection;
+			// Get our View of the data loaded
+			TestDetviewerView = CollectionViewSource.GetDefaultView(TestDetDbcollection);
+			//			TestDetviewerView = CollectionViewSource.GetDefaultView(e.DataSource as TestDetailsCollection);
+			TestDetviewerView.Refresh();
 			this.DetGrid.Focus();
-			this.DetGrid.ItemsSource = DetviewerView;
+			this.DetGrid.ItemsSource = TestDetviewerView;
 			this.DetGrid.SelectedIndex = dindex;
 			this.DetGrid.SelectedItem = dindex;
 			Utils.SetUpGridSelection(DetGrid, dindex);
@@ -214,7 +222,7 @@ namespace WPFPages.Views
 			this.DetGrid.ItemsSource = null;
 			this.DetGrid.Items.Clear();
 			Mouse.OverrideCursor = Cursors.Wait;
-			await DetailCollection.LoadDet(DetViewerDbcollection, "DETAILSDBVIEW", 2, true);
+			await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
 			IsDirty = false;
 		}
 		#endregion DATA BASED EVENT HANDLERS
@@ -227,9 +235,9 @@ namespace WPFPages.Views
 		//	this . DetGrid . Items . Clear ( );
 		//	// Get our personal Collection view of the Db
 		//	IList<DetailsViewModel> SQLDetViewerView = e . DataSource as DetCollection;
-		//	// This (DetviewerView) is an ICollectionView 
-		//	DetviewerView = CollectionViewSource . GetDefaultView ( SQLDetViewerView );
-		//	this . DetGrid . ItemsSource = DetviewerView;
+		//	// This (TestDetviewerView) is an ICollectionView 
+		//	TestDetviewerView = CollectionViewSource . GetDefaultView ( SQLDetViewerView );
+		//	this . DetGrid . ItemsSource = TestDetviewerView;
 
 		//	this . DetGrid . SelectedIndex = 0;
 		//	this . DetGrid . SelectedItem = 0;
@@ -320,42 +328,44 @@ namespace WPFPages.Views
 			Startup = true;
 			DataFields.DataContext = this.DetGrid.SelectedItem;
 
-			if (Flags.LinkviewerRecords && Triggered == false)
-				TriggerViewerIndexChanged(DetGrid);
+			// TESTING commented out 26/6/21
 
-			// Only  do this if global link is OFF
-			if (LinktoParent)
-			{
-				// update parents row selection
-				string bankno = "";
-				string custno = "";
-				var dvm = this.DetGrid.SelectedItem as DetailsViewModel;
+			//if (Flags.LinkviewerRecords && Triggered == false)
+			//	TriggerViewerIndexChanged(DetGrid);
 
-				if (SqlParentViewer != null)
-				{
-					int rec = Utils.FindMatchingRecord(dvm.CustNo, dvm.BankNo, SqlParentViewer.DetailsGrid, "DETAILS");
-					SqlParentViewer.DetailsGrid.SelectedIndex = rec;
-					Utils.SetUpGridSelection(SqlParentViewer.DetailsGrid, rec);
-				}
-				else if (MultiParentViewer != null)
-				{
-					int rec = Utils.FindMatchingRecord(dvm.CustNo, dvm.BankNo, MultiParentViewer.DetailsGrid, "DETAILS");
-					MultiParentViewer.DetailsGrid.SelectedIndex = rec;
-					Utils.SetUpGridSelection(MultiParentViewer.DetailsGrid, rec);
-				}
-				if (IsMultiLinkActive(LinktoMultiParent))
-				{
-					Flags.SqlMultiViewer.DetailsGrid.SelectedIndex = this.DetGrid.SelectedIndex;
-					Flags.SqlMultiViewer.DetailsGrid.ScrollIntoView(this.DetGrid.SelectedIndex);
-					Utils.SetUpGridSelection(Flags.SqlMultiViewer.DetailsGrid, this.DetGrid.SelectedIndex);
-				}
-			}
-			else if (LinktoMultiParent)
-			{
-				Flags.SqlMultiViewer.DetailsGrid.SelectedIndex = this.DetGrid.SelectedIndex;
-				Flags.SqlMultiViewer.DetailsGrid.ScrollIntoView(this.DetGrid.SelectedIndex);
-				Utils.SetUpGridSelection(Flags.SqlMultiViewer.DetailsGrid, this.DetGrid.SelectedIndex);
-			}
+			//// Only  do this if global link is OFF
+			//if (LinktoParent)
+			//{
+			//	// update parents row selection
+			//	string bankno = "";
+			//	string custno = "";
+			//	var dvm = this.DetGrid.SelectedItem as DetailsViewModel;
+
+			//	if (SqlParentViewer != null)
+			//	{
+			//		int rec = Utils.FindMatchingRecord(dvm.CustNo, dvm.BankNo, SqlParentViewer.DetailsGrid, "DETAILS");
+			//		SqlParentViewer.DetailsGrid.SelectedIndex = rec;
+			//		Utils.SetUpGridSelection(SqlParentViewer.DetailsGrid, rec);
+			//	}
+			//	else if (MultiParentViewer != null)
+			//	{
+			//		int rec = Utils.FindMatchingRecord(dvm.CustNo, dvm.BankNo, MultiParentViewer.DetailsGrid, "DETAILS");
+			//		MultiParentViewer.DetailsGrid.SelectedIndex = rec;
+			//		Utils.SetUpGridSelection(MultiParentViewer.DetailsGrid, rec);
+			//	}
+			//	if (IsMultiLinkActive(LinktoMultiParent))
+			//	{
+			//		Flags.SqlMultiViewer.DetailsGrid.SelectedIndex = this.DetGrid.SelectedIndex;
+			//		Flags.SqlMultiViewer.DetailsGrid.ScrollIntoView(this.DetGrid.SelectedIndex);
+			//		Utils.SetUpGridSelection(Flags.SqlMultiViewer.DetailsGrid, this.DetGrid.SelectedIndex);
+			//	}
+			//}
+			//else if (LinktoMultiParent)
+			//{
+			//	Flags.SqlMultiViewer.DetailsGrid.SelectedIndex = this.DetGrid.SelectedIndex;
+			//	Flags.SqlMultiViewer.DetailsGrid.ScrollIntoView(this.DetGrid.SelectedIndex);
+			//	Utils.SetUpGridSelection(Flags.SqlMultiViewer.DetailsGrid, this.DetGrid.SelectedIndex);
+			//}
 			Count.Text = $"{this.DetGrid.SelectedIndex} / { this.DetGrid.Items.Count.ToString()}";
 			dindex = this.DetGrid.SelectedIndex;
 			Triggered = false;
@@ -404,12 +414,12 @@ namespace WPFPages.Views
 			SQLHandlers sqlh = new SQLHandlers();
 			await sqlh.UpdateDbRow("DETAILS", bvm);
 
-			EventControl.TriggerViewerDataUpdated(DetViewerDbcollection,
+			EventControl.TriggerViewerDataUpdated(TestDetDbcollection,
 				new LoadedEventArgs
 				{
 					CallerType = "DETAILSDBVIEW",
 					CallerDb = "DETAILS",
-					DataSource = DetViewerDbcollection,
+					DataSource = TestDetDbcollection,
 					RowCount = this.DetGrid.SelectedIndex
 				});
 
@@ -495,7 +505,7 @@ namespace WPFPages.Views
 		//		DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 		//		Flags . IsMultiMode = true;
 		//		DetailCollection det = new DetailCollection ( );
-		//		await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+		//		await DetailCollection . LoadDet ( TestDetDbcollection , "DETAILSDBVIEW", 2, true );
 
 		//		ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGray" );
 		//		MultiAccounts . Template = tmp;
@@ -521,10 +531,10 @@ namespace WPFPages.Views
 		//		DetailsViewModel bgr = this . DetGrid . SelectedItem as DetailsViewModel;
 
 		//		DetailCollection det = new DetailCollection ( );
-		//		await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+		//		await DetailCollection . LoadDet ( TestDetDbcollection , "DETAILSDBVIEW", 2, true );
 		//		// Just reset our current itemssource to man Db
 		//		this . DetGrid . ItemsSource = null;
-		//		this . DetGrid . ItemsSource = DetviewerView;
+		//		this . DetGrid . ItemsSource = TestDetviewerView;
 		//		this . DetGrid . Refresh ( );
 
 		//		ControlTemplate tmp = Utils . GetDictionaryControlTemplate ( "HorizontalGradientTemplateGreen" );
@@ -550,12 +560,12 @@ namespace WPFPages.Views
 			// Databases have DEFINITELY been updated successfully after a change
 			// We Now Broadcast this to ALL OTHER OPEN VIEWERS here and now
 
-			EventControl.TriggerViewerDataUpdated(DetViewerDbcollection,
+			EventControl.TriggerViewerDataUpdated(TestDetDbcollection,
 			new LoadedEventArgs
 			{
 				CallerType = "DETAILSDBVIEW",
 				CallerDb = "DETAILS",
-				DataSource = DetViewerDbcollection,
+				DataSource = TestDetDbcollection,
 				RowCount = this.DetGrid.SelectedIndex
 			});
 			Mouse.OverrideCursor = Cursors.Arrow;
@@ -707,7 +717,7 @@ namespace WPFPages.Views
 		private void Linq1_Click(object sender, RoutedEventArgs e)
 		{
 			//select items;
-			var accounts = from items in DetViewerDbcollection
+			var accounts = from items in TestDetDbcollection
 				       where (items.AcType == 1)
 				       orderby items.CustNo
 				       select items;
@@ -716,7 +726,7 @@ namespace WPFPages.Views
 		private void Linq2_Click(object sender, RoutedEventArgs e)
 		{
 			//select items;
-			var accounts = from items in DetViewerDbcollection
+			var accounts = from items in TestDetDbcollection
 				       where (items.AcType == 2)
 				       orderby items.CustNo
 				       select items;
@@ -725,7 +735,7 @@ namespace WPFPages.Views
 		private void Linq3_Click(object sender, RoutedEventArgs e)
 		{
 			//select items;
-			var accounts = from items in DetViewerDbcollection
+			var accounts = from items in TestDetDbcollection
 				       where (items.AcType == 3)
 				       orderby items.CustNo
 				       select items;
@@ -734,7 +744,7 @@ namespace WPFPages.Views
 		private void Linq4_Click(object sender, RoutedEventArgs e)
 		{
 			//select items;
-			var accounts = from items in DetViewerDbcollection
+			var accounts = from items in TestDetDbcollection
 				       where (items.AcType == 4)
 				       orderby items.CustNo
 				       select items;
@@ -743,7 +753,7 @@ namespace WPFPages.Views
 		private void Linq5_Click(object sender, RoutedEventArgs e)
 		{
 			//select All the items first;			
-			var accounts = from items in DetViewerDbcollection orderby items.CustNo, items.AcType select items;
+			var accounts = from items in TestDetDbcollection orderby items.CustNo, items.AcType select items;
 			//Next Group BankAccountViewModel collection on Custno
 			var grouped = accounts.GroupBy(
 				b => b.CustNo);
@@ -770,7 +780,7 @@ namespace WPFPages.Views
 		}
 		private void Linq6_Click(object sender, RoutedEventArgs e)
 		{
-			var accounts = from items in DetViewerDbcollection orderby items.CustNo, items.AcType select items;
+			var accounts = from items in TestDetDbcollection orderby items.CustNo, items.AcType select items;
 			this.DetGrid.ItemsSource = accounts;
 		}
 
@@ -853,13 +863,13 @@ namespace WPFPages.Views
 			if (filterValue == 0 && IsFiltered)
 			{
 				// Return to original collection
-				this.DetGrid.ItemsSource = DetviewerView;
+				this.DetGrid.ItemsSource = TestDetviewerView;
 				this.DetGrid.Refresh();
 				IsFiltered = false;
 				return;
 			}
 			DetailsViewModel dvm = new DetailsViewModel();
-			var temp = DetViewerDbcollection.Where(dvm => dvm.AcType == filterValue);
+			var temp = TestDetDbcollection.Where(dvm => dvm.AcType == filterValue);
 			ICollection<DetailsViewModel> t = CollectionViewSource.GetDefaultView(temp) as ICollection<DetailsViewModel>;
 			this.DetGrid.ItemsSource = temp;
 			this.DetGrid.Refresh();
@@ -872,14 +882,14 @@ namespace WPFPages.Views
 		//	if ( IsFiltered )
 		//	{
 		//		// Return to original collection
-		//		this . DetGrid . ItemsSource = DetviewerView;
+		//		this . DetGrid . ItemsSource = TestDetviewerView;
 		//		this . DetGrid . Refresh ( );
 		//		IsFiltered = false;
 		//		Filter2 . Header = "A/c Type = 2";
 		//		return;
 		//	}
 		//	DetailsViewModel dvm = new DetailsViewModel ( );
-		//	var temp = DetViewerDbcollection . Where ( dvm => dvm . AcType == 2 );
+		//	var temp = TestDetDbcollection  . Where ( dvm => dvm . AcType == 2 );
 		//	ICollection<DetailsViewModel> t = CollectionViewSource . GetDefaultView ( temp ) as ICollection<DetailsViewModel>;
 		//	this . DetGrid . ItemsSource = temp;
 		//	this . DetGrid . Refresh ( );
@@ -892,14 +902,14 @@ namespace WPFPages.Views
 		//	if ( IsFiltered )
 		//	{
 		//		// Return to original collection
-		//		this . DetGrid . ItemsSource = DetviewerView;
+		//		this . DetGrid . ItemsSource = TestDetviewerView;
 		//		this . DetGrid . Refresh ( );
 		//		IsFiltered = false;
 		//		Filter3 . Header = "A/c Type = 3";
 		//		return;
 		//	}
 		//	DetailsViewModel dvm = new DetailsViewModel ( );
-		//	var temp = DetViewerDbcollection . Where ( dvm => dvm . AcType == 3 );
+		//	var temp = TestDetDbcollection  . Where ( dvm => dvm . AcType == 3 );
 		//	ICollection<DetailsViewModel> t = CollectionViewSource . GetDefaultView ( temp ) as ICollection<DetailsViewModel>;
 		//	this . DetGrid . ItemsSource = temp;
 		//	this . DetGrid . Refresh ( );
@@ -912,14 +922,14 @@ namespace WPFPages.Views
 		//	if ( IsFiltered )
 		//	{
 		//		// Return to original collection
-		//		this . DetGrid . ItemsSource = DetviewerView;
+		//		this . DetGrid . ItemsSource = TestDetviewerView;
 		//		this . DetGrid . Refresh ( );
 		//		IsFiltered = false;
 		//		Filter4 . Header = "A/c Type = 4";
 		//		return;
 		//	}
 		//	DetailsViewModel dvm = new DetailsViewModel ( );
-		//	var temp = DetViewerDbcollection . Where ( dvm => dvm . AcType == 4 );
+		//	var temp = TestDetDbcollection  . Where ( dvm => dvm . AcType == 4 );
 		//	ICollection<DetailsViewModel> t = CollectionViewSource . GetDefaultView ( temp ) as ICollection<DetailsViewModel>;
 		//	this . DetGrid . ItemsSource = temp;
 		//	this . DetGrid . Refresh ( );
@@ -982,11 +992,11 @@ namespace WPFPages.Views
 			//	this is a DataGridEditAction dgea
 			if (e.EditAction == DataGridEditAction.Cancel)
 			{
-				// Either ENTER or Escape was hit, so data has been saved, or we need ot refresh the row if cancelled
+				// Either ENTER or Escape was hit, so data has been saved, or we need to refresh the row if cancelled
 				// So we go ahead and reload our grid with new data
 				// and this will notify any other open viewers as well
 				bvmCurrent = null;
-				await DetailCollection.LoadDet(DetViewerDbcollection, "DETAILSDBVIEW", 2, true);
+				await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
 				return;
 			}
 
@@ -1053,16 +1063,20 @@ namespace WPFPages.Views
 			if (Flags.CurrentEditDbViewer != null)
 				Flags.CurrentEditDbViewer.UpdateGrid("DETAILS");
 			TriggeredDataUpdate = true;
+
+			//TESTING - Commented out 26/6/21
+
+
 			// ***********  DEFINITE WIN  **********
-			// This DOES trigger a notification to SQLDBVIEWER for sure !!!   14/5/21
-			EventControl.TriggerViewerDataUpdated(DetViewerDbcollection,
-				new LoadedEventArgs
-				{
-					CallerType = "DETAILSDBVIEW",
-					CallerDb = "DETAILS",
-					DataSource = DetViewerDbcollection,
-					RowCount = this.DetGrid.SelectedIndex
-				});
+			//// This DOES trigger a notification to SQLDBVIEWER for sure !!!   14/5/21
+			//EventControl.TriggerViewerDataUpdated(TestDetDbcollection ,
+			//	new LoadedEventArgs
+			//	{
+			//		CallerType = "DETAILSDBVIEW",
+			//		CallerDb = "DETAILS",
+			//		DataSource = TestDetDbcollection ,
+			//		RowCount = this.DetGrid.SelectedIndex
+			//	});
 		}
 
 		#endregion DATA EDIT CONTROL METHODS
@@ -1186,43 +1200,43 @@ namespace WPFPages.Views
 				{
 					AllLinks++;
 					Application.Current.Dispatcher.Invoke(() =>
-				{
-					ResetLinkages("LINKTOPARENT", true);
-				});
+					{
+						ResetLinkages("LINKTOPARENT", true);
+					});
 				}
 				else
 				{
 					Application.Current.Dispatcher.Invoke(() =>
-				{
-					ResetLinkages("LINKTOPARENT", false);
-				});
+					{
+						ResetLinkages("LINKTOPARENT", false);
+					});
 				}
 
 				if (IsMultiLinkActive(reslt) == false)
 				{
 					Application.Current.Dispatcher.Invoke(() =>
-				{
-					ResetLinkages("MULTILINKTOPARENT", false);
-				});
+					{
+						ResetLinkages("MULTILINKTOPARENT", false);
+					});
 				}
 				else
 				{
 					AllLinks++;
 					Application.Current.Dispatcher.Invoke(() =>
-				{
-					ResetLinkages("MULTILINKTOPARENT", true);
-				});
+					{
+						ResetLinkages("MULTILINKTOPARENT", true);
+					});
 				}
 				if (AllLinks >= 1)
 					Application.Current.Dispatcher.Invoke(() =>
-				{
-					ResetLinkages("ALLLINKS", true);
-				});
+					{
+						ResetLinkages("ALLLINKS", true);
+					});
 				else
 					Application.Current.Dispatcher.Invoke(() =>
-				{
-					ResetLinkages("ALLLINKS", false);
-				});
+					{
+						ResetLinkages("ALLLINKS", false);
+					});
 
 			}
 		}
@@ -1286,6 +1300,7 @@ namespace WPFPages.Views
 			    Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
 			    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
 			{
+
 				if (IsLeftButtonDown && e.LeftButton == MouseButtonState.Pressed)
 				{
 					if (DetGrid.SelectedItem != null)
@@ -1302,6 +1317,7 @@ namespace WPFPages.Views
 						dataObject,
 						DragDropEffects.Move);
 						IsLeftButtonDown = false;
+
 						e.Handled = true;
 					}
 				}
@@ -1341,7 +1357,7 @@ namespace WPFPages.Views
 
 		private void ContextDisplayJsonData_Click(object sender, RoutedEventArgs e)
 		{
-			JsonSupport.CreateShowJsonText(false, "DETAILS", DetViewerDbcollection);
+			JsonSupport.CreateShowJsonText(false, "DETAILS", TestDetDbcollection);
 		}
 
 		private void ContextSave_Click(object sender, RoutedEventArgs e)
@@ -1369,15 +1385,15 @@ namespace WPFPages.Views
 			{
 				this.DetGrid.ItemsSource = null;
 				this.DetGrid.Items.Clear();
-				await DetCollection.LoadDet(DetViewerDbcollection, 1, true);
-				this.DetGrid.ItemsSource = DetviewerView;
+				await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILS", 1, true);
+				this.DetGrid.ItemsSource = TestDetviewerView;
 				// Notify everyone else of the data change
-				EventControl.TriggerViewerDataUpdated(DetviewerView,
+				EventControl.TriggerViewerDataUpdated(TestDetviewerView,
 					new LoadedEventArgs
 					{
 						CallerType = "DETDBVIEW",
 						CallerDb = "DETAILS",
-						DataSource = DetviewerView,
+						DataSource = TestDetviewerView,
 						RowCount = this.DetGrid.SelectedIndex
 					});
 			}
@@ -1393,17 +1409,7 @@ namespace WPFPages.Views
 
 		private void ContextShowJson_Click(object sender, RoutedEventArgs e)
 		{
-			//============================================//
-			//MENU ITEM 'Read and display JSON File'
-			//============================================//
-			string Output = "";
-			this.Refresh();
-			////We need to save current Collectionview as a Json (binary) data to disk
-			//// this is the best way to save persistent data in Json format
-			////using tmp folder for interim file that we will then display
-			DetailsViewModel bvm = this.DetGrid.SelectedItem as DetailsViewModel;
-			Output = JsonSupport.CreateShowJsonText(true, "DETAILS", bvm, "DetailsViewModel");
-			MessageBox.Show(Output, "Currently selected record in JSON format", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+
 		}
 
 		private void DetGrid_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -1415,24 +1421,6 @@ namespace WPFPages.Views
 
 
 		}
+
 	}
 }
-
-
-/*
-//			BankAccountViewModel bank = new BankAccountViewModel();
-//			var filtered = from bank inDetViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;
-//		   GroupBy bank.CustNo having count(*) > 1
-//where  
-//having COUNT (*) > 1
-//	select bank;
-//	Where ( b.CustNo = "1055033") ;
-			
-			commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
-	+ $"(SELECT CUSTNO FROM BANKACCOUNT "
-	+ $" GROUP BY CUSTNO"
-	+ $" HAVING COUNT(*) > 1) ORDER BY ";
-
-	*/
-
-

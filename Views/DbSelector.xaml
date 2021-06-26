@@ -431,6 +431,16 @@
 						Background="{StaticResource Cyan2}"
 						Foreground="{StaticResource Black0}"/>
 
+				<MenuItem  Header="Test System"
+						Click="Test_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="15"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Red0}"
+						Foreground="{StaticResource White0}"/>
+
 			</MenuItem>
 
 			<!--Menu THREE Exeute-->

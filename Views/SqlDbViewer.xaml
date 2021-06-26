@@ -57,6 +57,7 @@
 			<MenuItem 
 				Name ="linq1" Header="Linq Queries"  
 				    Foreground="{StaticResource White0}"
+				    FontSize="16"
 					Background="Blue">
 
 				<!--Style="{StaticResource Mitem1}"-->
@@ -186,34 +187,56 @@
 				</MenuItem.Resources>-->
 
 			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
 
-			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click"
+			<MenuItem Header="View currently selected record in JSON Format"  
+				    Background="{StaticResource Green3}"
+				    FontSize="16"
+				    Click="ViewJsonRecord_Click"
+				   >
+				<MenuItem.Icon>
+					<Image Source="/Icons/symlink_directory_30px.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Edit currently Selected Account" 
+				    Background="{StaticResource Green3}"
+				    Click="ContextEdit_Click"
+				    FontSize="16"
 				>
 				<MenuItem.Icon>
 					<Image Source="/Icons/mailbox-receive-message.png" />
 				</MenuItem.Icon>
 			</MenuItem>
 			<Separator Style="{StaticResource Menu_Separator}"/>
-			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click"
-				   >
+			<MenuItem Header="Save current Grid Db data as JSON File"  
+				    Background="{StaticResource Green0}"
+				    Foreground="{StaticResource White0}"
+				    FontSize="16"
+				    Click="ContextSave_Click">
 				<MenuItem.Icon>
 					<Image Source="/Icons/symlink_directory_30px.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" 
-				    Background="{StaticResource Green3}" Foreground="{StaticResource Black4}">
+			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  
+    				    Background="{StaticResource Green0}"
+				    Foreground="{StaticResource White0}"
+				    FontSize="16"
+				    Click="ContextDisplayJsonData_Click" >
 				<MenuItem.Icon>
 					<Image Source="/Icons/wifi.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
 			<Separator Style="{StaticResource Menu_Separator}"/>
-			<MenuItem Header="                                Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White"
-				    >
+			<MenuItem Header="                                Settings" Click="ContextSettings_Click" 
+				    Background="{StaticResource Blue1}" Foreground="White"
+    				    FontSize="16">
 				<MenuItem.Icon>
 					<Image Source="/Icons/phone-lock.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White"
+			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" 
+				    FontSize="16"
+				    Foreground="White"
 				    >
 				<MenuItem.Icon>
 					<Image Source="/Icons/document-delete_48x48.png"  />
