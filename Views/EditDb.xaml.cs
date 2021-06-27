@@ -367,6 +367,9 @@ namespace WPFPages . Views
 			SetupBackgroundGradient ( );
 			ThisWindow = this;
 			ThisParent = sqldb;
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
+
 			// data load code Now moved to WindowLoaded() method  16/5/2021
 
 			{
@@ -1351,6 +1354,7 @@ namespace WPFPages . Views
 						Custno = bvm . CustNo,
 						Bankno = bvm . BankNo,
 						CallerDb = "BANKACCOUNT",
+						SenderGuid = this.Tag.ToString(),
 						DataSource = EditDbBankcollection,
 						RowCount = this . DataGrid1 . SelectedIndex
 					} );
@@ -1366,6 +1370,7 @@ namespace WPFPages . Views
 						Custno = bvm . CustNo,
 						Bankno = bvm . BankNo,
 						CallerDb = "CUSTOMER",
+						SenderGuid = this.Tag.ToString(),
 						DataSource = EditDbCustcollection,
 						RowCount = this . DataGrid2 . SelectedIndex
 					} );
@@ -1382,6 +1387,7 @@ namespace WPFPages . Views
 						Custno = bvm . CustNo,
 						Bankno = bvm . BankNo,
 						CallerDb = "DETAILS",
+						SenderGuid = this.Tag.ToString(),
 						DataSource = EditDbDetcollection,
 						RowCount = this . DetailsGrid . SelectedIndex
 					} );

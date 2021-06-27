@@ -51,6 +51,8 @@ namespace WPFPages . Views
 		{
 			Startup = true;
 			InitializeComponent ( );
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
 		}
 		#region Mouse support
 		private void DoDragMove ( )
@@ -237,6 +239,7 @@ namespace WPFPages . Views
 					CallerType = "CUSTDBVIEW",
 					CallerDb = "CUSTOMER",
 					DataSource = CustDbViewcollection,
+					SenderGuid = this.Tag.ToString(),
 					RowCount = this . CustGrid . SelectedIndex
 				} );
 		}
@@ -411,6 +414,7 @@ namespace WPFPages . Views
 					CallerType = "CUSTDBVIEW",
 					CallerDb = "CUSTOMER",
 					DataSource = CustDbViewcollection,
+					SenderGuid = this.Tag.ToString(),
 					RowCount = this . CustGrid . SelectedIndex
 				} );
 
@@ -986,6 +990,7 @@ namespace WPFPages . Views
 						CallerType = "CUSTBVIEW",
 						CallerDb = "CUSTOMER",
 						DataSource = CustviewerView,
+						SenderGuid = this.Tag.ToString(),
 						RowCount = this . CustGrid . SelectedIndex
 					} );
 			}

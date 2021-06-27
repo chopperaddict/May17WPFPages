@@ -26,22 +26,22 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class MultiViewer : Window
 	{
-		public DetCollection BankMultiViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
-		public DetCollection CustMultiViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
-		public DetCollection DetMultiViewerDbcollection = null;// = new DetCollection ( );//. DetViewerDbcollection;
+		public DetCollection BankMultiViewerDbcollection = null;
+		public DetCollection CustMultiViewerDbcollection = null;
+		public DetCollection DetMultiViewerDbcollection = null;
 
-		public BankCollection MBankcollection = null;// = BankCollection . MultiBankcollection;
-		public CustCollection MCustcollection = null;// = CustCollection . MultiCustcollection;
-		public DetCollection MDetcollection = null;// = DetCollection . MultiDetcollection;
+		public BankCollection MBankcollection = null;
+		public CustCollection MCustcollection = null;
+		public DetCollection MDetcollection = null;
 		public Stopwatch stopwatch1 = new Stopwatch ( );
 		public Stopwatch stopwatch2 = new Stopwatch ( );
 		public Stopwatch stopwatch3 = new Stopwatch ( );
 
 		public Point _startPoint { get; set; }
 		// These MAINTAIN setting values across instances !!!
-		public int bindex { get; set; }
-		public int cindex { get; set; }
-		public int dindex { get; set; }
+		public static int bindex { get; set; }
+		public static  int cindex { get; set; }
+		public static int dindex { get; set; }
 		public int CurrentSelection { get; set; }
 		public bool key1 { get; set; }
 		public bool GridsLinked { get; set; }
@@ -86,7 +86,11 @@ namespace WPFPages . Views
 			// attach CommandBinding to root element
 			//			this . CommandBindings . Add ( myCommandBinding );
 			this . Show ( );
-			this . WaitMessage . Visibility = Visibility . Visible;
+
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
+
+			this. WaitMessage . Visibility = Visibility . Visible;
 			this . Refresh ( );
 			tmp3 . Add ( $"Please wait, The system is loading the data from 3 seperate SQL Databases..." );
 			//			tmp3 . Add ( $"This process can take a few soconds or so." );
@@ -574,10 +578,6 @@ namespace WPFPages . Views
 			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 2, true );
 
 			Flags . SqlMultiViewer = this;
-			//this . BankGrid . ItemsSource = MultiBankcollection;
-			//this . CustomerGrid . ItemsSource = MultiCustcollection;
-			//this . DetailsGrid . ItemsSource = MultiDetcollection;
-			//			Mouse . OverrideCursor = Cursors . Arrow;
 		}
 
 		#endregion STARTUP/CLOSE
@@ -1718,6 +1718,7 @@ namespace WPFPages . Views
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					CallerDb = "BANKACCOUNT",
+					SenderGuid = this.Tag.ToString(),
 					DataSource = MBankcollection,
 					RowCount = this . BankGrid . SelectedIndex
 				} );
@@ -1766,6 +1767,7 @@ namespace WPFPages . Views
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					CallerDb = "CUSTOMER",
+					SenderGuid = this.Tag.ToString(),
 					DataSource = MCustcollection,
 					RowCount = this . CustomerGrid . SelectedIndex
 				} );
@@ -1811,6 +1813,7 @@ namespace WPFPages . Views
 					Bankno = SearchBankNo,
 					Custno = SearchCustNo,
 					CallerDb = "DETAILS",
+					SenderGuid = this.Tag.ToString(),
 					DataSource = MDetcollection,
 					RowCount = this . DetailsGrid . SelectedIndex
 				} );
@@ -2257,6 +2260,7 @@ namespace WPFPages . Views
 						Custno = cust,
 						CallerDb = "BANKACCOUNT",
 						CurrSelection = CurrentRow,
+						SenderGuid = this.Tag.ToString(),
 						DataSource = MBankcollection,
 						RowCount = CurrentRow
 					} );
@@ -2285,6 +2289,7 @@ namespace WPFPages . Views
 						Custno = cust,
 						CallerDb = "CUSTOMER",
 						CurrSelection = CurrentRow,
+						SenderGuid = this.Tag.ToString(),
 						DataSource = MCustcollection,
 						RowCount = CurrentRow
 					} );
@@ -2314,6 +2319,7 @@ namespace WPFPages . Views
 						Custno = cust,
 						CallerDb = "DETAILS",
 						CurrSelection = CurrentRow,
+						SenderGuid = this.Tag.ToString(),
 						DataSource = MDetcollection,
 						RowCount = CurrentRow
 					} );

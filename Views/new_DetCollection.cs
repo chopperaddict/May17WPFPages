@@ -225,11 +225,11 @@ namespace WPFPages . Views
 		//**************************************************************************************************************************************************************//
 		public async Task<bool> LoadDetailsDataSql ( bool isMultiMode = false )
 		{
-			Stopwatch st = new Stopwatch ( );
+//			Stopwatch st = new Stopwatch ( );
 
 			try
 			{
-				st . Start ( );
+//				st . Start ( );
 				SqlConnection con;
 				string ConString = "";
 				string commandline = "";
@@ -264,8 +264,8 @@ namespace WPFPages . Views
 					//					{
 					sda . Fill ( dtDetails );
 					//					}
-					st . Stop ( );
-					//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
+//					st . Stop ( );
+//					//					Debug . WriteLine ( $"DETAILS : Sql data loaded  [{dtDetails . Rows . Count}] row(s) into Details DataTable in {( double ) st . ElapsedMilliseconds / ( double ) 1000}...." );
 				}
 			}
 			catch ( Exception ex )

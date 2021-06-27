@@ -93,6 +93,9 @@ namespace WPFPages.Views
 			this.Refresh();
 			Startup = true;
 
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
+
 			string ndx = (string)Properties.Settings.Default["DetailsDbView_dindex"];
 			dindex = int.Parse(ndx);
 			this.DetGrid.SelectedIndex = dindex < 0 ? 0 : dindex;
@@ -107,6 +110,7 @@ namespace WPFPages.Views
 			EventControl.ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl.ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl.DetDataLoaded += EventControl_DetDataLoaded;
+			EventControl.TestDataChanged += EventControl_TestDataChanged;
 
 			await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
 
@@ -163,6 +167,22 @@ namespace WPFPages.Views
 			dindex = e.Row;
 			Triggered = false;
 		}
+		private  void EventControl_TestDataChanged(object sender, LoadedEventArgs e)
+		{
+			// dont update if we triggered the change
+			// Works well 23/6/21
+			if (e.Bankno == this.Tag.ToString()) return;
+			// Dont update if another Details  viewer did the update
+			if (e.CallerDb == "DETAILS") return;
+
+			// else update the grid
+			TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
+			//int currsel = this.DetGrid.SelectedIndex, SelectedIndex;
+			//this.DetGrid.ItemsSource = null;
+			//this.DetGrid.ItemsSource = TestDetDbcollection;
+			//this.DetGrid.SelectedIndex = currsel;
+			//this.DetGrid.UpdateLayout(); ;
+		}
 
 		/// <summary>
 		/// Event handler that is triggered once Data is ready for us from the SQL loading functions.
@@ -172,16 +192,17 @@ namespace WPFPages.Views
 		private async void EventControl_DetDataLoaded(object sender, LoadedEventArgs e)
 		{
 			// Event handler for BankDataLoaded
-			if (e.DataSource == null) return;
+			if (e.DataSource == null)
+			{ Mouse.OverrideCursor = Cursors.Arrow; return; }
 			//ONLY do this if WE triggered the event
 			if (e.CallerDb != "DETAILSDBVIEW")
 			{ Mouse.OverrideCursor = Cursors.Arrow; return; }
 
-			if (TriggeredDataUpdate)
-			{
-				TriggeredDataUpdate = false;
-				return;
-			}
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
+			Debug.WriteLine("BANKDBVIEW : Loading Details Data ");
+
 			this.DetGrid.ItemsSource = null;
 			this.DetGrid.Items.Clear();
 
@@ -193,18 +214,15 @@ namespace WPFPages.Views
 			TestDetDbcollection = e.DataSource as TestDetailsCollection;
 			// Get our View of the data loaded
 			TestDetviewerView = CollectionViewSource.GetDefaultView(TestDetDbcollection);
-			//			TestDetviewerView = CollectionViewSource.GetDefaultView(e.DataSource as TestDetailsCollection);
-			TestDetviewerView.Refresh();
-			this.DetGrid.Focus();
 			this.DetGrid.ItemsSource = TestDetviewerView;
 			this.DetGrid.SelectedIndex = dindex;
 			this.DetGrid.SelectedItem = dindex;
 			Utils.SetUpGridSelection(DetGrid, dindex);
-			Thread.Sleep(250);
+
 			Count.Text = $"{this.DetGrid.SelectedIndex} / { this.DetGrid.Items.Count.ToString()}";
 			Mouse.OverrideCursor = Cursors.Arrow;
-			this.DetGrid.Refresh();
-			Debug.WriteLine("BANKDBVIEW : Details Data fully loaded");
+			sw.Stop();
+			Debug.WriteLine($"DETAILSDBVIEW : Details Data fully loaded in {(double)sw.ElapsedMilliseconds / (double)1000} secs");
 			bool reslt = false;
 		}
 		private async void EventControl_DataUpdated(object sender, LoadedEventArgs e)
@@ -217,10 +235,10 @@ namespace WPFPages.Views
 				return;
 			}
 			Debug.WriteLine($"BankDbView : Data changed event notification received successfully.");
-			int currsel = this.DetGrid.SelectedIndex;
+//			int currsel = this.DetGrid.SelectedIndex;
 
-			this.DetGrid.ItemsSource = null;
-			this.DetGrid.Items.Clear();
+			//this.DetGrid.ItemsSource = null;
+			//this.DetGrid.Items.Clear();
 			Mouse.OverrideCursor = Cursors.Wait;
 			await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
 			IsDirty = false;
@@ -287,6 +305,7 @@ namespace WPFPages.Views
 											       //			EventControl . DataUpdated -= EventControl_DataUpdated;
 			EventControl.ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl.DetDataLoaded -= EventControl_DetDataLoaded;
+			EventControl.TestDataChanged -= EventControl_TestDataChanged;
 
 			Utils.SaveProperty("DetailsDbView_dindex", dindex.ToString());
 		}
@@ -420,6 +439,7 @@ namespace WPFPages.Views
 					CallerType = "DETAILSDBVIEW",
 					CallerDb = "DETAILS",
 					DataSource = TestDetDbcollection,
+					SenderGuid = this.Tag.ToString(),
 					RowCount = this.DetGrid.SelectedIndex
 				});
 
@@ -566,6 +586,7 @@ namespace WPFPages.Views
 				CallerType = "DETAILSDBVIEW",
 				CallerDb = "DETAILS",
 				DataSource = TestDetDbcollection,
+				SenderGuid = this.Tag.ToString(),
 				RowCount = this.DetGrid.SelectedIndex
 			});
 			Mouse.OverrideCursor = Cursors.Arrow;
@@ -1070,13 +1091,16 @@ namespace WPFPages.Views
 			// ***********  DEFINITE WIN  **********
 			//// This DOES trigger a notification to SQLDBVIEWER for sure !!!   14/5/21
 			//EventControl.TriggerViewerDataUpdated(TestDetDbcollection ,
-			//	new LoadedEventArgs
-			//	{
-			//		CallerType = "DETAILSDBVIEW",
-			//		CallerDb = "DETAILS",
-			//		DataSource = TestDetDbcollection ,
-			//		RowCount = this.DetGrid.SelectedIndex
-			//	});
+			EventControl.TriggerTestDataChanged(TestDetDbcollection,
+			new LoadedEventArgs
+			{
+				CallerType = "DETAILSDBVIEW",
+				CallerDb = "DETAILS",
+				DataSource = TestDetDbcollection,
+				RowCount = this.DetGrid.SelectedIndex,
+				SenderGuid = this.Tag.ToString(),
+				Bankno = this.Tag.ToString()
+			});
 		}
 
 		#endregion DATA EDIT CONTROL METHODS
@@ -1394,6 +1418,7 @@ namespace WPFPages.Views
 						CallerType = "DETDBVIEW",
 						CallerDb = "DETAILS",
 						DataSource = TestDetviewerView,
+						SenderGuid = this.Tag.ToString(),
 						RowCount = this.DetGrid.SelectedIndex
 					});
 			}

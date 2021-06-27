@@ -291,6 +291,9 @@ namespace WPFPages
 		{
 			// dummy constructor to let others get a pointer
 			InitializeComponent();
+			
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
 			ThisViewer = this;
 			Flags.CurrentSqlViewer = this;
 			this.Show();
@@ -695,19 +698,19 @@ namespace WPFPages
 			// Handles ViewerDataChanged Event notification
 			//			if ( e . CallerType == "SQLDBVIEWER" ) return;
 
-			if (CurrentDb == "BANKACCOUNT" && e.CallerDb != "BANKACCOUNT")
+			if (CurrentDb == "BANKACCOUNT" && e.SenderGuid == this.Tag.ToString())
 			{
 				// its not for us, so dont bother
 				return;
 			}
-			if (CurrentDb == "CUSTOMER" && e.CallerDb != "CUSTOMER")
+			if (CurrentDb == "CUSTOMER" && e.SenderGuid == this.Tag.ToString())
 			{
 				// its not for us, so dont bother
 				return;
 			}
-			if (CurrentDb == "DETAILS" && e.CallerDb != "DETAILS")
+			if (CurrentDb == "DETAILS" && e.SenderGuid == this.Tag.ToString())
 			{
-				// its not for us, so dont bother
+				// we triggered it, so dont bother
 				return;
 			}
 
@@ -738,14 +741,15 @@ namespace WPFPages
 		private void EventControl_BankDataLoaded(object sender, LoadedEventArgs e)
 		{
 			// Event handler for BankDataLoaded
-			if (e.CallerDb != "SQLDBVIEWER") return;
+			// it was us, ignore it
+			if (e.SenderGuid == this.Tag.ToString()) return;
 			if (e.CallerType != "SQLSERVER") return;
 			if (e.DataSource == null) return;
-
+			stopwatch.Stop();
 			Debug.WriteLine($"SQLDBVIEWER : BankAccount  Data fully loaded: {stopwatch.ElapsedMilliseconds} ms");
 			LoadingDbData = true;
 
-			if (this.BankGrid.Items.Count > 0) return;
+//			if (this.BankGrid.Items.Count > 0) return;
 			WaitMessage.Visibility = Visibility.Collapsed;
 			BankGrid.Visibility = Visibility.Visible;
 			if (BankReserved?.Count > 0)
@@ -780,12 +784,17 @@ namespace WPFPages
 		}
 		private void EventControl_CustDataLoaded(object sender, LoadedEventArgs e)
 		{
-			if (e.CallerDb != "SQLDBVIEWER") return;
+			// it was us, ignore it
+			if (e.SenderGuid == this.Tag.ToString()) return;
 			if (e.CallerType != "SQLSERVER") return;
 
+			stopwatch.Stop();
 			Debug.WriteLine($"SQLDBVIEWER : Customer Data fully loaded: {stopwatch.ElapsedMilliseconds} ms");
 			LoadingDbData = true;
-			if (this.CustomerGrid.Items.Count > 0) return;
+			if (CustReserved?.Count > 0)
+				// Reset main Db collection to FULL set of data
+				CustReserved.Clear();
+
 			// Event handler for CustDataLoaded
 			if (e.DataSource == null) return;//|| this . CustomerGrid . Items . Count > 0 ) return;
 
@@ -822,13 +831,16 @@ namespace WPFPages
 		}
 		private void EventControl_DetDataLoaded(object sender, LoadedEventArgs e)
 		{
-			if (e.CallerDb != "SQLDBVIEWER") return;
+			//Triggered by any viewer updating a rows data
+			// it was us, ignore it
+			if (e.SenderGuid == this.Tag.ToString()) return;
 			if (e.CallerType != "SQLSERVER") return;
 
+			stopwatch.Stop();
 			Debug.WriteLine($"SQLDBVIEWER : Details Data fully loaded: {stopwatch.ElapsedMilliseconds} ms");
 			LoadingDbData = true;
 
-			if (this.DetailsGrid.Items.Count > 0) return;
+//			if (this.DetailsGrid.Items.Count > 0) return;
 			// Event handler for DetDataLoaded
 			if (e.DataSource == null) return;// || this . DetailsGrid . Items . Count > 0 ) return;
 
@@ -1188,6 +1200,7 @@ namespace WPFPages
 						Bankno = bvm.BankNo,
 						CallerDb = "BANKACCOUNT",
 						DataSource = SqlBankcollection,
+						SenderGuid = this.Tag.ToString(),
 						RowCount = this.BankGrid.SelectedIndex
 					});
 				Debug.WriteLine($"EditDb(1485) SQLDBVIEWER : in SendDataChanged : Sending ViewerDataUpdated EVENT for Bank");
@@ -1203,6 +1216,7 @@ namespace WPFPages
 						Custno = bvm.CustNo,
 						Bankno = bvm.BankNo,
 						CallerDb = "CUSTOMER",
+						SenderGuid = this.Tag.ToString(),
 						DataSource = SqlCustcollection,
 						RowCount = this.CustomerGrid.SelectedIndex
 					});
@@ -1219,6 +1233,7 @@ namespace WPFPages
 						Custno = bvm.CustNo,
 						Bankno = bvm.BankNo,
 						CallerDb = "DETAILS",
+						SenderGuid = this.Tag.ToString(),
 						DataSource = SqlDetcollection,
 						RowCount = this.DetailsGrid.SelectedIndex
 					});
@@ -3345,6 +3360,7 @@ namespace WPFPages
 						//Get the NEW selected index
 						index = this.BankGrid.SelectedIndex;
 						if (index == -1) index = 0;
+						bindex = index;
 						//Get the CustNo data to pass ot other viewers for their search
 						CurrentBankSelectedRecord = this.BankGrid.SelectedItem as BankAccountViewModel;
 						SearchCustNo = CurrentBankSelectedRecord.CustNo;
@@ -3369,6 +3385,7 @@ namespace WPFPages
 					{
 						index = this.CustomerGrid.SelectedIndex;
 						if (index == -1) index = 0;
+						cindex = index;
 						CurrentCustomerSelectedRecord = this.CustomerGrid.SelectedItem as CustomerViewModel;
 						SearchCustNo = CurrentCustomerSelectedRecord.CustNo;
 						SearchBankNo = CurrentCustomerSelectedRecord.BankNo;
@@ -3392,6 +3409,7 @@ namespace WPFPages
 					{
 						index = this.DetailsGrid.SelectedIndex;
 						if (index == -1) index = 0;
+						dindex = index;
 						CurrentDetailsSelectedRecord = this.DetailsGrid.SelectedItem as DetailsViewModel;
 						// This creates a new entry in gv[] if this is a new window being loaded
 						SearchCustNo = CurrentDetailsSelectedRecord.CustNo;
@@ -4614,6 +4632,7 @@ namespace WPFPages
 						Custno = cust,
 						CallerDb = "BANKACCOUNT",
 						CurrSelection = CurrentRow,
+						SenderGuid = this.Tag.ToString(),
 						DataSource = SqlBankcollection,
 						RowCount = CurrentRow
 					});
@@ -4648,6 +4667,7 @@ namespace WPFPages
 						Custno = cust,
 						CallerDb = "CUSTOMER",
 						CurrSelection = CurrentRow,
+						SenderGuid = this.Tag.ToString(),
 						DataSource = SqlCustcollection,
 						RowCount = CurrentRow
 					});
@@ -4681,6 +4701,7 @@ namespace WPFPages
 						Bankno = bank,
 						Custno = cust,
 						CallerDb = "DETAILS",
+						SenderGuid = this.Tag.ToString(),
 						CurrSelection = CurrentRow,
 						DataSource = SqlDetcollection,
 						RowCount = CurrentRow
@@ -6446,6 +6467,7 @@ namespace WPFPages
 						CallerType = "SQLDBVIEWER",
 						CallerDb = "BANKACCOUNT",
 						DataSource = SqlBankcollection,
+						SenderGuid = this.Tag.ToString(),
 						RowCount = this.BankGrid.SelectedIndex
 					});
 			}

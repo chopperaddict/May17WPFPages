@@ -58,19 +58,8 @@ namespace WPFPages . Views
 		public static event EventHandler<LoadedEventArgs> TransferDataUpdated;
 		public static event EventHandler<LoadedEventArgs> DbChangedExternally;
 
-		// Event we TRIGGER to notify SqlViewer of  a selectedindex change
-		// uses delegate : public delegate void EditDbDataChanged ( int EditDbChangeType , int row , string CurentDb );
-		//		public static event EditDbDataChanged ViewerDataHasBeenChanged;
 
-		// Uses Delegate : public delegate void DbUpdated ( SqlDbViewer sender , DataGrid Grid , DataChangeArgs args );
-		//		public static event DbUpdated NotifyOfDataChange;
-
-		//	create a record deletion delegate handle to use through the code
-		// to assing methods to dynamically
-		// used delegate : public delegate void DeletionHandler ( string Source , string bankno , string custno , int CurrrentRow );
-		//		public static event DeletionHandler RecordDeleted;
-
-
+		public static event EventHandler<LoadedEventArgs> TestDataChanged;
 
 
 		#endregion ALL NEW EVENTS
@@ -164,6 +153,13 @@ namespace WPFPages . Views
 		//------------------------------//
 		// DATA CHANGE EVENTS
 		//------------------------------//
+
+		
+		public static void TriggerTestDataChanged(object obj, LoadedEventArgs e)
+		{
+			Console.WriteLine($"DEBUG : In EventControl : Sending  TestDataChanged EVENT trigger (from{obj?.ToString()})");
+			TestDataChanged?.Invoke(obj, e);
+		}
 		public static void TriggerViewerDataUpdated ( object obj, LoadedEventArgs e )
 		{
 			Console . WriteLine ( $"DEBUG : In EventControl : Sending  ViewerDataUpdated EVENT trigger (from{obj?.ToString ( )})" );

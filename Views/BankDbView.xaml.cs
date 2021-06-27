@@ -37,7 +37,7 @@ namespace WPFPages . Views
 		private bool RowHasBeenEdited { get; set; }
 		private bool keyshifted { get; set; }
 		private bool IsEditing { get; set; }
-		public int bindex { get; set; }
+		public static int bindex { get; set; }
 		public bool IsLeftButtonDown { get; set; }
 
 		private Point _startPoint { get; set; }
@@ -58,7 +58,10 @@ namespace WPFPages . Views
 			Startup = true;
 			InitializeComponent ( );
 			this . Show ( );
-			this . Refresh ( );
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
+
+			this. Refresh ( );
 		}
 		#region Mouse support
 		private void DoDragMove ( )
@@ -276,14 +279,15 @@ namespace WPFPages . Views
 
 			// ***********  DEFINITE WIN  **********
 			// This DOES trigger a notification to SQLDBVIEWER AND OTHERS for sure !!!   14/5/21
-			EventControl . TriggerViewerDataUpdated ( BankViewcollection,
+			EventControl.TriggerViewerDataUpdated(BankViewcollection,
 				new LoadedEventArgs
 				{
 					CallerType = "BANKDBVIEW",
 					CallerDb = "BANKACCOUNT",
 					DataSource = BankViewcollection,
-					RowCount = this . BankGrid . SelectedIndex
-				} );
+					SenderGuid = this.Tag.ToString(),
+					RowCount = this.BankGrid.SelectedIndex
+				});
 
 		}
 
@@ -471,6 +475,7 @@ namespace WPFPages . Views
 					CallerType = "BANKDBVIEW",
 					CallerDb = "BANKACCOUNT",
 					DataSource = BankViewcollection,
+					SenderGuid = this.Tag.ToString(),
 					RowCount = this . BankGrid . SelectedIndex
 				} );
 
@@ -1092,6 +1097,7 @@ namespace WPFPages . Views
 						CallerType = "BANKBVIEW",
 						CallerDb = "BANKACCOUNT",
 						DataSource = BankviewerView,
+						SenderGuid = this.Tag.ToString(),
 						RowCount = this . BankGrid . SelectedIndex
 					} );
 			}

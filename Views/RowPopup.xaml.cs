@@ -242,6 +242,7 @@ namespace WPFPages . Views
 				{
 					CallerDb = CurrentDb,
 					Custno = bvm.CustNo,
+					SenderGuid = this.Tag.ToString(),
 					Bankno = bvm . BankNo,
 				});
 			}
@@ -268,6 +269,7 @@ namespace WPFPages . Views
 				{
 					CallerDb = CurrentDb,
 					Custno = cvm . CustNo,
+					SenderGuid = this.Tag.ToString(),
 					Bankno = cvm . BankNo,
 				});
 			}
@@ -288,6 +290,7 @@ namespace WPFPages . Views
 				{
 					CallerDb = CurrentDb,
 					Custno = dvm . CustNo,
+					SenderGuid = this.Tag.ToString(),
 					Bankno = dvm.BankNo,				
 				});
 			}

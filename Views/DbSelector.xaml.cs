@@ -1481,11 +1481,18 @@ namespace WPFPages . Views
 
 		}
 
-		private void Test_Click(object sender, RoutedEventArgs e)
+		private void TestDet_Click(object sender, RoutedEventArgs e)
 		{
 			// load test observable collections testing window(s)
 			TestDetailsDbView tddv = new TestDetailsDbView();
 			tddv.Show();
+		}
+
+		private void TestBank_Click(object sender, RoutedEventArgs e)
+		{
+			// load test observable collections testing window(s)
+			TestBankDbView tbdv = new TestBankDbView();
+			tbdv.Show();
 		}
 	}
 }

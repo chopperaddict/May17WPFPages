@@ -29,6 +29,7 @@ namespace WPFPages . Views
 		public string CallerType { get; set; }
 		public string Custno { get; set; }
 		public string Bankno { get; set; }
+		public string SenderGuid { get; set; }
 		public int CurrSelection { get; set; }
 		public string CallerDb { get; set; }
 		public object DataSource { get; set; }

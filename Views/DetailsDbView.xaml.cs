@@ -71,6 +71,9 @@ namespace WPFPages.Views
 			Startup = true;
 			InitializeComponent();
 			//Type calltype = typeof ( callerWin );
+			//Identify individual windows for update protection
+			this.Tag = (Guid)Guid.NewGuid();
+
 			MultiParentViewer = mv;
 			SqlParentViewer = sqldbv;
 			DbsParentViewer = dbs;
@@ -410,6 +413,7 @@ namespace WPFPages.Views
 					CallerType = "DETAILSDBVIEW",
 					CallerDb = "DETAILS",
 					DataSource = DetViewerDbcollection,
+					SenderGuid = this.Tag.ToString(),
 					RowCount = this.DetGrid.SelectedIndex
 				});
 
@@ -556,6 +560,7 @@ namespace WPFPages.Views
 				CallerType = "DETAILSDBVIEW",
 				CallerDb = "DETAILS",
 				DataSource = DetViewerDbcollection,
+				SenderGuid = this.Tag.ToString(),
 				RowCount = this.DetGrid.SelectedIndex
 			});
 			Mouse.OverrideCursor = Cursors.Arrow;
@@ -1061,6 +1066,7 @@ namespace WPFPages.Views
 					CallerType = "DETAILSDBVIEW",
 					CallerDb = "DETAILS",
 					DataSource = DetViewerDbcollection,
+					SenderGuid = this.Tag.ToString(),
 					RowCount = this.DetGrid.SelectedIndex
 				});
 		}
@@ -1378,6 +1384,7 @@ namespace WPFPages.Views
 						CallerType = "DETDBVIEW",
 						CallerDb = "DETAILS",
 						DataSource = DetviewerView,
+						SenderGuid = this.Tag.ToString(),
 						RowCount = this.DetGrid.SelectedIndex
 					});
 			}

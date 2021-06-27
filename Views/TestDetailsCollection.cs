@@ -15,9 +15,6 @@ namespace WPFPages.Views
 {
 	public class TestDetailsCollection : ObservableCollection<DetailsViewModel>
 	{
-		public static bool Notify = false;
-		public static string Caller = "";
-
 		public TestDetailsCollection()
 		{
 		}
@@ -26,9 +23,10 @@ namespace WPFPages.Views
 
 		// working entity to load data into
 		public static TestDetailsCollection internalcollection = null;
-
-
 		public static DataTable dtDetails = new DataTable();
+
+		public static bool Notify = false;
+		public static string Caller = "";
 
 		public static async Task<TestDetailsCollection> LoadDet(TestDetailsCollection dc, string caller, int ViewerType = 1, bool NotifyAll = false)
 		{
@@ -225,6 +223,7 @@ namespace WPFPages.Views
 								CallerType = "SQLSERVER",
 								CallerDb = Caller,
 								DataSource = internalcollection,
+//								SenderGuid = Guid.NewGuid().ToString(),
 								RowCount = internalcollection.Count
 							});
 					}
@@ -305,6 +304,7 @@ namespace WPFPages.Views
 							CallerType = "SQLSERVER",
 							CallerDb = Caller,
 							DataSource = internalcollection,
+//							SenderGuid = Guid.NewGuid().ToString(),
 							RowCount = internalcollection.Count
 						});
 				}

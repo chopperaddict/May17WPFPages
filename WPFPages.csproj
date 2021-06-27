@@ -166,6 +166,10 @@
     </Compile>
     <Compile Include="Views\SQLHandlers.cs" />
     <Compile Include="Views\SupportMethods.cs" />
+    <Compile Include="Views\TestBankCollection.cs" />
+    <Compile Include="Views\TestBankDbView.xaml.cs">
+      <DependentUpon>TestBankDbView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TestDetailsCollection.cs" />
     <Compile Include="Views\TestDetailsDbView.xaml.cs">
       <DependentUpon>TestDetailsDbView.xaml</DependentUpon>
@@ -341,6 +345,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dicts\TestDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TestBankDbView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,809 @@
+﻿<Window x:Class="WPFPages.Views.TestBankDbView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+        mc:Ignorable="d"
+	Closing="Window_Closing"
+	DataContext="BankviewerView"
+	Height="450"
+	IsTabStop="False"
+	Loaded="Window_Loaded"
+	MinHeight="450"
+	MinWidth="750"
+	PreviewKeyUp="Window_PreviewKeyUp"
+	PreviewKeyDown="Window_PreviewKeyDown"
+	Title="Bank A/c Editor"
+	Width="800"
+	>
+	<!--d:DataContext="{d:DesignInstance Type=local:BankCollection}"-->
+	<Window.Resources>
+		<ContextMenu x:Key="ContextMenu1">
+			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/text-message.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/symlink_directory_30px.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Create/Save and View JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+
+			<MenuItem Header="                                 Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/phone-lock.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
+
+		<ContextMenu x:Key="CMenu1">
+			<MenuItem Header="Edit" Click="ContextEdit_Click">
+				<MenuItem.Icon>
+					<Image Source="/Icons/mailbox-receive-message.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Save as JSON File"  Click="ContextSave_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/wifi.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Exit" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
+				<MenuItem.Icon>
+					<Image Source="/Icons/document-delete_48x48.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+		</ContextMenu>
+
+		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
+			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushBlue}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="30" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="{StaticResource HeaderBorderBrushBlue}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+
+		<Style x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}" TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Grid>
+							<Rectangle x:Name="Border" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" SnapsToDevicePixels="True"/>
+							<Polygon x:Name="Arrow" Fill="Black" HorizontalAlignment="Right" Margin="8,8,3,3" Opacity="0.15" Points="0,10 10,10 10,0" Stretch="Uniform" VerticalAlignment="Bottom"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Stroke" TargetName="Border" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter Property="Fill" TargetName="Border" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Visibility" TargetName="Arrow" Value="Collapsed"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!--<Style x:Key="UnfocusedSelection" TargetType="DataGridRow">
+		-->
+		<!--<Style TargetType="DataGridRow">-->
+		<!--
+			<Style.Triggers>
+				-->
+		<!--=====================
+						Window WITH Focus ....
+						SINGLE SELECTED  Item
+						=====================-->
+		<!--
+				<MultiTrigger>
+					-->
+		<!--// This is working 17/6/21-->
+		<!--
+					<MultiTrigger.Conditions>
+						<Condition Property="IsSelected" Value="true" />
+						<Condition Property="IsFocused" Value="false" />
+						-->
+		<!--<Condition Property="SelectionActive" Value="false" />-->
+		<!--
+					</MultiTrigger.Conditions>
+					<Setter Property="Background" Value="{StaticResource Red1}" />
+					<Setter Property="Foreground" Value="{StaticResource White0}" />
+					<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
+				</MultiTrigger>
+			</Style.Triggers>
+		</Style>-->
+
+
+
+		<!--Not in use-->
+		<Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
+			<!--<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="BorderBrush" Value="#FF688CAF"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
+			<Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+			<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+			<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+			
+			<Setter Property="Template">
+				<Setter.Value>
+					
+					<ControlTemplate TargetType="{x:Type DataGrid}">
+						<Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" 
+							  BorderBrush="{TemplateBinding BorderBrush}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+							<ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
+								<ScrollViewer.Template>
+									<ControlTemplate TargetType="{x:Type ScrollViewer}">
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="Auto"/>
+												<ColumnDefinition Width="*"/>
+												<ColumnDefinition Width="Auto"/>
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto"/>
+												<RowDefinition Height="*"/>
+												<RowDefinition Height="Auto"/>
+											</Grid.RowDefinitions>
+											<Button Command="{x:Static DataGrid.SelectAllCommand}" Focusable="false" 
+												  Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" 
+												  Visibility="{Binding HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.All}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+											<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Column="1" Visibility="{Binding HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+											<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Grid.ColumnSpan="2" CanContentScroll="{TemplateBinding CanContentScroll}" Grid.Row="1"/>
+											<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" Orientation="Vertical" Grid.Row="1" ViewportSize="{TemplateBinding ViewportHeight}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+											<Grid Grid.Column="1" Grid.Row="2">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+													<ColumnDefinition Width="*"/>
+												</Grid.ColumnDefinitions>
+												<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" ViewportSize="{TemplateBinding ViewportWidth}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+											</Grid>
+										</Grid>
+									</ControlTemplate>
+								</ScrollViewer.Template>
+								<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+							</ScrollViewer>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			
+			<Style.Triggers>
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<Condition Property="IsGrouping" Value="true"/>
+						<Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+					</MultiTrigger.Conditions>
+					<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+
+				</MultiTrigger>
+			</Style.Triggers>-->
+		</Style>
+
+	</Window.Resources>
+	<Grid>
+
+		<!--#region grid setup-->
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="5*" />
+			<RowDefinition Height="135" />
+			<RowDefinition Height="10" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="15" />
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="150" />
+			<ColumnDefinition Width="110" />
+			<ColumnDefinition Width="10" />
+		</Grid.ColumnDefinitions>
+
+		<Grid.Background>
+			<!--  create an elegant left to right light-> Dark gradient as a background  -->
+			<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+				<GradientStop Offset="1" Color="#333333" />
+				<GradientStop Offset="0.0" Color="#35F6FB" />
+			</LinearGradientBrush>
+		</Grid.Background>
+
+		<Menu
+			Grid.Row="0"
+			Grid.Column="1"
+			Width="auto"
+			Height="30"
+			IsTabStop="False"
+			Margin="5"
+			HorizontalAlignment="Left"
+			Background="Transparent">
+
+			<!--// Menu Header-->
+			<MenuItem Header="_Linq Queries"
+				Width="80"
+				Foreground="{StaticResource White0}">
+
+				<!--// Seperate menu items in DropDown-->
+				<MenuItem Header="A/c Type 1 Only"
+						Background="#35F6FB"
+						Click="Linq1_Click"
+						Foreground="Black"						
+						IsCheckable="false" />
+				<MenuItem Header="A/c Type 2 Only"
+						Background="#35F6FB"
+						Click="Linq2_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<MenuItem Header="A/c Type 3 Only"
+						Background="#35F6FB"
+						Click="Linq3_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<MenuItem Header="A/c Type 4 Only"
+						Background="#35F6FB"
+						Click="Linq4_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<Separator />
+
+				<MenuItem
+						Background="#35F6FB"
+						Click="Linq5_Click"
+						Foreground="Black"
+						Header="Multi A/C Holders"
+						IsCheckable="False" />
+
+			</MenuItem>
+
+			<!--// Seperate menu items at top level -->
+			<MenuItem
+				Width="60"
+				Click="Filter_Click"
+				Foreground="{StaticResource White0}"
+				Header="Filtering"/>
+
+			<MenuItem
+				Width="50"
+				Click="Options_Click"
+				Foreground="{StaticResource White1}"
+				Header="Options" />
+
+			<MenuItem
+				Width="50"
+				Click="Exit_Click"
+				Foreground="{StaticResource White1}"
+				Header="Exit..." />
+		</Menu>
+
+		<!--#endregion grid setup-->
+
+		<DataGrid 
+			x:Name="BankGrid"
+			AlternatingRowBackground="{StaticResource Blue4}"
+			AlternationCount="3"
+			AutoGenerateColumns="False"
+			BeginningEdit="BankGrid_BeginningEdit"	   
+			CanUserAddRows="False"
+			CellEditEnding="BankGrid_CellEditEnding"
+			ColumnHeaderStyle="{StaticResource HeaderStyleBlue}"
+			CanUserResizeColumns="True"
+			CanUserSortColumns="True"
+			Grid.Column="1"
+			Grid.ColumnSpan="3"
+			Grid.Row="1"
+			Grid.RowSpan="1"
+			DragEnter="BankGrid_DragEnter"
+			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
+			IsSynchronizedWithCurrentItem="False"
+			IsTabStop="False"
+			Margin="0,0,0,8"
+			Padding="-10"
+			PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtonDown"
+			PreviewMouseMove="BankGrid_PreviewMouseMove"
+			PreviewMouseLeftButtonDown="BankGrid_PreviewMouseLeftButtondown"
+			RowEditEnding="ViewerGrid_RowEditEnding"
+			SelectionChanged="BankGrid_SelectionChanged"
+			SelectionMode="Single"
+			SelectionUnit="FullRow"
+			VerticalAlignment="Stretch"
+			VerticalContentAlignment="Center"			
+			VerticalGridLinesBrush="{StaticResource Blue2}" 
+>
+			<!--
+				SelectedIndex="{Binding SelectedIndex}"
+				SelectedItem="{Binding SelectedItem}"
+			-->
+			<!--  DataGridCell.Selected="BankGrid_Selected"  -->
+			<!--  ItemsSource="{Binding Source={StaticResource BankData}}"  -->
+			<!--<DataGrid.Background>
+				-->
+			<!--  create an elegant left to right light-> Dark gradient as a background  -->
+			<!--
+				<LinearGradientBrush StartPoint="1.3,0" EndPoint="0.0,1">
+					<GradientStop Offset="1" Color="#333333" />
+					<GradientStop Offset="0.3" Color="#35F6FB" />
+				</LinearGradientBrush>
+			</DataGrid.Background>-->
+
+			<DataGrid.Resources>
+				<!--<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{DynamicResource Blue}" />-->
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#6598FD" />
+				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrush}" Color="#FFFFFF" />
+
+			</DataGrid.Resources>
+
+			<!--#region bank Columns-->
+			<DataGrid.Columns>
+				<DataGridTemplateColumn
+					x:Name="ID"
+					Width="40"
+					Header="Id"
+					SortMemberPath="Id">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock
+								HorizontalAlignment="Center"
+								VerticalAlignment="Top"
+								Text="{Binding Id}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTextColumn Binding="{Binding CustNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Customer #" />
+
+				<DataGridTextColumn
+					Width="80"
+					Binding="{Binding BankNo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+					Header="Bank #"
+					SortMemberPath="BankNo" />
+
+				<DataGridTextColumn
+					Width="30"
+					Binding="{Binding AcType, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+					Header="Type"
+					SortMemberPath="AcType" />
+
+				<DataGridTextColumn
+					Width="90"
+					Binding="{Binding Balance, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat='£ ##,###,###.00'}"
+					Header="Balance"
+					SortMemberPath="Balance" />
+
+				<DataGridTextColumn
+					Width="50"
+					Binding="{Binding IntRate, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat='0.00'}"
+					Header="Interest"
+					SortMemberPath="IntRate" />
+				<!--  CellStyle="{StaticResource CenterText}"  -->
+
+				<!--  the next 2 show 2 ways to format a date - 1 a Converter the other a direct Format string  -->
+				<DataGridTemplateColumn
+					Width="80"
+					Header="Open Date"
+					SortMemberPath="ODate">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock
+								HorizontalAlignment="Center"
+								VerticalAlignment="Top"
+								Text="{Binding Path=ODate, StringFormat='dd/MM/yyyy'}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+					<DataGridTemplateColumn.CellEditingTemplate>
+						<DataTemplate>
+							<DatePicker SelectedDate="{Binding Path=ODate, StringFormat='dd/MM/yyyy', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellEditingTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn
+					Width="80"
+					Header="Close Date"
+					SortMemberPath="CDate">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock
+								HorizontalAlignment="Center"
+								VerticalAlignment="Top"
+								Text="{Binding Path=CDate, StringFormat='dd/MM/yyyy'}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+					<DataGridTemplateColumn.CellEditingTemplate>
+						<DataTemplate>
+							<DatePicker SelectedDate="{Binding Path=CDate, StringFormat='dd/MM/yyyy', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellEditingTemplate>
+				</DataGridTemplateColumn>
+
+			</DataGrid.Columns>
+			<!--#endregion bankfields-->
+
+
+		</DataGrid>
+
+		<Grid x:Name="DataFields"
+			DataContext="BankGrid"
+			Grid.Column="1" 
+			Grid.ColumnSpan="2" 
+			Grid.Row="1"
+			Grid.RowSpan="2"
+			HorizontalAlignment="Stretch"
+			Margin="-3,230,0,3"
+			VerticalAlignment="Bottom"
+			>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="40" />
+				<RowDefinition Height="40*" />
+				<RowDefinition Height="40" />
+				<RowDefinition Height="40*" />
+			</Grid.RowDefinitions>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="90"/>
+				<ColumnDefinition Width="110"/>
+			</Grid.ColumnDefinitions>
+			<!--#endregion Text Fields-->
+
+			<!--#region Text Fields-->
+			<Border
+				BorderBrush="DarkBlue"
+				BorderThickness="2"
+				Grid.Row="0"
+				Grid.Column="0"
+				Grid.ColumnSpan="4"
+				Grid.RowSpan="4"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				Margin="5,1,-40,-8"
+				/>
+			<TextBlock
+					x:Name="textBlock"
+					FontWeight="Bold"
+					Foreground="White"
+					Grid.Column="0"
+					Grid.Row="0"
+					Height="25"
+					HorizontalAlignment="Center"
+					Padding="10,5,5,5"
+					VerticalAlignment="Center"
+					Text="Customer #" 
+					Width="70"
+/>
+			<TextBlock
+					x:Name="textBlock_Copy"
+					Foreground="White"
+					Grid.Column="0"
+					Grid.Row="1"
+					Width="70"
+					Height="25"
+					Padding="10,5,5,5"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontWeight="Bold"
+					Text="Bank A/c #" />
+
+			<TextBlock
+					x:Name="textBlock_Copy5"
+					Foreground="White"
+					Grid.Column="0"
+					Grid.Row="2"
+					Width="70"
+					Height="25"
+					Padding="10,5,5,5"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontWeight="Bold"
+					Text="A/c Type" />
+
+			<TextBlock
+					x:Name="textBlock_Copy1"
+					Foreground="White"
+					Grid.Column="0"
+					Grid.Row="3"
+					Width="84"
+					Height="25"
+					Padding="15,5,5,5"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontWeight="Bold"
+					RenderTransformOrigin="0.457,-0.36"
+					Text="A/c Balance" />
+
+			<TextBox
+					x:Name="Custno"
+					Foreground="Black"
+					Grid.Column="1"
+					Grid.Row="0"
+					Width="90"
+					Height="24"
+					Margin="5,0,-35,0"
+					Padding="10,3,0,0"
+					HorizontalAlignment="Center"
+					IsTabStop="True"
+					VerticalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					FontSize="12"
+					TabIndex="0"
+					LostFocus ="Edit_LostFocus"
+					Text="{Binding CustNo, FallbackValue=Cust  #, UpdateSourceTrigger=LostFocus}" />
+
+
+			<TextBox
+					x:Name="Bankno"
+					Grid.Column="1"
+					Grid.Row="1"
+					Width="90"
+					Height="24"
+					Margin="5,0,-35,0"
+					Padding="10,3,0,0"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					IsTabStop="True"
+					FontSize="12"
+					Foreground="Red"
+					RenderTransformOrigin="0.422,2.208"
+					TabIndex="1"
+					LostFocus ="Edit_LostFocus"
+					Text="{Binding BankNo, FallbackValue=Bank A/c #, UpdateSourceTrigger=LostFocus}" />
+
+			<TextBox
+					x:Name="acType"
+					Foreground="Black"
+					Grid.Column="1"
+					Grid.Row="2"
+					Width="90"
+					Height="24"
+					Margin="5,0,-35,0"
+					Padding="5,3,0,0"
+					HorizontalAlignment="Center"
+					IsTabStop="True"
+					VerticalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					FontSize="12"
+					SelectionChanged="SelectionChanged"
+					TabIndex="2"
+					LostFocus ="Edit_LostFocus"
+					Text="{Binding AcType, FallbackValue=AcType, UpdateSourceTrigger=LostFocus}"
+					TextAlignment="Center"
+					TextChanged="TextChanged" />
+
+
+			<TextBox
+					x:Name="balance"
+					Grid.Column="1"
+					Grid.Row="3"
+					Width="104"
+					Height="32"
+					Padding="5,3,0,0"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					IsTabStop="True"
+					FontSize="16"
+					FontWeight="DemiBold"
+					Foreground="Red"
+					Margin="5,0,-35,0"
+					SelectionChanged="SelectionChanged"
+					TabIndex="3"
+					LostFocus ="Edit_LostFocus"
+					Text="{Binding Balance, FallbackValue=Balance, UpdateSourceTrigger=LostFocus}"
+					TextAlignment="Center"
+					TextChanged="TextChanged" />
+
+
+			<TextBlock
+					x:Name="textBlock_Copy3"
+					Foreground="White"
+					Grid.Column="2"
+					Grid.Row="1"
+					Width="88"
+					Height="24"
+					Margin="15,0,-35,0"
+					Padding="5,5,5,5"
+					FontWeight="DemiBold"
+					Text="Date Opened"
+					TextAlignment="Center" />
+
+			<TextBox
+					x:Name="odate"
+					Foreground="Black"
+					Grid.Column="3"
+					Grid.Row="1"
+					Width="90"
+					Height="24"
+					Margin="15,0,-35,0"
+					Padding="5,3,0,0"
+					HorizontalContentAlignment="Center"
+					IsTabStop="True"
+					FontSize="12"
+					SelectionChanged="SelectionChanged"
+					TabIndex="4"
+					LostFocus ="Edit_LostFocus"
+					Text="{Binding ODate, FallbackValue=ODate, StringFormat=dd/MM/yyyy, UpdateSourceTrigger=LostFocus}"
+					TextAlignment="Center"
+					TextChanged="TextChanged" />
+
+			<TextBlock
+					x:Name="textBlock_Copy4"
+					Foreground="White"
+					Grid.Column="2"
+					Grid.Row="2"
+					Margin="3,0,-35,0"
+					Width="70"
+					Height="25"
+					Padding="5,5,5,5"
+					FontWeight="Bold"
+					Text="Close Date" />
+
+			<TextBox
+					x:Name="cdate"
+					Grid.Column="3"
+					Grid.Row="2"
+					Width="90"
+					Height="24"
+					Margin="15,0,-35,0"
+					Padding="5,3,0,0"
+					HorizontalContentAlignment="Center"
+					IsTabStop="True"
+					FontSize="12"
+					Foreground="Black"
+					SelectionChanged="SelectionChanged"
+					TabIndex="5"
+					LostFocus ="Edit_LostFocus"
+					Text="{Binding CDate, FallbackValue=CDate, StringFormat=dd/MM/yyyy, UpdateSourceTrigger=LostFocus}"
+					TextAlignment="Center"
+					TextChanged="TextChanged" />
+			<TextBlock
+					x:Name="Count"
+					Grid.Column="4"
+					Grid.Row="0"
+					Width="88"
+					Height="24"
+					Margin="15,0,-35,0"
+					Padding="5,3,5,5"
+					Background="DarkGray"
+					FontSize="14"
+					FontWeight="DemiBold"
+					Foreground="Red"
+					Text=" Counter"
+					TextAlignment="Center"
+					TextTrimming="WordEllipsis" />
+
+		</Grid>
+
+		<!--#region buttons2-->
+		<Button
+			x:Name="SaveBttn"
+			Grid.Column="3"
+			Grid.ColumnSpan="2"
+			Grid.Row="2"
+			Width="100"
+			Height="30"
+			Margin="10,61,0,0"
+			HorizontalAlignment="Left"
+			IsTabStop="False"
+			VerticalAlignment="Top"
+			Background="{StaticResource HeaderBrushRed}"
+			Click="SaveBtn"
+			Content="Save Changes"
+			Foreground="White"
+			IsEnabled="False"
+			Template="{StaticResource HorizontalGradientTemplateRed}" />
+		<Button
+			Grid.Row="2"
+			Grid.Column="3"
+			Width="100"
+			Height="30"
+			Margin="10,99,0,0"
+			HorizontalAlignment="Left"
+			IsTabStop="False"
+			VerticalAlignment="Top"
+			Background="{StaticResource HeaderBrushBlue}"
+			Click="Close_Click"
+			Content="Close"
+			Foreground="White"
+			Template="{StaticResource HorizontalGradientTemplateBlue}" />
+		<CheckBox
+			x:Name="OntopChkbox"
+			Grid.Column="3"
+			Grid.ColumnSpan="2"
+			Grid.Row="2"
+			Width="90"
+			Height="25"
+			Margin="15,10,0,0"
+			HorizontalAlignment="Left"
+			IsTabStop="False"
+			VerticalAlignment="Top"
+			Click="OntopChkbox_Click"
+			Content="Keep on Top"
+			FontWeight="Medium"
+			Foreground="Black"
+			IsChecked="true" />
+		<CheckBox
+			x:Name="LinkRecords"
+			Grid.Row="2"
+			Grid.Column="1"
+			IsTabStop="False"
+			Margin="435,37,80,75"
+			Click="LinkRecords_Click"
+			Content="Link to ALL Viewers "
+			Foreground="Red" 
+			Grid.ColumnSpan="2"
+			Width="150"/>
+		<CheckBox
+			x:Name="LinkToParent"
+			Grid.Row="2"
+			Grid.Column="1"
+			Grid.ColumnSpan="2"
+			IsTabStop="False"
+			Margin="435,60,30,55"
+			Click="LinkToParent_Click"
+			Content="Link  => to Parent Viewer"
+			Foreground="Red"
+			Width="200"/>
+		<CheckBox
+			  x:Name="LinkToMulti"
+			  Grid.Row="2"
+			  Grid.Column="1"
+			Grid.ColumnSpan="2"
+			  IsTabStop="False"
+			  Margin="435,86,30,30"
+			  Click="LinkToMulti_Click"
+			  Content="Link  => to Multi Viewer"
+			  Foreground="Red"
+			Width="200"
+			  RenderTransformOrigin="0.49,1.56" />
+
+		<Button			
+			Background="{StaticResource HeaderBrushGray}"
+			  Click="Minimize_click"
+			  Content="-v-"
+			  Foreground="White"
+			  Grid.Column="3"
+			  HorizontalAlignment="Left"
+			  IsTabStop="False"
+			  MouseDown="Window_MouseDown"
+			  Opacity="50"
+			  Template="{StaticResource HorizontalGradientTemplateGray}"
+			  VerticalContentAlignment="Top"
+			  Visibility="Visible"
+			  Width="20" Margin="95,5,0,5" Grid.ColumnSpan="2"/>
+		<!--#endregion buttons2-->
+
+	</Grid>
+</Window>
