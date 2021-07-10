@@ -163,7 +163,7 @@ namespace WPFPages . Views
 			if ( CurrentDb == "BANKACCOUNT" )
 			{
 				// ss = BankAccountViewModel
-				BankCollection . UpdateBankDb ( ss );
+				BankCollection . UpdateBankDb ( ss, "BANKACCOUNT" );
 				// cs = CustomerViewModel 
 				// Copy Bank data to Customer
 				cs . Id = ss . Id;
@@ -173,7 +173,7 @@ namespace WPFPages . Views
 				cs . ODate = ss . ODate;
 				cs . CDate = ss . CDate;
 				// ss = CustomerViewModel
-				CustCollection . UpdateCustomerDb ( cs );
+				CustCollection . UpdateCustomerDb ( cs , "BANKACCOUNT");
 				// sa = DetailsViewModel 
 				// Copy Bank data to Details
 				sa . Id = ss . Id;
@@ -184,13 +184,13 @@ namespace WPFPages . Views
 				sa . IntRate = ss . IntRate;
 				sa . ODate = ss . ODate;
 				sa . CDate = ss . CDate;
-				DetCollection . UpdateDetailsDb ( sa );
+				DetCollection . UpdateDetailsDb ( sa , "BANKACCOUNT");
 				return true;
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
 				// ss = DetailsViewModel 
-				DetCollection . UpdateDetailsDb ( sa );
+				DetCollection . UpdateDetailsDb ( sa , "DETAILS");
 				ss . Id = sa . Id;
 				ss . BankNo = sa . BankNo;
 				ss . CustNo = sa . CustNo;
@@ -200,7 +200,7 @@ namespace WPFPages . Views
 				ss . ODate = sa . ODate;
 				ss . CDate = sa . CDate;
 				// ss = BankAccountViewModel
-				BankCollection . UpdateBankDb ( ss );
+				BankCollection . UpdateBankDb ( ss, "DETAILS" );
 				// Copy data to Customer
 				cs . Id = sa . Id;
 				cs . BankNo = sa . BankNo;
@@ -209,13 +209,13 @@ namespace WPFPages . Views
 				cs . ODate = sa . ODate;
 				cs . CDate = sa . CDate;
 				// ss = CustomerViewModel
-				CustCollection . UpdateCustomerDb ( cs );
+				CustCollection . UpdateCustomerDb ( cs, "DETAILS" );
 				return true;
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
 				// ss = CustomerViewModel
-				CustCollection . UpdateCustomerDb ( cs );
+				CustCollection . UpdateCustomerDb ( cs, "CUSTOMER" );
 				ss . Id = cs . Id;
 				ss . BankNo = cs . BankNo;
 				ss . CustNo = cs . CustNo;
@@ -223,7 +223,7 @@ namespace WPFPages . Views
 				ss . ODate = cs . ODate;
 				ss . CDate = cs . CDate;
 				// ss = BankAccountViewModel
-				BankCollection . UpdateBankDb ( ss );
+				BankCollection . UpdateBankDb ( ss ,"CUSTOMER");
 				// ss = DetailsViewModel 
 				sa . Id = cs . Id;
 				sa . BankNo = cs . BankNo;
@@ -231,7 +231,7 @@ namespace WPFPages . Views
 				sa . AcType = cs . AcType;
 				sa . ODate = cs . ODate;
 				sa . CDate = cs . CDate;
-				DetCollection . UpdateDetailsDb ( sa );
+				DetCollection . UpdateDetailsDb ( sa, "CUSTOMER" );
 			}
 			return true;
 #endif
@@ -382,7 +382,8 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update successful for Customers Data..." );
 
-						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
+						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, "+
+							"ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -392,7 +393,8 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update successful for Bank Account Data..." );
 
-						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
+						
+						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " + "ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -1029,7 +1031,8 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update of Customers successful..." );
 
-						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
+						cmd = new SqlCommand ( "UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, "+
+							"ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );
@@ -1039,7 +1042,8 @@ namespace WPFPages . Views
 						cmd . ExecuteNonQuery ( );
 						Debug . WriteLine ( "SQL Update of BankAccounts successful..." );
 
-						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
+						cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, "+ 
+							"ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
 						cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( cs . Id ) );
 						cmd . Parameters . AddWithValue ( "@bankno", cs . BankNo . ToString ( ) );
 						cmd . Parameters . AddWithValue ( "@custno", cs . CustNo . ToString ( ) );

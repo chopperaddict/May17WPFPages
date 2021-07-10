@@ -64,13 +64,13 @@ namespace WPFPages . Views
 			this. Refresh ( );
 		}
 		#region Mouse support
-		private void DoDragMove ( )
-		{//Handle the button NOT being the left mouse button
-		 // which will crash the DragMove Fn.....
-			try
-			{ this . DragMove ( ); }
-			catch { return; }
-		}
+		//private void DoDragMove ( )
+		//{//Handle the button NOT being the left mouse button
+		// // which will crash the DragMove Fn.....
+		//	try
+		//	{ this . DragMove ( ); }
+		//	catch { return; }
+		//}
 		#endregion Mouse support
 
 		#region Startup/ Closedown
@@ -95,6 +95,9 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
+
+			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+
 
 			await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 
@@ -128,6 +131,13 @@ namespace WPFPages . Views
 			t1 . Priority = ThreadPriority . Lowest;
 			t1 . Start ( );
 			Startup = false;
+		}
+
+		private void EventControl_GlobalDataChanged(object sender, GlobalEventArgs e)
+		{
+			if (e.CallerType == "BANKDBVIEW")
+				return;
+			BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -288,7 +298,12 @@ namespace WPFPages . Views
 					SenderGuid = this.Tag.ToString(),
 					RowCount = this.BankGrid.SelectedIndex
 				});
-
+			EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+			{
+				CallerType = "BANKDBVIEW",
+				AccountType = "BANKACCOUNT",
+				SenderGuid = this.Tag?.ToString()
+			});
 		}
 
 		#endregion DATA EDIT CONTROL METHODS
@@ -358,7 +373,9 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl . BankDataLoaded -= EventControl_BankDataLoaded;
-			DataFields . DataContext = this . BankGrid . SelectedItem;
+			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
+
+			DataFields. DataContext = this . BankGrid . SelectedItem;
 			BankViewcollection = null;
 			Utils . SaveProperty ( "BankDbView_bindex", bindex . ToString ( ) );
 		}
@@ -478,6 +495,12 @@ namespace WPFPages . Views
 					SenderGuid = this.Tag.ToString(),
 					RowCount = this . BankGrid . SelectedIndex
 				} );
+			EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+			{
+				CallerType = "BANKDBVIEW",
+				AccountType = "BANKACCOUNT",
+				SenderGuid = this.Tag?.ToString()
+			});
 
 			//Gotta reload our data because the update clears it down totally to null
 			//this . BankGrid . SelectedIndex = CurrentSelection;
@@ -488,7 +511,7 @@ namespace WPFPages . Views
 			//this . BankGrid . ItemsSource = BankViewcollection;
 			//this . BankGrid . Refresh ( );
 
-			SaveBttn . IsEnabled = false;
+			SaveBttn. IsEnabled = false;
 			IsDirty = false;
 			return true;
 		}
@@ -1100,6 +1123,12 @@ namespace WPFPages . Views
 						SenderGuid = this.Tag.ToString(),
 						RowCount = this . BankGrid . SelectedIndex
 					} );
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "BANKDBVIEW",
+					AccountType = "BANKACCOUNT",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else
 				this . BankGrid . SelectedItem = RowData . Item;

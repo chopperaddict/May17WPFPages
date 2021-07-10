@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -12,7 +13,7 @@ using WPFPages.Views;
 
 namespace WPFPages.ViewModels
 {
-	public partial class DetailsViewModel// : Observable
+	public partial class DetailsViewModel : ObservableCollection<DetailsViewModel>
 	{
 
 #region CONSTRUCTORS

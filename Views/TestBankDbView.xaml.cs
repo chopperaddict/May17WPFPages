@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using WPFPages.ViewModels;
 
 namespace WPFPages.Views
@@ -61,6 +62,46 @@ namespace WPFPages.Views
 		private MultiViewer MultiParentViewer;
 		private Thread t1;
 
+
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
+		// CREATING YOUR OWN DEPENDENCY PROPERTY
+		// This one simply increments an Int value the we 
+		// bind to a TextBlock, so it simply displays the counter value
+		// automatically increasing to max, thren back to zero
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
+
+		/*
+		 *  CAUTION - YOU WILL NEED TO CREATE THIS SOMEWHERE INSIDE THE MODULE YU WABNT TO USE IT IN, 
+		 *  AS IT REQUIRES A DATACONTEXT TO BE "BINDED" TO IN THE xaml CODE
+		  */
+		public int Counter
+		{
+			get { return (int)GetValue(CounterProperty); }
+			set { SetValue(CounterProperty, value); }			
+		}
+
+		//To use this, your C# code should be something like this : although this is fancy ot create an auto timer
+/*
+		DispatcherTimer dispatcherTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal,
+			delegate
+			{
+				int newvalue = 0;
+				if (Counter == int.MaxValue) newvalue = 0;
+				else newvalue = Counter + 1;
+				SetValue(CounterProperty, newvalue);
+			}, Dispatcher);
+*/
+
+		// Using a DependencyProperty as the backing store for Counter.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty CounterProperty =
+		    DependencyProperty.Register("Counter", typeof(int), typeof(TestBankDbView), new PropertyMetadata(25));
+		// Typeof (int ) needs to match declaration type !!
+		// OwnerClass is This class (You cannot use 'this'), PropertyMetadata holds the STARTING Value in this case
+
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
+
+
+
 		// Crucial structure for use when a Grid row is being edited
 		private RowData bvmCurrent = null;
 		#region Mouse support
@@ -76,6 +117,17 @@ namespace WPFPages.Views
 		#region Startup/ Closedown
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
+			// Handle the new Dependency property
+			DispatcherTimer dispatcherTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, 
+				delegate
+				{
+					int newvalue = 0;
+					if (Counter == int.MaxValue) newvalue = 0;
+					else  newvalue = Counter + 1;
+					SetValue(CounterProperty, newvalue);
+				},Dispatcher);
+
+
 			Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
 			this.Show();
 			this.Refresh();
@@ -98,6 +150,10 @@ namespace WPFPages.Views
 			EventControl.BankDataLoaded += EventControl_BankDataLoaded;
 
 			EventControl.TestDataChanged += EventControl_TestDataChanged;
+
+			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+
+
 
 			await TestBankCollection.LoadBank(TestBankcollection, "BANKDBVIEW", 3, true);
 
@@ -131,8 +187,15 @@ namespace WPFPages.Views
 			t1.Start();
 			Startup = false;
 		}
+		private void EventControl_GlobalDataChanged(object sender, GlobalEventArgs e)
+		{
+			if (e.CallerType == "TESTBANKDBVIEW")
+				return;
+			//Update our own data tyoe only
+			BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
+		}
 
-		private  void EventControl_TestDataChanged(object sender, LoadedEventArgs e)
+		private void EventControl_TestDataChanged(object sender, LoadedEventArgs e)
 		{
 			// dont update if we triggered the change
 			// Works well 23/6/21
@@ -382,6 +445,7 @@ namespace WPFPages.Views
 			EventControl.ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl.ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl.BankDataLoaded -= EventControl_BankDataLoaded;
+			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
 
 			EventControl.TestDataChanged -= EventControl_TestDataChanged;
 

@@ -92,11 +92,23 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\CustomCommands.cs" />
+    <Compile Include="Converts\Color2Hex.cs" />
+    <Compile Include="Converts\dateconvertor.cs" />
+    <Compile Include="Converts\HexConvert.cs" />
+    <Compile Include="Views\Colorpicker.xaml.cs">
+      <DependentUpon>Colorpicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ColorsSelector.xaml.cs">
+      <DependentUpon>ColorsSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConvertDateToShortString.cs" />
+    <Compile Include="Depends\ExtenderProp.cs" />
     <Compile Include="Libraries\DataClasses1.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DataClasses1.dbml</DependentUpon>
     </Compile>
+    <Compile Include="ListBoxScroll.cs" />
     <Compile Include="Observable.cs" />
     <Compile Include="Page0.xaml.cs" />
     <Compile Include="Page1.xaml.cs" />
@@ -134,7 +146,7 @@
     <Compile Include="Views\ImportDbData.cs" />
     <Compile Include="Views\JsonSupport.cs" />
     <Compile Include="Views\new_DetCollection.cs" />
-    <Compile Include="DateOnlyConverter.cs" />
+    <Compile Include="Views\DateOnlyConverter.cs" />
     <Compile Include="SalaryConvertor.cs" />
     <Compile Include="Views\EventControl.cs" />
     <Compile Include="Views\FileHandling.cs" />
@@ -173,6 +185,9 @@
     <Compile Include="Views\TestDetailsCollection.cs" />
     <Compile Include="Views\TestDetailsDbView.xaml.cs">
       <DependentUpon>TestDetailsDbView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserListBoxViewer.xaml.cs">
+      <DependentUpon>UserListBoxViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ViewEditdb.cs" />
     <Compile Include="Views\ViewModelBase.cs" />
@@ -216,6 +231,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dicts\DataTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dicts\DiagonalGradients.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -225,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dicts\Menus.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dicts\StylesDict.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -245,6 +268,14 @@
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\BankDbView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Colorpicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ColorsSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -360,6 +391,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UserListBoxViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -434,7 +469,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Behaviours\" />
-    <Folder Include="Converters\" />
     <Folder Include="DataSources\" />
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>

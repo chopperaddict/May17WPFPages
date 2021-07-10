@@ -1,0 +1,174 @@
+﻿<Window x:Class="WPFPages.Views.ColorsSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+	  xmlns:conv="clr-namespace:WPFPages.Converts"
+	  xmlns:colors="clr-namespace:WPFPages.Views" 
+	  xmlns:wpfpages="clr-namespace:WPFPages" 
+	  mc:Ignorable="d"
+	  MinHeight="320"
+	  MinWidth="565"
+	  MaxHeight="520"
+	  MaxWidth="565"
+	  WindowStartupLocation="CenterScreen"
+	  WindowStyle="SingleBorderWindow"
+        Title="RGB Colors Selector" Height="320" Width="565">
+
+	<Window.Resources>
+		<colors:Colorpicker 	x:Key="Colors"/>
+		<conv:HexConvert x:Key="DectoHex"/>
+		<local:ColorsSelector x:Key="THIS"/>
+
+	</Window.Resources>
+
+	<Grid
+	    >
+		<!--<Grid.DataContext>
+				<colors:ColorsSelector/>
+			</Grid.DataContext>-->
+
+		<Grid.Background>
+			<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+				<GradientStop Color="#555555" Offset="0.7" />
+				<GradientStop Color="LightGray" Offset="0.17" />
+			</LinearGradientBrush>
+		</Grid.Background>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="10"/>
+			<RowDefinition Height="20"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="10"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="10"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="10"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="10"/>
+		</Grid.ColumnDefinitions>
+	    
+		<StackPanel
+			Orientation="Horizontal"
+		     Grid.Row="1"
+		     Grid.Column="1">
+			<TextBlock Text="Opacity" 
+				     HorizontalAlignment="Left"
+				     FontSize="10"
+				     Foreground="White" Width="50"/>
+			<TextBlock x:Name="opVal"
+					Text="{Binding ElementName=opacity, Path=Value}" 
+				     TextAlignment="Center"				     
+				     Padding="0,0,0,0"  
+				     Background="{StaticResource White4}"
+				     Foreground="Red" Width="31"
+					    />
+				<TextBlock Text="     Red" 
+				     HorizontalAlignment="Left"
+				     FontSize="10"
+				     Foreground="White" 
+				     Width="45"/>
+			<TextBlock x:Name="opRed"
+					Text="{Binding ElementName=RedSlider, Path=Value}"
+					TextAlignment="Center"
+				     HorizontalAlignment="Left"
+				     Background="{StaticResource White4}"
+				     Foreground="Red" Width="31">
+			</TextBlock>
+			<TextBlock Text="  Green" 
+				     HorizontalAlignment="Left"
+				     FontSize="10"
+				     Foreground="White" 
+				     Width="40"/>
+			<TextBlock x:Name="opGreen"
+					Text="{Binding ElementName=GreenSlider, Path=Value}"
+
+					TextAlignment="Center"
+				     HorizontalAlignment="Left"
+				     Background="{StaticResource White4}"
+				     Foreground="Red" Width="31"/>
+				<TextBlock Text="  Blue" 
+				     HorizontalAlignment="Center"
+				     FontSize="10"
+				     Foreground="White" 
+				     Width="40"/>
+			<TextBlock x:Name="opBlue"
+					Text="{Binding ElementName=BlueSlider, Path=Value}"
+				     TextAlignment="Center"
+				     HorizontalAlignment="Center"
+				     Background="{StaticResource White4}"
+				     Foreground="Red" Width="31"/>
+				<TextBlock Text="     RGB" 
+				     HorizontalAlignment="Left"
+				     FontSize="10"
+				     Foreground="White" 
+				     Width="45"/>
+			<TextBlock x:Name="opAll"
+					Text="{Binding ElementName=opacity, Path=Value}"
+				     HorizontalAlignment="Center"
+				     TextAlignment="Center"
+				     Background="{StaticResource White4}"
+				     Foreground="Red" Width="61"/>
+			<Button x:Name="ClipSave"
+				Content="Save to ClipBoard"
+				Height="30"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Width="109"
+				  Margin="10,0,0,0"
+				 Click="ClipSave_Click"
+				Background="Green"
+				Foreground="White"
+				/>
+		</StackPanel>
+
+		<Slider  x:Name="OpacitySlider" 
+			   Grid.Row="2"
+			   Grid.Column="1"
+			   Height="20"
+			   Background="Gray"
+			   ValueChanged="OpacitySlider_ValueChanged"
+			   Minimum="0.0" Maximum="1.0" 
+			   Value="{Binding ElementName=opVal, Path=Text}"   
+			   />
+		<Slider  x:Name="RedSlider" 
+			   Grid.Row="3"
+			   Grid.Column="1"
+			   Height="20"
+			   Background="Red"
+			   ValueChanged="RedSlider_ValueChanged"
+			   Minimum="0" Maximum="255" 
+				Value="{Binding RedValue}"/>
+	
+		<Slider  x:Name="GreenSlider" 
+			   Grid.Row="4"
+			   Grid.Column="1"
+			   Height="20"
+			   Background="Green"
+			   ValueChanged="GreenSlider_ValueChanged"
+			   Minimum="0" Maximum="255" 
+				Value="{Binding GreenValue}"/>
+
+		<Slider  x:Name="BlueSlider" 
+			Grid.Row="5"
+			Grid.Column="1"
+			Height="20"
+			Background="Blue"
+			ValueChanged="BlueSlider_ValueChanged"
+			Minimum="0" Maximum="255" 
+			Value="{Binding BlueValue}"/>
+	
+	    
+			<Rectangle x:Name="Output"
+				     Grid.Row="7"
+				     Grid.RowSpan="1"
+				     Grid.Column="1"
+				     HorizontalAlignment="Stretch"
+				     VerticalAlignment="Stretch"
+				     Fill ="White"/>
+	</Grid>
+</Window>

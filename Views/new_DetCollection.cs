@@ -407,7 +407,7 @@ namespace WPFPages . Views
 			}
 			return result;
 		}
-		public static bool UpdateDetailsDb ( DetailsViewModel sa )
+		public static bool UpdateDetailsDb ( DetailsViewModel sa , string CallerType)
 		{
 
 			SqlConnection con;
@@ -421,20 +421,37 @@ namespace WPFPages . Views
 				using ( con )
 				{
 					con . Open ( );
-					SqlCommand cmd = new SqlCommand ( "UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, " + 
-						"INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
-					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( sa . Id ) );
-					cmd . Parameters . AddWithValue ( "@bankno", sa . BankNo . ToString ( ) );
-					cmd . Parameters . AddWithValue ( "@custno", sa . CustNo . ToString ( ) );
-					cmd . Parameters . AddWithValue ( "@actype", Convert . ToInt32 ( sa . AcType ) );
-					cmd . Parameters . AddWithValue ( "@balance", Convert . ToDecimal ( sa . Balance ) );
-					cmd . Parameters . AddWithValue ( "@intrate", Convert . ToDecimal ( sa . IntRate ) );
-					cmd . Parameters . AddWithValue ( "@odate", Convert . ToDateTime ( sa . ODate ) );
-					cmd . Parameters . AddWithValue ( "@cdate", Convert . ToDateTime ( sa . CDate ) );
-					cmd . ExecuteNonQuery ( );
-					Debug . WriteLine ( "SQL Update of SecAccounts successful..." );
 
-			}
+					if (CallerType == "CUSTOMER")
+					{
+						SqlCommand cmd = new SqlCommand("UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype,  " +
+						"ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con);
+						cmd.Parameters.AddWithValue("@id", Convert.ToInt32(sa.Id));
+						cmd.Parameters.AddWithValue("@bankno", sa.BankNo.ToString());
+						cmd.Parameters.AddWithValue("@custno", sa.CustNo.ToString());
+						cmd.Parameters.AddWithValue("@actype", Convert.ToInt32(sa.AcType));
+						cmd.Parameters.AddWithValue("@odate", Convert.ToDateTime(sa.ODate));
+						cmd.Parameters.AddWithValue("@cdate", Convert.ToDateTime(sa.CDate));
+						cmd.ExecuteNonQuery();
+						Debug.WriteLine("SQL Update of SecAccounts successful...");
+					}
+					else
+					{
+						SqlCommand cmd = new SqlCommand("UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, " +
+						"INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con);
+						cmd.Parameters.AddWithValue("@id", Convert.ToInt32(sa.Id));
+						cmd.Parameters.AddWithValue("@bankno", sa.BankNo.ToString());
+						cmd.Parameters.AddWithValue("@custno", sa.CustNo.ToString());
+						cmd.Parameters.AddWithValue("@actype", Convert.ToInt32(sa.AcType));
+						cmd.Parameters.AddWithValue("@balance", Convert.ToDecimal(sa.Balance));
+						cmd.Parameters.AddWithValue("@intrate", Convert.ToDecimal(sa.IntRate));
+						cmd.Parameters.AddWithValue("@odate", Convert.ToDateTime(sa.ODate));
+						cmd.Parameters.AddWithValue("@cdate", Convert.ToDateTime(sa.CDate));
+						cmd.ExecuteNonQuery();
+						Debug.WriteLine("SQL Update of SecAccounts successful...");
+					}
+
+				}
 			}
 			catch ( Exception ex )
 			{ Console . WriteLine ( $"DETAILS Update FAILED : {ex . Message}, {ex . Data}" ); }

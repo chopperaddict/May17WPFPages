@@ -15,7 +15,7 @@
 	Closing="Window_Closing"
 	KeyDown="Window_KeyDown"
 	Left="1220"
-	Top="680"
+	Top="280"
 	Topmost="false"
 	WindowStartupLocation="Manual"
 	WindowStyle="None"
@@ -441,8 +441,19 @@
 						Background="{StaticResource Red0}"
 						Foreground="{StaticResource White0}"/>
 
+				
 				<MenuItem  Header="Test Details System"
 						Click="TestDet_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="20"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Red0}"
+						Foreground="{StaticResource White0}"/>
+
+				<MenuItem  Header="New Listbox Viewer"
+						Click="UserListbox_Click"
 						Margin="2"
 						FontWeight="Bold"
 						Height="20"
@@ -486,6 +497,16 @@
 						Background="{StaticResource Blue4}"
 					     Foreground="{StaticResource Black2}"/>
 			</MenuItem>
+
+			<MenuItem  Header="Colors"
+				     Name ="Colors"
+				     Click="Colors_Click"
+					Background="{StaticResource Gray0}"
+					Foreground="{StaticResource White0}"
+					Margin="2"
+					FontWeight="DemiBold"
+					IsTabStop="False"
+					Height="25"/>
 
 		</Menu>
 

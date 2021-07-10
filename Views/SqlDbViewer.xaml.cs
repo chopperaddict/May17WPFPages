@@ -62,7 +62,6 @@ namespace WPFPages
 		//		public static Dispatcher UiThread = Dispatcher . CurrentDispatcher;
 
 		//Temporary collection to support linq querying
-		private BankCollection tmp = new BankCollection();
 		private BankCollection BankReserved = new BankCollection();
 		private CustCollection CustReserved = new CustCollection();
 		private DetCollection DetReserved = new DetCollection();
@@ -71,6 +70,7 @@ namespace WPFPages
 		public BankCollection SqlBankcollection = null;
 		public CustCollection SqlCustcollection = null;
 		public DetCollection SqlDetcollection = null;
+
 		// Crucial structure for use when a Grid row is being edited
 		private static RowData bvmCurrent = null;
 		private static CustRowData cvmCurrent = null;
@@ -83,18 +83,18 @@ namespace WPFPages
 		#region CollectionView stuff
 		// Get our personal Collection views of the Db
 		private ICollectionView _SQLBankviewerView;
+		private ICollectionView _SQLCustviewerView;
+		private ICollectionView _SQLDetviewerView;
 		private ICollectionView SQLBankviewerView
 		{
 			get { return _SQLBankviewerView; }
 			set { _SQLBankviewerView = value; }
 		}
-		private ICollectionView _SQLCustviewerView;
 		private ICollectionView SQLCustviewerView
 		{
 			get { return _SQLCustviewerView; }
 			set { _SQLCustviewerView = value; }
 		}
-		private ICollectionView _SQLDetviewerView;
 		private ICollectionView SQLDetViewerView
 		{
 			get { return _SQLDetviewerView; }
@@ -337,6 +337,7 @@ namespace WPFPages
 		{
 			IsViewerLoaded = false;
 			InitializeComponent();
+			this.Tag = (Guid)Guid.NewGuid();
 			CurrentDb = caller;
 			this.BankGrid.Visibility = Visibility.Collapsed;
 			this.CustomerGrid.Visibility = Visibility.Collapsed;
@@ -430,7 +431,7 @@ namespace WPFPages
 				Flags.CurrentSqlViewer = this;
 			}
 			//This is the ONE & ONLY place we should set the Guid
-			Flags.CurrentSqlViewer.Tag = Guid.NewGuid();
+//			Flags.CurrentSqlViewer.Tag = Guid.NewGuid();
 			MainWindow.gv.SqlViewerGuid = (Guid)Flags.CurrentSqlViewer.Tag;
 			IsViewerLoaded = true;
 			// clear global "loading new window" flag
@@ -542,10 +543,29 @@ namespace WPFPages
 			// Another SqlDbviewer has changed the current index
 			EventControl.ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
 
+			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+
+
 			// Triggered when multi account data is beign transferred from one to the other Db via GetExportRecords Window
 			EventControl.TransferDataUpdated += EventControl_TransferDataUpdated;
 			//Subscribe to the notifier EVENT so we know when a record is deleted from one of the grids
 			EventControl.RecordDeleted += OnDeletion;
+		}
+		private void EventControl_GlobalDataChanged(object sender, GlobalEventArgs e)
+		{
+			int x = 0;
+			if (e.CallerType == "SQLDBVIEWER" && e.AccountType == CurrentDb)
+				return;
+			//Update our own data tyoe only
+			if (CurrentDb == "BANKACCOUNT")
+				BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
+			else if (CurrentDb == "CUSTOMER")
+				CustCollection.LoadCust(null, "CUSTOMER",2,true);
+			else if (CurrentDb == "DETAILS")
+				DetailCollection.LoadDet(null, "DETAILS", 1, true);
+			{
+
+			}
 		}
 
 
@@ -742,7 +762,7 @@ namespace WPFPages
 		{
 			// Event handler for BankDataLoaded
 			// it was us, ignore it
-			if (e.SenderGuid == this.Tag.ToString()) return;
+			if (e.SenderGuid == this.Tag?.ToString()) return;
 			if (e.CallerType != "SQLSERVER") return;
 			if (e.DataSource == null) return;
 			stopwatch.Stop();
@@ -1149,6 +1169,7 @@ namespace WPFPages
 			EventControl.BankDataLoaded -= EventControl_BankDataLoaded;
 			EventControl.CustDataLoaded -= EventControl_CustDataLoaded;
 			EventControl.DetDataLoaded -= EventControl_DetDataLoaded; ;
+			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
 
 			// Triggered when multi account data is beign transferred from one to the other Db via GetExportRecords Window
 			EventControl.TransferDataUpdated -= EventControl_TransferDataUpdated;
@@ -1203,6 +1224,12 @@ namespace WPFPages
 						SenderGuid = this.Tag.ToString(),
 						RowCount = this.BankGrid.SelectedIndex
 					});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "SQLDBVIEWER",
+					AccountType = "BANKACCOUNT",
+					SenderGuid = this.Tag?.ToString()
+				});
 				Debug.WriteLine($"EditDb(1485) SQLDBVIEWER : in SendDataChanged : Sending ViewerDataUpdated EVENT for Bank");
 			}
 			else if (dbName == "CUSTOMER")
@@ -1220,6 +1247,12 @@ namespace WPFPages
 						DataSource = SqlCustcollection,
 						RowCount = this.CustomerGrid.SelectedIndex
 					});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "SQLDBVIEWER",
+					AccountType = "CUSTOMER",
+					SenderGuid = this.Tag?.ToString()
+				});
 				Debug.WriteLine($"EditDb(1499) SQLDBVIEWER : in SendDataChanged : Sending ViewerDataUpdated EVENT for customer");
 			}
 			else if (dbName == "DETAILS")
@@ -1237,6 +1270,13 @@ namespace WPFPages
 						DataSource = SqlDetcollection,
 						RowCount = this.DetailsGrid.SelectedIndex
 					});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "SQLDBVIEWER",
+					AccountType = "DETAILS",
+
+					SenderGuid = this.Tag?.ToString()
+				});
 				Debug.WriteLine($"EditDb(1514) SQLDBVIEWER : in SendDataChanged : Sending ViewerDataUpdated EVENT for Details");
 			}
 			Mouse.OverrideCursor = Cursors.Arrow;
@@ -2789,7 +2829,8 @@ namespace WPFPages
 							cmd.ExecuteNonQuery();
 							Debug.WriteLine("SQL Update of Customers successful...");
 
-							cmd = new SqlCommand("UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con);
+							cmd = new SqlCommand("UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, "+
+								" ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con);
 							cmd.Parameters.AddWithValue("@id", Convert.ToInt32(cs.Id));
 							cmd.Parameters.AddWithValue("@bankno", cs.BankNo.ToString());
 							cmd.Parameters.AddWithValue("@custno", cs.CustNo.ToString());
@@ -2799,7 +2840,8 @@ namespace WPFPages
 							cmd.ExecuteNonQuery();
 							Debug.WriteLine("SQL Update of BankAccounts successful...");
 
-							cmd = new SqlCommand("UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con);
+							cmd = new SqlCommand("UPDATE SecAccounts SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, "+ 
+								"ODATE=@odate, CDATE=@cdate where CUSTNO=@custno AND BANKNO = @bankno", con);
 							cmd.Parameters.AddWithValue("@id", Convert.ToInt32(cs.Id));
 							cmd.Parameters.AddWithValue("@bankno", cs.BankNo.ToString());
 							cmd.Parameters.AddWithValue("@custno", cs.CustNo.ToString());
@@ -6470,6 +6512,12 @@ namespace WPFPages
 						SenderGuid = this.Tag.ToString(),
 						RowCount = this.BankGrid.SelectedIndex
 					});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "SQLDBVIEWER",
+					AccountType = "DETAILS",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else
 				this.BankGrid.SelectedItem = RowData.Item;

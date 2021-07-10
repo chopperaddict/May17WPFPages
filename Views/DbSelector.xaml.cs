@@ -1494,5 +1494,17 @@ namespace WPFPages . Views
 			TestBankDbView tbdv = new TestBankDbView();
 			tbdv.Show();
 		}
+
+		private void UserListbox_Click ( object sender, RoutedEventArgs e )
+		{
+			UserListBoxViewer dblw = new UserListBoxViewer ( );
+			dblw . Show ( );
+		}
+
+		private void Colors_Click ( object sender, RoutedEventArgs e )
+		{
+			ColorsSelector cs = new ColorsSelector ( );
+			cs . Show ( );
+		}
 	}
 }

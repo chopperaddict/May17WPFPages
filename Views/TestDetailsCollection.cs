@@ -34,22 +34,22 @@ namespace WPFPages.Views
 			object lockobject = new object();
 			Notify = NotifyAll;
 			Caller = caller;
-			Debug.WriteLine($"About to lock Details Load system");
+//			Debug.WriteLine($"About to lock Details Load system");
 			try
 			{
-				lock (lockobject)
-				{
+//				lock (lockobject)
+//				{
 					internalcollection = null;
 					internalcollection = new TestDetailsCollection();
 
 					LoadDetailsTaskInSortOrderAsync(internalcollection);
-					Debug.WriteLine($"Exiting lock of Details Load system");
-				}
+//					Debug.WriteLine($"Exiting lock of Details Load system");
+//				}
 				return internalcollection;
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine($"Erro in lock Details Load system : {ex.Message} + {ex.Data}");
+				Debug.WriteLine($"Error in ock Details Load system : {ex.Message} + {ex.Data}");
 			}
 			return null;
 		}
@@ -162,10 +162,10 @@ namespace WPFPages.Views
 					SqlCommand cmd = new SqlCommand(commandline, con);
 					SqlDataAdapter sda = new SqlDataAdapter(cmd);
 
-					lock (bptr)
-					{
+//					lock (bptr)
+//					{
 						sda.Fill(dtDetails);
-					}
+//					}
 					st.Stop();
 				}
 			}
@@ -186,8 +186,8 @@ namespace WPFPages.Views
 		{
 			object bptr = new object();
 			int count = 0;
-			lock (bptr)
-			{
+//			lock (bptr)
+//			{
 				try
 				{
 					for (int i = 0; i < dtDetails.Rows.Count; i++)
@@ -228,7 +228,7 @@ namespace WPFPages.Views
 							});
 					}
 				}
-			}
+//			}
 			return true;
 		}
 		public static DataTable LoadDetailsDirect(DataTable dtDetails, string Sqlcommand = "Select* from SecAccounts order by CustNo, BankNo")

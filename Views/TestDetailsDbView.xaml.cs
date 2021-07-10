@@ -112,6 +112,10 @@ namespace WPFPages.Views
 			EventControl.DetDataLoaded += EventControl_DetDataLoaded;
 			EventControl.TestDataChanged += EventControl_TestDataChanged;
 
+			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+
+
+
 			await TestDetailsCollection.LoadDet(TestDetDbcollection, "DETAILSDBVIEW", 2, true);
 
 			SaveBttn.IsEnabled = false;
@@ -143,7 +147,14 @@ namespace WPFPages.Views
 			Startup = false;
 		}
 
+		private void EventControl_GlobalDataChanged(object sender, GlobalEventArgs e)
+		{
+			if (e.CallerType == "TESTDETAILSDBVIEW")
+				return;
+			//Update our own data tyoe only
+			DetailCollection.LoadDet(null, "DETAILS", 1, true);
 
+		}
 		#region DATA BASED EVENT HANDLERS
 		private void EventControl_EditIndexChanged(object sender, IndexChangedArgs e)
 		{
@@ -306,6 +317,7 @@ namespace WPFPages.Views
 			EventControl.ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl.DetDataLoaded -= EventControl_DetDataLoaded;
 			EventControl.TestDataChanged -= EventControl_TestDataChanged;
+			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
 
 			Utils.SaveProperty("DetailsDbView_dindex", dindex.ToString());
 		}
@@ -442,6 +454,12 @@ namespace WPFPages.Views
 					SenderGuid = this.Tag.ToString(),
 					RowCount = this.DetGrid.SelectedIndex
 				});
+			EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+			{
+				CallerType = "TESTDETAILSDBVIEWER",
+				AccountType = "DETAILS",
+				SenderGuid = this.Tag?.ToString()
+			});
 
 			//Gotta reload our data because the update clears it down totally to null
 			this.DetGrid.SelectedIndex = CurrentSelection;
@@ -589,6 +607,13 @@ namespace WPFPages.Views
 				SenderGuid = this.Tag.ToString(),
 				RowCount = this.DetGrid.SelectedIndex
 			});
+			EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+			{
+				CallerType = "TESTDETAILSDBVIEWER",
+				AccountType = "DETAILS",
+				SenderGuid = this.Tag?.ToString()
+			});
+
 			Mouse.OverrideCursor = Cursors.Arrow;
 		}
 
@@ -1421,6 +1446,13 @@ namespace WPFPages.Views
 						SenderGuid = this.Tag.ToString(),
 						RowCount = this.DetGrid.SelectedIndex
 					});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "TESTDETAILSDBVIEWER",
+					AccountType = "DETAILS",
+					SenderGuid = this.Tag?.ToString()
+				});
+
 			}
 			else
 				this.DetGrid.SelectedItem = RowData.Item;

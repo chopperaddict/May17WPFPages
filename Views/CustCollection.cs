@@ -49,7 +49,7 @@ namespace WPFPages . Views
 
 				if ( USEFULLTASK )
 				{
-					lock ( lockobj )
+//					lock ( lockobj )
 					{
 						Custinternalcollection = new CustCollection ( );
 						Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
@@ -98,7 +98,7 @@ namespace WPFPages . Views
 
 			if ( USEFULLTASK )
 			{
-				lock ( lockobject )
+//				lock ( lockobject )
 				{
 					Custinternalcollection = null;
 					Custinternalcollection = new CustCollection ( );
@@ -221,7 +221,7 @@ namespace WPFPages . Views
 			{
 				using ( con )
 				{
-					Debug . WriteLine ( $"Using new SQL connection in CUSTCOLLECTION" );
+					Debug . WriteLine ( $"Loading dtCust in CUSTCOLLECTION" );
 					string commandline = "";
 
 					if ( Flags . IsMultiMode )
@@ -246,10 +246,10 @@ namespace WPFPages . Views
 					//CustCollection bptr = new CustCollection ( );
 					//					lock ( bptr . LockCustReadData )
 					//					{
-					lock ( bptr )
-					{
+//					lock ( bptr )
+//					{
 						sda . Fill ( dtCust );
-					}                                       //					Debug . WriteLine ( $"CUSTOMERS : Sql data loaded into Customers DataTable [{dtCust . Rows . Count}] ...." );
+						Debug . WriteLine ( $"CUSTOMERS : dtCust loaded [{dtCust . Rows . Count}] ...." );
 										//					}
 				}
 			}
@@ -275,7 +275,7 @@ namespace WPFPages . Views
 			//			CustCollection bptr = new CustCollection ( );
 			//			lock ( bptr . LockCustLoadData )
 			//			{
-			lock ( bptr )
+//			lock ( bptr )
 			{
 				try
 				{
@@ -416,10 +416,11 @@ namespace WPFPages . Views
 		// Entry point for all data load/Reload
 		//**************************************************************************************************************************************************************//
 		// NO LONGER USED
-		public static bool UpdateCustomerDb ( CustomerViewModel NewData )
+		public static bool UpdateCustomerDb ( CustomerViewModel NewData , string CallerType)
 		{
 
 			SqlConnection con;
+			SqlCommand cmd = null;
 			string ConString = "";
 			ConString = ( string ) Settings . Default [ "BankSysConnectionString" ];
 			//			@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
@@ -430,13 +431,39 @@ namespace WPFPages . Views
 				using ( con )
 				{
 					con . Open ( );
-					SqlCommand cmd = new SqlCommand ( "UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con );
-					cmd . Parameters . AddWithValue ( "@id", Convert . ToInt32 ( NewData . Id ) );
-					cmd . Parameters . AddWithValue ( "@bankno", NewData . BankNo . ToString ( ) );
-					cmd . Parameters . AddWithValue ( "@custno", NewData . CustNo . ToString ( ) );
-					cmd . Parameters . AddWithValue ( "@actype", Convert . ToInt32 ( NewData . AcType ) );
-					cmd . Parameters . AddWithValue ( "@odate", Convert . ToDateTime ( NewData . ODate ) );
-					cmd . Parameters . AddWithValue ( "@cdate", Convert . ToDateTime ( NewData . CDate ) );
+					if (CallerType == "CUSTOMER")
+					{
+						cmd = new SqlCommand("UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " + 
+							"FNAME=@FName, LNAME=@LName, ADDR1=Addr1, ADDR2=@Addr2, TOWN=@Town, COUNTY=@County," +
+							" PCODE=@PCode, PHONE=@Phone, MOBILE=@Mobile, DOB=@dob, ODATE=@odate, CDATE=@cdate " + 
+							" where CUSTNO = @custno AND BANKNO = @bankno", con);
+						cmd.Parameters.AddWithValue("@id", Convert.ToInt32(NewData.Id));
+						cmd.Parameters.AddWithValue("@bankno", NewData.BankNo.ToString());
+						cmd.Parameters.AddWithValue("@custno", NewData.CustNo.ToString());
+						cmd.Parameters.AddWithValue("@actype", Convert.ToInt32(NewData.AcType));
+						cmd.Parameters.AddWithValue("@fname", NewData.FName.ToString());
+						cmd.Parameters.AddWithValue("@lname", NewData.LName.ToString());
+						cmd.Parameters.AddWithValue("@addr1", NewData.Addr1.ToString());
+						cmd.Parameters.AddWithValue("@addr2", NewData.Addr2.ToString());
+						cmd.Parameters.AddWithValue("@town", NewData.Town.ToString());
+						cmd.Parameters.AddWithValue("@county", NewData.County.ToString());
+						cmd.Parameters.AddWithValue("@pcode", NewData.PCode.ToString());
+						cmd.Parameters.AddWithValue("@phone", NewData.Phone.ToString());
+						cmd.Parameters.AddWithValue("@mobile", NewData.Mobile.ToString());
+						cmd.Parameters.AddWithValue("@dob", Convert.ToDateTime(NewData.Dob));
+						cmd.Parameters.AddWithValue("@odate", Convert.ToDateTime(NewData.ODate));
+						cmd.Parameters.AddWithValue("@cdate", Convert.ToDateTime(NewData.CDate));
+					}
+					else
+					{
+						cmd = new SqlCommand("UPDATE Customer SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno AND BANKNO = @bankno", con);
+						cmd.Parameters.AddWithValue("@id", Convert.ToInt32(NewData.Id));
+						cmd.Parameters.AddWithValue("@bankno", NewData.BankNo.ToString());
+						cmd.Parameters.AddWithValue("@custno", NewData.CustNo.ToString());
+						cmd.Parameters.AddWithValue("@actype", Convert.ToInt32(NewData.AcType));
+						cmd.Parameters.AddWithValue("@odate", Convert.ToDateTime(NewData.ODate));
+						cmd.Parameters.AddWithValue("@cdate", Convert.ToDateTime(NewData.CDate));
+					}
 					cmd . ExecuteNonQuery ( );
 					Debug . WriteLine ( "SQL Update of Customers successful..." );
 				}

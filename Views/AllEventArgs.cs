@@ -24,7 +24,13 @@ namespace WPFPages . Views
 		public string Bankno { get; set; }
 		public string Custno { get; set; }
 	}
-	public class LoadedEventArgs :EventArgs
+	public class GlobalEventArgs : EventArgs
+	{
+		public string CallerType { get; set; }
+		public string AccountType { get; set; }
+		public string SenderGuid { get; set; }
+	}
+	public class LoadedEventArgs : EventArgs
 	{
 		public string CallerType { get; set; }
 		public string Custno { get; set; }

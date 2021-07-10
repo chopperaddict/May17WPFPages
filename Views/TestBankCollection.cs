@@ -417,33 +417,33 @@ namespace WPFPages.Views
 		}
 		public static bool UpdateBankDb(BankAccountViewModel NewData)
 		{
-			SqlConnection con;
-			string ConString = "";
-			ConString = (string)Settings.Default["BankSysConnectionString"];
-			con = new SqlConnection(ConString);
-			try
-			{
-				using (con)
-				{
-					con.Open();
-					SqlCommand cmd = new SqlCommand("UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
-						"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno", con);
-					cmd.Parameters.AddWithValue("@id", Convert.ToInt32(NewData.Id));
-					cmd.Parameters.AddWithValue("@bankno", NewData.BankNo.ToString());
-					cmd.Parameters.AddWithValue("@custno", NewData.CustNo.ToString());
-					cmd.Parameters.AddWithValue("@actype", Convert.ToInt32(NewData.AcType));
-					cmd.Parameters.AddWithValue("@balance", Convert.ToDecimal(NewData.Balance));
-					cmd.Parameters.AddWithValue("@intrate", Convert.ToDecimal(NewData.IntRate));
-					cmd.Parameters.AddWithValue("@odate", Convert.ToDateTime(NewData.ODate));
-					cmd.Parameters.AddWithValue("@cdate", Convert.ToDateTime(NewData.CDate));
-					cmd.ExecuteNonQuery();
-					Debug.WriteLine("SQL Update of BankAccounts successful...");
-				}
-			}
-			catch (Exception ex)
-			{ Console.WriteLine($"BANKACCOUNT Update FAILED : {ex.Message}, {ex.Data}"); }
-			finally
-			{ con.Close(); }
+			//SqlConnection con;
+			//string ConString = "";
+			//ConString = (string)Settings.Default["BankSysConnectionString"];
+			//con = new SqlConnection(ConString);
+			//try
+			//{
+			//	using (con)
+			//	{
+			//		con.Open();
+			//		SqlCommand cmd = new SqlCommand("UPDATE BankAccount SET BANKNO=@bankno, CUSTNO=@custno, ACTYPE=@actype, " +
+			//			"BALANCE=@balance, INTRATE=@intrate, ODATE=@odate, CDATE=@cdate where CUSTNO = @custno", con);
+			//		cmd.Parameters.AddWithValue("@id", Convert.ToInt32(NewData.Id));
+			//		cmd.Parameters.AddWithValue("@bankno", NewData.BankNo.ToString());
+			//		cmd.Parameters.AddWithValue("@custno", NewData.CustNo.ToString());
+			//		cmd.Parameters.AddWithValue("@actype", Convert.ToInt32(NewData.AcType));
+			//		cmd.Parameters.AddWithValue("@balance", Convert.ToDecimal(NewData.Balance));
+			//		cmd.Parameters.AddWithValue("@intrate", Convert.ToDecimal(NewData.IntRate));
+			//		cmd.Parameters.AddWithValue("@odate", Convert.ToDateTime(NewData.ODate));
+			//		cmd.Parameters.AddWithValue("@cdate", Convert.ToDateTime(NewData.CDate));
+			//		cmd.ExecuteNonQuery();
+			//		Debug.WriteLine("SQL Update of BankAccounts successful...");
+			//	}
+			//}
+			//catch (Exception ex)
+			//{ Console.WriteLine($"BANKACCOUNT Update FAILED : {ex.Message}, {ex.Data}"); }
+			//finally
+			//{ con.Close(); }
 			return true;
 		}
 

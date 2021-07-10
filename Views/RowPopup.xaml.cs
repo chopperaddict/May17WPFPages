@@ -245,6 +245,12 @@ namespace WPFPages . Views
 					SenderGuid = this.Tag.ToString(),
 					Bankno = bvm . BankNo,
 				});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "ROWPOPUP",
+					AccountType = "BANKACCOUNT",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else if ( CurrentDb == "CUSTOMER" )
 			{
@@ -272,6 +278,12 @@ namespace WPFPages . Views
 					SenderGuid = this.Tag.ToString(),
 					Bankno = cvm . BankNo,
 				});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "ROWPOPUP",
+					AccountType = "CUSTOMER",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else if ( CurrentDb == "DETAILS" )
 			{
@@ -292,6 +304,12 @@ namespace WPFPages . Views
 					Custno = dvm . CustNo,
 					SenderGuid = this.Tag.ToString(),
 					Bankno = dvm.BankNo,				
+				});
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "ROWPOPUP",
+					AccountType = "DETAILS",
+					SenderGuid = this.Tag?.ToString()
 				});
 			}
 			Close ( );

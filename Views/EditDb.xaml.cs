@@ -579,6 +579,9 @@ namespace WPFPages . Views
 			// changes made inMultiviewer
 			EventControl . MultiViewerDataUpdated += EventControl_ViewerDataUpdated;
 
+
+			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+
 			//===============================================
 			// First we get the data loaded
 			//===============================================
@@ -808,6 +811,19 @@ namespace WPFPages . Views
 			Startup = false;
 		}
 
+		private void EventControl_GlobalDataChanged(object sender, GlobalEventArgs e)
+		{
+			if (e.CallerType == "EDITDB" && e.AccountType == CurrentDb)
+				return;
+			//Update our own data tyoe only
+			if (CurrentDb == "BANKACCOUNT")
+				BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
+			else if (CurrentDb == "CUSTOMER")
+				CustCollection.LoadCust(null, "CUSTOMER", 2, true);
+			else if (CurrentDb == "DETAILS")
+				DetailCollection.LoadDet(null, "DETAILS", 1, true);
+
+		}
 
 		private void OnDeletion ( object sender, LoadedEventArgs e )
 		{
@@ -951,7 +967,10 @@ namespace WPFPages . Views
 			EventControl . RecordDeleted -= OnDeletion;
 			EventControl . ForceEditDbIndexChanged -= EventControl_EditDbIndexChanged;
 
-			MainWindow . gv . SqlCurrentEditViewer = null;
+			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
+
+
+			MainWindow. gv . SqlCurrentEditViewer = null;
 
 			//Clear flags
 			if ( CurrentDb == "BANKACCOUNT" )
@@ -1358,6 +1377,12 @@ namespace WPFPages . Views
 						DataSource = EditDbBankcollection,
 						RowCount = this . DataGrid1 . SelectedIndex
 					} );
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "EDITDBVIEW",
+					AccountType = "BANKACCOUNT",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else if ( dbName == "CUSTOMER" )
 			{
@@ -1374,6 +1399,12 @@ namespace WPFPages . Views
 						DataSource = EditDbCustcollection,
 						RowCount = this . DataGrid2 . SelectedIndex
 					} );
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "EDITDBVIEW",
+					AccountType = "CUSTOMER",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else if ( dbName == "DETAILS" )
 			{
@@ -1391,7 +1422,13 @@ namespace WPFPages . Views
 						DataSource = EditDbDetcollection,
 						RowCount = this . DetailsGrid . SelectedIndex
 					} );
-				Flags . EditDbDataChange = false;
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "EDITDBVIEW",
+					AccountType = "DETAILS",
+					SenderGuid = this.Tag?.ToString()
+				});
+				Flags. EditDbDataChange = false;
 			}
 			Mouse . OverrideCursor = Cursors . Arrow;
 		}

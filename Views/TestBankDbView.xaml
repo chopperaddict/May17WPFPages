@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFPages.Views"
+	  x:Name="Bankviewtest"
         mc:Ignorable="d"
 	Closing="Window_Closing"
 	DataContext="BankviewerView"
@@ -17,6 +18,9 @@
 	Title="Bank A/c Editor"
 	Width="800"
 	>
+	<!--x:Name is Required Forthe new " DependencyProperty" to work"-->
+
+
 	<!--d:DataContext="{d:DesignInstance Type=local:BankCollection}"-->
 	<Window.Resources>
 		<ContextMenu x:Key="ContextMenu1">
@@ -480,6 +484,7 @@
 
 			<!--#region Text Fields-->
 			<Border
+				x:Name="MyDependenciesBorder"
 				BorderBrush="DarkBlue"
 				BorderThickness="2"
 				Grid.Row="0"
@@ -704,6 +709,26 @@
 					TextAlignment="Center"
 					TextTrimming="WordEllipsis" />
 
+			<!--Test of private dependency property-->
+			<!--Caution : - you MUST provide a DATACONTEXT for this, I have given an x.Name to this 
+			Window as it seems it needs the DataContext to be the window it is declared in, 
+			whichfor thids is in the .CS code of this window, & then it does work just fine.
+			If the MetaData is set in .CS to non zero it will define the starting value for the property-->
+			<TextBlock
+				   x:Name="MyCounter"
+				   Grid.Column="3"
+				   Grid.Row="0"
+				   Width="88"
+				   Height="24"
+				   Margin="244,7,-222,9"
+				   Padding="5,3,5,5"
+				   Background="DarkGray"
+				   FontSize="14"
+				   FontWeight="DemiBold"
+				   Foreground="Red"
+				   Text="{Binding ElementName=Bankviewtest, Path=Counter}"
+				   TextAlignment="Center"
+				   TextTrimming="WordEllipsis" />
 		</Grid>
 
 		<!--#region buttons2-->

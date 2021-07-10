@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFPages", "WPFPages.csproj", "{10856B92-B1F5-4B31-815B-1D371C90A559}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp-Net5", "..\Users\ianch\source\repos\WpfApp-Net5\WpfApp-Net5.csproj", "{FAEA37C2-B4AC-4C5A-897A-308955F5367B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colorpicker", "..\Users\ianch\source\repos\Colorpicker\Colorpicker.csproj", "{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{10856B92-B1F5-4B31-815B-1D371C90A559}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10856B92-B1F5-4B31-815B-1D371C90A559}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10856B92-B1F5-4B31-815B-1D371C90A559}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FAEA37C2-B4AC-4C5A-897A-308955F5367B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FAEA37C2-B4AC-4C5A-897A-308955F5367B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FAEA37C2-B4AC-4C5A-897A-308955F5367B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FAEA37C2-B4AC-4C5A-897A-308955F5367B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

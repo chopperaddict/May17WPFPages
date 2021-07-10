@@ -714,7 +714,8 @@ namespace WPFPages
 		{
 			//			bool inprogress = false;
 			int scrollrow = 0;
-			if ( row == -1 ) row = 0;
+			if ( row == -1 )
+				row = 0;
 			// This triggers the selection changed event
 			grid . SelectedIndex = row;
 			grid . SelectedItem = row;
@@ -722,6 +723,23 @@ namespace WPFPages
 			grid . SelectedIndex = row;
 			grid . SelectedItem = row;
 			Utils . ScrollRecordIntoView ( grid, row );
+			grid . UpdateLayout ( );
+			grid . Refresh ( );
+			//			var v = grid .VerticalAlignment;
+		}
+		public static void SetUpGListboxSelection ( ListBox grid, int row = 0 )
+		{
+			//			bool inprogress = false;
+			int scrollrow = 0;
+			if ( row == -1 )
+				row = 0;
+			// This triggers the selection changed event
+			grid . SelectedIndex = row;
+			grid . SelectedItem = row;
+			//			grid . SetDetailsVisibilityForItem ( grid . SelectedItem, Visibility . Visible );
+			grid . SelectedIndex = row;
+			grid . SelectedItem = row;
+			Utils . ScrollLBRecordIntoView ( grid, row );
 			grid . UpdateLayout ( );
 			grid . Refresh ( );
 			//			var v = grid .VerticalAlignment;
@@ -819,7 +837,8 @@ namespace WPFPages
 			// Works well 26/5/21
 			double currentTop = 0;
 			double currentBottom = 0;
-			if ( CurrentRecord == -1 ) return;
+			if ( CurrentRecord == -1 )
+				return;
 			if ( Dgrid . Name == "CustomerGrid" || Dgrid . Name == "DataGrid1" )
 			{
 				currentTop = Flags . TopVisibleBankGridRow;
@@ -836,7 +855,8 @@ namespace WPFPages
 				currentBottom = Flags . BottomVisibleDetGridRow;
 			}     // Believe it or not, it takes all this to force a scrollinto view correctly
 
-			if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null ) return;
+			if ( Dgrid == null || Dgrid . Items . Count == 0 || Dgrid . SelectedItem == null )
+				return;
 
 			//update and scroll to bottom first
 			Dgrid . SelectedIndex = ( int ) CurrentRecord;
@@ -847,6 +867,19 @@ namespace WPFPages
 			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
 			Dgrid . UpdateLayout ( );
 			Flags . CurrentSqlViewer?.SetScrollVariables ( Dgrid );
+		}
+		public static void ScrollLBRecordIntoView ( ListBox Dgrid, int CurrentRecord )
+		{
+			// Works well 26/5/21
+
+			//update and scroll to bottom first
+			Dgrid . SelectedIndex = ( int ) CurrentRecord;
+			Dgrid . SelectedItem = ( int ) CurrentRecord;
+			Dgrid . UpdateLayout ( );
+			Dgrid . ScrollIntoView ( Dgrid . Items . Count - 1 );
+			Dgrid . UpdateLayout ( );
+			Dgrid . ScrollIntoView ( Dgrid . SelectedItem );
+			Dgrid . UpdateLayout ( );
 		}
 
 		//		public NewFlags Flags = new NewFlags();

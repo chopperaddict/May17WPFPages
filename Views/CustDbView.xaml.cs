@@ -87,6 +87,10 @@ namespace WPFPages . Views
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl . CustDataLoaded += EventControl_CustDataLoaded;
 
+
+			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+
+
 			await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
 
 			SaveBttn . IsEnabled = false;
@@ -117,6 +121,14 @@ namespace WPFPages . Views
 
 			Mouse . OverrideCursor = Cursors . Arrow;
 			Startup = false;
+		}
+		private void EventControl_GlobalDataChanged(object sender, GlobalEventArgs e)
+		{
+			if (e.CallerType == "CUSTDBVIEWER" )
+				return;
+			//Update our own data tyoe only
+			CustCollection.LoadCust(null, "CUSTOMER", 2, true);
+
 		}
 
 		private void EventControl_EditIndexChanged ( object sender, IndexChangedArgs e )
@@ -242,6 +254,12 @@ namespace WPFPages . Views
 					SenderGuid = this.Tag.ToString(),
 					RowCount = this . CustGrid . SelectedIndex
 				} );
+			EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+			{
+				CallerType = "CUSTDBVIEW",
+				AccountType = "CUSTOMER",
+				SenderGuid = this.Tag?.ToString()
+			});
 		}
 
 		private async void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
@@ -307,7 +325,10 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged -= EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl . ViewerDataUpdated -= EventControl_DataUpdated;
 			EventControl . CustDataLoaded -= EventControl_CustDataLoaded;
-			Utils . SaveProperty ( "CustDbView_cindex", cindex . ToString ( ) );
+
+			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
+
+			Utils. SaveProperty ( "CustDbView_cindex", cindex . ToString ( ) );
 		}
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -417,9 +438,15 @@ namespace WPFPages . Views
 					SenderGuid = this.Tag.ToString(),
 					RowCount = this . CustGrid . SelectedIndex
 				} );
+			EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+			{
+				CallerType = "CUSTDBVIEW",
+				AccountType = "CUSTOMER",
+				SenderGuid = this.Tag?.ToString()
+			});
 
 			//Gotta reload our data because the update clears it down totally to null
-			this . CustGrid . SelectedIndex = CurrentSelection;
+			this. CustGrid . SelectedIndex = CurrentSelection;
 			this . CustGrid . SelectedItem = CurrentSelection;
 			this . CustGrid . Refresh ( );
 
@@ -993,6 +1020,12 @@ namespace WPFPages . Views
 						SenderGuid = this.Tag.ToString(),
 						RowCount = this . CustGrid . SelectedIndex
 					} );
+				EventControl.TriggerGlobalDataChanged(this, new GlobalEventArgs
+				{
+					CallerType = "CUSTDBVIEW",
+					AccountType = "CUSTOMER",
+					SenderGuid = this.Tag?.ToString()
+				});
 			}
 			else
 				this . CustGrid . SelectedItem = RowData . Item;

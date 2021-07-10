@@ -42,7 +42,7 @@
 		<!--  BasedOn="{StaticResource GradientStyleButton}">  -->
 		<!--  Line above would let us Inherit another style and just modify it  -->
 
-		<Setter Property="Background" Value="{StaticResource Background}" />
+		<!--<Setter Property="Background" Value="{StaticResource Background}" />-->
 		<Setter Property="Foreground" Value="Red" />
 		<Style.Triggers>
 
@@ -95,7 +95,7 @@
 		<!--  BasedOn="{StaticResource GradientStyleButton}">  -->
 		<!--  Line above would let us Inherit another style and just modify it  -->
 
-		<Setter Property="Background" Value="{StaticResource Background}" />
+		<!--<Setter Property="Background" Value="{StaticResource Background}" />-->
 		<Setter Property="Foreground" Value="Red" />
 		<Style.Triggers>
 			<!--  This is a DATA Trigger  -->

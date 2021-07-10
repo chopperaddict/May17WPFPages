@@ -14,7 +14,9 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="Dicts\ButtonMainTemplate.xaml" />
+				<ResourceDictionary Source="Dicts\DataTemplates.xaml" />
 				<ResourceDictionary Source="Dicts\Menus.xaml" />
+				<ResourceDictionary Source="Dicts\StylesDict.xaml" />
 				<ResourceDictionary Source="Dicts\ColorsDictionary.xaml" />
 				<ResourceDictionary Source="Dicts\ButtonsMaster.xaml" />
 				<ResourceDictionary Source="Dicts\DiagonalGradients.xaml" />
@@ -29,108 +31,16 @@
 				<ResourceDictionary Source="Dicts\BtnsDict.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
-			<!--<ContextMenu x:Key="ContextMenu1">
-				<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
-					<MenuItem.Icon>
-						<Image Source="/Icons/text-message.png"  />
-					</MenuItem.Icon>
-				</MenuItem>
-				<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
-					<MenuItem.Icon>
-						<Image Source="/Icons/mailbox-receive-message.png" />
-					</MenuItem.Icon>
-				</MenuItem>
-				<Separator Style="{StaticResource Menu_Separator}"/>
-				<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
-					<MenuItem.Icon>
-						<Image Source="/Icons/symlink_directory_30px.png"  />
-					</MenuItem.Icon>
-				</MenuItem>
-				<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
-					<MenuItem.Icon>
-						<Image Source="/Icons/wifi.png"  />
-					</MenuItem.Icon>
-				</MenuItem>
-				--><!--<MenuItem Header="Create JSON output file from this Db Grid"  Click="ContextCreateJsonOutput_Click" >
-				<MenuItem.Icon>
-					<Image Source="/Icons/mailbox.png"  />
-				</MenuItem.Icon>
-			</MenuItem>--><!--
-
-				<Separator Style="{StaticResource Menu_Separator}"/>
-
-				<MenuItem Header="Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
-					<MenuItem.Icon>
-						<Image Source="/Icons/phone-lock.png"  />
-					</MenuItem.Icon>
-				</MenuItem>
-				<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
-					<MenuItem.Icon>
-						<Image Source="/Icons/document-delete_48x48.png"  />
-					</MenuItem.Icon>
-				</MenuItem>
-			</ContextMenu>-->
-
-			<!--These are Application wide Overrides for that annpoying
+				<!--These are Application wide Overrides for that annpoying
 			Focus Rectangle that appears by default on many controls-->
 			<Style TargetType="{x:Type Button}">
 				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 				<Setter Property="Focusable" Value="False" />
 			</Style>
-			<!--<Style TargetType="{x:Type TextBox}">
-				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
-				<Setter Property="Focusable" Value="False" />
-			</Style>-->
 			<Style TargetType="{x:Type TextBlock}">
 				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 				<Setter Property="Focusable" Value="False" />
 			</Style>
-			<!--<Style TargetType="{x:Type Ellipse}">
-				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
-				<Setter Property="Focusable" Value="False" />
-			</Style>-->
-			<!--End of Focus rectangle Overrides-->
-
-		<!--<ContextMenu x:Key="ContextMenu1">
-			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
-				<MenuItem.Icon>
-						<Image Source="WPFPages/Icons/text-message.png"  />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Edit currently Selected Account" Click="ContextEdit_Click">
-				<MenuItem.Icon>
-						<Image Source="Icons/mailbox-receive-message.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator Style="{StaticResource Menu_Separator}"/>
-			<MenuItem Header="Save current Grid Db data as JSON File"  Click="ContextSave_Click" >
-				<MenuItem.Icon>
-					<Image Source="WPFPages/Icons/symlink_directory_30px.png"  />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Create and view JSON File for this Db Grid"  Click="ContextDisplayJsonData_Click" >
-				<MenuItem.Icon>
-						<Image Source="WPFPages/Icons/wifi.png"  />
-				</MenuItem.Icon>
-			</MenuItem>
-			--><!--<MenuItem Header="Create JSON output file from this Db Grid"  Click="ContextCreateJsonOutput_Click" >
-				<MenuItem.Icon>
-					<Image Source="/Icons/mailbox.png"  />
-				</MenuItem.Icon>
-			</MenuItem>--><!--
-			<Separator Style="{StaticResource Menu_Separator}"/>
-
-			<MenuItem Header="Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
-				<MenuItem.Icon>
-						<Image Source="WPFPages/Icons/phone-lock.png"  />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="                            Exit this Viewer" Click="ContextClose_Click" Background="{StaticResource Red1}" Foreground="White">
-				<MenuItem.Icon>
-						<Image Source="WPFPages/Icons/document-delete_48x48.png"  />
-				</MenuItem.Icon>
-			</MenuItem>
-		</ContextMenu>-->
 		</ResourceDictionary>
 
 	</Application.Resources>
