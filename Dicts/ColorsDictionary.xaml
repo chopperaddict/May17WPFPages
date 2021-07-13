@@ -11,7 +11,7 @@
 
 	<!--  SolidBrush Definitions  -->
 
-	<SolidColorBrush x:Key="White0" Color="#ffffff" />
+	<SolidColorBrush x:Key="White0" Color="#FFFFFFFF" />
 	<SolidColorBrush x:Key="White1" Color="#FFE3E4E4" />
 	<SolidColorBrush x:Key="White2" Color="#FFD6D7D6" />
 	<SolidColorBrush x:Key="White3" Color="#FFC8C9C9" />
@@ -77,7 +77,9 @@
 	<SolidColorBrush x:Key="Red6" Color="#FFB15150" />
 	<SolidColorBrush x:Key="Red7" Color="#FFFE6C6E" />
 	<SolidColorBrush x:Key="Red8" Color="#FFFE797D" />
-
+	<SolidColorBrush x:Key="Red9" Color="#94FA828F" />
+	<SolidColorBrush x:Key="Red10" Color="#66FA828F" />
+	
 
 	<SolidColorBrush x:Key="Cyan0" Color="#FF5C72CE" />
 	<SolidColorBrush x:Key="Cyan1" Color="#FF409DF8" />
@@ -102,13 +104,15 @@
 	<SolidColorBrush x:Key="Blue8" Color="#FF9FB8BD" />
 	<SolidColorBrush x:Key="Blue9" Color="#FFAEC8DB" />
 
-	<SolidColorBrush x:Key="Magenta0" Color="#FFE30F97" />
-	<SolidColorBrush x:Key="Magenta1" Color="#FFE30FAC" />
-	<SolidColorBrush x:Key="Magenta2" Color="#FFE322BD" />
-	<SolidColorBrush x:Key="Magenta3" Color="#FFE322DB" />
-	<SolidColorBrush x:Key="Magenta4" Color="#FFFD86E8" />
-	<SolidColorBrush x:Key="Magenta5" Color="#FFFD9DE8" />
-	<SolidColorBrush x:Key="Magenta6" Color="#FFFDC5FD" />
+	<SolidColorBrush x:Key="Magenta0" Color="#FFFE377F" />
+	<SolidColorBrush x:Key="Magenta1" Color="#FFFE3D98" />
+	<SolidColorBrush x:Key="Magenta2" Color="#FFFE3DB0" />
+	<SolidColorBrush x:Key="Magenta3" Color="#FFFE4AB2" />
+	<SolidColorBrush x:Key="Magenta4" Color="#FFFE4ACB" />
+	<SolidColorBrush x:Key="Magenta5" Color="#FFFE88CF" />
+	<SolidColorBrush x:Key="Magenta6" Color="#FFFE9AE5" />
+	<SolidColorBrush x:Key="Magenta7" Color="#FFFEA7E4" />
+	<SolidColorBrush x:Key="Magenta8" Color="#FFFEB6F7" />
 
 	<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  -->
 	<!--  %%%%%%%%%%%%%%%%%%%%%%%% DEFAULT FOR ALL BUTTONs %%%%%%%%%%%%%%%%%%%%%%%%  -->

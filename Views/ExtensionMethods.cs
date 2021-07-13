@@ -15,7 +15,14 @@ namespace WPFPages . Views
 
 		public static void Refresh ( this UIElement uiElement )
 		{
+			try
+			{
 			uiElement . Dispatcher . Invoke ( DispatcherPriority . Render, EmptyDelegate );
+			}
+			catch (Exception ex)
+			{
+
+			}
 		}
 	}
 }

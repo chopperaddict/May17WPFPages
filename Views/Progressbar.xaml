@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFPages.Views"
+        xmlns:dateconv="clr-namespace:WPFPages.MyConvertors"
         mc:Ignorable="d"
  	  WindowStartupLocation="CenterScreen"
 	  WindowState="Normal"
@@ -24,6 +25,9 @@
 
 	<Window.Resources>
 
+		<!--xmlns:dateconv="clr-namespace:WPFPages.MyConvertors"-->
+		<dateconv:DateTimeToShortStringConverter x:Key="DateConvert"/>
+		
 		<Style x:Key ="shadedfont1" TargetType="TextBlock">
 			<Setter Property="Foreground" >
 				<Setter.Value>

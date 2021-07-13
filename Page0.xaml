@@ -33,16 +33,13 @@
 
 		<!--We can either define the DataTemplate here, or down in the Items code as here (See above)-->
 		<DataTemplate x:Key="MyItemTemplate" >
-	<!--#region MyItemTemplate DATATEMPLATE-->
 			<StackPanel Orientation="Horizontal">
 				<Label Content="{Binding Name}" Foreground="Red"/>
 				<Label Content="{Binding Age}"/>
 			</StackPanel>
 		</DataTemplate>
-	<!--#endregion MyItemTemplate DATATEMPLATE-->
 
 		<Style x:Key="LViewX" TargetType="{x:Type ListView}">
-	<!--#region LViewX LISTBOX-->
 			<Setter Property="Background" Value="Green"/>
 			<Setter Property="Foreground" Value="Red"/>
 			<Style.Triggers>
@@ -52,10 +49,8 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#ENDregion LViewX LISTBOX-->
 
 		<Style x:Key="tblStyle5" TargetType="{x:Type TextBlock}">
-	<!--#region tblStyle5 TEXTBLOCK-->
 			<Setter Property="Background" Value="Bisque"/>
 			<Setter Property="Foreground" Value="White"/>
 			<Style.Triggers>
@@ -65,10 +60,8 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion tblStyle5 TEXTBLOCK-->
 
 		<Style x:Key="tblStyle6" TargetType="{x:Type TextBlock}">
-	<!--#region lblStyle6 TEXTBLOCK-->
 			<Setter Property="Background" Value="AliceBlue"/>
 			<Setter Property="Foreground" Value="Red"/>
 			<Style.Triggers>
@@ -78,10 +71,8 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion lblStyle6 TEXTBLOCK-->
 
 		<Style x:Key="lblStyle4" TargetType="{x:Type Label}">
-	<!--#region lblStyle4 LABEL-->
 			<Setter Property="Foreground" Value="Blue"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Style.Triggers>
@@ -91,11 +82,9 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-		<!--#endregion lblStyle4 LABEL-->
 
 		<!--Cute Label style that makes field Grow in size and Font-->
 		<Style x:Key="lblStyle5" TargetType="{x:Type Label}">
-	<!--#region lblStyle5 LABEL-->
 			<Setter Property="Foreground" Value="Red"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Style.Triggers>
@@ -109,11 +98,9 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion lblStyle5 Label-->
 
 		<DataTemplate x:Key="dtStyle1">
 			<!--Cute DataTemplate used in 1st Listview with Gridview inside-->
-	<!--#region DataTemplate for use in LISTVIEW/GRIDVIEW-->
 			<Grid Background="Green" >
 				<Grid.RowDefinitions>
 					<RowDefinition Height="45"/>
@@ -153,12 +140,10 @@
 						 Text=""/>
 			</Grid>
 		</DataTemplate>
-	<!--#endregion DataTemplate for use in ListView/GridView-->
 
 		<!--Cute TextBox style that makes field Grow in size and Font
 		AND it stays like that to allow editing until it looses focus again-->
 		<Style x:Key="tbxStyle1" TargetType="{x:Type TextBox}">
-	<!--#region tbxStyle1- TEXTBOX-->
 			<Setter Property="Foreground" Value="DarkGreen"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="HorizontalAlignment" Value="Center"/>
@@ -189,10 +174,8 @@
  				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion tbxStyle1- TextBox-->
 
 		<Style x:Key="HideBorder" TargetType="{x:Type Border}">
-	<!--#region HideBorder - BORDER-->
 			<Setter Property="Background" Value="White"/>
 			<Setter Property="BorderBrush" Value="LightBlue"/>
 			<Style.Triggers>
@@ -201,10 +184,8 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion HideBorder - Border-->
 
 		<Style x:Key="spnlStyle" TargetType="{x:Type StackPanel}">
-	<!--#region spnStyle1 STACKPANEL -->
 			<Setter Property="Background" Value="Gray"/>
 			<Setter Property="HorizontalAlignment" Value="Stretch"/>
 			<Setter Property="Width" Value="auto"/>
@@ -216,13 +197,11 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion spnlStyle1 Stackpanel -->
 
 		<!--Default Template for Items inside Listview
 		It seems we can only do this in resources, and cannot 
 		give it an x:Key  as we cannot seem to add a Style to ListViewItem-->
 		<Style x:Key="lvStyle1" TargetType="{x:Type ListViewItem}">
-	<!--#region lvStyle1  LISTVIEWITEM-->
 			<Setter Property="Background" Value="Red"/>
 			<Setter Property="Foreground" Value="White"/>
 			<Style.Triggers>
@@ -233,7 +212,6 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-	<!--#endregion lvStyle1 -->
 
 		<Style x:Key="{x:Type ListViewItem}" TargetType="{x:Type ListViewItem}">
 	<!--#region {ListViewItem}-->

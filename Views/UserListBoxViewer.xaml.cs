@@ -21,29 +21,30 @@ using System . Windows . Shapes;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
+
 namespace WPFPages . Views
 {
 
-	public class ExpandedState : Expander
-	{
-		public ExpandedState ( ) : base ( ) { }
-		public bool IsItemExpanded
-		{
-			get
-			{
-				return ( bool ) this . GetValue ( IsItemExpandedProperty );
-			}
-			set
-			{
-				this . SetValue ( IsItemExpandedProperty, value );
-			}
-		}
+	//public class ExpandedState : Expander
+	//{
+	//	public ExpandedState ( ) : base ( ) { }
+	//	public bool IsItemExpanded
+	//	{
+	//		get
+	//		{
+	//			return ( bool ) this . GetValue ( IsItemExpandedProperty );
+	//		}
+	//		set
+	//		{
+	//			this . SetValue ( IsItemExpandedProperty, value );
+	//		}
+	//	}
 
-		public static readonly DependencyProperty
-			IsItemExpandedProperty = DependencyProperty .
-			Register ( "IsItemExpanded", typeof ( bool ), typeof ( Expander ), new PropertyMetadata ( true ) );
+	//	public static readonly DependencyProperty
+	//		IsItemExpandedProperty = DependencyProperty .
+	//		Register ( "IsItemExpanded", typeof ( bool ), typeof ( Expander ), new PropertyMetadata ( true ) );
 
-	}
+	//}
 
 	/// <summary>
 	/// Interaction logic for UserListBoxViewer.xaml
@@ -409,19 +410,36 @@ namespace WPFPages . Views
 				//				UCListbox . SelectedItem = ListSelection;
 			}
 		}
-
 		private void DbListbox_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			ListBoxItem lbi = new ListBoxItem ( );
-			ListBox lv = sender as ListBox;
+			ListViewItem lbi = new ListViewItem ( );
+			List<TextBlock> tbList = new List<TextBlock> ( );
+			ListView lv= sender as ListView;
 			int sel = lv . SelectedIndex;
-			lbi = ( ListBoxItem ) UCListbox . ItemContainerGenerator . ContainerFromIndex ( UCListbox . SelectedIndex );
+			var v  = UCListbox . ItemContainerGenerator . ContainerFromIndex ( UCListbox . SelectedIndex );
 			ListSelection = UCListbox . SelectedIndex;
-			GridSelection = ListSelection;
-			datagrid . SelectedIndex = GridSelection;
-			datagrid . ScrollIntoView ( datagrid . SelectedItem );
-			datagrid . Refresh ( );
-			int count = 0;
+			//			var mtextboxes = this . UCListbox.Children . OfType<TextBlock>;
+			//				Flags.GetChildOfType<TextBlock> ( );
+			//string s = (  (_Border as Border) . FindName ( "LbItem" ) as TextBlock ) . Text;
+
+			//var o = VisualTreeHelper . GetChild ( lv, 0 );
+			//var o2 = VisualTreeHelper . GetChild ( o, 0 );
+			//var o3 = VisualTreeHelper . GetChild ( o2, 0 );
+			//var o4 = VisualTreeHelper . GetChild ( o3, 0 );
+			//var o5 = VisualTreeHelper . GetChild ( o4, 0 );
+			//			Type t =o.GetValue(Border);
+			//			Type t1 = GetType ( "Border" );
+			//			if ( t == 0.GetType("Border"))
+			//int y = 0;
+
+			//GridSelection = ListSelection;
+//			datagrid . SelectedIndex = GridSelection;
+//			datagrid . ScrollIntoView ( datagrid . SelectedItem );
+//			datagrid . Refresh ( );
+//			int count = 0;
+			//var vi = UCListbox . Items . IndexOf ( UCListbox . SelectedItem );
+			//	vi.Background = FindResource ( "Blue1" );
+			//UCListbox.ListView
 			//foreach ( var item in lv.Items )
 			//{
 			//	lv . SelectedIndex = count;
@@ -473,14 +491,47 @@ namespace WPFPages . Views
 
 		private void UCListbox_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
-			ListBox lb = new ListBox ( );
-			lb = sender as ListBox;
-			ListSelection = lb . SelectedIndex;
-			GridSelection = ListSelection;
-			if ( lb . SelectedItem != null )
-				datagrid . ScrollIntoView ( lb . SelectedItem );
+			//			ListView lb = new ListView ( );
+			//			lb = sender as ListView;
+			//			lb = e . Source as ListView;
+			//			var curr = lb . SelectedItem as BankAccountViewModel;
+//			object o = UCListbox . SelectedIndex;
+			
+			// Store in a class variable
+			CurrentIndex = UCListbox . SelectedIndex;
+			ListSelection = CurrentIndex;
+			Debug . WriteLine ($"Index is set to {CurrentIndex}");
+//			ListViewItem lvi = ( ListViewItem ) UCListbox . ItemContainerGenerator . ContainerFromItem ( o );
+//			if ( lvi == null )
+//				return;
+//			TextBox tb = FindByName ( "tb100", lvi ) as TextBox;
+//
+//			if ( tb != null )
+//				tb . Dispatcher . BeginInvoke ( new Func<bool> ( tb . Focus ) );
 		}
 
+		private FrameworkElement FindByName ( string name, FrameworkElement root )
+		{
+			Stack<FrameworkElement> tree = new Stack<FrameworkElement> ( );
+			tree . Push ( root );
+
+			while ( tree . Count > 0 )
+			{
+				FrameworkElement current = tree . Pop ( );
+				if ( current . Name == name )
+					return current;
+
+				int count = VisualTreeHelper . GetChildrenCount ( current );
+				for ( int i = 0 ; i < count ; ++i )
+				{
+					DependencyObject child = VisualTreeHelper . GetChild ( current, i );
+					if ( child is FrameworkElement )
+						tree . Push ( ( FrameworkElement ) child );
+				}
+			}
+
+			return null;
+		}
 		private void datagrid_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
 			DataGrid dg = new DataGrid ( );
@@ -663,5 +714,125 @@ namespace WPFPages . Views
 				Debug . WriteLine ( $"Name={CurrentCellName }, B = {CurrentBackColor}, F = {CurrentForeColor}" );
 			}
 		}
+		public void FindChildren<T> ( List<T> results, DependencyObject startNode )
+		  where T : DependencyObject
+		{
+			int count = VisualTreeHelper . GetChildrenCount ( startNode );
+			for ( int i = 0 ; i < count ; i++ )
+			{
+				DependencyObject current = VisualTreeHelper . GetChild ( startNode, i );
+				if ( ( current . GetType ( ) ) . Equals ( typeof ( T ) ) || ( current . GetType ( ) . GetTypeInfo ( ) . IsSubclassOf ( typeof ( T ) ) ) )
+				{
+					T asType = ( T ) current;
+					results . Add ( asType );
+				}
+				FindChildren<T> ( results, current );
+			}
+		}
+
+		private void Style_Selected ( object sender, RoutedEventArgs e )
+		{
+			int c = 0;
+		}
+
+		private void _Border_PreviewMouseDown ( object sender, MouseButtonEventArgs e )
+		{
+			//Click inside ListView Item
+			Border brdr = sender as Border;
+//			ListView lv = GetParent ( ( Visual ) e . Source );
+			//CurrentIndex = lv . SelectedIndex;
+//			object o = FindName("UCListbox");
+//			ListView LV = o as ListView;
+//			CurrentIndex  = LV . FocusedItem;
+//			CurrentIndex = LV . SelectedIndex;
+
+		}
+		private ListView GetParent ( Visual v )
+		{
+			while ( v != null )
+			{
+				v = VisualTreeHelper . GetParent ( v ) as Visual;
+				if ( v is ListView )
+					break;
+			}
+			return v as ListView;
+		}
+			//private void UCListbox_MouseMove ( object sender, MouseEventArgs e )
+			//{
+			//	string name = "";
+			//	int indx = 0;
+			//	if ( UCListbox . Items . Count <= 0 )
+			//		return;
+
+			//	// Retrieve the coordinate of the mouse position.
+			//	var pt = e . GetPosition ( ( UIElement ) sender );
+
+			//	// Callback to return the result of the hit test.
+			//	HitTestResultCallback myHitTestResult = result => {
+			//		var obj = result . VisualHit;
+
+			//		// Add additional DependancyObject types to ignore triggered by the cell's parent object container contexts here.
+			//		//-----------
+			//		if ( obj is Border )
+			//			return HitTestResultBehavior . Stop;
+			//		//-----------
+
+			//		var parent = VisualTreeHelper . GetParent ( obj ) as GridViewRowPresenter;
+			//		if ( parent == null )
+			//			return HitTestResultBehavior . Stop;
+
+			//		var headers = parent . Columns . ToDictionary ( column => column . Header . ToString ( ) );
+
+			//		// Traverse up the VisualTree and find the record set.
+			//		DependencyObject d = parent;
+			//		do
+			//		{
+			//			d = VisualTreeHelper . GetParent ( d );
+			//		} while ( d != null && !( d is ListViewItem ) );
+
+			//		// Reached the end of element set as root's scope.
+			//		if ( d == null )
+			//			return HitTestResultBehavior . Stop;
+
+			//		var item = d as ListViewItem;
+			//		var index = UCListbox . ItemContainerGenerator . IndexFromContainer ( item );
+			//		Debug . WriteLine ( index );
+			//		name = item.Name;
+			//		indx = index;
+
+			//		// Set the behavior to return visuals at all z-order levels.
+			//		return HitTestResultBehavior . Continue;
+			//	};
+
+
+			//	// Set up a callback to receive the hit test result enumeration.
+			//	VisualTreeHelper . HitTest ( ( Visual ) sender, null, myHitTestResult, new PointHitTestParameters ( pt ) );
+			//}
+			//public HitTestResultCallback myHitTestResult ( HitTestResult result )
+			//{
+			//	var res = result . ToString ( );
+			//	return  result;
+			//}
+		}
+
+	public class PremiumUserDataTemplateSelector : DataTemplateSelector
+	{
+		public override DataTemplate SelectTemplate ( object item, DependencyObject container )
+		{
+			FrameworkElement elemnt = container as FrameworkElement;
+			int actype = (int)item ;
+			if ( actype == 1 )
+				return elemnt . FindResource ( "Actype1DataTemplate" ) as DataTemplate;
+			else if ( actype == 2 )
+				return elemnt . FindResource ( "Actype2DataTemplate" ) as DataTemplate;
+			else if ( actype == 3 )
+				return elemnt . FindResource ( "Actype3DataTemplate" ) as DataTemplate;
+			else if ( actype == 4 )
+				return elemnt . FindResource ( "Actype4DataTemplate" ) as DataTemplate;
+
+			return null;
+		}
 	}
+
+
 }

@@ -158,9 +158,9 @@ namespace WPFPages . Views
 		CancellationTokenSource cts = new CancellationTokenSource ( );
 
 		//**************************************************************************************************************************************************************//
-		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false, int row = 0, bool NotifyAll = false )
+		public async Task<DetCollection> LoadDetailsTaskInSortOrderAsync ( bool b = false, int row = 0, bool notifyAll = false )
 		{
-			NotifyAll = NotifyAll;
+			Notify = notifyAll;
 
 			if ( dtDetails . Rows . Count > 0 )
 				dtDetails . Clear ( );

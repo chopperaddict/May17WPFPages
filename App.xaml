@@ -29,6 +29,7 @@
 				<ResourceDictionary Source="Dicts\TestDictionary.xaml" />
 				<ResourceDictionary Source="Dicts\BaseDictionary.xaml" />
 				<ResourceDictionary Source="Dicts\BtnsDict.xaml" />
+				<ResourceDictionary Source="Dicts\DGCellStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 				<!--These are Application wide Overrides for that annpoying
@@ -41,7 +42,9 @@
 				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 				<Setter Property="Focusable" Value="False" />
 			</Style>
+
 		</ResourceDictionary>
+
 
 	</Application.Resources>
 	

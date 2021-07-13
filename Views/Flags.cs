@@ -10,7 +10,10 @@ using System . Collections . Generic;
 using System . Data . SqlClient;
 using System . Diagnostics;
 using System . Threading;
+using System . Windows;
 using System . Windows . Controls;
+using System . Windows . Media;
+
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
@@ -163,6 +166,22 @@ namespace WPFPages
 			DOB,
 			ODATE,
 			CDATE
+		}
+
+		public static T GetChildOfType<T> ( this DependencyObject depObj ) where T : DependencyObject
+		{
+			if ( depObj == null )
+				return null;
+
+			for ( int i = 0 ; i < VisualTreeHelper . GetChildrenCount ( depObj ) ; i++ )
+			{
+				var child = VisualTreeHelper . GetChild ( depObj, i );
+
+				var result = ( child as T ) ?? GetChildOfType<T> ( child );
+				if ( result != null )
+					return result;
+			}
+			return null;
 		}
 
 		/// <summary>

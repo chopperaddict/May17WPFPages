@@ -166,6 +166,12 @@
 					IsCheckable="False"
 					Foreground="Black"/>
 				<Separator />
+				<MenuItem Header="All Records"
+						Background="#35F6FB"
+						Click="Linq6_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<Separator />
 			</MenuItem>
 
 			<MenuItem  Header="Filtering" 

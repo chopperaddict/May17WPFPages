@@ -462,6 +462,16 @@
 						Background="{StaticResource Red0}"
 						Foreground="{StaticResource White0}"/>
 
+				<MenuItem  Header="TreeView Viewer"
+						Click="TreeView_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="20"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Red0}"
+						Foreground="{StaticResource White0}"/>
+
 			</MenuItem>
 
 			<!--Menu THREE Exeute-->

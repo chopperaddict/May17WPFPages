@@ -1,0 +1,97 @@
+﻿<Window x:Class="WPFPages.Views.TreeView1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+        mc:Ignorable="d"
+		Title="TreeView 1" Height="350" Width="525">
+
+	<Window.Resources>
+		 <!--some dummy Data Templates for use with tree-->
+		<DataTemplate x:Key="myFirstItemTemplate">
+			<StackPanel Background="LightPink">
+			<TextBlock Text="{Binding Name}" />
+		</StackPanel>
+		</DataTemplate>
+		<DataTemplate x:Key="mySecondItemTemplate">
+			<StackPanel Background="LightGray">
+				<TextBlock Text="{Binding Name}" />
+			</StackPanel>
+		</DataTemplate>
+
+
+	</Window.Resources>
+	
+	<Grid>
+		<ListView x:Name="LV1"
+			ItemsSource="{Binding}"
+			    Background="Aqua"		
+			    PreviewMouseDown="LV1_PreviewMouseDown"
+			    PreviewMouseMove="LV1_PreviewMouseMove"
+			    IsHitTestVisible="True"
+			    
+			    Loaded="ListView_Loaded">
+			<!--ItemTemplate="{DynamicResource myFirstItemTemplate}"-->
+
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+				</Style>
+			</ListView.ItemContainerStyle>
+
+			<ListView.View
+			>
+				<GridView>
+
+					<GridViewColumn>
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Border >
+									<CheckBox IsChecked="{Binding IsSelected}"/>
+								</Border>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+					
+					<GridViewColumn Header="Size">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Border >
+								<TextBlock x:Name="Size" Text="{Binding Size}"/>
+								</Border>
+								<DataTemplate.Triggers>
+									<DataTrigger Binding="{Binding IsFile}" Value="False">
+										<Setter TargetName="Size" Property="Text"										
+											  Value="[Directory]"/>
+									</DataTrigger>
+								</DataTemplate.Triggers>							
+								
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+
+					<GridViewColumn Header="Path" >
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Border 
+									  BorderBrush="Brown"
+									  BorderThickness="1">
+									<TextBlock x:Name="Size" Text="{Binding Path}"/>
+								</Border>
+								<!--<DataTemplate.Triggers>
+									<DataTrigger Binding="{Binding Path}" Value="False">
+										<Setter TargetName="Path" Property="Text"	Value="[Directory]"/>
+										<Setter Property="Background"	Value="Brown"/>
+									</DataTrigger>
+								</DataTemplate.Triggers>-->
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>						
+					</GridViewColumn>
+					
+				</GridView>
+			</ListView.View>
+		</ListView>
+	</Grid>
+</Window>

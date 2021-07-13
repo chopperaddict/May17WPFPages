@@ -206,6 +206,7 @@ namespace WPFPages
 		public void MainWindowLoaded ( object sender, RoutedEventArgs e )
 		{
 			//_frame.NavigationService.Navigate(_Page1);
+			
 			BaseDataText = "Hello World";
 			//if ( con== null ) {
 			//	string ConString = ( string ) Properties . Settings . Default [ "BankSysConnectionString" ];

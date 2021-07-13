@@ -92,8 +92,9 @@ namespace WPFPages . Views
 		//Constructor
 		public DbSelector ( )
 		{
+			
 			InitializeComponent ( );
-			if ( ViewersList . Items . Count > 2 )
+			if ( ViewersList? . Items . Count > 2 )
 			{// ignore the dummy blank entry line
 				ViewersList . SelectedIndex = 2;
 				ViewersList . SelectedItem = 2;
@@ -1505,6 +1506,12 @@ namespace WPFPages . Views
 		{
 			ColorsSelector cs = new ColorsSelector ( );
 			cs . Show ( );
+		}
+
+		private void TreeView_Click ( object sender, RoutedEventArgs e )
+		{
+			//TreeView1 tv1 = new TreeView1 ( );
+			//tv1 . Show ( );
 		}
 	}
 }

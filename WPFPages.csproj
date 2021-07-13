@@ -101,7 +101,7 @@
     <Compile Include="Views\ColorsSelector.xaml.cs">
       <DependentUpon>ColorsSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ConvertDateToShortString.cs" />
+    <Compile Include="Views\MyConverters.cs" />
     <Compile Include="Depends\ExtenderProp.cs" />
     <Compile Include="Libraries\DataClasses1.designer.cs">
       <AutoGen>True</AutoGen>
@@ -232,6 +232,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dicts\DataTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dicts\DGCellStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -95,7 +95,7 @@ namespace WPFPages.ViewModels
 		#endregion properties
 
 		#region PropertyChanged
-		public event PropertyChangedEventHandler PropertyChanged;
+		public new event PropertyChangedEventHandler PropertyChanged;
 		protected void OnPropertyChanged(string PropertyName)
 		{
 			if (null != PropertyChanged)
