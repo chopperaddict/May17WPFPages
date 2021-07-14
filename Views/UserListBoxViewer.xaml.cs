@@ -21,6 +21,7 @@ using System . Windows . Shapes;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
+using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
 
 namespace WPFPages . Views
 {
@@ -53,6 +54,7 @@ namespace WPFPages . Views
 	{
 		// Declare all 3 of the local Db pointers
 		public BankCollection SqlBankcollection = new BankCollection ( );
+		public BankCollection BackupBankcollection = new BankCollection ( );
 		public CustCollection SqlCustcollection = new CustCollection ( );
 		public DetCollection SqlDetcollection = new DetCollection ( );
 		public static List<BankAccountViewModel> BankList = new List<BankAccountViewModel> ( );
@@ -237,14 +239,17 @@ namespace WPFPages . Views
 		{
 			// Only load if it was US that triggered the request
 			// So we do not close all Expanders on the user via an auto load of new data
-			if ( e . CallerType == "SELECTEDDATA" )
-			{
+//			if ( e . CallerType == "SELECTEDDATA" )
+//			{
 				//Pass the data  to the UserControl to load into the ListBox
 				UCListbox . ItemsSource = e . DataSource as BankCollection;
 				datagrid . ItemsSource = e . DataSource as BankCollection;
 				UCListbox . SelectedIndex = 0;
+//				BackupBankcollection = e.DataSource as BankCollection;
+				SqlBankcollection = e . DataSource as BankCollection;
+				UCListbox . ItemsSource = SqlBankcollection;
 				Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
-			}
+//			}
 		}
 
 		private void Window_Closed ( object sender, EventArgs e )
@@ -257,24 +262,6 @@ namespace WPFPages . Views
 
 		private async void DbList_LoadBtnPressed ( object sender, RoutedEventArgs e )
 		{
-			int min = 0, max = 0, tot = 0;
-			DataTable dtBank = new DataTable ( );
-			UCListbox . ItemsSource = null;
-			UCListbox . Items . Clear ( );
-			UCListbox . Refresh ( );
-			UCListbox . UpdateLayout ( );
-			Mouse . OverrideCursor = System . Windows . Input . Cursors . Wait;
-			SqlBankcollection . Clear ( );
-			min = Convert . ToInt32 ( MinValue . Text );
-			max = Convert . ToInt32 ( MaxValue . Text );
-			tot = Convert . ToInt32 ( MaxRecords . Text );
-			dtBank = BankCollection . LoadSelectedBankData ( min, max, tot );
-			await BankCollection . LoadSelectedCollection ( SqlBankcollection, -1, dtBank, true );
-			//			UCListbox . ItemsSource = SqlBankcollection;
-			//ActiveType = "BANKACCOUNT";
-			//			UCListbox . SelectedIndex = 0;
-			//BankRecord = DbListbox . UCListbox . SelectedItem as BankAccountViewModel;
-			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 		}
 
 		#region DATA LOAD FUNCTIONS
@@ -412,42 +399,19 @@ namespace WPFPages . Views
 		}
 		private void DbListbox_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			ListViewItem lbi = new ListViewItem ( );
-			List<TextBlock> tbList = new List<TextBlock> ( );
-			ListView lv= sender as ListView;
-			int sel = lv . SelectedIndex;
-			var v  = UCListbox . ItemContainerGenerator . ContainerFromIndex ( UCListbox . SelectedIndex );
-			ListSelection = UCListbox . SelectedIndex;
-			//			var mtextboxes = this . UCListbox.Children . OfType<TextBlock>;
-			//				Flags.GetChildOfType<TextBlock> ( );
-			//string s = (  (_Border as Border) . FindName ( "LbItem" ) as TextBlock ) . Text;
+			try
+			{
+				ListViewItem lbi = new ListViewItem ( );
+				List<TextBlock> tbList = new List<TextBlock> ( );
+				ListView lv = sender as ListView;
+				int sel = lv . SelectedIndex;
+				var v = UCListbox . ItemContainerGenerator . ContainerFromIndex ( UCListbox . SelectedIndex );
+				ListSelection = UCListbox . SelectedIndex;
+			}
+			catch ( Exception ex )
+			{
 
-			//var o = VisualTreeHelper . GetChild ( lv, 0 );
-			//var o2 = VisualTreeHelper . GetChild ( o, 0 );
-			//var o3 = VisualTreeHelper . GetChild ( o2, 0 );
-			//var o4 = VisualTreeHelper . GetChild ( o3, 0 );
-			//var o5 = VisualTreeHelper . GetChild ( o4, 0 );
-			//			Type t =o.GetValue(Border);
-			//			Type t1 = GetType ( "Border" );
-			//			if ( t == 0.GetType("Border"))
-			//int y = 0;
-
-			//GridSelection = ListSelection;
-//			datagrid . SelectedIndex = GridSelection;
-//			datagrid . ScrollIntoView ( datagrid . SelectedItem );
-//			datagrid . Refresh ( );
-//			int count = 0;
-			//var vi = UCListbox . Items . IndexOf ( UCListbox . SelectedItem );
-			//	vi.Background = FindResource ( "Blue1" );
-			//UCListbox.ListView
-			//foreach ( var item in lv.Items )
-			//{
-			//	lv . SelectedIndex = count;
-			//	count++;
-			//	lv . Refresh ( );
-			//}
-
-			//			ListSelection = UCListbox . SelectedIndex;
+			}
 		}
 
 		private void Datagrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
@@ -491,23 +455,10 @@ namespace WPFPages . Views
 
 		private void UCListbox_SelectionChanged ( object sender, SelectionChangedEventArgs e )
 		{
-			//			ListView lb = new ListView ( );
-			//			lb = sender as ListView;
-			//			lb = e . Source as ListView;
-			//			var curr = lb . SelectedItem as BankAccountViewModel;
-//			object o = UCListbox . SelectedIndex;
-			
 			// Store in a class variable
 			CurrentIndex = UCListbox . SelectedIndex;
 			ListSelection = CurrentIndex;
-			Debug . WriteLine ($"Index is set to {CurrentIndex}");
-//			ListViewItem lvi = ( ListViewItem ) UCListbox . ItemContainerGenerator . ContainerFromItem ( o );
-//			if ( lvi == null )
-//				return;
-//			TextBox tb = FindByName ( "tb100", lvi ) as TextBox;
-//
-//			if ( tb != null )
-//				tb . Dispatcher . BeginInvoke ( new Func<bool> ( tb . Focus ) );
+			Debug . WriteLine ( $"Index is set to {CurrentIndex}" );
 		}
 
 		private FrameworkElement FindByName ( string name, FrameworkElement root )
@@ -537,17 +488,11 @@ namespace WPFPages . Views
 			DataGrid dg = new DataGrid ( );
 			dg = e . Source as DataGrid;
 			var dgr = dg . Items . CurrentItem;
-			//Brush br = dg . RowBackground;
 			GridSelection = dg . SelectedIndex;
 			ListSelection = GridSelection;
 			var template = datagrid;
 			TextBlock tb = ( TextBlock ) this . datagrid . FindName ( "custno2" );
 			Brush newbrush = new SolidColorBrush ( Color . FromArgb ( 255, ( byte ) 255, ( byte ) 255, ( byte ) 255 ) );
-			//			BalanceTextBlock . Foreground= newbrush;
-			//var myControl = ( MyControl ) template . FindName ( "MyControlName", MyList );
-			//custno . Foreground = newbrush;
-			//Brush b = SolidColorBrush ( Colors.Chocolate); 
-			//dg
 		}
 
 		private void CheckTypes ( )
@@ -648,57 +593,14 @@ namespace WPFPages . Views
 
 		private void Balancefield_PreviewMouseEnter ( object sender, MouseEventArgs e )
 		{
-			// Default the brush to Unselected (Alternate) colored background row
-			//if ( CurrentCellName == "balancefield" )
-			//{
-			//	TextBlock tb = new TextBlock ( );
-			//	tb = ( TextBlock ) sender as TextBlock;
-
-
-			//	if ( tb != null )
-			//	{
-			//		Brush newbrush = new SolidColorBrush ( Color . FromArgb ( 0xFF, 0x11, 0x71, 0xe6 ) );
-			//		//Save current background color
-			//		// Set the Font Weight value
-			//		tb . FontWeight = FontWeight . FromOpenTypeWeight ( 600 );
-
-			//		// Set the ForeGround color
-			//		newbrush = new SolidColorBrush ( Color . FromArgb ( 0xFF, 0xFF, 0x00, 0x00 ) );
-			//		tb . Foreground = newbrush;
-			//		// Set the BackGround color
-			//		newbrush = new SolidColorBrush ( Color . FromArgb ( 0xFF, 0x70, 0x9e, 0xFe ) );
-			//		tb . Background = newbrush;
-			//	}
-			//}
 		}
 
 		private void Balancefield_PreviewMouseLeave ( object sender, MouseEventArgs e )
 		{
-			//Brush tempbrush;
-			//TextBlock tb = new TextBlock ( );
-			//tb = sender as TextBlock;
-			//if ( CurrentCellName == "balancefield" )
-			//{
-			//	tb . Background = CurrentBackColor;
-			//	tb . Foreground = CurrentForeColor;
-			//	tb . FontWeight = FontWeight . FromOpenTypeWeight ( 200 );
-			//}
 		}
 
 		private void Balancefield_MouseMove ( object sender, MouseEventArgs e )
 		{
-			//TextBlock tb = new TextBlock ( );
-			//tb = sender as TextBlock;
-			//if ( TbBalance == "balancefield" )
-			//{
-			//	TbBalance = tb . Name;
-			//	// set Foreground to Red
-			//	Brush newbrush = new SolidColorBrush ( Color . FromArgb ( 0xFF, 0xFF, 0x00, 0x00 ) );
-			//	tb . Foreground = newbrush;
-			//	//Set Background to Highlight blue
-			//	newbrush = new SolidColorBrush ( Color . FromArgb ( 0xFF, 0xDF, 0xE9, 0xAD ) );
-			//	tb . Background = newbrush;
-			//}
 		}
 
 		private void Datagrid_PreviewMouseMove ( object sender, MouseEventArgs e )
@@ -714,6 +616,14 @@ namespace WPFPages . Views
 				Debug . WriteLine ( $"Name={CurrentCellName }, B = {CurrentBackColor}, F = {CurrentForeColor}" );
 			}
 		}
+
+		private void ListView_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			ContextMenu cm = this . FindResource ( "ContextMenu2" ) as ContextMenu;
+			cm . PlacementTarget = sender as ListView;
+			cm . IsOpen = true;
+		}
+
 		public void FindChildren<T> ( List<T> results, DependencyObject startNode )
 		  where T : DependencyObject
 		{
@@ -739,12 +649,12 @@ namespace WPFPages . Views
 		{
 			//Click inside ListView Item
 			Border brdr = sender as Border;
-//			ListView lv = GetParent ( ( Visual ) e . Source );
+			//			ListView lv = GetParent ( ( Visual ) e . Source );
 			//CurrentIndex = lv . SelectedIndex;
-//			object o = FindName("UCListbox");
-//			ListView LV = o as ListView;
-//			CurrentIndex  = LV . FocusedItem;
-//			CurrentIndex = LV . SelectedIndex;
+			//			object o = FindName("UCListbox");
+			//			ListView LV = o as ListView;
+			//			CurrentIndex  = LV . FocusedItem;
+			//			CurrentIndex = LV . SelectedIndex;
 
 		}
 		private ListView GetParent ( Visual v )
@@ -757,70 +667,182 @@ namespace WPFPages . Views
 			}
 			return v as ListView;
 		}
-			//private void UCListbox_MouseMove ( object sender, MouseEventArgs e )
-			//{
-			//	string name = "";
-			//	int indx = 0;
-			//	if ( UCListbox . Items . Count <= 0 )
-			//		return;
 
-			//	// Retrieve the coordinate of the mouse position.
-			//	var pt = e . GetPosition ( ( UIElement ) sender );
+		private async void DbList_LoadBtnPressed ( object sender, MouseButtonEventArgs e )
+		{
+			int min = 0, max = 0, tot = 0;
+			// Reset the background of the Load Data button
+			Border b = sender as Border;
+			b . Background = FindResource ( "Gray3" ) as SolidColorBrush;
+			b . BorderBrush = FindResource ( "Red3" ) as SolidColorBrush;
+			DataTable dtBank = new DataTable ( );
+			UCListbox . ItemsSource = null;
+			UCListbox . Items . Clear ( );
+			UCListbox . Refresh ( );
+			UCListbox . UpdateLayout ( );
+			Mouse . OverrideCursor = System . Windows . Input . Cursors . Wait;
+			SqlBankcollection . Clear ( );
+			min = Convert . ToInt32 ( MinValue . Text );
+			max = Convert . ToInt32 ( MaxValue . Text );
+			tot = Convert . ToInt32 ( MaxRecords . Text );
+			dtBank = BankCollection . LoadSelectedBankData ( min, max, tot );
+			await BankCollection . LoadSelectedCollection ( SqlBankcollection, -1, dtBank, true );
 
-			//	// Callback to return the result of the hit test.
-			//	HitTestResultCallback myHitTestResult = result => {
-			//		var obj = result . VisualHit;
+			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
 
-			//		// Add additional DependancyObject types to ignore triggered by the cell's parent object container contexts here.
-			//		//-----------
-			//		if ( obj is Border )
-			//			return HitTestResultBehavior . Stop;
-			//		//-----------
-
-			//		var parent = VisualTreeHelper . GetParent ( obj ) as GridViewRowPresenter;
-			//		if ( parent == null )
-			//			return HitTestResultBehavior . Stop;
-
-			//		var headers = parent . Columns . ToDictionary ( column => column . Header . ToString ( ) );
-
-			//		// Traverse up the VisualTree and find the record set.
-			//		DependencyObject d = parent;
-			//		do
-			//		{
-			//			d = VisualTreeHelper . GetParent ( d );
-			//		} while ( d != null && !( d is ListViewItem ) );
-
-			//		// Reached the end of element set as root's scope.
-			//		if ( d == null )
-			//			return HitTestResultBehavior . Stop;
-
-			//		var item = d as ListViewItem;
-			//		var index = UCListbox . ItemContainerGenerator . IndexFromContainer ( item );
-			//		Debug . WriteLine ( index );
-			//		name = item.Name;
-			//		indx = index;
-
-			//		// Set the behavior to return visuals at all z-order levels.
-			//		return HitTestResultBehavior . Continue;
-			//	};
-
-
-			//	// Set up a callback to receive the hit test result enumeration.
-			//	VisualTreeHelper . HitTest ( ( Visual ) sender, null, myHitTestResult, new PointHitTestParameters ( pt ) );
-			//}
-			//public HitTestResultCallback myHitTestResult ( HitTestResult result )
-			//{
-			//	var res = result . ToString ( );
-			//	return  result;
-			//}
 		}
+
+		#region LINQ methods
+		private void Linq1_Click ( object sender, RoutedEventArgs e )
+		{
+//			BackupBankcollection = SqlBankcollection;
+			LinqResults lq = new LinqResults ( );
+			var accounts = from items in SqlBankcollection
+				       where ( items . AcType == 1 )
+				       orderby items . CustNo
+				       select items;
+			BankCollection vm = new BankCollection ( );
+			foreach ( var item in accounts )
+			{
+				vm . Add ( item );
+			}
+			UCListbox . ItemsSource = null;
+			UCListbox . Items . Clear ( );
+			UCListbox . ItemsSource = vm;
+		}
+
+		private void Linq2_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+//			BackupBankcollection = SqlBankcollection;
+			var accounts = from items in SqlBankcollection
+				       where ( items . AcType == 2 )
+				       orderby items . CustNo
+				       select items;
+			BankCollection vm = new BankCollection ( );
+			foreach ( var item in accounts )
+			{
+				vm . Add ( item );
+			}
+			UCListbox . ItemsSource = null;
+			UCListbox . Items . Clear ( );
+			UCListbox . ItemsSource = vm;
+		}
+
+		private void Linq3_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+//			BackupBankcollection = SqlBankcollection;
+			var accounts = from items in SqlBankcollection
+				       where ( items . AcType == 3 )
+				       orderby items . CustNo
+				       select items;
+			BankCollection vm = new BankCollection ( );
+			foreach ( var item in accounts )
+			{
+				vm . Add ( item );
+			}
+			UCListbox . ItemsSource = null;
+			UCListbox . Items . Clear ( );
+			UCListbox . ItemsSource = vm;
+		}
+		private void Linq4_Click ( object sender, RoutedEventArgs e )
+		{
+			//select items;
+//			BackupBankcollection = SqlBankcollection;
+			var accounts = from items in SqlBankcollection
+				       where ( items . AcType == 4 )
+				       orderby items . CustNo
+				       select items;
+			BankCollection vm = new BankCollection ( );
+			foreach ( var item in accounts )
+			{
+				vm . Add ( item );
+			}
+			UCListbox . ItemsSource = null;
+			UCListbox . Items . Clear ( );
+			UCListbox . ItemsSource = vm;
+		}
+
+		/// <summary>
+		/// Create a subset that only includes those cust acs with >1 bankaccounts
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Linq5_Click ( object sender, RoutedEventArgs e )
+		{
+			//select All the items first;
+//			BackupBankcollection = SqlBankcollection;
+			var accounts = from items in SqlBankcollection orderby items . CustNo, items . BankNo select items;
+			//Next Group collection on CustNo
+			var grouped = accounts . GroupBy ( b => b . CustNo );
+
+			//Now filter content down to only those a/c's with multiple Bank A/c's
+			var sel = from g in grouped
+				  where g . Count ( ) > 1
+				  select g;
+
+			// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full BankAccounts data
+			// giving us ONLY the full records for any records that have > 1 Bank accounts
+			List<BankAccountViewModel> output = new List<BankAccountViewModel> ( );
+
+			foreach ( var item1 in sel )
+			{
+				foreach ( var item2 in accounts )
+				{
+					if ( item2 . CustNo . ToString ( ) == item1 . Key )
+					{
+						output . Add ( item2 );
+					}
+				}
+			}
+			BankCollection vm = new BankCollection ( );
+			foreach ( var item in output )
+			{
+				vm . Add ( item );
+			}
+			UCListbox . ItemsSource = null;
+			UCListbox . Items . Clear ( );
+			UCListbox . ItemsSource = vm;
+		}
+		//*************************************************************************************************************//
+		// Turn filter OFF
+		/// <summary>
+		/// Reset our viewer to FULL record display by reloading  the Db from disk - JIC
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Linq6_Click ( object sender, RoutedEventArgs e )
+		{
+//			BackupBankcollection = null;
+			SqlBankcollection = null ;
+			UCListbox . ItemsSource = null;
+			BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
+			UCListbox . Refresh ( );
+		}
+
+
+
+		#endregion LINQ methods
+		private void ViewJsonRecord_Click ( object sender, RoutedEventArgs e )
+		{
+			//============================================//
+			//MENU ITEM 'Read and display JSON File'
+			//============================================//
+			string Output = "";
+			Mouse . OverrideCursor = Cursors . Wait;
+			BankAccountViewModel bvm = this . UCListbox . SelectedItem as BankAccountViewModel;
+			Output = JsonSupport . CreateShowJsonText ( true, "BANKACCOUNT", bvm, "BankAccountViewModel" );
+			MessageBox . Show ( Output, "Currently selected record in JSON format", MessageBoxButton . OK, MessageBoxImage . Information, MessageBoxResult . OK );
+		}
+	}
 
 	public class PremiumUserDataTemplateSelector : DataTemplateSelector
 	{
 		public override DataTemplate SelectTemplate ( object item, DependencyObject container )
 		{
 			FrameworkElement elemnt = container as FrameworkElement;
-			int actype = (int)item ;
+			int actype = ( int ) item;
 			if ( actype == 1 )
 				return elemnt . FindResource ( "Actype1DataTemplate" ) as DataTemplate;
 			else if ( actype == 2 )
