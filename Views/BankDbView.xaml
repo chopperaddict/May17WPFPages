@@ -251,7 +251,6 @@
 			HorizontalAlignment="Left"
 			Background="Transparent">
 
-			<!--// Menu Header-->
 			<MenuItem Header="_Linq Queries"
 				Width="80"
 				Foreground="{StaticResource White0}">

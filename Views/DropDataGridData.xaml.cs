@@ -1,12 +1,8 @@
-﻿#define USEDRAGVIEWMODEL
-using System;
+﻿using System;
 using System . Collections . Generic;
 using System . Diagnostics;
 using System . IO;
 using System . Linq;
-using System . Runtime . CompilerServices;
-using System . Runtime . InteropServices . ComTypes;
-using System . Runtime . Serialization;
 using System . Text;
 using System . Threading;
 using System . Threading . Tasks;
@@ -14,81 +10,81 @@ using System . Windows;
 using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Documents;
+using System . Windows;
 using System . Windows . Input;
 using System . Windows . Media;
 using System . Windows . Media . Imaging;
 using System . Windows . Shapes;
-using Newtonsoft . Json;
+
 using Newtonsoft . Json . Linq;
+
+using Newtonsoft . Json;
+
 using WPFPages . ViewModels;
-using WPFPages . Views;
+using DataFormats = System . Windows . DataFormats;
+using DragDropEffects = System . Windows . DragDropEffects;
 
 namespace WPFPages . Views
 {
-
-	// Delegate to allow a selection of optional search locations for the internal Execute file method
-	public delegate string QualifyingFileLocations (string filename );
-//	public delegate string QualifyingFileLocations ( string [ ] possiblefolders, string searchfilename );
-
 	/// <summary>
-	/// Interaction logic for DragDropClient.xaml
+	/// Interaction logic for DropDataGridData.xaml
 	/// </summary>
-	/// 
-	public class DragviewModel : BankAccountViewModel
+	public partial class DropDataGridData : Window
 	{
-		public string RecordType { get; set; }
-		public override string ToString ( )
-		{
-			//-WORKING WELL 13 / 6 / 21
-			//return RecordType + ", " + CustNo + ", " + BankNo + ", " + AcType . ToString ( ) + ", " + IntRate . ToString ( ) + ", " + Balance . ToString ( ) + ", " + ODate . ToString ( ) + ", " + CDate . ToString ( );
-			return base . ToString ( );
-		}
-
-		public DragviewModel ( )
-		{
-		}
-	}
-	public partial class DragDropClient : Window
-	{
-		//-WORKING WELL 13 / 6 / 21
-		private DragviewModel bv = new DragviewModel ( );
-		private List<DragviewModel> bvm = new List<DragviewModel> ( );
-		public bool addCr { get; set; }
-		private string Savepath = @"C:\Users\Ianch\Documents\";
-		private bool CopyGridToText { get; set; }
-		private bool SaveBoth { get; set; }
-		private int Selectindex { get; set; }
-		private Point _startPoint { get; set; }
-
-
-		// CONSTRUCTOR
-		public DragDropClient ( )
+		public DropDataGridData ( )
 		{
 			InitializeComponent ( );
 			this . Topmost = false;
 			dataGrid . ItemsSource = bvm;
 			addCr = true;
-			
+
 			SavePrompt . Visibility = Visibility . Collapsed;
-			ExecuteFile . Visibility = Visibility . Collapsed;
 			dataGrid . Visibility = Visibility . Visible;
 			textBox . Visibility = Visibility . Visible;
 			//			this . MouseDown += delegate { DoDragMove ( ); };
-			Utils.SetupWindowDrag(this);
-			AddToText. IsChecked = true;
+			Utils . SetupWindowDrag ( this );
+			AddToText . IsChecked = true;
 			CopyGridToText = true;
-			Flags . DragDropViewer = this;
+//			Flags . DragDropViewer = this;
 			OntopChkbox . IsChecked = true;
-			ExecuteFile . Visibility = Visibility . Collapsed;
 			this . Topmost = true;
 		}
+		//-WORKING WELL 13 / 6 / 21
+		private DragviewModel bv = new DragviewModel ( );
+		private List<BankAccountViewModel> bvm = new List<BankAccountViewModel> ( );
+		public bool addCr
+		{
+			get; set;
+		}
+		private string Savepath = @"C:\Users\Ianch\Documents\";
+		private bool CopyGridToText
+		{
+			get; set;
+		}
+		private bool SaveBoth
+		{
+			get; set;
+		}
+		private int Selectindex
+		{
+		get; set;
+		}
+		private Point _startPoint
+		{
+			get; set;
+		}
+
+
+		// CONSTRUCTOR
 
 
 		private void DoDragMove ( )
 		{//Handle the button NOT being the left mouse button
 		 // which will crash the DragMove Fn.....
 			try
-			{ this . DragMove ( ); }
+{
+this . DragMove ( );
+}
 			catch { return; }
 		}
 
@@ -119,11 +115,11 @@ namespace WPFPages . Views
 				return;
 			}
 			SaveAll_Click ( sender, e );
-			//SaveBoth = true;
-			//SaveText_Click ( sender, e );
-			//SaveGrid_Click ( sender, e );
-			//SaveBoth = false;
-		}
+//SaveBoth = true;
+//SaveText_Click ( sender, e );
+//SaveGrid_Click ( sender, e );
+//SaveBoth = false;
+}
 
 		private void SaveData_Click ( object sender, RoutedEventArgs e )
 		{
@@ -139,51 +135,52 @@ namespace WPFPages . Views
 		}
 		private void SaveAll_Click ( object sender, RoutedEventArgs e )
 		{
-			string path = "";
-			if ( execName . Text . Contains ( "Enter Name for" ) || execName . Text == "" )
-			{
-				MessageBox . Show ( "You must enter a name for the combined data to be saved to!", "Save dragged data Utility" );
-				return;
-			}
-			// Save grid data here ->>
-			string output = "";
-			DragviewModel bvm = new DragviewModel ( );
-			foreach ( var item in dataGrid . Items )
-			{
-				bvm = item as DragviewModel;
-				output += Utils . CreateDragDataFromRecord ( bvm );
-			}
-			if ( CombinedSaveName . Text . ToUpper ( ) . Contains ( ".CSV" ) == false )
-				path = Savepath + CombinedSaveName . Text + ".DATA.CSV";
-			else if ( CombinedSaveName . Text . Contains ( "." ) )
-			{
-				char ch = '.';
-				string [ ] data = CombinedSaveName . Text . Split ( ch );
-				string tmp = data [ 0 ] + ".ALLDATA.CSV";
-				path = tmp;
-			}
-			else
-				path = Savepath + CombinedSaveName . Text;
-			output += "\n$$$\n";
-			output += textBox . Text;
-			try
-			{
-				//Save the data to disk file
-				File . WriteAllText ( path, output );
-				MessageBox . Show ( $"The file [{path}] \nhas been saved successfully", "File Save" );
-				SavePrompt . Visibility = Visibility . Collapsed;
-				dataGrid . Visibility = Visibility . Visible;
-				textBox . Visibility = Visibility . Visible;
-				promptmessage . Visibility = Visibility . Visible;
-			}
-			catch {
-				MessageBox . Show ( $"The file [{path}] \nas entered does not appear to be valid.\nPlease correct chack and correct it & try again", "File Save Error" );
-			}
-	//		e . Handled = true;
+			//string path = "";
+			//if ( execName . Text . Contains ( "Enter Name for" ) || execName . Text == "" )
+			//{
+			//	MessageBox . Show ( "You must enter a name for the combined data to be saved to!", "Save dragged data Utility" );
+			//	return;
+			//}
+			//// Save grid data here ->>
+			//string output = "";
+			//DragviewModel bvm = new DragviewModel ( );
+			//foreach ( var item in dataGrid . Items )
+			//{
+			//	bvm = item as DragviewModel;
+			//	output += Utils . CreateDragDataFromRecord ( bvm );
+			//}
+			//if ( CombinedSaveName . Text . ToUpper ( ) . Contains ( ".CSV" ) == false )
+			//	path = Savepath + CombinedSaveName . Text + ".DATA.CSV";
+			//else if ( CombinedSaveName . Text . Contains ( "." ) )
+			//{
+			//	char ch = '.';
+			//	string [ ] data = CombinedSaveName . Text . Split ( ch );
+			//	string tmp = data [ 0 ] + ".ALLDATA.CSV";
+			//	path = tmp;
+			//}
+			//else
+			//	path = Savepath + CombinedSaveName . Text;
+			//output += "\n$$$\n";
+			//output += textBox . Text;
+			//try
+			//{
+			//	//Save the data to disk file
+			//	File . WriteAllText ( path, output );
+			//	MessageBox . Show ( $"The file [{path}] \nhas been saved successfully", "File Save" );
+			//	SavePrompt . Visibility = Visibility . Collapsed;
+			//	dataGrid . Visibility = Visibility . Visible;
+			//	textBox . Visibility = Visibility . Visible;
+			//	promptmessage . Visibility = Visibility . Visible;
+			//}
+			//catch
+			//{
+			//	MessageBox . Show ( $"The file [{path}] \nas entered does not appear to be valid.\nPlease correct chack and correct it & try again", "File Save Error" );
+			//}
+			////		e . Handled = true;
 		}
 		private void PreviewKeyDownCombo ( object sender, KeyEventArgs e )
 		{
-			if (e.OriginalSource == "" &&  e . Key == Key . Enter )
+			if ( e . OriginalSource == "" && e . Key == Key . Enter )
 			{
 				SaveAll_Click ( sender, null );
 				e . Handled = true;
@@ -204,7 +201,7 @@ namespace WPFPages . Views
 		private void CloseBtn_Click ( object sender, RoutedEventArgs e )
 		{
 			//-WORKING WELL 13 / 6 / 21
-			Flags . DragDropViewer = null;
+//			Flags . DragDropViewer = null;
 			Close ( );
 		}
 		private void AddToText_Click ( object sender, RoutedEventArgs e )
@@ -232,7 +229,8 @@ namespace WPFPages . Views
 			char ch;
 			string [ ] splitdata = { };
 			string path = Utils . GetImportFileName ( ".CSV" );
-			if ( path . Length == 0 ) return;
+			if ( path . Length == 0 )
+				return;
 			input = File . ReadAllText ( path );
 			try
 			{
@@ -260,7 +258,8 @@ namespace WPFPages . Views
 					while ( true )
 					{
 						DragviewModel bv = new DragviewModel ( );
-						if ( index >= data . Length - 1 ) break;
+						if ( index >= data . Length - 1 )
+							break;
 						bv . RecordType = data [ index++ ];
 						bv . Id = int . Parse ( data [ index++ ] );
 						bv . CustNo = data [ index++ ];
@@ -281,8 +280,7 @@ namespace WPFPages . Views
 						tmp3 = tmp2 . Split ( ch2 );
 						bv . CDate = Convert . ToDateTime ( tmp3 [ 0 ] );
 						bvm . Add ( bv );
-
-					}
+}
 					dataGrid . ItemsSource = null;
 					dataGrid . ItemsSource = bvm;
 					dataGrid . SelectedIndex = 0;
@@ -298,8 +296,8 @@ namespace WPFPages . Views
 			catch ( Exception ex )
 			{
 				MessageBox . Show ( $"Error encountered loading data from [{path}]\nPlease check  this data file for possible corruption!\nor the file may NOT be in  the correct format for this application", "Incompatible Data Identified" );
-			}
-		}
+}
+}
 
 		private void ClearGrid_Click ( object sender, RoutedEventArgs e )
 		{
@@ -318,11 +316,12 @@ namespace WPFPages . Views
 
 		private void ShowToString_Click ( object sender, RoutedEventArgs e )
 		{
-			//-WORKING WELL 13 / 6 / 21
+//-WORKING WELL 13 / 6 / 21
 			string output = "";
 			string input;
 			char [ ] ch = { ',' };
-			if ( dataGrid . SelectedItem == null ) return;
+			if ( dataGrid . SelectedItem == null )
+				return;
 			input = dataGrid . SelectedItem . ToString ( );
 			string [ ] str = input . Split ( ch );
 			foreach ( var item in str )
@@ -338,27 +337,13 @@ namespace WPFPages . Views
 				this . Topmost = true;
 			else
 				this . Topmost = false;
-
-		}
-
-		private void TextBox_PreviewDragOver ( object sender, DragEventArgs e )
-		{
-			//if ( !e . Data . GetDataPresent ( "DETAILS" ) &&
-			//	!e . Data . GetDataPresent ( "StringFormat" ) )
-			//{
-			//	e . Effects = DragDropEffects . None;
-			//}
-			//else
-			e . Effects = DragDropEffects . Copy;
-			//this line is CRITICAL - witohut it the TextBo does  not recognize a drop in progress
-//			e . Handled = true;
-		}
+}
 
 		private void DataGrid_ColumnReordered ( object sender, DataGridColumnEventArgs e )
 		{
 			DragviewModel dvm = new DragviewModel ( );
 			dvm = dataGrid . SelectedItem as DragviewModel;
-			string custno = dvm . CustNo;
+string custno = dvm . CustNo;
 			string bankno = dvm . BankNo;
 			int indx = Utils . FindMatchingRecord ( custno, bankno, dataGrid );
 			Utils . ScrollRecordIntoView ( dataGrid, indx );
@@ -451,7 +436,7 @@ namespace WPFPages . Views
 
 		private void TextBox_MouseDoubleClick ( object sender, MouseButtonEventArgs e )
 		{
-			SupportMethods. ProcessExecuteRequest ( sender, e, textBox );
+			SupportMethods . ProcessExecuteRequest ( sender, e, textBox );
 		}
 		#region AUTO PATH SEARCH METHODS
 
@@ -464,13 +449,12 @@ namespace WPFPages . Views
 		}
 
 		private void textBox_TextChanged ( object sender, TextChangedEventArgs e )
-		{
-
-		}
+{
+}
 
 		private void ClearAll_Click ( object sender, RoutedEventArgs e )
 		{
-			//-WORKING WELL 13 / 6 / 21
+//-WORKING WELL 13 / 6 / 21
 			dataGrid . ItemsSource = null;
 			dataGrid . Items . Clear ( );
 			textBox . Text = "";
@@ -482,39 +466,24 @@ namespace WPFPages . Views
 		private void searchpaths_Click ( object sender, RoutedEventArgs e )
 		{
 			// modify paths used by (QualifyingFileLocations ) delegate
-			if ( Flags . ExecuteViewer != null ) {
+			if ( Flags . ExecuteViewer != null )
+			{
 				Flags . ExecuteViewer . BringIntoView ( );
 				Flags . ExecuteViewer . Focus ( );
 				return;
 			}
-			RunSearchPaths rsp = new RunSearchPaths (  );
-			rsp.Show();
-			rsp . BringIntoView (  );
+			RunSearchPaths rsp = new RunSearchPaths ( );
+			rsp . Show ( );
+			rsp . BringIntoView ( );
 			rsp . Topmost = true;
 		}
 
-		private void Execute_Click ( object sender, RoutedEventArgs e )
-		{
-			ExecuteFile . Visibility = Visibility . Visible;
-			promptmessage . Visibility = Visibility . Collapsed;
-			ExecuteFile . BringIntoView ( );
-			ExecuteFile . Refresh ( );
-			ExecuteFile . UpdateLayout ( );
-			execName . Focus ( );
-		}
-
-		private void Exec_Click ( object sender, RoutedEventArgs e )
-		{
-			SupportMethods . ProcessExecuteRequest ( this, null, null, execName.Text );
-		}
 
 		private void scratch_Click ( object sender, RoutedEventArgs e )
-		{
+{
 			promptmessage . Visibility = Visibility . Visible;
-			ExecuteFile . Visibility = Visibility . Collapsed;
 			dataGrid . Visibility = Visibility . Visible;
 			textBox . Visibility = Visibility . Visible;
-			execName . Text = "";
 		}
 
 
@@ -543,7 +512,7 @@ namespace WPFPages . Views
 
 			// this is the best way to save persistent data in Json format
 			//Save data (DragviewModel[]) as binary to disk file
-			JsonSupport.JsonSerialize ( bvm, path1 );
+			JsonSupport . JsonSerialize ( bvm, path1 );
 
 			//Save data (DragviewModel[]) as text string to disk file to see differences
 			string jsonresult = JsonConvert . SerializeObject ( bvm );
@@ -600,7 +569,7 @@ namespace WPFPages . Views
 
 
 
-		#region END Drag & Drop 
+		#region  Drag & Drop 
 		/// <summary>
 		/// sets cursor to a hand if dragged over the dataGrid
 		/// </summary>
@@ -694,7 +663,8 @@ namespace WPFPages . Views
 #if USEDRAGVIEWMODEL
 				bv = Utils . CreateGridRecordFromString ( dataString );
 #else
-if ( dataString . Contains ( "CUSTOMER" ) )
+				BankAccountViewModel bv = new BankAccountViewModel ( );
+				if ( dataString . Contains ( "CUSTOMER" ) )
 					bv = Utils . CreateBankRecordFromString ( "CUSTOMER", dataString );
 				else if ( dataString . Contains ( "BANK" ) )
 					bv = Utils . CreateBankRecordFromString ( "BANK", dataString );
@@ -799,11 +769,12 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 			}
 			e . Handled = true;
 		}
+		private void TextBox_PreviewDragOver ( object sender, DragEventArgs e )
+		{
+			e . Effects = DragDropEffects . Copy;
+		}
+
 
 		#endregion END Drag & Drop 
-
-
 	}
 }
-
-

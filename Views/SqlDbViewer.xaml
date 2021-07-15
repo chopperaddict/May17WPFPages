@@ -501,7 +501,7 @@
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="5" />
-			<RowDefinition Height="30" />
+			<RowDefinition Height="40" />
 			<RowDefinition Height="25" />
 			<RowDefinition Height="57" />
 			<RowDefinition Height="65" />
@@ -525,227 +525,100 @@
 		</Grid.Background>
 
 
+		<!--#region Menu Bar-->
 
-		<!--<Menu
-			Background="Transparent"
-			Grid.Column="1"
-			Grid.ColumnSpan="2"
+		<Menu
 			Grid.Row="1"
+			Grid.Column="1"
+			Width="auto"
 			Height="30"
-			Margin="0,3">
+			IsTabStop="True"
+			Margin="5"
+			HorizontalAlignment="Left"
+			Background="Transparent">
 
-			<MenuItem  Header="_Linq Queries"
-				Margin="2"
-				FontWeight="Bold"
-				Width="100"
-				Foreground="{StaticResource Black0}">
+			<!--// Menu Header-->
+			<MenuItem Header="_Linq Queries"
+				Width="80"
+				Foreground="{StaticResource White0}">
 
-				<MenuItem Header="Show All records"
-					     FontWeight="Bold"
-						Foreground="{StaticResource Black1}"
-						Style="{StaticResource MenuItemGreen}"
-						Background="#00FF00"
-					    VerticalAlignment="Top"
-						Click="Linq6_Click">					
-				</MenuItem>
-
+				<!--// Seperate menu items in DropDown-->
 				<MenuItem Header="A/c Type 1 Only"
 						Background="#35F6FB"
 						Click="Linq1_Click"
-						Foreground="{StaticResource Black1}"
-						Style="{StaticResource MenuItemBlue}">					
-				</MenuItem>
-
+						Foreground="Black"						
+						IsCheckable="false" />
 				<MenuItem Header="A/c Type 2 Only"
 						Background="#35F6FB"
 						Click="Linq2_Click"
-						Foreground="{StaticResource Black1}"
-						Style="{StaticResource MenuItemBlue}">
-				</MenuItem>
-
+						Foreground="Black"						
+						IsCheckable="False" />
 				<MenuItem Header="A/c Type 3 Only"
 						Background="#35F6FB"
-						Foreground="{StaticResource Black1}"
-						Style="{StaticResource MenuItemBlue}"
 						Click="Linq3_Click"
-						IsCheckable="false">
-				</MenuItem>
-
+						Foreground="Black"						
+						IsCheckable="False" />
 				<MenuItem Header="A/c Type 4 Only"
 						Background="#35F6FB"
 						Click="Linq4_Click"
-						Foreground="{StaticResource Black1}"
-						Style="{StaticResource MenuItemBlue}"
-						IsCheckable="false">
-				</MenuItem>
-
-				<Separator />
-			
-				<MenuItem Header="Multi A/C Holders"
-						Background="#FF0000"
-						Foreground="{StaticResource Black1}"
-						Style="{StaticResource MenuItemRed}"
-						Click="Linq5_Click"
-						IsCheckable="false">
-				</MenuItem>
-
-			</MenuItem>
-
-			<MenuItem  Header="Data Copy Utilities"
-				    Click="Filter_Click"
-				     FontWeight="DemiBold"
-     				     IsTabStop="False"
-					Width="130"
-				     Margin="2"
-				    Foreground="{StaticResource Black1}">
-
-				<MenuItem Header="Copy Multi Bank a/c's to Details Db"
-					Name="ExportBank"
-					Click="Exportselected_Click"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					Width="280">
-				</MenuItem>
-
-				<MenuItem Header="Copy Multi Details a/c's to Bank Db"
-					Name="ExportDetails"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					Click="Exportselected_Click"
-					Width="280">
-				</MenuItem>
-
-				<Separator
-					Background="Red"
-					Foreground="Red"
-					Height="8"
-					HorizontalAlignment="Left"/>
+						Foreground="Black"						
+						IsCheckable="False" />
 				
-				<MenuItem Header="Copy Bank a/c's to Details Db"
-					Name="ExportFullBank"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					Click="Exportany_Click"
-					IsCheckable="false"
-					Width="280">
+				<Separator />
+
+				<MenuItem Header="All Records"
+						Background="#35F6FB"
+						Click="Linq6_Click"
+						Foreground="Black"						
+						IsCheckable="False" />
+				<Separator />
+				<MenuItem
+						Background="#35F6FB"
+						Click="Linq5_Click"
+						Foreground="Black"
+						Header="Multi A/C Holders"
+						IsCheckable="False" />
+
 				</MenuItem>
 
-				<MenuItem Header="Copy Details a/c's to Bank Db"
-					Name="ExportFullDetails"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					Click="Exportany_Click"
-					IsCheckable="false"
-					Width="280">
-				</MenuItem>
+				<!--// Seperate menu items at top level -->
+				<MenuItem
+				Width="60"
+				Click="Filter_Click"
+				Foreground="{StaticResource White0}"
+				Header="Filtering"/>
 
-			</MenuItem>
-			
-			<MenuItem  Header="Options"
+				<MenuItem
+				Width="50"
 				Click="Options_Click"
-				     IsTabStop="False"
-				Width="70"
-				Foreground="{StaticResource White2}">
+				Foreground="{StaticResource White1}"
+				Header="Options" />
 
-				<MenuItem  Header="Setting"
-					Click="Settings_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2">
-				</MenuItem>
-				<MenuItem  Header="Export Bank Account Db => CSV"
-					Click="ExportBankCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2">
-				</MenuItem>
-				<MenuItem  Header="Export Customers Db => CSV"
-					Click="ExportCustCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2">
-				</MenuItem>
-				<MenuItem  Header="Export Details Db => CSV"
-					Click="ExportDetCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					Background="#00FF00"
-					Style="{StaticResource MenuItemGreen}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2">
-				</MenuItem>
-				<Separator/>
-				<MenuItem  Header="Import Bank Account Db from CSV"
-				     Name="bankfromCSV"
-					Click="ImportBankCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="White"
-					Background="#FF0000"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Style="{StaticResource MenuItemRed}"
-					Width="290"
-					Margin="2">
-				</MenuItem>
-				<MenuItem  Header="Import Customers Db from CSV"
-				     Name="custfromCSV"
-					Click="ImportCustCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="White"
-					Background="#FF0000"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Style="{StaticResource MenuItemRed}"
-					Width="290"
-					Margin="2">
-				</MenuItem>
-				<MenuItem  Header="Import Details Db from CSV"
-				     Name="detfromCSV"
-					Click="ImportDetCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="White"
-					Background="#FF0000"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Style="{StaticResource MenuItemRed}"
-					Width="290"
-					Margin="2">
-				</MenuItem>
+				<MenuItem
+				Width="50"
+				Click="Exit_Click"
+				Foreground="{StaticResource White1}"
+				Header="Exit..." />
 
-			</MenuItem>
-
-			<MenuItem  Header="Drag / Drop"
+				<MenuItem  Header="Drag / Drop"
 				Click="Drag_Click"
 			     IsTabStop="False"
-				Width="90"
-				Foreground="{StaticResource White1}">
-			</MenuItem>
+				Width="81"
+				Foreground="{StaticResource White1}"/>
 
-			-->
-		<!--// Seperate menu item at top level -->
+				<MenuItem  Header="Close Viewer..."
+				    Click="Exit_Click"
+				     FontWeight="SemiBold"
+				     Margin="2,0"
+					Width="97"
+				    Foreground="{StaticResource White1}"/>
+		
+		</Menu>
 
-		<!--</Menu>-->
+		<!--#endregion Menu Bar-->
+
+
+
 
 		<!--#region Checkboxes-->
 		<WrapPanel
@@ -2719,132 +2592,6 @@
 				TextAlignment="Center"
 				VerticalAlignment="Center"
 				/>
-
-
-		<!--#region Menu Bar-->
-		<Menu  			
-			Background="Transparent"
-			Grid.Column="1"
-			Grid.Row="1"
-			Height="30" 
-			IsHitTestVisible="True"
-			HorizontalAlignment="Left"
-			Width="auto">
-
-			<MenuItem  Header="_Linq Queries" 
-					Margin="5"
-				     Width="80" 
-				    >
-				<!--Foreground="{StaticResource White0}"-->
-				<MenuItem Header="A/c Type 1 Only"
-					    Click="Linq1_Click"
-					    Foreground="Black"
-					    IsCheckable="false"/>
-				<!--Background="#35F6FB"-->
-				<MenuItem Header="A/c Type 2 Only"
-					Click="Linq2_Click"
-					Foreground="Black"
-					IsCheckable="False"/>
-				<MenuItem Header="A/c Type 3 Only"
-					Click="Linq3_Click"
-					Foreground="Black"
-					IsCheckable="False"/>
-				<MenuItem Header="A/c Type 4 Only"
-					Click="Linq4_Click"
-					Foreground="Black"
-					IsCheckable="False"/>
-				<MenuItem Header="Multi A/C Holders"
-					Click="Linq5_Click"
-					IsCheckable="False"
-					Foreground="Black"/>
-				<Separator />
-				<MenuItem Header="Show All Records"
-					Click="Linq6_Click"
-					IsCheckable="False"
-					Foreground="Black"/>
-			</MenuItem>
-
-			<!--<MenuItem  Header="Filtering" 
-				Width="60" 
-				    Foreground="{StaticResource White1}">-->
-
-			<!--</MenuItem>-->
-
-			<!--<MenuItem  Header="Options" 
-				    Click="Options_Click"
-					Width="50" 
-				    Foreground="{StaticResource White2}">
-
-				<MenuItem  Header="Export Bank Account Db => CSV"
-					Click="ExportBankCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-				--><!--Style="{StaticResource MenuItemGreen}"--><!--
-				<MenuItem  Header="Export Customers Db => CSV"
-					Click="ExportCustCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-				<MenuItem  Header="Export Details Db => CSV"
-					Click="ExportDetCSV_Click"
-					FontWeight="DemiBold"
-					Foreground="{StaticResource Black1}"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-				<Separator/>
-				<MenuItem  Header="Import Bank Account Db from CSV"
-					Click="ImportBankCSV_Click"
-					FontWeight="DemiBold"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-				<MenuItem  Header="Import Customers Db from CSV"
-					Click="ImportCustCSV_Click"
-					FontWeight="DemiBold"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-				--><!--Foreground="White"
-					Background="#FF0000"--><!--
-				<MenuItem  Header="Import Details Db from CSV"
-					Click="ImportDetCSV_Click"
-					FontWeight="DemiBold"
-					HorizontalAlignment="Left"
-					HorizontalContentAlignment="Left"
-					Width="290"
-					Margin="2"/>
-
-			</MenuItem>-->
-
-			<MenuItem  Header="Drag / Drop"
-				Click="Drag_Click"
-			     IsTabStop="False"
-				Width="81"
-				Foreground="{StaticResource White1}"/>
-
-
-
-			<MenuItem  Header="Close Viewer..."
-				    Click="Exit_Click"
-				     FontWeight="SemiBold"
-				     Margin="2,0"
-					Width="97"
-				    Foreground="{StaticResource White1}"/>
-		</Menu>
-
-		<!--#endregion Menu Bar-->
-
 
 	</Grid>
 </Window>

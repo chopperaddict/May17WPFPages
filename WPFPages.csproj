@@ -101,6 +101,9 @@
     <Compile Include="Views\ColorsSelector.xaml.cs">
       <DependentUpon>ColorsSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DropDataGridData.xaml.cs">
+      <DependentUpon>DropDataGridData.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MyConverters.cs" />
     <Compile Include="Depends\ExtenderProp.cs" />
     <Compile Include="Libraries\DataClasses1.designer.cs">
@@ -300,6 +303,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DragDropClient.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DropDataGridData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

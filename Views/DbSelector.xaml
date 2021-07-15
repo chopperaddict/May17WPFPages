@@ -360,7 +360,7 @@
 					IsTabStop="False"
 					Height="25">
 
-				<!--<MenuItem  Header="Show Drag Client Window"
+				<MenuItem  Header="Show Drag Client Window"
 						Click="LoadDragClient_Click"
 					     MinWidth="200"
 						FontWeight="Bold"
@@ -369,7 +369,7 @@
 						IsTabStop="False"
 						Style="{StaticResource MenuItemBlue}"
 						Background="{StaticResource Red0}"
-					     Foreground="{StaticResource Green1}"/>-->
+					     Foreground="{StaticResource White0}"/>
 
 			</MenuItem>
 

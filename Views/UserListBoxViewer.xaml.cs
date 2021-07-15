@@ -21,6 +21,7 @@ using System . Windows . Shapes;
 using WPFPages . ViewModels;
 using WPFPages . Views;
 
+using static System . Net . Mime . MediaTypeNames;
 using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
 
 namespace WPFPages . Views
@@ -185,6 +186,18 @@ namespace WPFPages . Views
 		}
 
 		private TextBox tb;
+
+		// Drag & Drop stuff
+		private bool IsLeftButtonDown = false;
+		private static Point _startPoint
+		{
+			get; set;
+		}
+		private static bool ScrollBarMouseMove
+		{
+			get; set;
+		}
+
 		////This is how to declare properties for binding
 		//public TextBlock BalanceTextBlock
 		//{
@@ -239,17 +252,17 @@ namespace WPFPages . Views
 		{
 			// Only load if it was US that triggered the request
 			// So we do not close all Expanders on the user via an auto load of new data
-//			if ( e . CallerType == "SELECTEDDATA" )
-//			{
-				//Pass the data  to the UserControl to load into the ListBox
-				UCListbox . ItemsSource = e . DataSource as BankCollection;
-				datagrid . ItemsSource = e . DataSource as BankCollection;
-				UCListbox . SelectedIndex = 0;
-//				BackupBankcollection = e.DataSource as BankCollection;
-				SqlBankcollection = e . DataSource as BankCollection;
-				UCListbox . ItemsSource = SqlBankcollection;
-				Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
-//			}
+			//			if ( e . CallerType == "SELECTEDDATA" )
+			//			{
+			//Pass the data  to the UserControl to load into the ListBox
+			UCListbox . ItemsSource = e . DataSource as BankCollection;
+			datagrid . ItemsSource = e . DataSource as BankCollection;
+			UCListbox . SelectedIndex = 0;
+			//				BackupBankcollection = e.DataSource as BankCollection;
+			SqlBankcollection = e . DataSource as BankCollection;
+			UCListbox . ItemsSource = SqlBankcollection;
+			Mouse . OverrideCursor = System . Windows . Input . Cursors . Arrow;
+			//			}
 		}
 
 		private void Window_Closed ( object sender, EventArgs e )
@@ -394,8 +407,18 @@ namespace WPFPages . Views
 				UCListbox . Refresh ( );
 				UCListbox . ScrollIntoView ( UCListbox . SelectedItem );
 				UCListbox . Focus ( );
-				//				UCListbox . SelectedItem = ListSelection;
 			}
+			//var currentborder = ToggleViews . Child . GetValue ( ContentProperty ) ;
+			//if ( datagrid . Visibility != Visibility . Visible )
+			//	ToggleViews . Child .  SetValue ( ContentProperty, "Show in Grid View" );
+			//else
+			//	ToggleViews . Child . SetValue ( ContentProperty, "Show in List View" );
+			
+			
+			// Nothing changes behaviour, it just shows text in default Black and small size
+//			Brush newbrush = new SolidColorBrush ( Color . FromArgb ( 255, ( byte ) 255, ( byte ) 255, ( byte ) 255 ) );
+//			BtnText . HorizontalAlignment = HorizontalAlignment . Center;
+//			BtnText . Background = newbrush;
 		}
 		private void DbListbox_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
@@ -671,10 +694,13 @@ namespace WPFPages . Views
 		private async void DbList_LoadBtnPressed ( object sender, MouseButtonEventArgs e )
 		{
 			int min = 0, max = 0, tot = 0;
+//			return;
 			// Reset the background of the Load Data button
-			Border b = sender as Border;
-			b . Background = FindResource ( "Gray3" ) as SolidColorBrush;
-			b . BorderBrush = FindResource ( "Red3" ) as SolidColorBrush;
+//			Border b = sender as Border;
+//			if ( b == null )
+//				return;
+//			b . Background = FindResource ( "Gray3" ) as SolidColorBrush;
+//			b . BorderBrush = FindResource ( "Red3" ) as SolidColorBrush;
 			DataTable dtBank = new DataTable ( );
 			UCListbox . ItemsSource = null;
 			UCListbox . Items . Clear ( );
@@ -695,7 +721,7 @@ namespace WPFPages . Views
 		#region LINQ methods
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
-//			BackupBankcollection = SqlBankcollection;
+			//			BackupBankcollection = SqlBankcollection;
 			LinqResults lq = new LinqResults ( );
 			var accounts = from items in SqlBankcollection
 				       where ( items . AcType == 1 )
@@ -714,7 +740,7 @@ namespace WPFPages . Views
 		private void Linq2_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-//			BackupBankcollection = SqlBankcollection;
+			//			BackupBankcollection = SqlBankcollection;
 			var accounts = from items in SqlBankcollection
 				       where ( items . AcType == 2 )
 				       orderby items . CustNo
@@ -732,7 +758,7 @@ namespace WPFPages . Views
 		private void Linq3_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-//			BackupBankcollection = SqlBankcollection;
+			//			BackupBankcollection = SqlBankcollection;
 			var accounts = from items in SqlBankcollection
 				       where ( items . AcType == 3 )
 				       orderby items . CustNo
@@ -749,7 +775,7 @@ namespace WPFPages . Views
 		private void Linq4_Click ( object sender, RoutedEventArgs e )
 		{
 			//select items;
-//			BackupBankcollection = SqlBankcollection;
+			//			BackupBankcollection = SqlBankcollection;
 			var accounts = from items in SqlBankcollection
 				       where ( items . AcType == 4 )
 				       orderby items . CustNo
@@ -772,7 +798,7 @@ namespace WPFPages . Views
 		private void Linq5_Click ( object sender, RoutedEventArgs e )
 		{
 			//select All the items first;
-//			BackupBankcollection = SqlBankcollection;
+			//			BackupBankcollection = SqlBankcollection;
 			var accounts = from items in SqlBankcollection orderby items . CustNo, items . BankNo select items;
 			//Next Group collection on CustNo
 			var grouped = accounts . GroupBy ( b => b . CustNo );
@@ -814,8 +840,8 @@ namespace WPFPages . Views
 		/// <param name="e"></param>
 		private void Linq6_Click ( object sender, RoutedEventArgs e )
 		{
-//			BackupBankcollection = null;
-			SqlBankcollection = null ;
+			//			BackupBankcollection = null;
+			SqlBankcollection = null;
 			UCListbox . ItemsSource = null;
 			BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 			UCListbox . Refresh ( );
@@ -835,8 +861,141 @@ namespace WPFPages . Views
 			Output = JsonSupport . CreateShowJsonText ( true, "BANKACCOUNT", bvm, "BankAccountViewModel" );
 			MessageBox . Show ( Output, "Currently selected record in JSON format", MessageBoxButton . OK, MessageBoxImage . Information, MessageBoxResult . OK );
 		}
-	}
 
+		private void linq1_IsMouseDirectlyOverChanged ( object sender, DependencyPropertyChangedEventArgs e )
+		{
+			int x = 0;
+		}
+
+
+
+
+		private void datagrid_PreviewDragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+			//Debug . WriteLine ( $"Setting drag cursor...." );
+		}
+
+		//================================================================================================
+		#region DRAG CODE
+		private void datagrid_PreviewMouseLeftButtonup ( object sender, MouseButtonEventArgs e )
+		{
+			ScrollBarMouseMove = false;
+		}
+
+		private void datagrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
+		{
+			GridSelection = datagrid . SelectedIndex;
+			ListSelection = GridSelection;
+			UCListbox . SelectedIndex = ListSelection;
+
+			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
+			if ( Utils . HitTestScrollBar ( sender, e ) )
+			{
+				ScrollBarMouseMove = true;
+				return;
+			}
+			if ( Utils . HitTestHeaderBar ( sender, e ) )
+				return;
+
+			_startPoint = e . GetPosition ( null );
+			// Make sure the left mouse button is pressed down so we are really moving a record
+			if ( e . LeftButton == MouseButtonState . Pressed )
+			{
+				IsLeftButtonDown = true;
+			}
+
+		}
+
+		private void datagrid_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			object Sender;
+			Point mousePos = e . GetPosition ( null );
+			Vector diff = _startPoint - mousePos;
+			string  t1 = sender . GetType ( ).ToString();
+			if ( e . LeftButton == MouseButtonState . Pressed &&
+			    Math . Abs ( diff . X ) > SystemParameters . MinimumHorizontalDragDistance ||
+			    Math . Abs ( diff . Y ) > SystemParameters . MinimumVerticalDragDistance )
+			{
+				if ( IsLeftButtonDown && e . LeftButton == MouseButtonState . Pressed )
+				{
+					bool isvalid = false;
+					if ( t1 . Contains ( "ListView" ) )
+						isvalid = true;
+					else if ( t1 . Contains ( "DataGrid" ) )
+						isvalid = true;
+					if ( isvalid)
+					{
+						if ( ScrollBarMouseMove )
+							return;
+						// We are dragging from the DETAILS grid
+						//Working string version
+						BankAccountViewModel bvm = new BankAccountViewModel ( );
+						if ( t1 . Contains ( "ListView" ))
+							bvm = UCListbox. SelectedItem as BankAccountViewModel;
+						else
+							bvm = datagrid . SelectedItem as BankAccountViewModel;
+						string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );
+						string dataFormat = DataFormats . Text;
+						DataObject dataObject = new DataObject ( dataFormat, str );
+						System . Windows . DragDrop . DoDragDrop (
+						datagrid,
+						dataObject,
+						DragDropEffects . Copy );
+						IsLeftButtonDown = false;
+					}
+				}
+			}
+		}
+
+		private void DbList_ShowDropGrid ( object sender, MouseButtonEventArgs e )
+		{
+			DropDataGridData ddg = new DropDataGridData ( );
+			ddg . Show ( );
+		}
+
+		#endregion DRAG CODE
+		//================================================================================================
+
+
+
+
+
+	}
+	public class FocusVisualTreeChanger
+	{
+		public static bool GetIsChanged ( DependencyObject obj )
+		{
+			return ( bool ) obj . GetValue ( IsChangedProperty );
+		}
+
+		public static void SetIsChanged ( DependencyObject obj, bool value )
+		{
+			obj . SetValue ( IsChangedProperty, value );
+		}
+
+		public static readonly DependencyProperty IsChangedProperty =
+		    DependencyProperty . RegisterAttached ( "IsChanged", typeof ( bool ), typeof ( FocusVisualTreeChanger ), new FrameworkPropertyMetadata ( false, FrameworkPropertyMetadataOptions . Inherits, IsChangedCallback ) );
+
+		private static void IsChangedCallback ( DependencyObject d, DependencyPropertyChangedEventArgs e )
+		{
+			if ( true . Equals ( e . NewValue ) )
+			{
+				FrameworkContentElement contentElement = d as FrameworkContentElement;
+				if ( contentElement != null )
+				{
+					contentElement . FocusVisualStyle = null;
+					return;
+				}
+
+				FrameworkElement element = d as FrameworkElement;
+				if ( element != null )
+				{
+					element . FocusVisualStyle = null;
+				}
+			}
+		}
+	}
 	public class PremiumUserDataTemplateSelector : DataTemplateSelector
 	{
 		public override DataTemplate SelectTemplate ( object item, DependencyObject container )
@@ -851,10 +1010,8 @@ namespace WPFPages . Views
 				return elemnt . FindResource ( "Actype3DataTemplate" ) as DataTemplate;
 			else if ( actype == 4 )
 				return elemnt . FindResource ( "Actype4DataTemplate" ) as DataTemplate;
-
 			return null;
 		}
 	}
-
 
 }
