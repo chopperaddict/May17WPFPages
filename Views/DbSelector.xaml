@@ -431,7 +431,7 @@
 						Background="{StaticResource Cyan2}"
 						Foreground="{StaticResource Black0}"/>
 
-				<MenuItem  Header="Test Bank System"
+				<!--<MenuItem  Header="Test Bank System"
 						Click="TestBank_Click"
 						Margin="2"
 						FontWeight="Bold"
@@ -439,7 +439,7 @@
 						IsTabStop="False"
 						Style="{StaticResource MenuItemGreen}"
 						Background="{StaticResource Red0}"
-						Foreground="{StaticResource White0}"/>
+						Foreground="{StaticResource White0}"/>-->
 
 				
 				<MenuItem  Header="Test Details System"

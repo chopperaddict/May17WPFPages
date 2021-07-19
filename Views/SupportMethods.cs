@@ -180,7 +180,14 @@ namespace WPFPages . Views
 				if ( test == "" )
 					test = linetext;
 			}
-
+			// check to see if we actually have a file of some sort
+			if ( test . Contains ( "." ) == false )
+				return false;
+			Type t = test . GetType ( );
+			//Check the fle suffix
+			string [ ] suffixes = test . Split ( '.' );
+			if ( ValidateFileType ( suffixes [ 1 ])== false )
+				return false;
 			// Finally, lets try to execute the command received
 			// Clever stuff here  :-
 			// See if any args have been passed, and split the off the command line
@@ -246,6 +253,27 @@ namespace WPFPages . Views
 				}
 			}
 			return result;
+		}
+		private static bool ValidateFileType ( string suffix)
+		{
+			switch (  suffix .ToUpper() )
+			{
+				case "DLL":
+					return false;
+				case "EXE":
+					return false;
+				case "OBJ":
+					return false;
+				case "BAK":
+					return false;
+				case "COM":
+					return false;
+				case "ILK":
+					return false;
+				case "RESX":
+					return false;
+			}
+			return true;
 		}
 		public static string GetCurrentApplicationFullPath ( )
 		{

@@ -1492,8 +1492,8 @@ namespace WPFPages . Views
 		private void TestBank_Click(object sender, RoutedEventArgs e)
 		{
 			// load test observable collections testing window(s)
-			TestBankDbView tbdv = new TestBankDbView();
-			tbdv.Show();
+//			TestBankDbView tbdv = new TestBankDbView();
+//			tbdv.Show();
 		}
 
 		private void UserListbox_Click ( object sender, RoutedEventArgs e )
@@ -1510,8 +1510,8 @@ namespace WPFPages . Views
 
 		private void TreeView_Click ( object sender, RoutedEventArgs e )
 		{
-			//TreeView1 tv1 = new TreeView1 ( );
-			//tv1 . Show ( );
+			TreeView1 tv1 = new TreeView1 ( );
+			tv1 . Show ( );
 		}
 	}
 }

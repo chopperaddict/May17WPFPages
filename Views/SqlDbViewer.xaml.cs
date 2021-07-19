@@ -31,6 +31,7 @@ using System . Windows . Shapes;
 using static System . Net . Mime . MediaTypeNames;
 using System . Configuration;
 using System . CodeDom;
+using System . Runtime . CompilerServices;
 
 //[assembly: SecurityPermissionAttribute ( SecurityAction . RequestMinimum, Flags = ( SecurityPermissionFlag ) UIPermissionClipboard . AllClipboard )]
 
@@ -885,6 +886,11 @@ namespace WPFPages
 		{
 			// Event handler for BankDataLoaded
 			// it was us, ignore it
+			if ( sender == null && e . DataSource == null )
+				return;
+			if ( e . CallerDb != "SQLDBVIEWER" )
+				return;
+			Debug . WriteLine ( $"\n * **Loading Bank data in SqlDbViewer after BankDataLoaded trigger\n" );
 			stopwatch . Stop ( );
 			if ( e . SenderGuid == this . Tag?.ToString ( ) )
 				return;
@@ -894,10 +900,10 @@ namespace WPFPages
 				return;
 
 			SqlBankcollection = e . DataSource as BankCollection;
-			if ( SqlBankcollection . Count == 0 )
+			if ( SqlBankcollection ?. Count == 0 )
 				return;
 
-			Debug . WriteLine ( $"SQLDBVIEWER : BankAccount  Data fully loaded: {stopwatch . ElapsedMilliseconds} ms" );
+			Debug . WriteLine ( $"SQLDBVIEWER : BankAccount  BankDataLoaded = Data fully loaded: {stopwatch . ElapsedMilliseconds} ms" );
 			LoadingDbData = true;
 			WaitMessage . Visibility = Visibility . Collapsed;
 			BankGrid . Visibility = Visibility . Visible;
@@ -929,7 +935,7 @@ namespace WPFPages
 			BankReserved? . Clear ( );
 			// Save our reserve collection
 			BankReserved = SqlBankcollection;
-
+			this . BankGrid . Refresh ( );
 			StatusBar . Text = "All records for Bank Db are displayed...";
 		}
 		private void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
@@ -5126,12 +5132,8 @@ namespace WPFPages
 					// Reset main Db collection to FULL set of data
 					SqlBankcollection = BankReserved;
 				}
-				var accounts = from items in SqlBankcollection
-					       where ( items . AcType == 1 )
-					       orderby items . CustNo
-					       select items;
 				BankCollection vm = new BankCollection ( );
-				foreach ( var item in accounts )
+				foreach ( var item in vm)
 				{
 					vm . Add ( item );
 				}
@@ -5139,8 +5141,6 @@ namespace WPFPages
 				BankGrid . ItemsSource = SqlBankcollection;
 				ParseButtonText ( true );
 				Count . Text = $"{Utils . GetPrettyGridStatistics ( this . BankGrid, this . BankGrid . SelectedIndex )}";
-				//				Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
-				//				Count . Text = BankGrid . Items . Count . ToString ( );
 				BankFiltered = true;
 				StatusBar . Text = "All records for Bank Account type 1 alone are displayed...";
 			}
@@ -5727,27 +5727,15 @@ namespace WPFPages
 			//			MainWindow . gv . Datagrid [ LoadIndex ] = this . DetailsGrid;
 		}
 
-		private void DetailsGrid_MouseRightButtonDown ( object sender, MouseButtonEventArgs e )
-		{
-			//ContextMenu cm = this . FindResource ( "SqlDbviewerMenu1" ) as ContextMenu;
-			//if ( CurrentDb == "BANKACCOUNT" )
-			//	cm . PlacementTarget = this . BankGrid as DataGrid;
-			//else if ( CurrentDb == "CUSTOMER" )
-			//	cm . PlacementTarget = this . CustomerGrid as DataGrid;
-			//else if ( CurrentDb == "DETAILS" )
-			//	cm . PlacementTarget = this . DetailsGrid as DataGrid;
-			//cm . IsOpen = true;
-
-		}
-		private void DoDragMove ( )
-		{//Handle the button NOT being the left mouse button
-		 // which will crash the DragMove Fn.....
-			try
-			{
-				this . DragMove ( );
-			}
-			catch { return; }
-		}
+		//private void DoDragMove ( )
+		//{//Handle the button NOT being the left mouse button
+		// // which will crash the DragMove Fn.....
+		//	try
+		//	{
+		//		this . DragMove ( );
+		//	}
+		//	catch { return; }
+		//}
 
 		private void TopMost_Click ( object sender, RoutedEventArgs e )
 		{
@@ -6246,131 +6234,13 @@ namespace WPFPages
 				}
 			}
 		}
-		#region // DRAG AND DROP STUFF - not fully working yet
 
-		//		void BankGrid_Drop (object sender, DragEventArgs e )
-		//		{
-		//			if ( prevRowIndex < 0)
-		//				return;
-
-		//			int index = this . GetDataGridItemCurrentRowIndex ( e . GetPosition );
-
-		//			//The current Rowindex is -1 (No selected)
-		//			if ( index < 0 )
-		//				return;
-		//			//If Drag-Drop Location are same
-		//			if ( index == prevRowIndex )
-		//				return;
-
-		//			//If the Drop Index is the last Row of DataGrid(
-		//			// Note: This Row is typically used for performing Insert operation)
-		//			if ( index == BankGrid . Items . Count - 1 )
-		//			{
-		//				MessageBox . Show ( "This row-index cannot be used for Drop Operations" );
-		//				return;
-		//			}
-
-		//			BankAccountViewModel myAccounts = Resources [ "data" ] as BankAccountViewModel;
-
-		////			BankAccountViewModel moved = myAccounts ( prevRowIndex );
-		////			myAccounts . RemoveAt ( prevRowIndex );
-
-		////			myAccounts . Insert ( index, moved );
-
-		//		}
-		//		public bool IsTheMouseOnTargetRow ( Visual theTarget, GetDragDropPosition pos )
-		//		{
-		//			if ( theTarget == null ) return false;
-		//			Rect posBounds = VisualTreeHelper . GetDescendantBounds ( theTarget );
-		//			Point theMousePos = pos ( ( IInputElement ) theTarget );
-		//			return posBounds . Contains ( theMousePos );
-		//		}
-		//		private DataGridRow GetDataGridRowItem ( int index )
-		//		{
-		//			if ( this . BankGrid . ItemContainerGenerator . Status != GeneratorStatus . ContainersGenerated )
-		//				return null;
-
-		//			return BankGrid . ItemContainerGenerator . ContainerFromIndex ( index ) as DataGridRow;
-		//		}
-
-		//		private int GetDataGridItemCurrentRowIndex ( GetDragDropPosition pos )
-		//		{
-		//			int curIndex = -1;
-		//			for ( int i = 0 ; i < BankGrid . Items . Count ; i++ )
-		//			{
-		//				DataGridRow itm = GetDataGridRowItem ( i );
-		//				 itm = this . BankGrid . CurrentItem as DataGridRow;
-
-		//				if ( itm == null )
-		//					return -1;
-		//				if ( IsTheMouseOnTargetRow ( itm, pos ) )
-		//				{
-		//					curIndex = i;
-		//					break;
-		//				}
-		//			}
-		//			return curIndex;
-		//		}
-
-
-		#endregion // DRAG AND DROP STUFF
-
-
-
-		//void IDropTarget.DragOver ( DropInfo dropInfo )
-		//{
-		//	if ( dropInfo . Data is BankAccountViewModel && dropInfo . TargetItem is BankAccountViewModel )
-		//	{
-		//		dropInfo . DropTargetAdorner = DropTargetAdorners . Highlight;
-		//		dropInfo . Effects = DragDropEffects . Move;
-		//	}
-		//}
-
-		//void IDropTarget.Drop ( DropInfo dropInfo )
-		//{
-		//	BankAccountViewModel school = ( BankAccountViewModel ) dropInfo . TargetItem;
-		//	BankAccountViewModel  pupil = ( BankAccountViewModel ) dropInfo . Data;			
-		//	school . Pupils . Add ( pupil );
-
-		//	( ( IList ) dropInfo . DragInfo . SourceCollection ) . Remove ( pupil );
-		//}
-		////public ICollectionView Schools { get; private set; }
-
-		/*
-		 *  ORIGINAL
-		 *   void IDropTarget.DragOver(DropInfo dropInfo)
-			{
-			    if (dropInfo.Data is PupilViewModel && dropInfo.TargetItem is SchoolViewModel)
-			    {
-				dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-				dropInfo.Effects = DragDropEffects.Move;
-			    }
-			}
-
-			void IDropTarget.Drop(DropInfo dropInfo)
-			{
-			    SchoolViewModel school = (SchoolViewModel)dropInfo.TargetItem;
-			    PupilViewModel pupil = (PupilViewModel)dropInfo.Data;
-			    school.Pupils.Add(pupil);
-			    ((IList)dropInfo.DragInfo.SourceCollection).Remove(pupil);
-			}
-		 * */
-
-
-		/// <summary>
-		/// down
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void CustomerGrid_MouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		private void ResetMenuBarStatus ( )
 		{
-
+			return;
 		}
 
-		private void BankGrid_DragOver ( object sender, DragEventArgs e )
-		{
-			int r = 9;
-		}
+
 
 		private void Exportany_Click ( object sender, RoutedEventArgs e )
 		{
@@ -6408,38 +6278,17 @@ namespace WPFPages
 
 			}
 		}
-		private void ResetMenuBarStatus ( )
+
+		#region // DRAG AND DROP STUFF - working now
+
+
+		/// <summary>
+		/// down
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void CustomerGrid_MouseRightButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			if ( CurrentDb == "BANKACCOUNT" )
-			{
-				//ExportBank . IsEnabled = true;
-				//ExportDetails . IsEnabled = false;
-				//ExportFullBank . IsEnabled = true;
-				//ExportFullDetails . IsEnabled = false;
-				//bankfromCSV . IsEnabled = true;
-				//custfromCSV . IsEnabled = false;
-				//detfromCSV . IsEnabled = false;
-			}
-			else if ( CurrentDb == "DETAILS" )
-			{
-				//ExportBank . IsEnabled = false;
-				//ExportDetails . IsEnabled = true;
-				//ExportFullBank . IsEnabled = false;
-				//ExportFullDetails . IsEnabled = true;
-				//bankfromCSV . IsEnabled = false;
-				//custfromCSV . IsEnabled = false;
-				//detfromCSV . IsEnabled = true;
-			}
-			else  // Customer
-			{
-				//ExportBank . IsEnabled = false;
-				//ExportDetails . IsEnabled = false;
-				//ExportFullBank . IsEnabled = false;
-				//ExportFullDetails . IsEnabled = false;
-				//bankfromCSV . IsEnabled = true;
-				//custfromCSV . IsEnabled = false;
-				//detfromCSV . IsEnabled = false;
-			}
 
 		}
 		private void BankGrid_PreviewDragEnter ( object sender, DragEventArgs e )
@@ -6666,16 +6515,19 @@ namespace WPFPages
 			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
 			cm . PlacementTarget = this . CustomerGrid as DataGrid;
 			cm . IsOpen = true;
-
+			Brush b = ( Brush ) FindResource ( "Cyan4" );
+			cm . Background = b;
+			b = ( Brush ) FindResource ( "Black0" );
+			cm . Foreground = b;
 		}
 
-		#region JSON support function
 		private void DetailsGrid_PreviewMouseRightButtondown ( object sender, MouseButtonEventArgs e )
 		{
 			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
 			cm . PlacementTarget = this . DetailsGrid as DataGrid;
 			cm . IsOpen = true;
 		}
+		#endregion DRAG
 
 		#region CONTEXT MENU METHODS
 		private void ContextSave_Click ( object sender, RoutedEventArgs e )
@@ -6903,7 +6755,6 @@ namespace WPFPages
 				JsonSupport . CreateShowJsonText ( false, CurrentDb, SqlDetcollection, "DetailsViewModel" );
 
 		}
-		#endregion JSON support function
 
 		private void Settings_Click ( object sender, RoutedEventArgs e )
 		{
@@ -6919,6 +6770,9 @@ namespace WPFPages
 			this . Focus ( );
 		}
 		#endregion CONTEXT MENU METHODS
+
+		#region JSON support function
+		#endregion JSON support function
 
 		private void xxxxx ( object sender, RoutedEventArgs e )
 		{

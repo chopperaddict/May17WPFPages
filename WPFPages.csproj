@@ -104,6 +104,9 @@
     <Compile Include="Views\DropDataGridData.xaml.cs">
       <DependentUpon>DropDataGridData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Folder.cs" />
+    <Compile Include="Views\HeaderToImageConverter.cs" />
+    <Compile Include="Views\MenuItem.cs" />
     <Compile Include="Views\MyConverters.cs" />
     <Compile Include="Depends\ExtenderProp.cs" />
     <Compile Include="Libraries\DataClasses1.designer.cs">
@@ -188,6 +191,9 @@
     <Compile Include="Views\TestDetailsCollection.cs" />
     <Compile Include="Views\TestDetailsDbView.xaml.cs">
       <DependentUpon>TestDetailsDbView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TreeView1.xaml.cs">
+      <DependentUpon>TreeView1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserListBoxViewer.xaml.cs">
       <DependentUpon>UserListBoxViewer.xaml</DependentUpon>
@@ -398,6 +404,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\TreeView1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Triggers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -421,8 +431,27 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Views\magnify minus red.png" />
+    <Resource Include="Views\magnify plus red.png" />
+    <Resource Include="Icons\magnify minus.png" />
+    <Resource Include="Icons\magnify plus.png" />
+    <Resource Include="Icons\red magnify.png" />
+    <Resource Include="Views\magnify minus.png" />
+    <Resource Include="Views\magnify plus.png" />
+    <Resource Include="Views\red magnify.png" />
+    <Resource Include="Icons\folder.gif" />
+    <Resource Include="Icons\minusnode.gif" />
+    <Resource Include="Icons\openfolder.gif" />
+    <Resource Include="Icons\plusnode.gif" />
+    <Resource Include="Icons\python.gif" />
+    <Resource Include="Properties\folder1.png" />
+    <Resource Include="Icons\rss.png" />
+    <Resource Include="Views\mailbox.png" />
+    <Resource Include="Views\wifi.png" />
+    <Resource Include="Views\SMS3.png" />
+    <Resource Include="Views\cloud.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -437,6 +466,7 @@
     <None Include="Icons\delete-text-message2.icns" />
     <None Include="Icons\download-to-laptop.icns" />
     <None Include="Icons\fax.icns" />
+    <None Include="Icons\idle.icns" />
     <None Include="Icons\laptop-wifi.icns" />
     <None Include="Icons\mailbox-receive-message.icns" />
     <None Include="Icons\mailbox-receive-message2.icns" />
@@ -513,7 +543,7 @@
     <Resource Include="Icons\phone-wifi2.png" />
     <Resource Include="Icons\receive-text-message.png" />
     <Resource Include="Icons\received-calls.png" />
-    <Resource Include="Icons\rss.png" />
+    <Resource Include="Views\rss.png" />
     <Resource Include="Icons\send-message.png" />
     <Resource Include="Icons\send-message2.png" />
     <Resource Include="Icons\send-text-message.png" />

@@ -222,6 +222,8 @@ namespace WPFPages . Views
 			this . Show ( );
 			Utils . SetupWindowDrag ( this );
 			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
+			BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
+
 			//Events declared by my ListBox UserControl : DbListWindowControl 
 			//DbListWindowControl . SelectedParams += DbListbox_SelectedParams;
 			//DbListWindowControl . ClearBtnPressed += DbListWindowControl_ClearBtnPressed;
@@ -255,6 +257,9 @@ namespace WPFPages . Views
 			//			if ( e . CallerType == "SELECTEDDATA" )
 			//			{
 			//Pass the data  to the UserControl to load into the ListBox
+//			if ( sender == null )
+//				return;
+			Debug . WriteLine ( $"\n*** Loading Bank data in UserListboxViewer after BankDataLoaded trigger\n" );
 			UCListbox . ItemsSource = e . DataSource as BankCollection;
 			datagrid . ItemsSource = e . DataSource as BankCollection;
 			UCListbox . SelectedIndex = 0;
@@ -283,16 +288,34 @@ namespace WPFPages . Views
 
 			//try
 			//{
-			//	for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
+			int x = dtBank . Rows . Count;
+			int i = 0;
+			Func<int, int, bool> action = (i,x) =>
+		       {
+			       while ( i++ < x )
+			       {
+				       temp . Add ( new BankAccountViewModel
+				       {
+					       Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ), BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+					       CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ), AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+					       Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ), IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+					       ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ), CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
+				       } );
+			       }
+			       return true;
+		       };
+			action ( 0, x );
+
+			//for ( int i = 0 ; i < dtBank . Rows . Count ; i++ )
+			//{
+			//	temp . Add ( new BankAccountViewModel
 			//	{
-			//		temp . Add ( new BankAccountViewModel
-			//		{
-			//			Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ), BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
-			//			CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ), AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
-			//			Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ), IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
-			//			ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ), CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
-			//		} );
-			//	}
+			//		Id = Convert . ToInt32 ( dtBank . Rows [ i ] [ 0 ] ), BankNo = dtBank . Rows [ i ] [ 1 ] . ToString ( ),
+			//		CustNo = dtBank . Rows [ i ] [ 2 ] . ToString ( ), AcType = Convert . ToInt32 ( dtBank . Rows [ i ] [ 3 ] ),
+			//		Balance = Convert . ToDecimal ( dtBank . Rows [ i ] [ 4 ] ), IntRate = Convert . ToDecimal ( dtBank . Rows [ i ] [ 5 ] ),
+			//		ODate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 6 ] ), CDate = Convert . ToDateTime ( dtBank . Rows [ i ] [ 7 ] ),
+			//	} );
+			//}
 
 			//}
 			//catch ( Exception ex )
@@ -330,18 +353,10 @@ namespace WPFPages . Views
 				lbi = ( ListBoxItem ) UCListbox . ItemContainerGenerator . ContainerFromIndex ( UCListbox . SelectedIndex );
 				if ( lbi != null )
 					lbi . IsSelected = true;
-				//lbi.
 				ItemExpanded = true;
 				lbi . Refresh ( );
 				UCListbox . Refresh ( );
-				//if ( expander . IsExpanded = true )
-				//lbi.ItemExpanded = false;
-				//				Expander
-				//UCListbox.Items.
-				//ListBoxItem lbi = new ListBoxItem();
-				//lbi.lbiExpander
 				AreItemsExpanded = true;
-				//BankDataTemplate.lbiExpander . IsExpanded = true;
 			}
 		}
 		private void LbiExpander_Expanded ( object sender, RoutedEventArgs e )
@@ -371,14 +386,31 @@ namespace WPFPages . Views
 
 		private void TextBox_PreviewKeyDown ( object sender, KeyEventArgs e )
 		{
+			BankAccountViewModel bvm = new BankAccountViewModel ( );
+			// we are in a TextBlock or TextBox of the ListView
 			if ( e . Key == Key . Enter || e . Key == Key . Tab )
 			{
-				BankAccountViewModel bvm = new BankAccountViewModel ( );
-				bvm = UCListbox . SelectedItem as BankAccountViewModel;
-				BankCollection . UpdateBankDb ( bvm, "BANKACCOUNT" );
-				//e.Handled = true;
-				//Focus = false;
+				string t = sender . GetType ( ) . ToString ( );
+				if ( t . Contains ( "TextBox" ) || t . Contains ( "TextBlock" ) )
+				{
+					// in a listview !!
+					if ( listSelection > -1 )
+						bvm = UCListbox . SelectedItem as BankAccountViewModel;
+				}
+				if ( bvm != null )
+					BankCollection . UpdateBankDb ( bvm, "BANKACCOUNT" );
+
+				EventControl. TriggerViewerDataUpdated ( this,  new LoadedEventArgs 
+				{
+					CallerType = "USERLISTBOXVIEWER",
+					CallerDb = "BANKACCOUNT",
+					DataSource = SqlBankcollection,
+					RowCount = UCListbox. SelectedIndex,
+					Bankno = bvm.BankNo,
+					Custno = bvm.CustNo
+				} );
 			}
+
 		}
 
 		private void ToggleBtn_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
@@ -413,12 +445,12 @@ namespace WPFPages . Views
 			//	ToggleViews . Child .  SetValue ( ContentProperty, "Show in Grid View" );
 			//else
 			//	ToggleViews . Child . SetValue ( ContentProperty, "Show in List View" );
-			
-			
+
+
 			// Nothing changes behaviour, it just shows text in default Black and small size
-//			Brush newbrush = new SolidColorBrush ( Color . FromArgb ( 255, ( byte ) 255, ( byte ) 255, ( byte ) 255 ) );
-//			BtnText . HorizontalAlignment = HorizontalAlignment . Center;
-//			BtnText . Background = newbrush;
+			//			Brush newbrush = new SolidColorBrush ( Color . FromArgb ( 255, ( byte ) 255, ( byte ) 255, ( byte ) 255 ) );
+			//			BtnText . HorizontalAlignment = HorizontalAlignment . Center;
+			//			BtnText . Background = newbrush;
 		}
 		private void DbListbox_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
@@ -439,10 +471,16 @@ namespace WPFPages . Views
 
 		private void Datagrid_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
 		{
-			GridSelection = datagrid . SelectedIndex;
-			ListSelection = GridSelection;
-			UCListbox . SelectedIndex = ListSelection;
-
+			string t = sender . GetType ( ) . ToString ( );
+			if ( t . Contains ( "DataGrid" ) )
+			{
+				GridSelection = datagrid . SelectedIndex;
+				ListSelection = GridSelection;
+				UCListbox . SelectedIndex = ListSelection;
+			}
+			else
+			{
+			}
 		}
 
 		private void LbItem_PreviewMouseLeftButtonDown ( object sender, MouseButtonEventArgs e )
@@ -636,7 +674,7 @@ namespace WPFPages . Views
 				CurrentBackColor = tb . Background;
 				CurrentForeColor = tb . Foreground;
 				CurrentCellName = tb . Name;
-				Debug . WriteLine ( $"Name={CurrentCellName }, B = {CurrentBackColor}, F = {CurrentForeColor}" );
+//				Debug . WriteLine ( $"Name={CurrentCellName }, B = {CurrentBackColor}, F = {CurrentForeColor}" );
 			}
 		}
 
@@ -694,13 +732,13 @@ namespace WPFPages . Views
 		private async void DbList_LoadBtnPressed ( object sender, MouseButtonEventArgs e )
 		{
 			int min = 0, max = 0, tot = 0;
-//			return;
+			//			return;
 			// Reset the background of the Load Data button
-//			Border b = sender as Border;
-//			if ( b == null )
-//				return;
-//			b . Background = FindResource ( "Gray3" ) as SolidColorBrush;
-//			b . BorderBrush = FindResource ( "Red3" ) as SolidColorBrush;
+			//			Border b = sender as Border;
+			//			if ( b == null )
+			//				return;
+			//			b . Background = FindResource ( "Gray3" ) as SolidColorBrush;
+			//			b . BorderBrush = FindResource ( "Red3" ) as SolidColorBrush;
 			DataTable dtBank = new DataTable ( );
 			UCListbox . ItemsSource = null;
 			UCListbox . Items . Clear ( );
@@ -881,13 +919,11 @@ namespace WPFPages . Views
 		private void datagrid_PreviewMouseLeftButtonup ( object sender, MouseButtonEventArgs e )
 		{
 			ScrollBarMouseMove = false;
+
 		}
 
 		private void datagrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
 		{
-			GridSelection = datagrid . SelectedIndex;
-			ListSelection = GridSelection;
-			UCListbox . SelectedIndex = ListSelection;
 
 			// Gotta make sure it is not anywhere in the Scrollbar we clicked on 
 			if ( Utils . HitTestScrollBar ( sender, e ) )
@@ -904,6 +940,19 @@ namespace WPFPages . Views
 			{
 				IsLeftButtonDown = true;
 			}
+		string t = sender . GetType ( ) . ToString ( );
+			if ( t . Contains ( "DataGrid" ) )
+			{
+				GridSelection = datagrid . SelectedIndex;
+				ListSelection = GridSelection;
+				UCListbox . SelectedIndex = ListSelection;
+			}
+			else
+			{
+				ListSelection = UCListbox. SelectedIndex;
+				GridSelection = ListSelection;
+				datagrid . SelectedIndex = ListSelection;
+			}
 
 		}
 
@@ -912,7 +961,7 @@ namespace WPFPages . Views
 			object Sender;
 			Point mousePos = e . GetPosition ( null );
 			Vector diff = _startPoint - mousePos;
-			string  t1 = sender . GetType ( ).ToString();
+			string t1 = sender . GetType ( ) . ToString ( );
 			if ( e . LeftButton == MouseButtonState . Pressed &&
 			    Math . Abs ( diff . X ) > SystemParameters . MinimumHorizontalDragDistance ||
 			    Math . Abs ( diff . Y ) > SystemParameters . MinimumVerticalDragDistance )
@@ -924,15 +973,15 @@ namespace WPFPages . Views
 						isvalid = true;
 					else if ( t1 . Contains ( "DataGrid" ) )
 						isvalid = true;
-					if ( isvalid)
+					if ( isvalid )
 					{
 						if ( ScrollBarMouseMove )
 							return;
 						// We are dragging from the DETAILS grid
 						//Working string version
 						BankAccountViewModel bvm = new BankAccountViewModel ( );
-						if ( t1 . Contains ( "ListView" ))
-							bvm = UCListbox. SelectedItem as BankAccountViewModel;
+						if ( t1 . Contains ( "ListView" ) )
+							bvm = UCListbox . SelectedItem as BankAccountViewModel;
 						else
 							bvm = datagrid . SelectedItem as BankAccountViewModel;
 						string str = GetExportRecords . CreateTextFromRecord ( bvm, null, null, true, false );

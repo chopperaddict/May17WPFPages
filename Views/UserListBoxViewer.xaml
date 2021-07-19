@@ -10,12 +10,12 @@
 	Loaded="Window_Loaded"	  
 	Closed="Window_Closed"
 	Title="UserListBoxViewer" 
-  DataContext="BankAccountViewModel"
-	Height="450" 
+  	Height="450" 
 	Width="800"
 	MinHeight="250"
 	MinWidth="825"
 	SizeToContent="Width">
+	<!--DataContext="BankAccountViewModel"-->
 
 	<Window.Resources>
 
@@ -1190,6 +1190,19 @@
 						<Setter Property="FontWeight" Value="Normal"/>
 					</MultiDataTrigger.Setters>
 				</MultiDataTrigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<!--<Condition Binding="{Binding AcType}" Value="4"/>-->
+						<!--TEXTBOX, UNFOCUSED, NO MOUSE -->
+						<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="False" />
+						<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=IsKeyboardFocusWithin}" Value="false" />
+					</MultiDataTrigger.Conditions>
+					<MultiDataTrigger.Setters>
+						<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Red9}" />
+						<Setter Property="Foreground" Value="{StaticResource White0}"/>
+						<Setter Property="FontWeight" Value="Normal"/>
+					</MultiDataTrigger.Setters>
+				</MultiDataTrigger>
 			</Style.Triggers>				
 		</Style>
 		<!--END OF TEXTBOX STYLING-->
@@ -1753,7 +1766,8 @@
 				
 				<!--Drag is working from the datagrid-->
 				<DataGrid x:Name="datagrid"
-					    Background="{StaticResource Blue8}"
+				    AlternatingRowBackground="{StaticResource Blue9}"
+				    Background="{StaticResource Blue8}"
 					Grid.Row="1"
 					Grid.Column="1"
 					Grid.ColumnSpan="1"
@@ -1770,7 +1784,7 @@
 					PreviewMouseMove="datagrid_PreviewMouseMove"
 					PreviewMouseLeftButtonDown="datagrid_PreviewMouseLeftButtondown"
 					Padding="1"
-					Margin="10,10,10,-5"
+					Margin="0,5,0,-10"
 					Visibility="Visible" 
 					Foreground="Black"
 					SelectionChanged="datagrid_SelectionChanged">
@@ -1783,6 +1797,7 @@
 							<Style.Triggers>
 								<Trigger Property="DataGridCell.IsSelected" Value="True">
 									<Setter Property="Foreground" Value="White" />
+									<Setter Property="Background" Value="{StaticResource Blue6}" />
 								</Trigger>
 							</Style.Triggers>
 						</Style>
@@ -1810,7 +1825,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1826,7 +1841,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1842,7 +1857,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1861,7 +1876,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1874,11 +1889,11 @@
 
 								<!--#### ACTYPE = 1 ####-->
 								<!--// FOCUSED, SELECTED,  MOUSEOVER / TRUE-->
-								<!--<MultiDataTrigger>
+								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1886,7 +1901,7 @@
 										<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan0}" />
 										<Setter Property="Foreground" Value="{StaticResource White0}"/>
 									</MultiDataTrigger.Setters>
-								</MultiDataTrigger>-->
+								</MultiDataTrigger>
 
 								<!--#### ACTYPE = 1 ####-->
 								<!--// FOCUSED, NOT SELECTED,  MOUSEOVER / FALSE-->
@@ -1894,7 +1909,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1911,7 +1926,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="1"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1931,7 +1946,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1948,7 +1963,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1964,7 +1979,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1980,7 +1995,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -1999,7 +2014,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2016,7 +2031,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2032,7 +2047,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2049,7 +2064,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="2"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2070,7 +2085,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2087,7 +2102,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2103,7 +2118,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2120,7 +2135,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2139,7 +2154,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2156,7 +2171,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2173,7 +2188,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2191,7 +2206,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="3"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2213,7 +2228,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2230,7 +2245,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2246,7 +2261,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2263,7 +2278,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2283,7 +2298,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2300,7 +2315,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2318,7 +2333,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="False" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2335,7 +2350,7 @@
 									<MultiDataTrigger.Conditions>
 										<Condition Binding="{Binding AcType}" Value="4"/>
 										<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />
+										<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="True" />-->
 										<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 									</MultiDataTrigger.Conditions>
 									<MultiDataTrigger.Setters>
@@ -2624,6 +2639,7 @@
 					Margin="0,0,0,0">
 
 					<ListView x:Name="UCListbox"
+						   
 						ScrollViewer.VerticalScrollBarVisibility="Visible"
 						ScrollViewer.CanContentScroll="True"
 						HorizontalContentAlignment="Stretch"
@@ -2726,7 +2742,7 @@
 
 													<TextBlock Text="   "/>
 
-													<TextBlock  Text="{Binding Balance, FallbackValue=23456.71}" 													
+													<TextBox  Text="{Binding Balance, FallbackValue=23456.71}" 													
 														HorizontalAlignment="Center"
 														VerticalAlignment="Center"
 													     Margin="0,-5,0,0"
@@ -2734,7 +2750,7 @@
 														Height="35"
 														Width="90" 
 														FontSize="16"
-														Style="{StaticResource tbItemstyle1}"/>
+														Style="{StaticResource tboxItemstyle1}"/>
 													<TextBlock Text=" "/>
 
 													<TextBox  Text="{Binding IntRate, FallbackValue=3.21, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" 

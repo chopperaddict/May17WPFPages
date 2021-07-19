@@ -36,13 +36,34 @@ namespace WPFPages
 
 		public struct bankrec
 		{
-			public string custno { get; set; }
-			public string bankno { get; set; }
-			public int actype { get; set; }
-			public decimal intrate { get; set; }
-			public decimal balance { get; set; }
-			public DateTime odate { get; set; }
-			public DateTime cdate { get; set; }
+			public string custno
+			{
+				get; set;
+			}
+			public string bankno
+			{
+				get; set;
+			}
+			public int actype
+			{
+				get; set;
+			}
+			public decimal intrate
+			{
+				get; set;
+			}
+			public decimal balance
+			{
+				get; set;
+			}
+			public DateTime odate
+			{
+				get; set;
+			}
+			public DateTime cdate
+			{
+				get; set;
+			}
 		}
 
 
@@ -90,8 +111,20 @@ namespace WPFPages
 			}
 
 			// Define properties to return the note's tone and duration.
-			public Tone NoteTone { get { return toneVal; } }
-			public Duration NoteDuration { get { return durVal; } }
+			public Tone NoteTone
+			{
+				get
+				{
+					return toneVal;
+				}
+			}
+			public Duration NoteDuration
+			{
+				get
+				{
+					return durVal;
+				}
+			}
 		}
 		public static void PlayMary ( )
 		{
@@ -161,23 +194,23 @@ namespace WPFPages
 		//	TaskScheduler . FromCurrentSynchronizationContext ( ));
 		//	return t;
 		//}
-		public static Task DoSingleBeep ( int freq = 280, int count = 300, int repeat = 1 )
+		public static void DoSingleBeep ( int freq = 280, int count = 300, int repeat = 1 )
 		{
 			int x = 0;
+			//			int i = 0;
+			//Lambda test
 			Task t = new Task ( ( ) => x = 1 );
 			if ( Flags . UseBeeps )
 			{
 				for ( int i = 0 ; i < repeat ; i++ )
 				{
 					Console . Beep ( freq, count );
-					//t = Task . Factory . StartNew ( ( ) => Console . Beep ( freq, count ) );
-					//					Thread . Sleep ( 100 );
+					Thread . Sleep ( 200 );
 				}
-				Thread . Sleep ( 200 );
+				//else
+				//	t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
+				//			return t;
 			}
-			//else
-			//	t = Task . Factory . StartNew ( ( ) => Console . WriteLine ( ) );
-			return t;
 		}
 		public static Task DoErrorBeep ( int freq = 280, int count = 100, int repeat = 3 )
 		{
@@ -387,12 +420,14 @@ namespace WPFPages
 		}
 		public static string CreateFullCsvTextFromRecord ( BankAccountViewModel bvm, DetailsViewModel dvm, CustomerViewModel cvm = null, bool IncludeType = true )
 		{
-			if ( bvm == null && cvm == null && dvm == null ) return "";
+			if ( bvm == null && cvm == null && dvm == null )
+				return "";
 			string datastring = "";
 			if ( bvm != null )
 			{
 				// Handle a BANK Record
-				if ( IncludeType ) datastring = "BANKACCOUNT";
+				if ( IncludeType )
+					datastring = "BANKACCOUNT";
 				datastring += bvm . Id + ",";
 				datastring += bvm . CustNo + ",";
 				datastring += bvm . BankNo + ",";
@@ -404,7 +439,8 @@ namespace WPFPages
 			}
 			else if ( dvm != null )
 			{
-				if ( IncludeType ) datastring = "DETAILS,";
+				if ( IncludeType )
+					datastring = "DETAILS,";
 				datastring += dvm . Id + ",";
 				datastring += dvm . CustNo + ",";
 				datastring += dvm . BankNo + ",";
@@ -416,7 +452,8 @@ namespace WPFPages
 			}
 			else if ( cvm != null )
 			{
-				if ( IncludeType ) datastring = "CUSTOMER,";
+				if ( IncludeType )
+					datastring = "CUSTOMER,";
 				datastring += cvm . Id + ",";
 				datastring += cvm . CustNo + ",";
 				datastring += cvm . BankNo + ",";
@@ -428,7 +465,8 @@ namespace WPFPages
 		}
 		public static string CreateDragDataFromRecord ( DragviewModel bvm )
 		{
-			if ( bvm == null ) return "";
+			if ( bvm == null )
+				return "";
 			string datastring = "";
 			datastring = bvm . RecordType + ",";
 			datastring += bvm . Id + ",";
@@ -521,7 +559,8 @@ namespace WPFPages
 			// and return us a valid YYYY/MM/DD string
 			char [ ] ch = { '/', ' ' };
 			datebits = datein . Split ( ch );
-			if ( datebits . Length < 3 ) return datein;
+			if ( datebits . Length < 3 )
+				return datein;
 
 			// check input to see if it needs reversing ?
 			if ( datebits [ 0 ] . Length == 4 )
@@ -753,7 +792,8 @@ namespace WPFPages
 		/// <param name="row"></param>
 		public static void ScrollRecordInGrid ( DataGrid dGrid, int row )
 		{
-			if ( dGrid . CurrentItem == null ) return;
+			if ( dGrid . CurrentItem == null )
+				return;
 			dGrid . UpdateLayout ( );
 			dGrid . ScrollIntoView ( dGrid . Items . Count - 1 );
 			dGrid . UpdateLayout ( );
@@ -769,7 +809,8 @@ namespace WPFPages
 				foreach ( var item in Grid . Items )
 				{
 					BankAccountViewModel cvm = item as BankAccountViewModel;
-					if ( cvm == null ) break;
+					if ( cvm == null )
+						break;
 					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
 					{
 						break;
@@ -785,7 +826,8 @@ namespace WPFPages
 				foreach ( var item in Grid . Items )
 				{
 					CustomerViewModel cvm = item as CustomerViewModel;
-					if ( cvm == null ) break;
+					if ( cvm == null )
+						break;
 					if ( cvm . CustNo == Custno && cvm . BankNo == Bankno )
 					{
 						break;
@@ -801,7 +843,8 @@ namespace WPFPages
 				foreach ( var item in Grid . Items )
 				{
 					DetailsViewModel dvm = item as DetailsViewModel;
-					if ( dvm == null ) break;
+					if ( dvm == null )
+						break;
 					if ( dvm . CustNo == Custno && dvm . BankNo == Bankno )
 					{
 						break;
@@ -820,7 +863,8 @@ namespace WPFPages
 		{
 			//how to fibnd out whether a datagrid has focus or not to handle key previewers
 			IInputElement focusedControl = FocusManager . GetFocusedElement ( instance );
-			if ( focusedControl == null ) return true;
+			if ( focusedControl == null )
+				return true;
 			string compare = focusedControl . ToString ( );
 			if ( compare . ToUpper ( ) . Contains ( "DATAGRID" ) )
 				return true;
@@ -920,7 +964,8 @@ namespace WPFPages
 				ListBoxItem lbi = new ListBoxItem ( );
 				//lbi.Tag = viewer.Tag;
 				lbi = Flags . DbSelectorOpen . ViewersList . Items [ x ] as ListBoxItem;
-				if ( lbi . Tag == null ) return retval;
+				if ( lbi . Tag == null )
+					return retval;
 				Guid g = ( Guid ) lbi . Tag;
 				if ( g == guid )
 				{
@@ -998,19 +1043,26 @@ namespace WPFPages
 			//			HitTestResult hit = VisualTreeHelper . HitTest ( ( Visual ) sender, e . GetPosition ( ( IInputElement ) sender ) );
 			//			return hit . VisualHit . GetVisualAncestor<ScrollBar> ( ) != null;
 			object original = e . OriginalSource;
-
-			if ( !original . GetType ( ) . Equals ( typeof ( ScrollBar ) ) )
+			try
 			{
-				if ( original . GetType ( ) . Equals ( typeof ( DataGrid ) ) )
+				if ( !original . GetType ( ) . Equals ( typeof ( ScrollBar ) ) )
 				{
-					Console . WriteLine ( "DataGrid is clicked" );
+					if ( original . GetType ( ) . Equals ( typeof ( DataGrid ) ) )
+					{
+						Console . WriteLine ( "DataGrid is clicked" );
+					}
+					else if ( FindVisualParent<ScrollBar> ( original as DependencyObject ) != null )
+					{
+						//scroll bar is clicked
+						return true;
+					}
+					return false;
+					;
 				}
-				else if ( FindVisualParent<ScrollBar> ( original as DependencyObject ) != null )
-				{
-					//scroll bar is clicked
-					return true;
-				}
-				return false; ;
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"Error in HitTest ScriollBar Function (Utils-1010" );
 			}
 			return true;
 		}
@@ -1031,7 +1083,8 @@ namespace WPFPages
 					//Header bar is clicked
 					return true;
 				}
-				return false; ;
+				return false;
+				;
 			}
 			return true;
 		}
@@ -1064,7 +1117,9 @@ namespace WPFPages
 			inst . MouseDown += delegate
 			{
 				try
-				{ inst . DragMove ( ); }
+				{
+					inst . DragMove ( );
+				}
 				catch { return; }
 			};
 		}

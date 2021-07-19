@@ -239,8 +239,13 @@ namespace WPFPages . Views
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			if ( e . DataSource == null ) return; //|| this . BankGrid . Items . Count > 0 ) return;
+//			if ( e . CallerDb != "MULTIVIEWER" )
+//				return;
+			Debug . WriteLine ($"\n*** Loading Bank data in BankDbView after BankDataLoaded trigger\n" );
 							      // ONLY proceed if we triggered the new data request
-//			if ( e . CallerDb != "MULTIVIEWER" ) return;
+							      //			if ( e . CallerDb != "MULTIVIEWER" ) return;
+			Debug . WriteLine ( $"\n*** Loading Bank data in MultiViewer after BankDataLoaded trigger\n" );
+
 			this . BankGrid . ItemsSource = null;
 
 			stopwatch1 . Stop ( );
@@ -2531,6 +2536,7 @@ namespace WPFPages . Views
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
 				IsLeftButtonDown = true;
+				this . Focus ( );
 			}
 		}
 		private void Grids_PreviewMouseLeftButtonup ( object sender, MouseButtonEventArgs e )

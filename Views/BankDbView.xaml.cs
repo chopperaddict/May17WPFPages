@@ -4,6 +4,7 @@ using System . Collections . ObjectModel;
 using System . ComponentModel;
 using System . Diagnostics;
 using System . Globalization;
+using System . IO;
 using System . Linq;
 using System . Threading;
 using System . Threading . Tasks;
@@ -12,6 +13,8 @@ using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
+using System . Windows . Media . Imaging;
+
 using Newtonsoft . Json;
 using WPFPages . ViewModels;
 
@@ -315,6 +318,8 @@ namespace WPFPages . Views
 			if ( e . DataSource == null ) return;
 			// ONLY proceeed if we triggered the new data request
 			if ( e . CallerDb != "BANKDBVIEW" ) return;
+			Debug . WriteLine ( $"\n*** Loading Bank data in BankDbView after BankDataLoaded trigger\n" );
+
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			LoadingDbData = true;
@@ -776,6 +781,43 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = accounts;
 		}
 
+		private void Linq7_Click ( object sender, RoutedEventArgs e )
+		{
+			string Output = "";
+			string path = @"C:\users\ianch\documents\multiaccounts.dat";
+			//select All the items first;			
+			var bankaccounts = from items in BankViewcollection orderby items . CustNo, items . AcType select items;
+			//Next Group BankAccountViewModel collection on Custno
+			var grouped = bankaccounts . GroupBy (
+				b => b . CustNo );
+
+			//Now filter content down to only those a/c's with multiple Bank A/c's
+			var sel = from g in grouped
+				  where g . Count ( ) > 1
+				  select g;
+
+			// Finally, iterate thru the list of grouped CustNo's matching to CustNo in the full Bankaccounts data
+			// giving us ONLY the full records for any recordss that have > 1 Bank accounts
+			List<BankAccountViewModel> output = new List<BankAccountViewModel> ( );
+			foreach ( var item1 in sel )
+			{
+				foreach ( var item2 in bankaccounts )
+				{
+					if ( item2 . CustNo . ToString ( ) == item1 . Key )
+					{
+						output . Add ( item2 );
+					}
+				}
+			}
+			foreach ( var item in output )
+			{
+				Output += item . CustNo + "," + item . BankNo + "," + item . AcType + "," + item . Balance + "," + item . ODate + "," + item . CDate + "\n";
+
+			}
+			File . WriteAllText ( path, Output );
+			MessageBox . Show ($"Data saved to file\n{path} successfully " );
+		}
+
 		private void Filter_Click ( object sender, RoutedEventArgs e )
 		{
 			// Show Filter system
@@ -1183,6 +1225,33 @@ namespace WPFPages . Views
 		{
 			Close ( );
 		}
+
+		private void changesize_Click2 ( object sender, RoutedEventArgs e )
+		{
+			if ( BankGrid . RowHeight == 32 )
+			{
+				BankGrid . RowHeight = 25;
+				SizeChangeMenuItem2 . Header = "Larger Font";
+				SizeChangeMenuItem2 . FontSize = 12;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushBlue" );
+				SizeChangeMenuItem2 . Foreground = br;
+				string path = @"/Views/magnify plus red.png";
+				FontsizeIcon2 . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+			}
+			else
+			{
+				BankGrid . RowHeight = 32;
+				SizeChangeMenuItem2 . Header = "Smaller Font";
+				SizeChangeMenuItem2 . FontSize = 16;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
+				SizeChangeMenuItem2 . Foreground = br;
+
+				string path = @"/Views/magnify minus red.png";
+				FontsizeIcon2 . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+			}
+
+		}
+
 
 		//			BankAccountViewModel bank = new BankAccountViewModel();
 		//			var filtered = from bank inBankViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;

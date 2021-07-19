@@ -3,6 +3,7 @@
 	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dateconv="clr-namespace:WPFPages.MyConvertors"
 	xmlns:local="clr-namespace:WPFPages.Views"
 	  mc:Ignorable="d"
 	Closing="Window_Closing"
@@ -20,6 +21,9 @@
 	<!--d:DataContext="{d:DesignInstance Type=local:SqlCustCollection}"-->
 
 	<Window.Resources>
+
+		<dateconv:Actype2Name x:Key="Actype2StringConvert"/>
+
 		<ContextMenu x:Key="ContextMenu1">
 			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
 				<MenuItem.Icon>
@@ -212,7 +216,7 @@
 				CanUserAddRows="False"
 				CellEditEnding="CustGrid_CellEditEnding"
 				ColumnHeaderStyle ="{StaticResource HeaderStyleYellow}"
-			DragEnter="CustGrid_DragEnter"
+				DragEnter="CustGrid_DragEnter"
 				Grid.Column="1"
 				Grid.ColumnSpan="3" 
 				Grid.Row="1"
@@ -225,6 +229,7 @@
 				PreviewMouseMove="CustGrid_PreviewMouseMove"
 				PreviewMouseLeftButtonDown="CustGrid_PreviewMouseLeftButtonDown"
 				PreviewMouseRightButtonDown="CustGrid_PreviewMouseRightButtonDown "			
+				RowHeight="22"	
 				RowEditEnding="ViewerGrid_RowEditEnding"
 				SelectionChanged="CustGrid_SelectionChanged"
 				SelectionMode="Single"
@@ -260,6 +265,8 @@
 						<Trigger  Property="IsSelected" Value="true">
 							<Setter Property="Background" Value="#FF1171E6" />
 							<Setter Property="BorderBrush" Value="#FF72DBE0" />
+							<Setter Property="Foreground" Value="{StaticResource White0}" />
+							<Setter Property="FontWeight" Value="DemiBold" />
 						</Trigger>
 
 						<!--// Window IS NOT FOCUSED-->
@@ -267,10 +274,10 @@
 						<MultiDataTrigger>
 							<MultiDataTrigger.Conditions>
 								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 							</MultiDataTrigger.Conditions>
 							<MultiDataTrigger.Setters>
-								<Setter Property="Background" Value="{StaticResource Red1}" />
+								<Setter Property="Background" Value="{StaticResource Red4}" />
 								<Setter Property="Foreground" Value="{StaticResource White0}" />
 								<Setter Property="FontWeight" Value="DemiBold" />
 							</MultiDataTrigger.Setters>
@@ -281,7 +288,7 @@
 						<MultiDataTrigger>
 							<MultiDataTrigger.Conditions>
 								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 							</MultiDataTrigger.Conditions>
 							<MultiDataTrigger.Setters>
 								<!--<Setter Property="Background" Value="{StaticResource Red1}" />-->
@@ -295,7 +302,7 @@
 						<MultiDataTrigger>
 							<MultiDataTrigger.Conditions>
 								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
-								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 							</MultiDataTrigger.Conditions>
 							<MultiDataTrigger.Setters>
@@ -310,7 +317,7 @@
 						<MultiDataTrigger>
 							<MultiDataTrigger.Conditions>
 								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
 								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
 							</MultiDataTrigger.Conditions>
 							<MultiDataTrigger.Setters>
@@ -704,168 +711,6 @@
 					TextAlignment="Center"
 					TextTrimming="WordEllipsis" />
 
-
-			<!--<Grid.RowDefinitions>
-				<RowDefinition Height="50"/>
-				<RowDefinition Height="60*" />
-			</Grid.RowDefinitions>
-
-			<Canvas  x:Name="DataFields"
-				Grid.Row="0"
-				Grid.RowSpan="2"
-			   HorizontalAlignment="Stretch"
-			   VerticalAlignment="Stretch"
-				Margin="0,1,0,25">
-
-				--><!--#region Text Fields--><!--
-
-				<TextBlock x:Name="textBlock" 
-					Canvas.Left="24" 
-					Canvas.Top="23"
-					Foreground="White"
-					Height="25" 
-					HorizontalAlignment="Center" 
-					Padding="5,5,5,5"					    
-					Text="Customer #" 
-					VerticalAlignment="Center" 
-					Width="70" 
-/>
-				<TextBox x:Name="Custno" 
-					   FontSize="12"
-					    Foreground="Black"
-					    HorizontalAlignment="Center" 
-					   HorizontalContentAlignment="Center"
-					    Padding="5,3,0,0"
-					    Text="{Binding CustNo, UpdateSourceTrigger=LostFocus, FallbackValue=Cust  #}" 
-					    VerticalAlignment="Center" 
-					    Height="24" 
-						LostFocus ="Edit_LostFocus"
-					   TabIndex="0"
-					    Width="90" 
-					    Canvas.Left="108" 
-					    Canvas.Top="21"/>
-
-				<TextBlock x:Name="textBlock_Copy" 
-					    Foreground="White"
-					    HorizontalAlignment="Center" 
-					    Padding="5,5,5,5"
-					    Text="Bank A/c #" 
-					    VerticalAlignment="Center" 
-					    Height="25" 
-					    Width="70" 
-					     Canvas.Left="20" 
-					     Canvas.Top="48"/>
-
-				<TextBox x:Name="Bankno" 
-					   FontSize="12"
-					    Foreground="Red"
-					    HorizontalAlignment="Center" 
-					   HorizontalContentAlignment="Center"
-						Padding="5,3,0,0"
-					    Text="{Binding BankNo,UpdateSourceTrigger=LostFocus, FallbackValue=Bank A/c #}" 
-					    VerticalAlignment="Center" 
-					    Height="24" 
-					    Width="90" 
-						LostFocus ="Edit_LostFocus"
-					   TabIndex="1"
-					   Canvas.Left="108" 
-					   Canvas.Top="48" RenderTransformOrigin="0.422,2.208"/>
-
-				<TextBlock x:Name="textBlock_Copy5" 
-				Foreground="White"
-				HorizontalAlignment="Center" 
-				Padding="5,5,5,5"	 					    
-				Text="A/c Type" 
-				VerticalAlignment="Center" 
-				Height="25" 
-				Width="70" 
-				Canvas.Left="24" 
-				Canvas.Top="76"/>
-
-				<TextBox x:Name="acType" 
-				FontSize="12"
-				Foreground="Black"
-				HorizontalAlignment="Center" 
-				HorizontalContentAlignment="Center"
-				Padding="5,3,0,0"
-				Text="{Binding AcType, FallbackValue=AcType, UpdateSourceTrigger=LostFocus}" 
-				LostFocus ="Edit_LostFocus"
-			     TextAlignment="Center"
-				VerticalAlignment="Center" 
-				Height="24" 
-				Width="90" 
-				TabIndex="2"
-				Canvas.Left="108" 
-				Canvas.Top="76" 
-				SelectionChanged="SelectionChanged" 
-				TextChanged="TextChanged"/>
-
-				<TextBlock x:Name="textBlock_Copy3" 
-				Foreground="White" 
-				Padding="5,5,5,5"
-				Text="Date Opened" 
-			     TextAlignment="Center"
-				Height="24" 
-				Width="88" 
-				Canvas.Left="212" 
-				Canvas.Top="44"/>
-
-				<TextBox x:Name="odate" 
-				FontSize="12" 
-				HorizontalContentAlignment="Center"
-				Padding="5,3,0,0"
-				Text="{Binding ODate, FallbackValue=ODate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}" 
-			     	LostFocus ="Edit_LostFocus"
-				TextAlignment="Center" 
-				Height="24" 
-				Width="90" 
-				TabIndex="3"
-				Canvas.Left="305" 
-				Canvas.Top="47"
-				SelectionChanged="SelectionChanged" 
-				TextChanged="TextChanged"/>
-
-				<TextBlock x:Name="textBlock_Copy4" 
-				Foreground="White" 
-				Padding="5,5,5,5"
-				Text="Close Date" 
-				Height="25" 
-				Width="70" 
-				Canvas.Left="215" 
-				Canvas.Top="70"/>
-
-				<TextBox x:Name="cdate" 
-				   FontSize="12"
-				Foreground="Black" 
-				HorizontalContentAlignment="Center"
-				Padding="5,3,0,0"
-				Text="{Binding CDate, FallbackValue=CDate, UpdateSourceTrigger=LostFocus, StringFormat='dd/MM/yyyy'}" 
-				LostFocus ="Edit_LostFocus"
-			     TextAlignment="Center" 
-				Height="24" 
-				TabIndex="4"
-				Width="90" 
-				SelectionChanged="SelectionChanged" 
-				TextChanged="TextChanged"
-				    Canvas.Left="305" 
-				    Canvas.Top="76"	/>
-
-				<TextBlock x:Name="Count" 
-				Background="DarkGray"	    
-				Foreground="Red"
-			     FontWeight="DemiBold"
-			     FontSize="14" 
-			     Padding="5,3,5,5"
-				Height="24"
-				Text=" Counter"
-				TextAlignment="Center"
-				TextTrimming="WordEllipsis" 
-				Width="90" 
-			     Canvas.Left="305" Canvas.Top="9" 
-			     />
-				--><!--#endregion Text Fields--><!--
-			</Canvas>-->
-
 		</Grid>
 
 		<!--#region buttons2-->
@@ -881,7 +726,7 @@
 				IsTabStop="False"
 				IsEnabled="False"
 				VerticalAlignment="Top"
-				Margin="32,61,0,0"
+				Margin="20,61,0,0"
 				Height="30"
 				Template="{StaticResource HorizontalGradientTemplateRed}" 
 				Width="100"
@@ -899,7 +744,7 @@
 				KeyDown="ShowCust_KeyDown" 
 				Template="{StaticResource HorizontalGradientTemplateYellow}" 
 				VerticalAlignment="Top"
-				Width="100" Margin="32,99,0,0" />
+				Width="100" Margin="20,99,0,0" />
 		<CheckBox x:Name="OntopChkbox"
 				Click="OntopChkbox_Click"
 				Content="Keep on Top"
@@ -912,7 +757,7 @@
 				HorizontalAlignment="Left"
 				IsChecked="true"
 				IsTabStop="False"
-				Margin="40,10,0,0"
+				Margin="20,10,0,0"
 				VerticalAlignment="Top"
 				Width="100"  
 			     />

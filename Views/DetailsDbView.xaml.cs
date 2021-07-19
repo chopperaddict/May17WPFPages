@@ -1,6 +1,7 @@
 ﻿using System;
 using System . Collections . Generic;
 using System . ComponentModel;
+using System . Configuration;
 using System . Data;
 using System . Diagnostics;
 using System . Linq;
@@ -11,6 +12,7 @@ using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
+using System . Windows . Media . Imaging;
 
 using WPFPages . Properties;
 using WPFPages . ViewModels;
@@ -1583,6 +1585,31 @@ namespace WPFPages . Views
 		{
 			// Clear flag for auto data collection process via (CreateVisualDetailsRecord() call )
 			LeftClickinprogress = false;
+		}
+
+		private void changesize_Click ( object sender, RoutedEventArgs e )
+		{
+			if ( DetGrid . RowHeight == 32 )
+			{
+				DetGrid . RowHeight = 25;
+				SizeChangeMenuItem . Header = "Larger Font";
+				SizeChangeMenuItem . FontSize = 12;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushBlue" );
+				SizeChangeMenuItem . Foreground = br;
+				string path = @"/Views/magnify plus red.png";
+				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+			}
+			else
+			{
+				DetGrid . RowHeight = 32;
+				SizeChangeMenuItem . Header = "Smaller Font";
+				SizeChangeMenuItem . FontSize = 16;
+				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
+				SizeChangeMenuItem . Foreground = br;
+
+				string path = @"/Views/magnify minus red.png";
+				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+			}
 		}
 	}
 }
