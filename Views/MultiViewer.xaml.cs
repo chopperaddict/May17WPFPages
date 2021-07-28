@@ -16,7 +16,6 @@ using WPFPages . Commands;
 using WPFPages . ViewModels;
 using DataGrid = System . Windows . Controls . DataGrid;
 using System . IO;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
 using System . Xml . Linq;
 
 namespace WPFPages . Views
@@ -739,16 +738,16 @@ namespace WPFPages . Views
 
 		#region User Defined Commands
 		//
-		CustomCommands _InfoCommand = new CustomCommands ( );
-		public CustomCommands InformationCommand
-		{
-			get { return _InfoCommand; }
-		}
+//		CustomCommands _InfoCommand = new CustomCommands ( );
+		//public CustomCommands InformationCommand
+		//{
+		//	get { return _InfoCommand; }
+		//}
 
-		private void ExecutedCloseApp ( object sender, ExecutedRoutedEventArgs e )
-		{
-			App . Current . Shutdown ( );
-		}
+		//private void ExecutedCloseApp ( object sender, ExecutedRoutedEventArgs e )
+		//{
+		//	App . Current . Shutdown ( );
+		//}
 		#endregion User Defined Commands
 
 

@@ -22,7 +22,6 @@ using WPFPages . ViewModels;
 using WPFPages . Views;
 
 using static System . Net . Mime . MediaTypeNames;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . ProgressBar;
 
 namespace WPFPages . Views
 {

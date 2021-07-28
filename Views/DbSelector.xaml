@@ -413,6 +413,36 @@
 						Background="{StaticResource Cyan2}"
 						Foreground="{StaticResource Black0}"/>
 
+				<MenuItem  Header="Full NorthWind database"
+						Click="LoadFullNorthwind_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="20"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>
+
+				<!--<MenuItem  Header="NorthWind Basic Grid"
+						Click="LoadBasicNorthwind_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="20"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>-->
+
+				<MenuItem  Header="Selected NorthWind database"
+						Click="LoadSelectedNorthwind_Click"
+						Margin="2"
+						FontWeight="Bold"
+						Height="20"
+						IsTabStop="False"
+						Style="{StaticResource MenuItemGreen}"
+						Background="{StaticResource Cyan2}"
+						Foreground="{StaticResource Black0}"/>
+
 				<Separator
 					Style="{StaticResource Menu_Separator}"
 					Height="6"

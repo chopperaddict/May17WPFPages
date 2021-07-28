@@ -247,5 +247,41 @@ namespace WPFPages.Properties {
                 this["StartupWindow"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=C:\\WPFPAGES2-RECOVERED\\BIN\\DEB" +
+            "UG\\NORTHWND.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustS" +
+            "erverCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False")]
+        public string Setting {
+            get {
+                return ((string)(this["Setting"]));
+            }
+            set {
+                this["Setting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\VISUALSTUDIO\16.0_0827B8C0\DESIGNER\CACHE\1928924530X86DD\NWND.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False")]
+        public string NorthwindConnectionStringold {
+            get {
+                return ((string)(this["NorthwindConnectionStringold"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Northwind;Integrated Security=" +
+            "True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIn" +
+            "tent=ReadWrite;MultiSubnetFailover=False")]
+        public string NorthwindConnectionString {
+            get {
+                return ((string)(this["NorthwindConnectionString"]));
+            }
+        }
     }
 }

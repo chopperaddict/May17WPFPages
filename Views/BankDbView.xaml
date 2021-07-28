@@ -5,6 +5,9 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:WPFPages.Views"
 	xmlns:dateconv="clr-namespace:WPFPages.MyConvertors"
+	  xmlns:commands="clr-namespace:WPFPages" 
+	xmlns:cmd="clr-namespace:WPFPages.Commands"
+	  xmlns:self="clr-namespace:WPFPages.Views"
 	mc:Ignorable="d"
 	Closing="Window_Closing"
 	DataContext="BankviewerView"
@@ -18,6 +21,16 @@
 	Title="Bank A/c Editor"
 	Width="800"
 	>
+	  <!--Add a Command  to this window-->
+	<Window.CommandBindings>
+		<CommandBinding Command="ApplicationCommands.New" 
+		    Executed="Command_New"
+		    CanExecute="CommandNew_CanExecute" />
+		<!--<CommandBinding Command="cmd:WpfCommand" 
+			    CanExecute="ShowMessage_CanExecute" 
+			    Executed="ShowMessage_Executed"/>-->
+	</Window.CommandBindings>
+	
 	<!--d:DataContext="{d:DesignInstance Type=local:BankCollection}"-->
 	<Window.Resources>
 		<dateconv:DateTimeToShortStringConverter x:Key="DateConvert"/>
@@ -26,6 +39,7 @@
 		<dateconv:UniversalValueConverter x:Key="UniversalConvert"/>
 		<dateconv:Actype2Name x:Key="Actype2StringConvert"/>
 		<dateconv:Resource2BrushConverter x:Key="Resource2BrushConvert"/>
+		<!--<cmd:WpfCommand x:Key="Commands"/>-->
 
 		<ContextMenu x:Key="ContextMenu1">
 			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
@@ -222,7 +236,7 @@
 		<!--#region grid setup-->
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height="30" />
+			<RowDefinition Height="40" />
 			<RowDefinition Height="5*" />
 			<RowDefinition Height="135" />
 			<RowDefinition Height="10" />
@@ -247,9 +261,9 @@
 			Grid.Row="0"
 			Grid.Column="1"
 			Width="auto"
-			Height="30"
+			Height="50"
 			IsTabStop="False"
-			Margin="5"
+			Margin="0,5"
 			HorizontalAlignment="Left"
 			Background="Transparent">
 
@@ -309,19 +323,33 @@
 				Header="Filtering"/>
 
 			<MenuItem
-				Width="50"
 				Click="Options_Click"
+				Width="50"
 				Foreground="{StaticResource White1}"
 				Header="Options" />
 
+
+			<MenuItem
+				Command="ApplicationCommands.New"
+				Width="80"
+				Foreground="{StaticResource White1}"
+				Header="Command ?" />
+
+			<!--<MenuItem
+				Command="cmd:WpfCommand"
+				Width="70"
+				Foreground="{StaticResource White1}"
+				Header="Message?" />-->
+
 			<MenuItem Header ="Larger Font"
 				    x:Name="SizeChangeMenuItem2" 
-				    Width="150"
+				    Width="130"
 				    Click="changesize_Click2">
 				<MenuItem.ItemTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal" >
-							<TextBlock Text="Larger xxxx" VerticalAlignment="Center"/>
+							<TextBlock Text="Larger xxxx" 
+								     VerticalAlignment="Center"/>
 						</StackPanel>
 					</DataTemplate>
 				</MenuItem.ItemTemplate>

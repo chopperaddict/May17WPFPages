@@ -8,7 +8,7 @@
 	  mc:Ignorable="d"
 	  DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		MinHeight="450"
-		MinWidth="867"
+		MinWidth="877"
 		Loaded="OnWindowLoaded"	
 		PreviewKeyDown="Window_PreviewKeyDown"
 		Title="Database Edit/View Utility" 

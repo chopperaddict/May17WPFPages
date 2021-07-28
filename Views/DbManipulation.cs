@@ -7,13 +7,13 @@ using WPFPages . ViewModels;
 
 namespace WPFPages . Views
 {
-	public static class DbManipulation
-	{
-		public static void OutputSelectedRecords(string CurrentDb, List<BankAccountViewModel> recordsb,
-			List<CustomerViewModel> recordsc,
-			List<DetailsViewModel> recordsd )
-		{
-//		dataGrid . ItemsSourceProperty = records;
-		}
-	}
+//	public static class DbManipulation
+//	{
+//		public static void OutputSelectedRecords(string CurrentDb, List<BankAccountViewModel> recordsb,
+//			List<CustomerViewModel> recordsc,
+//			List<DetailsViewModel> recordsd )
+//		{
+////		dataGrid . ItemsSourceProperty = records;
+//		}
+//	}
 }

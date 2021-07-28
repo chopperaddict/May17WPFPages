@@ -59,23 +59,5 @@ namespace WPFPages.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Views\magnify minus.png.
-        /// </summary>
-        public static string magnifyminus {
-            get {
-                return ResourceManager.GetString("magnifyminus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Views\magnify pluss.png.
-        /// </summary>
-        public static string magnifyplus {
-            get {
-                return ResourceManager.GetString("magnifyplus", resourceCulture);
-            }
-        }
     }
 }

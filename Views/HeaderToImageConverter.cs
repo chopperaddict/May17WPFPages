@@ -18,7 +18,32 @@ namespace WPFPages . Views
                 public object Convert ( object value, Type targetType,
                     object parameter, CultureInfo culture )
                 {
-                        if ( ( value as string ) . Contains ( @"\" ) )
+                        string arg = parameter as string;
+                        if ( parameter != "" && arg. Contains ( "." ) )
+                        {
+                                //NB the parameter MUST MUST contain "/folderxxx/xxx/filename.suffix" with partially qualifed folder/path before the file name itself
+                                Uri uri = new Uri
+                                ( $"pack://application:,,,{arg}" );
+                                BitmapImage source = new BitmapImage ( uri );
+                                return source;
+                        }
+                        if ( ( value as string ) . Contains ( @"Smaller Font" ) )
+                        {
+                                //Drive
+                                Uri uri = new Uri
+                                ( "pack://application:,,,/Views/magnify minus.png" );
+                                BitmapImage source = new BitmapImage ( uri );
+                                return source;
+                        }
+                        else if ( ( value as string ) . Contains ( @"Larger Font" ) )
+                                {
+                                        //Drive
+                                        Uri uri = new Uri
+                                        ( "pack://application:,,,/Views/magnify minus.png" );
+                                        BitmapImage source = new BitmapImage ( uri );
+                                        return source;
+                                }
+                        else if ( ( value as string ) . Contains ( @"\" ) )
                         {
                                 //Drive
                                 Uri uri = new Uri

@@ -10,7 +10,6 @@ using System . Threading . Tasks;
 using System . Windows;
 using System . Windows . Controls;
 using System . Windows . Controls . Primitives;
-using System . Windows . Forms . VisualStyles;
 using System . Windows . Input;
 using System . Windows . Media;
 using Microsoft . Win32;
@@ -225,6 +224,39 @@ namespace WPFPages
 				Thread . Sleep ( 100 );
 			}
 			return t;
+		}
+
+		//Generic form of Selection forcing code below
+		/// <summary>
+		/// This is a great method that almost guarantees to 
+		/// highlight the selected item in any datagrid.
+		/// Found on StackOverflow (of course)
+		/// </summary>
+		/// <param name="dgrid"></param>
+		/// <param name="index"></param>
+		public static void SetGridRowSelectionOn ( DataGrid dgrid, int index )
+		{
+			if ( dgrid . Items . Count > 0 && index != -1 )
+			{
+				try
+				{
+
+					dgrid . SelectedIndex = index;
+					dgrid . SelectedItem = index;
+					dgrid . UpdateLayout ( );
+					dgrid . ScrollIntoView ( dgrid . Items [ index ] );
+					DataGridRow r = dgrid . ItemContainerGenerator . ContainerFromIndex ( index ) as DataGridRow;
+					if ( r != null )
+					{
+						r . IsSelected = false;
+						r . IsSelected = true;
+					}
+				}
+				catch ( Exception ex )
+				{
+					Debug . WriteLine ( $"{ex . Message}, {ex . Data}" );
+				}
+			}
 		}
 
 		public static BankAccountViewModel CreateBankRecordFromString ( string type, string input )
@@ -497,6 +529,68 @@ namespace WPFPages
 			catch ( Exception ex )
 			{
 				Debug . WriteLine ( $"Unable to save property {setting} of [{value}]\nError was {ex . Data}, {ex . Message}, Stack trace = \n{ex . StackTrace}" );
+			}
+		}
+
+		public static void AddUpdateAppSettings ( string key, string value )
+		{
+			try
+			{
+				var configFile = ConfigurationManager . OpenExeConfiguration ( ConfigurationUserLevel . None );
+				var settings = configFile . AppSettings . Settings;
+				if ( settings [ key ] == null )
+				{
+					settings . Add ( key, value );
+				}
+				else
+				{
+					settings [ key ] . Value = value;
+				}
+				configFile . Save ( ConfigurationSaveMode .Full);
+				ConfigurationManager . RefreshSection ( configFile . AppSettings . SectionInformation . Name );
+			}
+			catch ( ConfigurationErrorsException )
+			{
+				Console . WriteLine ( "Error writing app settings" );
+			}
+		}
+
+		public static string  ReadConfigSetting ( string key )
+		{
+			string result = "";
+			try
+			{
+				var appSettings = ConfigurationManager . AppSettings;
+				result = appSettings [ key ] ?? "Not Found";
+				Console . WriteLine ( result );
+			}
+			catch ( ConfigurationErrorsException )
+			{
+				Console . WriteLine ( "Error reading app settings" );
+			}
+			return result;
+		}
+		public static void ReadAllConfigSettings ( )
+		{
+			try
+			{
+				var appSettings = ConfigurationManager . AppSettings;
+
+				if ( appSettings . Count == 0 )
+				{
+					Console . WriteLine ( "AppSettings is empty." );
+				}
+				else
+				{
+					foreach ( var key in appSettings . AllKeys )
+					{
+						Console . WriteLine ( "Key: {0} Value: {1}", key, appSettings [ key ] );
+					}
+				}
+			}
+			catch ( ConfigurationErrorsException )
+			{
+				Console . WriteLine ( "Error reading app settings" );
 			}
 		}
 		public static string GetExportFileName ( string filespec )

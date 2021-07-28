@@ -27,7 +27,7 @@ namespace WPFPages
 		public static SqlDbViewer SqlBankViewer;// = null;
 		public static MultiViewer SqlMultiViewer;// = null;
 		public static DataGrid CurrentEditDbViewerBankGrid;// = null;
-
+		public static Window NwSelectionWindow;
 		// Pointers to our data collections
 		public static DetCollection DetCollection = null;
 		public static CustCollection CustCollection = null;

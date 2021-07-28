@@ -1513,5 +1513,22 @@ namespace WPFPages . Views
 			TreeView1 tv1 = new TreeView1 ( );
 			tv1 . Show ( );
 		}
+
+		private void LoadFullNorthwind_Click ( object sender, RoutedEventArgs e )
+		{
+			NorthwindFullData nwg = new NorthwindFullData ( );
+			nwg . Show ( );
+		}
+		private void LoadSelectedNorthwind_Click ( object sender, RoutedEventArgs e )
+		{
+			SelectedNwDetails nwg = new SelectedNwDetails ( );
+			nwg . Show ( );
+		}
+		private void LoadBasicNorthwind_Click ( object sender, RoutedEventArgs e )
+		{
+//			NorthWindGrid nwg = new NorthWindGrid ( );
+			
+//			nwg . Show ( );
+		}
 	}
 }

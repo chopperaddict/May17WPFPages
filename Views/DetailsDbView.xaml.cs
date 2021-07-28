@@ -4,7 +4,9 @@ using System . ComponentModel;
 using System . Configuration;
 using System . Data;
 using System . Diagnostics;
+using System . IO;
 using System . Linq;
+using System . Reflection;
 using System . Threading;
 using System . Threading . Tasks;
 using System . Windows;
@@ -1587,28 +1589,59 @@ namespace WPFPages . Views
 			LeftClickinprogress = false;
 		}
 
-		private void changesize_Click ( object sender, RoutedEventArgs e )
+		public  void changesize_Click ( object sender, RoutedEventArgs e )
 		{
+			Thickness t = new Thickness ( );
+			// All get the RUNNING directory "debug or release"
+			//string syspath = System . AppDomain . CurrentDomain . BaseDirectory;
+			string syspath = Directory . GetCurrentDirectory ( );
+			//syspath = Environment . CurrentDirectory;
+			//syspath = Path . GetDirectoryName ( Assembly . GetExecutingAssembly ( ) . Location );
+			//syspath = Application .
+			//string applicationDirectory = (
+			//    from assembly in AppDomain . CurrentDomain . GetAssemblies ( )
+			//	where assembly . CodeBase . EndsWith ( ".exe" )
+			//	select System . IO . Path . GetDirectoryName ( assembly . CodeBase . Replace ( "file:///", "" ) )
+			//) . FirstOrDefault ( );
+
+			//Read entry from App Configuration system
+			syspath =Utils . ReadConfigSetting ( "AppRoot");
 			if ( DetGrid . RowHeight == 32 )
 			{
 				DetGrid . RowHeight = 25;
 				SizeChangeMenuItem . Header = "Larger Font";
-				SizeChangeMenuItem . FontSize = 12;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushBlue" );
+				SizeChangeMenuItem . FontSize = 16;
+				t . Top = 0;
+				t . Bottom = 0;
+				SizeChangeMenuItem . Margin = t;
+				Brush br = Utils . GetDictionaryBrush ( "Black0" );
 				SizeChangeMenuItem . Foreground = br;
+				
 				string path = @"/Views/magnify plus red.png";
 				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+				t . Top = 0;
+				t . Bottom = 0;
+				FontsizeIcon . Margin = t;
 			}
 			else
 			{
 				DetGrid . RowHeight = 32;
 				SizeChangeMenuItem . Header = "Smaller Font";
-				SizeChangeMenuItem . FontSize = 16;
-				Brush br = Utils . GetDictionaryBrush ( "HeaderBorderBrushRed" );
+				SizeChangeMenuItem . FontSize = 10;
+				t . Top = (double)8;
+				SizeChangeMenuItem . Margin = t;
+				Brush br = Utils . GetDictionaryBrush ( "Red0" );
 				SizeChangeMenuItem . Foreground = br;
 
 				string path = @"/Views/magnify minus red.png";
-				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind.RelativeOrAbsolute));
+				t . Top = -5;
+//				t . Bottom = 5;
+//				t . Right = 5;
+				FontsizeIcon . Margin = t;
+//				FontsizeIcon . Width = 30;
+
+
 			}
 		}
 	}

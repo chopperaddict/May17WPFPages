@@ -2,6 +2,7 @@
 using System . Collections . Generic;
 using System . ComponentModel;
 using System . Diagnostics;
+using System . IO;
 using System . Linq;
 using System . Threading;
 using System . Threading . Tasks;
@@ -10,6 +11,8 @@ using System . Windows . Controls;
 using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
+using System . Windows . Media . Imaging;
+
 using WPFPages . ViewModels;
 
 namespace WPFPages . Views
@@ -1080,6 +1083,50 @@ namespace WPFPages . Views
 			CustomerViewModel bvm = this.CustGrid.SelectedItem as CustomerViewModel;
 			Output = JsonSupport.CreateShowJsonText(true, "CUSTOMER", bvm, "CustomerViewModel");
 			MessageBox.Show(Output, "Currently selected record in JSON format", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+		}
+
+		private void changesize_Click3 ( object sender, RoutedEventArgs e )
+		{
+			Thickness t = new Thickness ( );
+
+			if ( CustGrid . RowHeight == 32 )
+			{
+				CustGrid . RowHeight = 25;
+				SizeChangeMenuItem3 . Header = "Larger Font";
+				SizeChangeMenuItem3 . FontSize = 16;
+				t . Top =4;
+				t . Bottom = 0;
+				SizeChangeMenuItem3 . Margin = t;
+				Brush br = Utils . GetDictionaryBrush ( "White0" );
+				SizeChangeMenuItem3 . Foreground = br;
+
+				string path = @"/Views/magnify plus red.png";
+				FontsizeIcon3 . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+				t . Top = 0;
+				t . Bottom = 0;
+				FontsizeIcon3 . Margin = t;
+			}
+			else
+			{
+				CustGrid . RowHeight = 32;
+				SizeChangeMenuItem3 . Header = "Smaller Font";
+				SizeChangeMenuItem3 . FontSize = 10;
+				t . Top = ( double ) 8;
+				SizeChangeMenuItem3 . Margin = t;
+				Brush br = Utils . GetDictionaryBrush ( "White0" );
+				SizeChangeMenuItem3 . Foreground = br;
+
+				string path = @"/Views/magnify minus red.png";
+				FontsizeIcon3 . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
+				t . Top = -5;
+				//				t . Bottom = 5;
+				//				t . Right = 5;
+				FontsizeIcon3 . Margin = t;
+				//				FontsizeIcon . Width = 30;
+
+
+			}
+
 		}
 	}
 }

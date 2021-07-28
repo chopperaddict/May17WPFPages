@@ -1,0 +1,782 @@
+﻿<Window x:Class="WPFPages.Views.NorthWindGrid"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+	  xmlns:userctrl="clr-namespace:WPFPages.UserControls" 
+	  xmlns:system="clr-namespace:System;assembly=mscorlib"
+	  xmlns:data="clr-namespace:WPFPages.Views"
+	  xmlns:command="clr-namespace:WPFPages.Commands"
+	  mc:Ignorable="d"
+	  MinHeight=" 650"
+	  Loaded="Window_Loaded"
+	  Closing="Window_Closing"
+        Title="NorthWind Standard DataGrid" Height="650" Width="800"
+	  Background="{StaticResource Blue8}">
+
+	<Window.Resources>
+		<userctrl:CloseReturnButton x:Key="CloseButton"/>
+		<local:SelectedToYesNoConverter x:Key="SelectedToYesNo"/>
+		<local:DummyDebugConverter x:Key="DummyConverter"/>
+		<!--<local:NorthWindGrid x:Key="Commands"/>-->
+
+		<Style x:Key="dgStyle1" TargetType="DataGridRow">
+			<!--<Style.Triggers>
+				<Trigger Property="IsSelected" Value="True"/>
+				<Trigger Property="IsFocused" Value="True"/>
+			</Style.Triggers>
+			<Style.Setters>
+				<Setter Property="Background" Value="{StaticResource Red5}"/>
+				<Setter Property="Foreground" Value="{StaticResource Black1}"/>
+			</Style.Setters>-->
+		</Style>
+
+		<Style x:Key="DgCheckBoxStyle" TargetType="CheckBox">
+			<Style.Triggers>
+				<!--// Window IS FOCUSED
+				// SELECTED row Background & Border-->
+				<Trigger  Property="IsChecked" Value="true">
+					<Setter Property="Background" Value="{StaticResource Blue3}" />
+					<Setter Property="Foreground" Value="{StaticResource Blue0}" />
+					<Setter Property="BorderBrush" Value="{StaticResource Red0}" />
+				</Trigger>
+				<Trigger  Property="IsChecked" Value="False">
+					<Setter Property="Background" Value="{StaticResource White0}" />
+					<Setter Property="Foreground" Value="Black" />
+					<Setter Property="BorderBrush" Value="{StaticResource Red0}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
+		<ContextMenu x:Key="NwContextMenu">
+			<MenuItem Header="View currently selected Record in Details Window"  Click="ShowDetailedView_Click" >
+				<MenuItem.Icon>
+					<Image Source="/Icons/text-message.png"  />
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem Header="Find current Customer type in Selective Viewer"
+				    Click="ShowDetailedView_Click"/>
+			<Separator Style="{StaticResource Menu_Separator}"/>
+			<MenuItem Header="Find current Order type in Selective Viewer"
+				    Click="ShowOrderDetailedView_Click"/>
+
+		</ContextMenu>
+	</Window.Resources>
+
+
+	<!--/*
+	CustomersGrid
+	OrdersGrid
+	ProductsFrid
+	CategoriesGrid
+	*/-->
+
+	<Grid 
+		PreviewMouseRightButtonDown="NwStandard_PreviewMouseRightButtonDown">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="100"/>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="125"/>
+			<RowDefinition Height="70"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="10"/>
+			<ColumnDefinition Width="262"/>
+			<ColumnDefinition Width="10"/>
+			<ColumnDefinition Width="80"/>
+			<ColumnDefinition Width="10"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="150"/>
+			<ColumnDefinition Width="10"/>
+		</Grid.ColumnDefinitions>
+		<TextBlock Text="Customers Db"
+			     Grid.Row="0"
+			     Grid.Column="1"
+			     Grid.ColumnSpan="2"
+			     Height="25"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+		<DataGrid x:Name="CustomersGrid"
+			Grid.Row="1"
+			Grid.Column="1"
+			Grid.ColumnSpan="6"
+			    AutoGenerateColumns="False"
+			AlternatingRowBackground="{StaticResource Yellow3}"
+		    CanUserSortColumns="True"
+			IsSynchronizedWithCurrentItem="True"
+			SelectedItem="CustomersGrid_Selected"
+			RowHeight="20"
+			MinHeight="100"
+			VerticalAlignment="Stretch"
+			RowStyle="{StaticResource dgStyle1}"
+			SelectionMode="Single"
+			SelectionUnit="FullRow"
+			SelectionChanged="CustomerGrid_SelectionChanged" >
+			<!--VirtualizingStackPanel.IsVirtualizing="False"-->
+			<!--Loaded="CustomersGrid_Loaded"-->
+
+			<DataGrid.Columns>
+				<DataGridTemplateColumn Header=" Cust Id" Width="80" SortMemberPath="CustomerId">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=CustomerId}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Company" Width="180"  SortMemberPath="CompanyName">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=CompanyName}" 
+								     HorizontalAlignment="Left"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Contact" Width="130"  SortMemberPath="ContactName
+								">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=ContactName}" 
+								     HorizontalAlignment="Left"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Contact Title" Width="150"  SortMemberPath="ContactTitle">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=ContactTitle}" 
+								     HorizontalAlignment="Left"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Address" Width="170" SortMemberPath="Address">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Address}" 
+								     HorizontalAlignment="Left"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="City" Width="100" SortMemberPath="City">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=City}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Region" Width="100"  SortMemberPath="Region">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Region}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Postal Code" Width="70"  SortMemberPath="PostalCode">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=PostalCode}" 
+								     HorizontalAlignment="Left"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+
+				<DataGridTemplateColumn Header="Country" Width="80"  SortMemberPath="Country">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Country}" 
+								     HorizontalAlignment="Left"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Phone" Width="120"  SortMemberPath="Phone">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Phone}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Fax" Width="120"  SortMemberPath="Fax">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Fax}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+
+			<DataGrid.CellStyle>
+				<Style TargetType="{x:Type DataGridCell}">
+					<Style.Triggers>
+						<!--// Window IS FOCUSED-->
+						<!--// SELECTED row Background & Border-->
+						<Trigger  Property="IsSelected" Value="true">
+							<Setter Property="Background" Value="{StaticResource Red6}" />
+							<Setter Property="Foreground" Value="White" />
+							<Setter Property="BorderBrush" Value="{StaticResource White0}" />
+						</Trigger>
+
+						<!--=========================================================================================================-->
+						<!--selected, unfocused-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="false" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Green4}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource Black1}" />
+								<!--<Setter Property="Height" Value="30" />-->
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+						<!--Selected, Focused-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Red0}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource White3}" />
+								<!--<Setter Property="Height" Value="30" />-->
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.CellStyle>
+		</DataGrid>
+
+		<TextBlock Text="Orders Db"
+			     Grid.Row="2"
+			     Grid.Column="1"
+			     Height="25"
+			     Grid.ColumnSpan="2"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+		<DataGrid x:Name="OrdersGrid"
+			Grid.Row="3"
+			Grid.Column="1"
+			Grid.ColumnSpan="6"
+			AlternatingRowBackground="{StaticResource Blue9}"
+			AutoGenerateColumns="True"
+			IsSynchronizedWithCurrentItem="True"
+			RowHeight="20"
+			RowBackground="Bisque"
+			HorizontalScrollBarVisibility="Auto"
+			VerticalAlignment="Stretch"
+			Foreground="Black"
+			SelectionChanged="OrdersGrid_SelectionChanged"
+			SelectionMode="Single"
+			SelectionUnit="FullRow"
+			MinHeight="100">
+
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Order Id" Binding="{Binding Path=OrderId}" Width="60" SortMemberPath="OrderId"/>
+				<DataGridTextColumn Header="Cust.Id" Binding="{Binding Path=CustomerId}" Width="70" SortMemberPath="CustomerId"/>
+				<DataGridTextColumn Header="Emp. Id" Binding="{Binding Path=EmployeeId}" Width="40" SortMemberPath="EmployeeId"/>
+				<DataGridTextColumn Header="Order Date" Binding="{Binding Path=OrderDate}" Width="80" SortMemberPath="OrderDate"/>
+				<DataGridTextColumn Header="Req. Date" Binding="{Binding Path=RequiredDate}" Width="75" SortMemberPath="RequiredDate"/>
+				<DataGridTextColumn Header="Shipped" Binding="{Binding Path=ShippedDate}" Width="75" SortMemberPath="ShippedDate"/>
+				<DataGridTextColumn Header="Ship Via" Binding="{Binding Path=ShipVia}" Width="45" SortMemberPath="ShipVia"/>
+				<DataGridTextColumn Header="Freight" Binding="{Binding Path=Freight}" Width="55" SortMemberPath="Freight"/>
+				<DataGridTextColumn Header="Ship Name" Binding="{Binding Path=ShipName}" Width="125" SortMemberPath="ShipName"/>
+				<DataGridTextColumn Header="Ship Address" Binding="{Binding Path=ShipAddress}" Width="125" SortMemberPath="ShipAddress"/>
+				<DataGridTextColumn Header="Ship City" Binding="{Binding Path=ShipCity}" Width="85" SortMemberPath="ShipCity"/>
+				<DataGridTextColumn Header="Ship Region" Binding="{Binding Path=ShipRegion}" Width="45" SortMemberPath="ShipRegion"/>
+				<DataGridTextColumn Header="Ship Post Code" Binding="{Binding Path=ShipPostalCode}" Width="75" SortMemberPath="ShipPostalCode"/>
+				<DataGridTextColumn Header="Ship Country" Binding="{Binding Path=ShipCountry}" Width="75" SortMemberPath="ShipCountry"/>
+			</DataGrid.Columns>
+
+			<DataGrid.CellStyle>
+				<Style TargetType="{x:Type DataGridCell}">
+					<Style.Triggers>
+						<!--// Window IS FOCUSED-->
+						<!--// SELECTED row Background & Border-->
+						<Trigger  Property="IsSelected" Value="true">
+							<Setter Property="Background" Value="{StaticResource Red6}" />
+							<Setter Property="Foreground" Value="White" />
+							<Setter Property="BorderBrush" Value="{StaticResource White0}" />
+						</Trigger>
+
+						<!--=========================================================================================================-->
+						<!--NOT selected, unfocused-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="false" />
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="true" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<Setter Property="Background" Value="{StaticResource Cyan2}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="FontWeight" Value="DemiBold" />
+								<Setter Property="BorderBrush" Value="Transparent" />
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+						<!--selected, unfocused-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="false" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Cyan0}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource Black1}" />
+								<!--<Setter Property="Height" Value="30" />-->
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Blue1}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource White3}" />
+								<!--<Setter Property="Height" Value="30" />-->
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<!--
+								<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>-->
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.CellStyle>
+
+		</DataGrid>
+
+		<TextBlock Text="Products Db"
+			     Grid.Row="4"
+			     Grid.Column="1"
+			     Grid.ColumnSpan="2"
+			     Height="25"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+		<DataGrid x:Name="ProductsGrid"
+			Grid.Row="5"
+			Grid.Column="1"
+			Grid.ColumnSpan="6"
+			    AutoGenerateColumns="False"
+			AlternatingRowBackground="{StaticResource Yellow4}"
+			HorizontalScrollBarVisibility="Auto"
+			IsSynchronizedWithCurrentItem="True"
+			VerticalAlignment="Top"
+			RowHeight="20"
+			RowBackground="Bisque"
+			SelectionChanged="ProductsGrid_SelectionChanged"
+			SelectionMode="Single"
+			SelectionUnit="FullRow"
+			Foreground="Black"
+			MinHeight="90"
+			MaxHeight="90">
+
+			<DataGrid.Columns >
+
+				<DataGridTextColumn Header="Id" Binding="{Binding Path=ProductId}" Width="30" SortMemberPath="ProductId"/>
+				<DataGridTextColumn Header="Prod. Name" Binding="{Binding Path=ProductName}" Width="100" SortMemberPath="ProductName"/>
+				<DataGridTextColumn Header="Sup. Id" Binding="{Binding Path=SupplierId}" Width="50" SortMemberPath="SupplierId"/>
+				<DataGridTextColumn Header="Cat. Id" Binding="{Binding Path=CategoryId}" Width="45" SortMemberPath="CategoryId"/>
+				<DataGridTextColumn Header="Qty/Unit" Binding="{Binding Path=QuantityPerUnit}" Width="115" SortMemberPath="QuantityPerUnit"/>
+				<DataGridTextColumn Header="Unit Price" Binding="{Binding Path=UnitPrice}" Width="65" SortMemberPath="UnitPrice"/>
+				<DataGridTextColumn Header="Stock" Binding="{Binding Path=UnitsInStock}" Width="45" SortMemberPath="UnitsInStock"/>
+				<DataGridTextColumn Header="Ordered" Binding="{Binding Path=UnitsOnOrder}" Width="55" SortMemberPath="UnitsOnOrder"/>
+				<DataGridTextColumn Header="Reorder #" Binding="{Binding Path=ReorderLevel}" Width="55" SortMemberPath="ReorderLevel"/>
+				<DataGridTemplateColumn Header="Discontinued" Width="100" SortMemberPath="Discontinued" 
+								>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<!--// FINALLY - THIS WORKS !! //-->
+							<CheckBox x:Name="ChkBox" 
+								Content="{Binding ElementName=ChkBox, 
+								UpdateSourceTrigger=PropertyChanged, 
+								Converter={StaticResource 
+								SelectedToYesNo},
+								Path=IsChecked}"
+								Style="{StaticResource DgCheckBoxStyle}"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+			</DataGrid.Columns>
+
+			<!--Loaded="ProductsGrid_Loaded"-->
+			<DataGrid.CellStyle>
+				<Style TargetType="{x:Type DataGridCell}">
+					<Style.Triggers>
+						<!--// Window IS FOCUSED-->
+						<!--// SELECTED row Background & Border-->
+						<Trigger  Property="IsSelected" Value="true">
+							<Setter Property="Background" Value="{StaticResource Red6}" />
+							<Setter Property="Foreground" Value="White" />
+							<Setter Property="BorderBrush" Value="{StaticResource White0}" />
+						</Trigger>
+
+						<!--=========================================================================================================-->
+						<!--selected, unfocused-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="false" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Green4}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource Black1}" />
+								<!--<Setter Property="Height" Value="30" />-->
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Red0}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource White3}" />
+								<!--<Setter Property="Height" Value="30" />-->
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<!--<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>-->
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.CellStyle>
+		</DataGrid>
+
+		<TextBlock Text="Order Details Db"
+			     Grid.Row="6"
+			     Grid.Column="1"
+			     Height="25"
+			     VerticalAlignment="Center"
+			     Grid.ColumnSpan="2"
+			     Foreground="{StaticResource Black1}"/>
+		<TextBlock Text="Categories Db"
+			     Grid.Row="6"
+			     Grid.Column="4"
+			     Height="20"
+			     VerticalAlignment="Center"
+			     Grid.ColumnSpan="2"
+			     Foreground="{StaticResource Black1}"/>
+
+		<!--<StackPanel Orientation="Horizontal"
+				Grid.Row="7"
+				Grid.Column="1"
+				Grid.ColumnSpan="6"
+				MaxHeight="265"
+				VerticalAlignment="Top"
+				>-->
+		<DataGrid x:Name="OrderDetailsGrid"
+			Grid.Row="7"
+			Grid.Column="1"
+			Grid.ColumnSpan="1"
+			MaxHeight="165"
+			AutoGenerateColumns="False"
+			AlternatingRowBackground="{StaticResource Yellow4}"
+			HorizontalScrollBarVisibility="Auto"
+			HorizontalAlignment="Left"			    
+			IsSynchronizedWithCurrentItem="True"
+			VerticalAlignment="Stretch"
+			RowHeight="20"
+			RowBackground="Bisque"
+			SelectionChanged="OrderDetailsGrid_SelectionChanged"
+			SelectionMode="Single"
+			SelectionUnit="FullRow"
+			Foreground="Black"
+			MinWidth="270"
+			MinHeight="120">
+			<!--Loaded="OrderDetailsGrid_Loaded"-->
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Order Id" Binding="{Binding Path=OrderId}" Width="60" SortMemberPath="OrderId"/>
+				<DataGridTextColumn Header="Prod.Id" Binding="{Binding Path=ProductId}" Width="50" SortMemberPath="ProductId"/>
+				<DataGridTextColumn Header="Unit Price" Binding="{Binding Path=UnitPrice}" Width="60" SortMemberPath="UnitPrice"/>
+				<DataGridTextColumn Header="Qty" Binding="{Binding Path=Quantity}" Width="40" SortMemberPath="Quantity"/>
+				<DataGridTextColumn Header="Discnt" Binding="{Binding Path=Discount}" Width="45" SortMemberPath="Discount"/>
+				<!--<DataGridTemplateColumn Header="Image" Width="50" IsReadOnly="True">-->
+					<!--<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Image Source="{Binding Path=ImageInBytes}" Width="40" Height="40"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>-->
+			</DataGrid.Columns>
+
+			<DataGrid.CellStyle>
+				<Style TargetType="{x:Type DataGridCell}">
+					<Style.Triggers>
+						<!--// Window IS FOCUSED-->
+						<!--// SELECTED row Background & Border-->
+						<Trigger  Property="IsSelected" Value="true">
+							<Setter Property="Background" Value="{StaticResource Red6}" />
+							<Setter Property="Foreground" Value="White" />
+							<Setter Property="BorderBrush" Value="{StaticResource White0}" />
+						</Trigger>
+
+						<!--=========================================================================================================-->
+						<!--selected, unfocused-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="false" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Green4}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource Black1}" />
+								<Setter Property="Height" Value="30" />
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Red0}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource White3}" />
+								<Setter Property="Height" Value="30" />
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<!--<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>-->
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.CellStyle>
+		</DataGrid>
+
+		<DataGrid x:Name="CategoriesGrid"
+			Grid.Row="7"
+			Grid.Column="3"
+			Grid.ColumnSpan="4"
+			MaxHeight="165"
+			AlternatingRowBackground="{StaticResource Yellow4}"
+			AutoGenerateColumns="False"
+			HorizontalScrollBarVisibility="Auto"
+			HorizontalAlignment="Stretch"
+			IsSynchronizedWithCurrentItem="True"
+			VerticalAlignment="Stretch"
+			RowHeight="30"
+			RowBackground="Bisque"
+			MinRowHeight="30"
+			    DataContextChanged="CategoriesGrid_DataContextChanged"
+			SelectionChanged="CategoriesGrid_SelectionChanged"
+			SelectionMode="Single"
+			SelectionUnit="FullRow"
+			Foreground="Black"
+			MinHeight="70">
+			<!--Loaded="CategoriesGrid_Loaded"-->
+			<DataGrid.Columns>
+				<DataGridTemplateColumn Header=" Cat Id" Width="50" SortMemberPath="CategoryId">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=CategoryId}" Width="50"
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Name" Width="140" SortMemberPath="Name">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=CategoryName}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTemplateColumn Header="Description" Width="200" SortMemberPath="Description">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Path=Description}" 
+								     HorizontalAlignment="Center"
+								     TextAlignment="Center"
+								     VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<!--<DataGridTemplateColumn Header="Image" Width="70" IsReadOnly="True">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Image Source="{Binding Path=ImageInBytes}" Width="60" Height="60"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>-->				
+			</DataGrid.Columns>
+			
+			<DataGrid.CellStyle>
+				<Style TargetType="{x:Type DataGridCell}">
+					<Style.Triggers>
+						<!--// Window IS FOCUSED-->
+						<!--// SELECTED row Background & Border-->
+						<Trigger  Property="IsSelected" Value="true">
+							<Setter Property="Background" Value="{StaticResource Red6}" />
+							<Setter Property="Foreground" Value="White" />
+							<Setter Property="BorderBrush" Value="{StaticResource White0}" />
+						</Trigger>
+
+						<!--=========================================================================================================-->
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<!--<Condition Binding="{Binding AcType}" Value="1"/>-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="true" />
+								<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=RowHeight}" Value="25" />-->
+								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Cyan4}" />-->
+								<Setter Property="Background" Value="{StaticResource Red0}" />
+								<Setter Property="Foreground" Value="White" />
+								<Setter Property="BorderBrush" Value="{StaticResource White3}" />
+								<Setter Property="Height" Value="30" />
+
+								<!--<Setter Property="FontSize" Value="16" />-->
+								<!--<Setter Property="FontWeight" Value="Normal"/>
+								<Setter Property="Padding" Value="0,0,0,0"/>
+								<Setter Property="Margin" Value="0,0,0,0"/>-->
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.CellStyle>
+		</DataGrid>
+		<!--<StackPanel Orientation="Horizontal">-->
+
+		<!--Command="{Binding Command, Source={StaticResource Commands}}"-->
+		<Button Width="190" Height="45" Background="Red" Foreground="White"
+			  Content="Selected Northwind Data"
+			  FontSize="16"
+			  Grid.Row="8"
+			  Grid.Column="5"
+			  Grid.ColumnSpan="2"
+			Click="Selected_Click"
+			Margin="0, 0,0,0">
+
+		</Button>
+			<!--This allows MOST standard properties to be changed at the user design stage-->
+			<userctrl:CloseReturnButton			
+				FontSize="18"
+				BorderThickness="0.5"			
+				FontWeight="DemiBold"
+				Fill="Green"
+				Foreground="Blue"
+				ButtonText="dfghtyu"
+				Content="Close here"
+				Grid.Column="6" Grid.Row="8"  
+				PreviewMouseLeftButtonDown="CloseReturnButton_PreviewMouseLeftButtonDown"
+				HorizontalAlignment="Left" 
+				Height="66"
+				Width="93" Margin="47,0,0,10"
+				/>
+		<!--ColorBackground="Red"-->
+		<!--</StackPanel>-->
+	</Grid>
+</Window>

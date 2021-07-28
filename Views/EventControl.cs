@@ -46,6 +46,8 @@ namespace WPFPages.Views
 		public static event EventHandler<IndexChangedArgs> EditIndexChanged;
 		public static event EventHandler<IndexChangedArgs> MultiViewerIndexChanged;
 		public static event EventHandler<IndexChangedArgs> ForceEditDbIndexChanged;
+		//Northwind events
+		public static event EventHandler<NwGridArgs> NwCustomerSelected;
 
 		// Used to broadcast to everyone
 		public static event EventHandler<LoadedEventArgs> ViewerDataUpdated;
@@ -157,6 +159,14 @@ namespace WPFPages.Views
 			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
 			if (MultiViewerIndexChanged != null)
 				MultiViewerIndexChanged?.Invoke(obj, e);
+		}
+
+		
+		public static void TriggerNwCustomerSelected ( object obj, NwGridArgs e )
+		{
+			//			Console . WriteLine ( $"DEBUG : In EventControl : Sending  MultiViewerIndexChanged EVENT trigger (from{obj?.ToString ( )})" );
+			if ( NwCustomerSelected != null )
+				NwCustomerSelected?.Invoke ( obj, e );
 		}
 		//------------------------------//
 		// DATA CHANGE EVENTS

@@ -60,9 +60,29 @@ namespace WPFPages . Views
 
 	public class DataLoadedArgs : EventArgs
 	{
-		public DataGrid Grid { get; set; }
-		public string DbName { get; set; }
-		public int CurrentIndex { get; set; }
+		public DataGrid Grid
+		{
+			get; set;
+		}
+		public string DbName
+		{
+			get; set;
+		}
+		public int CurrentIndex
+		{
+			get; set;
+		}
+	}
+	public class NwGridArgs : EventArgs
+	{
+		public DataGrid Grid
+		{
+			get; set;
+		}
+		public string ArgumentParameter
+		{
+			get; set;
+		}
 	}
 
 	#endregion EventArg Declarations

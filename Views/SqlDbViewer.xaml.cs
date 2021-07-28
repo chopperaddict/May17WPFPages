@@ -24,7 +24,6 @@ using WPFPages . Views;
 using System . IO;
 using System . Security . Permissions;
 using WPFPages;
-using static System . Windows . Forms . VisualStyles . VisualStyleElement . TrackBar;
 using Newtonsoft . Json;
 using Newtonsoft . Json . Linq;
 using System . Windows . Shapes;
@@ -937,6 +936,10 @@ namespace WPFPages
 			BankReserved = SqlBankcollection;
 			this . BankGrid . Refresh ( );
 			StatusBar . Text = "All records for Bank Db are displayed...";
+			//Force the selected row to be FULLY selected
+			Utils . SetUpGridSelection ( this . BankGrid, bindex );
+			this . BankGrid . ScrollIntoView ( this . BankGrid . SelectedItem );
+
 		}
 		private void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		{
@@ -991,6 +994,10 @@ namespace WPFPages
 
 			SaveCurrentIndex ( 2, this . CustomerGrid . SelectedIndex );
 			StatusBar . Text = "All records for Customer Db are displayed...";
+			//Force the selected row to be FULLY selected
+			Utils . SetUpGridSelection ( this . CustomerGrid, cindex );
+			this . CustomerGrid . ScrollIntoView ( this . CustomerGrid . SelectedItem );
+
 		}
 		private void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
@@ -1044,6 +1051,9 @@ namespace WPFPages
 			SaveCurrentIndex ( 3, this . DetailsGrid . SelectedIndex );
 			ResetMenuBarStatus ( );
 			StatusBar . Text = "All records for Details Db are displayed...";
+			//Force the selected row to be FULLY selected
+			Utils . SetUpGridSelection ( this . DetailsGrid, dindex );
+			this . DetailsGrid . ScrollIntoView ( this . DetailsGrid . SelectedItem );
 		}
 
 		/// <summary>

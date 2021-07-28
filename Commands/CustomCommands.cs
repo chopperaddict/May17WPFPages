@@ -8,11 +8,12 @@ using System . Windows . Input;
 
 namespace WPFPages . Commands
 {
+
 	public  class CustomCommands 
 	{
 
 
-
+		#region SaveCommand
 		public ICommand SaveCommand
 		{
 			get; internal set;
@@ -32,6 +33,7 @@ namespace WPFPages . Commands
 			Debug . WriteLine ($"SaveExecute triggered ...");
 		}
 
+		#endregion SaveCommand
 
 
 		//		public event EventHandler CanExecuteChanged;

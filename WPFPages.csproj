@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>WPFPages</RootNamespace>
     <AssemblyName>WPFPages</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -29,6 +29,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -72,7 +73,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -82,6 +82,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -92,9 +93,22 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\CustomCommands.cs" />
+    <Compile Include="Commands\WpfCommand.cs" />
     <Compile Include="Converts\Color2Hex.cs" />
     <Compile Include="Converts\dateconvertor.cs" />
     <Compile Include="Converts\HexConvert.cs" />
+    <Compile Include="Converts\ValueToTextConverter.cs" />
+    <Compile Include="DataSet1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MyCommands.cs" />
+    <Compile Include="NorthWind.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NorthWind.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Views\Colorpicker.xaml.cs">
       <DependentUpon>Colorpicker.xaml</DependentUpon>
     </Compile>
@@ -104,6 +118,7 @@
     <Compile Include="Views\DropDataGridData.xaml.cs">
       <DependentUpon>DropDataGridData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DummyDebugConverter.cs" />
     <Compile Include="Views\Folder.cs" />
     <Compile Include="Views\HeaderToImageConverter.cs" />
     <Compile Include="Views\MenuItem.cs" />
@@ -134,7 +149,6 @@
       <DependentUpon>CustDbView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DataGridNavigation.cs" />
-    <Compile Include="Views\DbManipulation.cs" />
     <Compile Include="Views\DelegateSelection.xaml.cs">
       <DependentUpon>DelegateSelection.xaml</DependentUpon>
     </Compile>
@@ -170,6 +184,14 @@
     <Compile Include="ViewModels\DetailsViewModel.cs" />
     <Compile Include="Views\LinqResults.cs" />
     <Compile Include="Views\MainWindowViewModel.cs" />
+    <Compile Include="Views\NorthwindFullData.xaml.cs">
+      <DependentUpon>NorthwindFullData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NwCategory.cs" />
+    <Compile Include="Views\NwCustomer.cs" />
+    <Compile Include="Views\NwOrder.cs" />
+    <Compile Include="Views\NwOrderDetails.cs" />
+    <Compile Include="Views\NwProduct.cs" />
     <Compile Include="Views\Progressbar.xaml.cs">
       <DependentUpon>Progressbar.xaml</DependentUpon>
     </Compile>
@@ -179,6 +201,10 @@
     <Compile Include="Views\RunSearchPaths.xaml.cs">
       <DependentUpon>RunSearchPaths.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SelectedNwDetails.xaml.cs">
+      <DependentUpon>SelectedNwDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SelectedToYesNoConverter.cs" />
     <Compile Include="Views\Setup.xaml.cs">
       <DependentUpon>Setup.xaml</DependentUpon>
     </Compile>
@@ -328,6 +354,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\NorthwindFullData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Progressbar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -337,6 +367,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RunSearchPaths.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SelectedNwDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -444,7 +478,6 @@
     <Resource Include="Icons\openfolder.gif" />
     <Resource Include="Icons\plusnode.gif" />
     <Resource Include="Icons\python.gif" />
-    <Resource Include="Properties\folder1.png" />
     <Resource Include="Icons\rss.png" />
     <Resource Include="Views\mailbox.png" />
     <Resource Include="Views\wifi.png" />
@@ -460,6 +493,17 @@
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
+    <None Include="DataSet1.xsc">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </None>
+    <None Include="DataSet1.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSet1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DataSet1.xss">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </None>
     <None Include="Icons\calls-record.icns" />
     <None Include="Icons\cloud.icns" />
     <None Include="Icons\delete-text-message.icns" />
@@ -499,6 +543,17 @@
     <None Include="Libraries\DataClasses1.dbml.layout">
       <DependentUpon>DataClasses1.dbml</DependentUpon>
     </None>
+    <None Include="NorthWind.xsc">
+      <DependentUpon>NorthWind.xsd</DependentUpon>
+    </None>
+    <None Include="NorthWind.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>NorthWind.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="NorthWind.xss">
+      <DependentUpon>NorthWind.xsd</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -512,6 +567,7 @@
     <Folder Include="Behaviours\" />
     <Folder Include="DataSources\" />
     <Folder Include="Properties\DataSources\" />
+    <Folder Include="xx\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\font-awesome.css" />

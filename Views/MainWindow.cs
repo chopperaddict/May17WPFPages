@@ -12,6 +12,9 @@ using System . Data . SqlClient;
 using System . Data;
 using System . Diagnostics;
 using System . Configuration;
+using System . IO;
+using Newtonsoft . Json . Linq;
+using WPFPages . Properties;
 
 namespace WPFPages
 {
@@ -85,7 +88,20 @@ namespace WPFPages
 			string t = Environment . GetFolderPath ( Environment . SpecialFolder . MyDocuments ) + "\"";
 			Utils . SaveProperty ( "DocumentsPath", t);
 			ConfigurationManager . RefreshSection ( "DocumentsPath" );
-			}
+
+			// Get Applications development root folder
+			t = Directory . GetParent ( Directory . GetCurrentDirectory ( ) ) . Parent . FullName;
+			
+			Utils . AddUpdateAppSettings ( "AppRoot", t );
+			//Utils . SaveProperty ( "AppRoot", t );
+			Utils . SaveProperty ( "AppRoot", t.ToString() );
+			ConfigurationManager . RefreshSection ( "AppRoot" );
+
+			Utils . AddUpdateAppSettings ( "AppRoot", t );
+			//string program = ( string ) Properties . Settings . Default [ "AppRoot" ];
+			// outputs in Output window
+			Utils . ReadAllConfigSettings ( );
+		}
 
 		private void OnClosing ( object sender, CancelEventArgs e )
 		{

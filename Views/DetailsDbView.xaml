@@ -142,7 +142,7 @@
 		<!--#region grid setup-->
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height="30" />
+			<RowDefinition Height="40" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="135" />
 			<RowDefinition Height="10" />
@@ -168,11 +168,13 @@
 		<Menu
 			Grid.Row="0"
 			Grid.Column="1"
+			Height="50"
 			Width="420"
 			IsTabStop="False"
-			Margin="5,5,0,254"
 			HorizontalAlignment="Left"
-			Background="Transparent" Grid.RowSpan="2">
+			VerticalAlignment="Stretch"
+			Background="Transparent" 
+			Grid.ColumnSpan="2">
 
 			<MenuItem
 				Width="80"
@@ -267,12 +269,13 @@
 
 			<MenuItem Header ="Larger Font"
 				    x:Name="SizeChangeMenuItem" 
-				    Width="150"
+				    Width="130"
 				    Click="changesize_Click">
 				<MenuItem.ItemTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal" >
-							<TextBlock Text="Larger xxxx" VerticalAlignment="Center"/>
+							<TextBlock Text="Larger xxxx" 
+								     VerticalAlignment="Center"/>
 						</StackPanel>
 					</DataTemplate>
 				</MenuItem.ItemTemplate>
@@ -333,36 +336,7 @@
 			<DataGrid.CellStyle >
 				<Style TargetType="{x:Type DataGridCell}">
 					<Style.Triggers>
-						<!--// Window IS FOCUSED-->
-						<!--// SELECTED row Background & Border-->
-						<!--<Trigger  Property="IsSelected" Value="true">
-							<Setter Property="Background" Value="#FF1171E6" />
-							<Setter Property="BorderBrush" Value="#FF72DBE0" />
-						</Trigger>-->
-
-						<!--=========================================================================================================-->
-						<!--#### ACTYPE = 1 ####-->
-						<!--###  UNFOCUSED OPTIONS ###-->
-
-						<!--// NOT FOCUSED, SELECTED,  MOUSEOVER / TRUE -->
-						<!--<MultiDataTrigger>
-							<MultiDataTrigger.Conditions>
-								<Condition Binding="{Binding AcType}" Value="1"/>
-								<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-								-->
-						<!--<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />-->
-						<!--
-								<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsMouseOver}" Value="True" />
-							</MultiDataTrigger.Conditions>
-							<MultiDataTrigger.Setters>
-								-->
-						<!--<Setter Property="Background" Value="{StaticResource Red5}" />-->
-						<!--<Setter Property="Background" Value="{Binding Converter={StaticResource UniversalConvert}, ConverterParameter=Orange5}" />
-								<Setter Property="Foreground" Value="{StaticResource White2}" />
-								<Setter Property="FontWeight" Value="Bold" />
-							</MultiDataTrigger.Setters>
-						</MultiDataTrigger>-->
-
+	
 						<!--Handle Row height change only 25 -->
 						<MultiDataTrigger>
 							<MultiDataTrigger.Conditions>
@@ -1052,7 +1026,8 @@
 			</DataGrid.CellStyle>
 
 
-			<DataGrid.Columns>
+
+			<DataGrid.Columns >
 				<DataGridTemplateColumn
 					x:Name="ID"
 					Width="40"
@@ -1063,12 +1038,49 @@
 							<TextBlock
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
-								Text="{Binding Id}" />
+								Text="{Binding Id}" 
+								/>
+
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTemplateColumn
+
+
+				<DataGridTextColumn
+					x:Name="ID2"
+					Width="40"
+					Header="grtytututu"		
+					Foreground="Black"
+					SortMemberPath="Id">
+					
+					<DataGridTextColumn.CellStyle>
+						<Style TargetType="{x:Type DataGridCell}">
+							<Setter Property="Foreground" 
+								  Value="{Binding Background, 
+									ElementName=ID}"/>
+							<Setter Property="Background" 
+								  Value="{Binding Background, ElementName=DetGrid}" />
+							<Setter Property="TextBlock.Text" Value="fddsfdsf"/>
+							<Style.Triggers>  
+							  <DataTrigger Binding="{Binding UpdateSourceTrigger=PropertyChanged}" Value="100">  
+								<Setter Property="Background" Value="{Binding Brushes.Red, UpdateSourceTrigger=PropertyChanged}" />  
+							  </DataTrigger>  
+							  <DataTrigger Binding="{Binding UpdateSourceTrigger=PropertyChanged}" Value="200">  
+								<Setter Property="Background" Value="{Binding Brushes.Black, UpdateSourceTrigger=PropertyChanged}" />  
+							  </DataTrigger>  
+							  <DataTrigger Binding="{Binding UpdateSourceTrigger=PropertyChanged}" Value=">200">  
+								<Setter Property="Background" Value="{Binding Brushes.Green}"/>
+							   </DataTrigger>  
+						    </Style.Triggers>  
+
+						</Style>
+					</DataGridTextColumn.CellStyle>
+					 
+								
+				</DataGridTextColumn>
+
+					<DataGridTemplateColumn
 					x:Name="CUSTNO"
 					Width="70"
 					Header="Cust #"
