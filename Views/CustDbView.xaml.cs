@@ -26,6 +26,8 @@ namespace WPFPages . Views
 									 // Get our personal Collection view of the Db
 		public ICollectionView CustviewerView { get; set; }
 
+		private CustomerCollection Custcollection = new CustomerCollection ( );
+
 		// Crucial structure for use when a Grid row is being edited
 		private static CustRowData cvmCurrent = null;
 

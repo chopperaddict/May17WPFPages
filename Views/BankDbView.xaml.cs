@@ -14,9 +14,9 @@ using System . Windows . Data;
 using System . Windows . Input;
 using System . Windows . Media;
 using System . Windows . Media . Imaging;
+
 using Newtonsoft . Json;
 
-using WPFPages . Commands;
 using WPFPages . ViewModels;
 
 namespace WPFPages . Views
@@ -28,9 +28,7 @@ namespace WPFPages . Views
 	public partial class BankDbView : Window
 	{
 		public BankCollection BankViewcollection = null;
-//		public WpfCommand LoadNwCommand {get; set;}
-
-
+		//		public WpfCommand LoadNwCommand {get; set;}
 
 		// Get our personal Collection view of the Db
 		public ICollectionView BankviewerView
@@ -91,55 +89,9 @@ namespace WPFPages . Views
 			this . Show ( );
 			//Identify individual windows for update protection
 			this . Tag = ( Guid ) Guid . NewGuid ( );
-//			LoadNwCommand = new WpfCommand ( NewCommandExecute, NewCommandcanExecute );
 			this . Refresh ( );
-			var binding = new CommandBinding ( MyCommands . ShowMessage, Show_Message, Can_ShowMessage );
+			DataFields . DataContext = this . BankGrid;
 		}
-		private void Show_Message ( object sender, ExecutedRoutedEventArgs e )
-		{
-			MessageBox . Show ( "My real Appwide command" );
-		}
-		private void Can_ShowMessage ( object sender, CanExecuteRoutedEventArgs e )
-		{
-			e . CanExecute = true;
-		}
-
-		#region Commands handlers
-		private void Command_New ( object sender, ExecutedRoutedEventArgs e )
-		{
-			//handle the actual command code here
-			MessageBox . Show ( "Command has been run... Yeaaaahh !!!" );
-		}
-
-		private void CommandNew_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
-		{
-			e . CanExecute = true;
-		}
-
-		private void Paste_Executed ( object sender, ExecutedRoutedEventArgs e )
-		{
-			//handle the actual command code here
-			MessageBox . Show ( "Command has been run... Yeaaaahh !!!" );
-		}
-		private void Paste_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
-		{
-			e . CanExecute = true;
-		}
-
-		private void ShowMessage_Executed ( object sender, ExecutedRoutedEventArgs e )
-		{
-			//handle the actual command code here
-			MessageBox . Show ( "Yet another Command has been run... Woooow!!!" );
-		}
-
-		private void ShowMessage_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
-		{
-			e . CanExecute = true;
-		}
-
-		#endregion Commands handlers
-
-
 		#region Mouse support
 		//private void DoDragMove ( )
 		//{//Handle the button NOT being the left mouse button
@@ -176,7 +128,7 @@ namespace WPFPages . Views
 			EventControl . GlobalDataChanged += EventControl_GlobalDataChanged;
 
 
-			await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
+			BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -232,7 +184,7 @@ namespace WPFPages . Views
 			Triggered = false;
 		}
 
-		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
+		private  void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			if ( e . CallerDb == "BANKDBVIEW" || e . CallerDb == "BANKACCOUNT" )
 				return;
@@ -241,9 +193,8 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
-			BankViewcollection = await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
-			this . BankGrid . ItemsSource = BankViewcollection;
-			this . BankGrid . Refresh ( );
+			//Reload our data base data, it will be loaded when we are notified it is ready via the BankDataLoaded Event
+			BankViewcollection = BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 			IsDirty = false;
 		}
 
@@ -306,7 +257,7 @@ namespace WPFPages . Views
 				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
 				// and this will notify any other open viewers as well
 				bvmCurrent = null;
-				await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
+				BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
 				return;
 			}
 
@@ -388,7 +339,7 @@ namespace WPFPages . Views
 
 		#endregion DATA EDIT CONTROL METHODS
 
-		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
+		private void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			// Event handler for BankDataLoaded
 			if ( e . DataSource == null )
@@ -401,10 +352,12 @@ namespace WPFPages . Views
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
 			LoadingDbData = true;
-			BankviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as BankCollection );
 			BankViewcollection = e . DataSource as BankCollection;
+			BankviewerView = CollectionViewSource . GetDefaultView ( BankViewcollection );
 			BankviewerView . Refresh ( );
+			// Set our grids items source
 			this . BankGrid . ItemsSource = BankviewerView;
+
 			this . BankGrid . SelectedIndex = bindex;
 			this . BankGrid . SelectedItem = bindex;
 			this . BankGrid . CurrentItem = bindex;
@@ -423,16 +376,8 @@ namespace WPFPages . Views
 			Debug . WriteLine ( "BANKDBVIEW : Bank Data fully loaded" );
 		}
 
-
-		private void ShowBank_KeyDown ( object sender, System . Windows . Input . KeyEventArgs e )
-		{
-
-		}
-
 		private void Close_Click ( object sender, RoutedEventArgs e )
-		{
-			Close ( );
-		}
+		{Close ( );}
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
@@ -459,7 +404,7 @@ namespace WPFPages . Views
 			EventControl . BankDataLoaded -= EventControl_BankDataLoaded;
 			EventControl . GlobalDataChanged -= EventControl_GlobalDataChanged;
 
-			DataFields . DataContext = this . BankGrid . SelectedItem;
+			//			DataFields . DataContext = this . BankGrid . SelectedItem;
 			BankViewcollection = null;
 			Utils . SaveProperty ( "BankDbView_bindex", bindex . ToString ( ) );
 		}
@@ -471,65 +416,64 @@ namespace WPFPages . Views
 				LoadingDbData = false;
 				return;
 			}
-			bindex = this . BankGrid . SelectedIndex;
-			Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
-			Startup = true;
-			DataFields . DataContext = this . BankGrid . SelectedItem;
-
-			if ( LinkToAllRecords )// && Triggered == false )
-					       //if ( Flags . LinkviewerRecords && Triggered == false )
+			try
 			{
-				//				Debug . WriteLine ( $" 4-1 *** TRACE *** BANKDBVIEW : BankGrid_SelectionChanged  BANKACCOUNT - Sending TriggerEditDbIndexChanged Event trigger" );
-				TriggerViewerIndexChanged ( this . BankGrid );
-			}
 
-			// check to see if an SqlDbViewer has been opened that we can link to
-			if ( Flags . SqlBankViewer != null && LinkToParent . IsEnabled == false )
-			{
-				LinkToParent . IsEnabled = true;
-				SqlParentViewer = Flags . SqlBankViewer;
-			}
-			//else if ( Flags . SqlBankViewer == null )
-			//{
-			//	if ( LinkToParent . IsEnabled )
-			//	{
-			//		LinkToParent . IsEnabled = false;
-			//		LinkToParent . IsChecked = false;
-			//		LinktoParent = false;
-			//		SqlParentViewer = null;
-			//	}
-			//}
-
-			// Only  do this if global link is OFF
-			if ( LinktoParent )// && LinkRecords . IsChecked == false )
-			{
-				// update parents row selection
-				string bankno = "";
-				string custno = "";
-				var dvm = this . BankGrid . SelectedItem as BankAccountViewModel;
-				if ( dvm == null )
-					return;
-
-				if ( SqlParentViewer != null )
+				bindex = this . BankGrid . SelectedIndex;
+				Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
+				Startup = true;
+				try
 				{
-					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, SqlParentViewer . BankGrid, "BANKACCOUNT" );
-					SqlParentViewer . BankGrid . SelectedIndex = rec;
-					Utils . SetUpGridSelection ( SqlParentViewer . BankGrid, rec );
-				}
-				else if ( MultiParentViewer != null )
-				{
-					int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, MultiParentViewer . BankGrid, "BANKACCOUNT" );
-					MultiParentViewer . BankGrid . SelectedIndex = rec;
-					Utils . SetUpGridSelection ( MultiParentViewer . BankGrid, rec );
-				}
-			}
-			if ( LinktoMultiParent )
-			{
-				Flags . SqlMultiViewer . BankGrid . SelectedIndex = this . BankGrid . SelectedIndex;
-				Flags . SqlMultiViewer . BankGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
-				Utils . SetUpGridSelection ( Flags . SqlMultiViewer . BankGrid, this . BankGrid . SelectedIndex );
-			}
 
+					DataFields . DataContext = this . BankGrid . SelectedItem as BankAccountViewModel;
+				}
+				catch ( Exception ex )
+				{
+					Debug . WriteLine ( $"{ex . Message}, {ex . Data}" );
+				}
+				if ( LinkToAllRecords )// && Triggered == false )
+				{
+					TriggerViewerIndexChanged ( this . BankGrid );
+				}
+
+				// check to see if an SqlDbViewer has been opened that we can link to
+				if ( Flags . SqlBankViewer != null && LinkToParent . IsEnabled == false )
+				{
+					LinkToParent . IsEnabled = true;
+					SqlParentViewer = Flags . SqlBankViewer;
+				}
+				// Only  do this if global link is OFF
+				if ( LinktoParent )// && LinkRecords . IsChecked == false )
+				{
+					// update parents row selection
+					var dvm = this . BankGrid . SelectedItem as BankAccountViewModel;
+					if ( dvm == null )
+						return;
+
+					if ( SqlParentViewer != null )
+					{
+						int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, SqlParentViewer . BankGrid, "BANKACCOUNT" );
+						SqlParentViewer . BankGrid . SelectedIndex = rec;
+						Utils . SetUpGridSelection ( SqlParentViewer . BankGrid, rec );
+					}
+					else if ( MultiParentViewer != null )
+					{
+						int rec = Utils . FindMatchingRecord ( dvm . CustNo, dvm . BankNo, MultiParentViewer . BankGrid, "BANKACCOUNT" );
+						MultiParentViewer . BankGrid . SelectedIndex = rec;
+						Utils . SetUpGridSelection ( MultiParentViewer . BankGrid, rec );
+					}
+				}
+				if ( LinktoMultiParent )
+				{
+					Flags . SqlMultiViewer . BankGrid . SelectedIndex = this . BankGrid . SelectedIndex;
+					Flags . SqlMultiViewer . BankGrid . ScrollIntoView ( this . BankGrid . SelectedIndex );
+					Utils . SetUpGridSelection ( Flags . SqlMultiViewer . BankGrid, this . BankGrid . SelectedIndex );
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"DEBUG : {ex . Message}, {ex . Data}" );
+			}
 			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 
 			IsDirty = false;
@@ -568,9 +512,6 @@ namespace WPFPages . Views
 			BankViewcollection = null;
 			BankCollection bank = new BankCollection ( );
 			BankViewcollection = await bank . ReLoadBankData ( );
-
-			//			Debug . WriteLine ( $" 4-3 *** TRACE *** BANKDBVIEW : SaveButton BANKACCOUNT - Sending TriggerBankDataLoaded Event trigger" );
-			//			SendDataChanged ( null, this . BankGrid, "BANKACCOUNT" );
 
 			EventControl . TriggerViewerDataUpdated ( BankViewcollection,
 				new LoadedEventArgs
@@ -793,7 +734,8 @@ namespace WPFPages . Views
 				}
 			}
 		}
-		#region Menu items
+
+		#region Menu Linq handlers
 
 		private void Linq1_Click ( object sender, RoutedEventArgs e )
 		{
@@ -920,7 +862,6 @@ namespace WPFPages . Views
 		#endregion Menu items
 
 
-
 		/// <summary>
 		/// Link record selection to parent SQL viewer window only
 		/// </summary>
@@ -955,7 +896,7 @@ namespace WPFPages . Views
 			}
 		}
 
-		private async void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		private  void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
 		{
 			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
 			cm . PlacementTarget = this . BankGrid as DataGrid;
@@ -1212,10 +1153,9 @@ namespace WPFPages . Views
 			BankAccountViewModel bvm = this . BankGrid . SelectedItem as BankAccountViewModel;
 			Output = JsonSupport . CreateShowJsonText ( true, "BANKACCOUNT", bvm, "BankAccountViewModel" );
 			MessageBox . Show ( Output, "Currently selected record in JSON format", MessageBoxButton . OK, MessageBoxImage . Information, MessageBoxResult . OK );
-
 		}
 
-		private async void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		private  void ContextEdit_Click ( object sender, RoutedEventArgs e )
 		{
 			// handle flags to let us know WE have triggered the selectedIndex change
 			//MainWindow . DgControl . SelectionChangeInitiator = 2; // tells us it is a EditDb initiated the record change
@@ -1239,8 +1179,9 @@ namespace WPFPages . Views
 			{
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
-				await BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
-				this . BankGrid . ItemsSource = BankviewerView;
+				//Reload our data base data, it will be loaded when we are notified it is ready via the BankDataLoaded Event
+				BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
+//				this . BankGrid . ItemsSource = BankviewerView;
 				// Notify everyone else of the data change
 				EventControl . TriggerViewerDataUpdated ( BankviewerView,
 					new LoadedEventArgs
@@ -1258,13 +1199,15 @@ namespace WPFPages . Views
 					SenderGuid = this . Tag?.ToString ( )
 				} );
 			}
-			else
-				this . BankGrid . SelectedItem = RowData . Item;
+			//else
+			//	this . BankGrid . SelectedItem = RowData . Item;
 
-			// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
-			this . BankGrid . SelectedIndex = currsel;
-			Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
+			//// This sets up the selected Index/Item and scrollintoview in one easy FUNC function call (GridInitialSetup is  the FUNC name)
+			//this . BankGrid . SelectedIndex = currsel;
+			//Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 			// This is essential to get selection activated again
+			BankGrid . Focus ( );
+			Utils . SetGridRowSelectionOn ( BankGrid, BankGrid . SelectedIndex );				
 			this . BankGrid . Focus ( );
 		}
 
@@ -1351,50 +1294,155 @@ namespace WPFPages . Views
 				//				FontsizeIcon . Width = 30;
 			}
 		}
+		//#####################
+		#region Custom Commands
 
-		private void CommandBinding_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		#region ApplicationsCommands.New Command handlers
+
+		// Using a built in ApplicationComands.xxxx Command todo whatever we want
+		private void CommandNew_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
 		{
+			e . CanExecute = true;
+		}
+		private void Command_New ( object sender, ExecutedRoutedEventArgs e )
+		{
+			//handle the actual command code here
+			BankDbView bdv = sender as BankDbView;
+			int x = bdv . BankGrid . SelectedIndex;
+			MessageBox . Show ( $"New Command has been run... Yeaaaahh !!!\nIndex is {x}" );
+		}
+		#endregion ApplicationsCommands.New Command handlers
 
+		#region ApplicationsCommands.Cut Command handlers
+		// This is a testing Command, implementing the Applications.Cut Built in command
+		// as a shell to let us do whatever we want to do do inside the method
+		// the e contains a CommandParameter OBJECT that can be passed by  the calling function
+		private void CommandCut_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			e . CanExecute = true;
+		}
+		private void Command_Cut ( object sender, ExecutedRoutedEventArgs e )
+		{
+			BankDbView bdv = sender as BankDbView;
+			BankAccountViewModel bvm = new BankAccountViewModel ( );
+			bvm = BankGrid . SelectedItem as BankAccountViewModel;
+			int x = bdv . BankGrid . SelectedIndex;
+			MessageBox . Show ( $"Cut Command has been run... Yeaaaahh !!!\nCustNo is {bvm . CustNo}" );
+		}
+		#endregion ApplicationsCommands.Cut Command handlers
+
+		#region ApplicationsCommands.Paste Command handlers
+
+		private void Paste_Executed ( object sender, ExecutedRoutedEventArgs e )
+		{
+			MessageBox . Show ( "Command has been run... Yeaaaahh !!!" );
+		}
+		private void Paste_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			e . CanExecute = true;
 		}
 
-		private void CommandBinding_Executed ( object sender, ExecutedRoutedEventArgs e )
+		#endregion ApplicationsCommands.Paste Command handlers
+		//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		#region MyCommands.Exit CUSTOM Command handler
+		/// <summary>
+		/// CUSTOM Command implementation
+		/// the Command itself is declared in MyCommands.CS
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void CommandExit_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
 		{
-
+			e . CanExecute = true;
+		}
+		private void Command_Exit ( object sender, ExecutedRoutedEventArgs e )
+		{
+			MessageBox . Show ( "Custom Exit Command has been run... Yeaaaahh !!!" );
+		}
+		#endregion MyCommands.ExitCommand handlers
+		//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^		
+		#region MyCommands.ShowMessage CUSTOM Command handler
+		/// <summary>
+		/// CUSTOM Command implementation
+		/// the Command itself is declared in MyCommands.CS
+		/// Declaration in <CommandBindings> is:
+		/// 	<CommandBinding Command="self:MyCommands.ShowMessage" 
+		///	CanExecute="ShowMessage_CanExecute"
+		///	Executed="Show_Message"/>
+		///
+		/// Menu is :
+		/// 			
+		/// <MenuItem
+		/// Command="self:MyCommands.ShowMessage"
+		/// CommandParameter="Nuffink"
+		/// Width="70"
+		/// Foreground="{StaticResource White1}"
+		/// Header="Show Cmd" />
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ShowMessage_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			e . CanExecute = true;
+		}
+		/// NB
+		/// The Actual method to be performed MUST be in the CodeBehind, it CANNOT be in a seperate file
+		private void Show_Message ( object sender, ExecutedRoutedEventArgs e )
+		{
+			MessageBox . Show ( "Custom Show Message() Command has been run... Yeaaaahh !!!" );
 		}
 
+		#endregion MyCommands.ShowMessage CUSTOM handlers
+		//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+		#region Hello-Bye Hot key test
+		bool mHelloSaid = true;
+		private void Hello_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			e . CanExecute = mHelloSaid;
+		}
+		private void Hello_Executed ( object sender, ExecutedRoutedEventArgs e )
+		{
+			//			mHelloSaid = true;
+			if ( HelloItem . Header == "Bye..." )
+			{
+				MessageBox . Show ( "Bye" );
+				HelloItem . Header = "Hello !";
+			}
+			else
+			{
+				MessageBox . Show ( "Hello!!" );
+				HelloItem . Header = "Bye...";
+			}
+		}
+		private void Bye_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			e . CanExecute = mHelloSaid;
+		}
+		void Bye_Executed ( object sender, ExecutedRoutedEventArgs e )
+		{
+			//			mHelloSaid = false;
+			MessageBox . Show ( "Bye!!" );
+			HelloItem . Header = "Bye...";
+		}
+		#endregion Hello-Bye Hot key test
 
+		#region Close menu option Command
+		private void Close_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			if ( !IsDirty )
+				e . CanExecute = true;
+		}
 
-		//			BankAccountViewModel bank = new BankAccountViewModel();
-		//			var filtered = from bank inBankViewercollection . Where ( x => bank . CustNo = "1055033" ) select x;
-		//		   GroupBy bank.CustNo having count(*) > 1
-		//where  
-		//having COUNT (*) > 1
-		//	select bank;
-		//	Where ( b.CustNo = "1055033") ;
-		/*
-					commandline = $"SELECT * FROM BANKACCOUNT WHERE CUSTNO IN "
-			+ $"(SELECT CUSTNO FROM BANKACCOUNT "
-			+ $" GROUP BY CUSTNO"
-			+ $" HAVING COUNT(*) > 1) ORDER BY ";
+		private void CloseWin ( object sender, ExecutedRoutedEventArgs e )
+		{
+			MessageBox . Show ( "Custom Command is closing the current Window" );
+			this . Close ( );
+		}
+		#endregion Close menu option Command
 
-		    */
+		#endregion Commands
+		//#####################
 
-
-	}
-	public  static class CustomCommands
-	{
-		public static readonly RoutedUICommand ShowMessage = new RoutedUICommand
-			(
-				"Exit",
-				"ShowMessage",
-				typeof ( CustomCommands )
-				//new InputGestureCollection ( )
-				//{
-				//	new KeyGesture(Key.F4, ModifierKeys.Alt)
-				//}
-			);
-
-		//Define more commands here, just like the one above
 	}
 }

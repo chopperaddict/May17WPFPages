@@ -119,20 +119,6 @@ namespace WPFPages.Views
 		}
 
 
-
-		/// <summary>
-		/// Central point for TRIGGERING this event
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="e"></param>
-
-		//dummy to stop error only
-		//public static void TriggerDataUpdated ( object obj, LoadedEventArgs e )
-		//{
-		//	DataUpdated?.Invoke ( obj, e );
-		//	Console . WriteLine ( $"DEBUG : In EventControl : Sending  DataUpdated EVENT trigger" );
-		//}
-
 		//------------------------------//
 		// INDEX CHANGE EVENTS
 		//------------------------------//

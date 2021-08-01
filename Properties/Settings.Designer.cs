@@ -283,5 +283,17 @@ namespace WPFPages.Properties {
                 return ((string)(this["NorthwindConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\WPFPages2-Recovered")]
+        public string AppRoot {
+            get {
+                return ((string)(this["AppRoot"]));
+            }
+            set {
+                this["AppRoot"] = value;
+            }
+        }
     }
 }

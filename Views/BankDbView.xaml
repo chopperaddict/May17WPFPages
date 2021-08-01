@@ -5,9 +5,9 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:WPFPages.Views"
 	xmlns:dateconv="clr-namespace:WPFPages.MyConvertors"
-	  xmlns:commands="clr-namespace:WPFPages" 
+	xmlns:commands="clr-namespace:WPFPages" 
 	xmlns:cmd="clr-namespace:WPFPages.Commands"
-	  xmlns:self="clr-namespace:WPFPages.Views"
+	xmlns:self="clr-namespace:WPFPages.Views"
 	mc:Ignorable="d"
 	Closing="Window_Closing"
 	DataContext="BankviewerView"
@@ -21,26 +21,21 @@
 	Title="Bank A/c Editor"
 	Width="800"
 	>
-	  <!--Add a Command  to this window-->
-	<Window.CommandBindings>
-		<CommandBinding Command="ApplicationCommands.New" 
-		    Executed="Command_New"
-		    CanExecute="CommandNew_CanExecute" />
-		<!--<CommandBinding Command="cmd:WpfCommand" 
-			    CanExecute="ShowMessage_CanExecute" 
-			    Executed="ShowMessage_Executed"/>-->
-	</Window.CommandBindings>
-	
+	<!--==================================================================-->
+
 	<!--d:DataContext="{d:DesignInstance Type=local:BankCollection}"-->
 	<Window.Resources>
+		<!--#region Converters-->
+		<!--Converters-->
 		<dateconv:DateTimeToShortStringConverter x:Key="DateConvert"/>
 		<dateconv:NumericString2ShortDateConverter x:Key="NumberToDateConvert"/>
 		<dateconv:Date2UTCConverter x:Key="Date2UTCConvert"/>
 		<dateconv:UniversalValueConverter x:Key="UniversalConvert"/>
 		<dateconv:Actype2Name x:Key="Actype2StringConvert"/>
 		<dateconv:Resource2BrushConverter x:Key="Resource2BrushConvert"/>
-		<!--<cmd:WpfCommand x:Key="Commands"/>-->
+		<!--#endregion Converters-->
 
+		<!--#region ContextMenu--> 
 		<ContextMenu x:Key="ContextMenu1">
 			<MenuItem Header="View currently selected Record in JSON Format"  Click="ContextShowJson_Click" >
 				<MenuItem.Icon>
@@ -63,6 +58,7 @@
 					<Image Source="/Icons/wifi.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
+			
 			<Separator Style="{StaticResource Menu_Separator}"/>
 
 			<MenuItem Header="                                 Settings" Click="ContextSettings_Click" Background="{StaticResource Blue1}" Foreground="White">
@@ -97,6 +93,10 @@
 			</MenuItem>
 		</ContextMenu>
 
+		<!--#endregion ContextMenu-->
+
+		<!--#region Styles-->
+		
 		<Style x:Key="HeaderStyleBlue" TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="{StaticResource HeaderBrushBlue}" />
 			<Setter Property="Foreground" Value="White" />
@@ -113,9 +113,9 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-		
-		
-		<Style x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}" TargetType="{x:Type Button}">
+
+
+		<!--Not in use-->				<!--<Style x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}" TargetType="{x:Type Button}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type Button}">
@@ -137,30 +137,7 @@
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
-		</Style>
-
-		<!--<Style x:Key="UnfocusedSelection" TargetType="DataGridRow">
-		--><!--<Style TargetType="DataGridRow">--><!--
-			<Style.Triggers>
-				--><!--=====================
-						Window WITH Focus ....
-						SINGLE SELECTED  Item
-						=====================--><!--
-				<MultiTrigger>
-					--><!--// This is working 17/6/21--><!--
-					<MultiTrigger.Conditions>
-						<Condition Property="IsSelected" Value="true" />
-						<Condition Property="IsFocused" Value="false" />
-						--><!--<Condition Property="SelectionActive" Value="false" />--><!--
-					</MultiTrigger.Conditions>
-					<Setter Property="Background" Value="{StaticResource Red1}" />
-					<Setter Property="Foreground" Value="{StaticResource White0}" />
-					<Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
-				</MultiTrigger>
-			</Style.Triggers>
 		</Style>-->
-
-
 
 		<!--Not in use-->
 		<Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
@@ -228,8 +205,111 @@
 			</Style.Triggers>-->
 		</Style>
 
-		</Window.Resources>
-	
+		<Style x:Key="MenuItemLightblue" TargetType="{x:Type MenuItem}">
+			<Setter Property="Background" Value="Red" />
+			<Setter Property="Foreground" Value="Black" />
+			<!--<Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrushYellow}" />-->
+			<Setter Property="BorderThickness" Value="1.5" />
+			<Setter Property="SnapsToDevicePixels" Value="True" />
+			<Setter Property="HorizontalContentAlignment" Value="left" />
+			<Setter Property="VerticalAlignment" Value="Bottom" />
+			<Setter Property="VerticalContentAlignment" Value="Bottom" />
+			<Setter Property="MinHeight" Value="25" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type MenuItem}">
+						<Border x:Name="Bd" 
+							  Padding="17,0,17,0" 
+							  BorderBrush="{TemplateBinding BorderBrush}" 
+							  BorderThickness="{TemplateBinding BorderThickness}" 
+							  Background="{TemplateBinding Background}" 
+							  
+							  SnapsToDevicePixels="True" 
+							  Uid="Border_38">
+							<ContentPresenter x:Name="ContentPresenter"  
+										Content="{TemplateBinding Header}" 
+										Grid.Column="1" 
+										ContentSource="Header" 
+										Margin="{TemplateBinding Padding}" 
+										RecognizesAccessKey="True" 
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+										VerticalAlignment="Center"
+										Uid="ContentPresenter_33"/>
+						</Border>
+						<!--Handle Mouseover condition-->
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsHighlighted" Value="True">
+								<Setter Property="Height" TargetName="Bd" Value="35"/>
+								<!--This is  the Border color-->
+								<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Red3}"/>
+								<!--This is  the Background color-->
+								<Setter Property="Background" TargetName="Bd" Value="{StaticResource Blue1}"/>
+								<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
+								<!--<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>-->
+							</Trigger>
+							<Trigger Property="IsHighlighted" Value="False">
+								<Setter Property="Height" TargetName="Bd" Value="35"/>
+								<!--This is  the Border color-->
+								<Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource White2}"/>
+								<!--This is  the Background color-->
+								<Setter Property="Background" TargetName="Bd" Value="{StaticResource Blue4}"/>
+								<Setter Property="MenuItem.Foreground" TargetName="Bd" Value="{StaticResource White0}"/>
+								<!--<Setter Property="Padding" TargetName="Bd"  Value="5,0,5,5"/>-->
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+
+		<!--#endregion Styles-->
+
+		<!--Db Collction-->
+		<local:CustomerCollection x:Key="CustCollection"/>
+		
+	</Window.Resources>
+	<!--==================================================================-->
+
+	<!--This is NEEDED to implement shortcut key menu/button options-->
+	<Window.InputBindings>
+		<KeyBinding Command="{x:Static cmd:MyCommands.Hello}" Modifiers="Ctrl" Key="H" />
+		<KeyBinding Command="{x:Static cmd:MyCommands.Bye}" Modifiers="Ctrl" Key="B" />
+		<KeyBinding Command="{x:Static cmd:MyCommands.ShowMessage}" Modifiers="Ctrl" Key="S" />
+	</Window.InputBindings>
+	<!--==================================================================-->
+
+	<!--Add a Command  to this window-->
+	<Window.CommandBindings>
+		<!--These are NEEDED for the Commands in the ContextMenu to work-->
+		<CommandBinding Command="ApplicationCommands.New" 
+		    Executed="Command_New"
+		    CanExecute="CommandNew_CanExecute" />
+		<CommandBinding Command="ApplicationCommands.Cut" 
+		    Executed="Command_Cut"
+		    CanExecute="CommandCut_CanExecute" />
+		
+		<!--CUSTOM COMMAND-->
+		<CommandBinding Command="cmd:MyCommands.Exit" 
+		    CanExecute="CommandExit_CanExecute"
+		    Executed="Command_Exit"/>
+		<CommandBinding Command="cmd:MyCommands.ShowMessage" 
+		    CanExecute="ShowMessage_CanExecute"
+		    Executed="Show_Message"/>
+		<CommandBinding Command="cmd:MyCommands.CloseWin" 
+		    CanExecute="Close_CanExecute"
+		    Executed="CloseWin"/>		
+		<!--Now we have to add CommandBindings for the Hot key version-->
+		<CommandBinding Command="cmd:MyCommands.Hello" 
+			CanExecute="Hello_CanExecute" 
+			Executed="Hello_Executed"/>
+		<CommandBinding Command="cmd:MyCommands.Bye" 
+			CanExecute="Bye_CanExecute" 
+			Executed="Bye_Executed"/>
+	</Window.CommandBindings>
+
+	<!--==================================================================-->
+
 	<!--MAIN GRID FOR WINDOW-->
 	<Grid>
 
@@ -260,6 +340,7 @@
 		<Menu
 			Grid.Row="0"
 			Grid.Column="1"
+			Grid.ColumnSpan="3"
 			Width="auto"
 			Height="50"
 			IsTabStop="False"
@@ -328,19 +409,56 @@
 				Foreground="{StaticResource White1}"
 				Header="Options" />
 
-
+			<!--How to use a default "ApplicationCommands" option that we--> 
+			<!--provide the method for in our .CS. The Method in .CS is :-->
+			<!--private void Command_New ( object sender, ExecutedRoutedEventArgs e )-->
+			<!--NB The method can do ANYTHING IT WANTS, it does NOT have to--> 
+			<!--implement the New command it appears to be-->
 			<MenuItem
-				Command="ApplicationCommands.New"
-				Width="80"
+				Width="Auto"
 				Foreground="{StaticResource White1}"
-				Header="Command ?" />
+				Header="Commands" >
+				<MenuItem
+					Style="{StaticResource MenuItemLightblue}"
+					Command="ApplicationCommands.New"
+					CommandParameter="Selectedindex"
+					Foreground="{StaticResource Red0}"
+					Header="Show current Index" />
+				<MenuItem
+					Style="{StaticResource MenuItemLightblue}"
+					Command="ApplicationCommands.Cut"
+					CommandParameter="Selectedindex"
+					Foreground="{StaticResource Red0}"
+					Header="Show current CustNo" />
+				
+				<MenuItem
+					Style="{StaticResource MenuItemLightblue}"
+					Command="cmd:MyCommands.Exit"
+					Foreground="{StaticResource Red0}"
+					Header="Exit Command" />
 
-			<!--<MenuItem
-				Command="cmd:WpfCommand"
-				Width="70"
-				Foreground="{StaticResource White1}"
-				Header="Message?" />-->
+				<MenuItem Name="HelloItem"
+					Command="cmd:MyCommands.Hello"
+					Foreground="{StaticResource White0}"
+					    Background="CadetBlue"
+					InputGestureText="Ctrl+H"
+					Header="Hello Toggle!" />
 
+				<Separator Style="{StaticResource Menu_Separator}"/>
+
+				<MenuItem
+					Style="{StaticResource MenuItemLightblue}"
+					Command="cmd:MyCommands.ShowMessage"
+					Foreground="{StaticResource Red0}"
+					Header="Show MessageBox" />
+
+				<MenuItem
+					Style="{StaticResource MenuItemLightblue}"
+					Command="cmd:MyCommands.CloseWin"
+					Foreground="{StaticResource Red0}"
+					Header="Close Window" />
+			</MenuItem>
+			
 			<MenuItem Header ="Larger Font"
 				    x:Name="SizeChangeMenuItem2" 
 				    Width="130"
@@ -389,6 +507,7 @@
 			HorizontalContentAlignment="Center"
 			IsSynchronizedWithCurrentItem="False"
 			IsTabStop="False"
+			ItemsSource="{Binding Source={StaticResource CustCollection}}"
 			Margin="0,0,0,8"
 			Padding="-10"
 			PreviewMouseRightButtonDown="BankGrid_PreviewMouseRightButtonDown"
@@ -1065,7 +1184,7 @@
 			<DataGrid.Columns>
 
 
-				<DataGridTemplateColumn
+				<DataGridTemplateColumn				
 					x:Name="ID"
 					Width="40"
 					Header="Id"

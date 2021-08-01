@@ -36,7 +36,7 @@ namespace WPFPages . Views
 		public BankCollection ( ) : base ( )
 		{
 		}
-		public async static Task<BankCollection> LoadBank ( BankCollection cc, string caller, int ViewerType = 1, bool NotifyAll = false )
+		public static BankCollection LoadBank ( BankCollection cc, string caller, int ViewerType = 1, bool NotifyAll = false )
 		{
 			object lockobject = new object ( );
 			Notify = NotifyAll;

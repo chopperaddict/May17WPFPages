@@ -17,7 +17,6 @@ using System . Windows . Media;
 using System . Windows . Media . Imaging;
 using System . Windows . Shapes;
 using System . IO;
-using WPFPages . Libraries;
 using static WPFPages . NorthWind;
 
 namespace WPFPages . Views

@@ -88,5 +88,8 @@
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Northwind;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</Value>
     </Setting>
+    <Setting Name="AppRoot" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\WPFPages2-Recovered</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

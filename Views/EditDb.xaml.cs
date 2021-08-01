@@ -270,7 +270,7 @@ namespace WPFPages . Views
 				this . DataGrid1 . ItemsSource = null;
 				this . DataGrid1 . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
+				EditDbBankcollection = BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 				//this . DataGrid1 . ItemsSource = EditDbBankcollection;
 				//this . DataGrid1 . SelectedIndex = currsel;
 				//this . DataGrid1 . Refresh ( );
@@ -418,7 +418,7 @@ namespace WPFPages . Views
 		}
 		private async static Task<BankCollection> LoadBankData ( BankCollection EditDbBankcollection )
 		{
-			EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
+			EditDbBankcollection = BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 			return EditDbBankcollection;
 		}
 
@@ -1278,7 +1278,7 @@ namespace WPFPages . Views
 
 				//this . DataGrid1 . ItemsSource = null;
 				//this . DataGrid1 . ItemsSource = EditDbBankcollection;
-				//await BankCollection . LoadBank ( EditDbBankcollection, 2, true );
+				//BankCollection . LoadBank ( EditDbBankcollection, 2, true );
 				//this . DataGrid1 . SelectedIndex = currsel;
 
 				SendDataChanged ( CurrentDb );
@@ -1888,7 +1888,7 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
 				IsDirty = false;
-				EditDbBankcollection = await BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
+				EditDbBankcollection = BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 				dGrid . ItemsSource = null;
 				dGrid . ItemsSource = EditDbBankcollection;
 				dGrid . SelectedIndex = currsel;

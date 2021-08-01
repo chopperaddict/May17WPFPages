@@ -94,7 +94,7 @@ namespace WPFPages
 			
 			Utils . AddUpdateAppSettings ( "AppRoot", t );
 			//Utils . SaveProperty ( "AppRoot", t );
-			Utils . SaveProperty ( "AppRoot", t.ToString() );
+			Utils . SaveProperty ( "AppRoot", t);
 			ConfigurationManager . RefreshSection ( "AppRoot" );
 
 			Utils . AddUpdateAppSettings ( "AppRoot", t );

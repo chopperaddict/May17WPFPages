@@ -12,7 +12,6 @@ using System . Windows . Input;
 using System . Windows . Media;
 using Newtonsoft . Json . Linq;
 using Newtonsoft . Json;
-using WPFPages . Commands;
 using WPFPages . ViewModels;
 using DataGrid = System . Windows . Controls . DataGrid;
 using System . IO;
@@ -81,7 +80,7 @@ namespace WPFPages . Views
 		public MultiViewer ( )
 		{
 			InitializeComponent ( );
-			//CommandBinding myCommandBinding = new CommandBinding ( CustomCommands.myCommand, CustomCommands . ExecutedmyCommand, CustomCommands . CanExecutemyCommand );
+			//CommandBinding myCommandBinding = new CommandBinding ( MyCommands.myCommand, MyCommands . ExecutedmyCommand, MyCommands . CanExecutemyCommand );
 			// attach CommandBinding to root element
 			//			this . CommandBindings . Add ( myCommandBinding );
 			this . Show ( );
@@ -371,7 +370,7 @@ namespace WPFPages . Views
 			// update all grids EXCEPT the default in AccountType
 			//Update our own data tyoe only
 			if (CurrentDb == "BANKACCOUNT")
-				await BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
+				BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
 			else if (CurrentDb == "CUSTOMER")
 				await CustCollection . LoadCust(null, "CUSTOMER", 2, true);
 			else if (CurrentDb == "DETAILS")
@@ -538,7 +537,7 @@ namespace WPFPages . Views
 			//			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
 			MBankcollection = null;
 			stopwatch1 . Start ( );
-			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			//BankGrid . ItemsSource = MultiBankcollection;
 			//			if ( MultiCustcollection == null || MultiCustcollection . Count == 0 )
 			MCustcollection = null;
@@ -660,7 +659,7 @@ namespace WPFPages . Views
 			//MultiDetcollection = null;
 
 			/// Reoad the data into our Items Source collections
-			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			//			MultiBankcollection = BankCollection . MultiBankcollection;
 
 			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
@@ -738,8 +737,8 @@ namespace WPFPages . Views
 
 		#region User Defined Commands
 		//
-//		CustomCommands _InfoCommand = new CustomCommands ( );
-		//public CustomCommands InformationCommand
+//		MyCommands _InfoCommand = new MyCommands ( );
+		//public MyCommands InformationCommand
 		//{
 		//	get { return _InfoCommand; }
 		//}
@@ -1221,7 +1220,7 @@ namespace WPFPages . Views
 			}
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
-			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
+			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
 			this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MBankcollection );
 			this . BankGrid . Refresh ( );
 			this . CustomerGrid . ItemsSource = null;
@@ -1822,7 +1821,7 @@ namespace WPFPages . Views
 			else if ( sender == MCustcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Customer updated a row, so just update Bank and Details
-				await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+				BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 				await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
@@ -1831,7 +1830,7 @@ namespace WPFPages . Views
 			else if ( sender == MDetcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Details updated a row, so just update Customer and Bank
-				await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+				BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 				await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
@@ -1850,7 +1849,7 @@ namespace WPFPages . Views
 
 			if ( e . CallerDb == "MULTIVIEWER" ) return;
 
-			await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
 			Mouse . OverrideCursor = Cursors . Arrow;
@@ -2346,7 +2345,7 @@ namespace WPFPages . Views
 			//				{
 			//					this . BankGrid . ItemsSource = null;
 			//					this . BankGrid . Items . Clear ( );
-			//					MBankcollection = await BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
+			//					MBankcollection = BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
 			////					this . BankGrid . ItemsSource = MultiBankcollection;
 			//					//					StatusBar . Text = "Current Record Updated Successfully...";
 			//					// Notify everyone else of the data change
@@ -3051,7 +3050,7 @@ namespace WPFPages . Views
 		//	this . CustomerGrid . ItemsSource = null;
 		//	this . DetailsGrid . ItemsSource = null;
 
-		//	await BankCollection . LoadBank ( MultiBankcollection, 1, true );
+		//	BankCollection . LoadBank ( MultiBankcollection, 1, true );
 		//	this . BankGrid . ItemsSource = MultiBankcollection;
 
 		//	await CustCollection . LoadCust ( MultiCustcollection, 3, true );

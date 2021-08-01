@@ -9,7 +9,6 @@ using System . Threading . Tasks;
 using System . Windows . Controls;
 using System . Collections . ObjectModel;
 using WPFPages . ViewModels;
-using WPFPages . Libraries;
 using System . Windows;
 using System . ComponentModel;
 

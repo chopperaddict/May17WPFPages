@@ -93,7 +93,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\CustomCommands.cs" />
-    <Compile Include="Commands\WpfCommand.cs" />
     <Compile Include="Converts\Color2Hex.cs" />
     <Compile Include="Converts\dateconvertor.cs" />
     <Compile Include="Converts\HexConvert.cs" />
@@ -103,7 +102,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
-    <Compile Include="MyCommands.cs" />
+    <Compile Include="Commands\MyCommands.cs" />
     <Compile Include="NorthWind.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -115,6 +114,7 @@
     <Compile Include="Views\ColorsSelector.xaml.cs">
       <DependentUpon>ColorsSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CustomerCollection.cs" />
     <Compile Include="Views\DropDataGridData.xaml.cs">
       <DependentUpon>DropDataGridData.xaml</DependentUpon>
     </Compile>
@@ -123,12 +123,6 @@
     <Compile Include="Views\HeaderToImageConverter.cs" />
     <Compile Include="Views\MenuItem.cs" />
     <Compile Include="Views\MyConverters.cs" />
-    <Compile Include="Depends\ExtenderProp.cs" />
-    <Compile Include="Libraries\DataClasses1.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataClasses1.dbml</DependentUpon>
-    </Compile>
     <Compile Include="ListBoxScroll.cs" />
     <Compile Include="Observable.cs" />
     <Compile Include="Page0.xaml.cs" />
@@ -279,6 +273,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dicts\HorizontalGradients.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dicts\MainMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -535,14 +533,6 @@
     <None Include="Icons\text-message.icns" />
     <None Include="Icons\wifi.icns" />
     <None Include="Icons\wifi2.icns" />
-    <None Include="Libraries\DataClasses1.dbml">
-      <Generator>MSLinqToSQLGenerator</Generator>
-      <LastGenOutput>DataClasses1.designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Libraries\DataClasses1.dbml.layout">
-      <DependentUpon>DataClasses1.dbml</DependentUpon>
-    </None>
     <None Include="NorthWind.xsc">
       <DependentUpon>NorthWind.xsd</DependentUpon>
     </None>
@@ -564,8 +554,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Behaviours\" />
-    <Folder Include="DataSources\" />
     <Folder Include="Properties\DataSources\" />
     <Folder Include="xx\" />
   </ItemGroup>

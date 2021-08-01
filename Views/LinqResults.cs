@@ -264,7 +264,7 @@ namespace WPFPages . Views
 		//	if ( dataGrid . Items . Count > 0 )
 		//	{
 		//		dataGrid . ItemsSource = null;
-		//		await BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
+		//		BankCollection . LoadBank ( SqlViewerBankcollection, 1, true );
 		//		dataGrid . Refresh ( );
 		//	}
 		//	else if ( dataGrid . Items . Count > 0 )
