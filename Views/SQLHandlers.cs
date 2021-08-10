@@ -720,9 +720,9 @@ namespace WPFPages . Views
 		}
 		public void UpdateAllDb ( string CurrentDb, DataGridRowEditEndingEventArgs e )
 		{
-			BankCollection bss = BankViewercollection;
-			CustCollection ccs = CustCollection . Custcollection;
-			DetCollection dsa = DetCollection . Detcollection;
+//			BankCollection bss = BankViewercollection;
+//			CustCollection ccs = CustCollection . Custcollection;
+//			DetCollection dsa = DetCollection . Detcollection;
 			BankAccountViewModel ss = new BankAccountViewModel ( );
 			CustomerViewModel cs = new CustomerViewModel ( );
 			DetailsViewModel sa = new DetailsViewModel ( );

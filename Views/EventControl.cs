@@ -66,6 +66,7 @@ namespace WPFPages.Views
 
 
 		public static event EventHandler<LoadedEventArgs> TestDataChanged;
+		public static event EventHandler<LinkageChangedArgs> WindowLinkChanged;
 
 
 		#endregion ALL NEW EVENTS
@@ -236,9 +237,14 @@ namespace WPFPages.Views
 			Console.WriteLine($"DEBUG : In EventControl : Sending  RecordDeleted  EVENT trigger");
 		}
 
+		public static void TriggerWindowLinkChanged ( object obj, LinkageChangedArgs e )
+		{
+//			if ( WindowLinkChanged != null )
+//				WindowLinkChanged?.Invoke ( obj, e );
+		}
 		#region DEBUG utilities
 
-		public static Delegate[] GetEventCount4()
+			public static Delegate[] GetEventCount4()
 		{
 			Delegate[] dglist2 = null;
 			if (EditIndexChanged != null)

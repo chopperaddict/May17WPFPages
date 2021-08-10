@@ -184,6 +184,55 @@ namespace WPFPages . Views
 
 	public class nworder //: INotifyPropertyChanged
 	{
+		#region PropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void OnPropertyChanged ( string propertyName )
+		{
+			//PropertyChanged?.Invoke ( this, new PropertyChangedEventArgs ( propertyName ) );
+//			this . VerifyPropertyName ( propertyName );
+
+			if ( this . PropertyChanged != null )
+			{
+				var e = new PropertyChangedEventArgs ( propertyName );
+				this . PropertyChanged ( this, e );
+			}
+		}
+		/// <summary>
+		/// Warns the developer if this object does not have
+		/// a public property with the specified name. This
+		/// method does not exist in a Release build.
+		/// </summary>
+		[Conditional ( "DEBUG" )]
+		[DebuggerStepThrough]
+		public virtual void VerifyPropertyName ( string propertyName )
+		{
+			// Verify that the property name matches a real,
+			// public, instance property on this object.
+			if ( TypeDescriptor . GetProperties ( this ) [ propertyName ] == null )
+			{
+				string msg = "Invalid property name: " + propertyName;
+
+				if ( this . ThrowOnInvalidPropertyName )
+					throw new Exception ( msg );
+				else
+					Debug . Fail ( msg );
+			}
+		}
+
+		/// <summary>
+		/// Returns whether an exception is thrown, or if a Debug.Fail() is used
+		/// when an invalid property name is passed to the VerifyPropertyName method.
+		/// The default value is false, but subclasses used by unit tests might
+		/// override this property's getter to return true.
+		/// </summary>
+		protected virtual bool ThrowOnInvalidPropertyName
+		{
+			get; private set;
+		}
+
+		#endregion PropertyChanged
 
 		#region declarations
 		//private int identity;
@@ -202,14 +251,17 @@ namespace WPFPages . Views
 		private string shipPostalCode;
 		private string shipCountry;
 		private int currentSelection;
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected virtual void OnPropertyChanged ( String propertyName )
+		private int orderDetailsTotal;
+		public int OrderDetailsTotal
 		{
-			if ( this . PropertyChanged != null )
+			get
 			{
-				this . PropertyChanged ( this, new PropertyChangedEventArgs ( propertyName ) );
+				return orderDetailsTotal;
+			}
+			set
+			{
+				orderDetailsTotal = value;
+				OnPropertyChanged ( "OrderDetailsTotal" );
 			}
 		}
 		public int CurrentSelection

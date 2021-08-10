@@ -2,7 +2,7 @@
 
 namespace WPFPages
 {
-	public class Observable : INotifyPropertyChanged
+	public class INotifyPropertyChanged : System . ComponentModel.INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 

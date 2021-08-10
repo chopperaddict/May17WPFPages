@@ -1,4 +1,5 @@
-﻿using System . Windows;
+﻿using System;
+using System . Windows;
 using System . Windows . Controls;
 using WPFPages . Views;
 
@@ -23,27 +24,32 @@ namespace WPFPages
 			_exceptionHandler = new WindowExceptionHandler ();
 #endif
 			// allows Datagrid to sense/handle datacontext changes
-			FrameworkElement . DataContextProperty . OverrideMetadata ( typeof ( DataGrid ),
-				new FrameworkPropertyMetadata(	null, 
-						FrameworkPropertyMetadataOptions . Inherits,new PropertyChangedCallback ( OnDataContextChanged ) ) );
+		//	FrameworkElement . DataContextProperty . OverrideMetadata ( typeof ( DataGrid ),
+		//		new FrameworkPropertyMetadata(	null, 
+		//				FrameworkPropertyMetadataOptions . Inherits,new PropertyChangedCallback ( OnDataContextChanged ) ) );
 		}
 
-		public static void OnDataContextChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
+		private void Application_dispatcherUnhandledException ( object sender, System . Windows . Threading . DispatcherUnhandledExceptionEventArgs e )
 		{
-			DataGrid grid = d as DataGrid;
-			if ( grid != null )
-			{
-				foreach ( DataGridColumn col in grid . Columns )
-				{
-					col . SetValue ( FrameworkElement . DataContextProperty, e . NewValue );
-					var header = col . Header as FrameworkElement;
-					if ( header != null )
-					{
-						header . SetValue ( FrameworkElement . DataContextProperty, e . NewValue );
-					}
-				}
-			}
+			MessageBox . Show ( "An unhandled exception just occurred: " + e . Exception . Message, "Exception Sample", MessageBoxButton . OK, MessageBoxImage . Warning );
+			e . Handled = true;
 		}
+		//public static void OnDataContextChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
+		//{
+		//	DataGrid grid = d as DataGrid;
+		//	if ( grid != null )
+		//	{
+		//		foreach ( DataGridColumn col in grid . Columns )
+		//		{
+		//			col . SetValue ( FrameworkElement . DataContextProperty, e . NewValue );
+		//			var header = col . Header as FrameworkElement;
+		//			if ( header != null )
+		//			{
+		//				header . SetValue ( FrameworkElement . DataContextProperty, e . NewValue );
+		//			}
+		//		}
+		//	}
+		//}
 #pragma MVVM TODO
 
 		#region MVVM STUFF
@@ -51,7 +57,7 @@ namespace WPFPages
 		// In App.xaml.cs
 		protected override void OnStartup ( StartupEventArgs e )
 		{
-			base . OnStartup ( e );
+//			base . OnStartup ( e );
 		}
 
 		#endregion MVVM STUFF

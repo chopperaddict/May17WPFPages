@@ -28,7 +28,7 @@ namespace WPFPages
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : INotifyPropertyChanged
+	public partial class MainWindow : System . ComponentModel.INotifyPropertyChanged
 	{
 
 		//public  BankCollection Bankcollection= new BankCollection();

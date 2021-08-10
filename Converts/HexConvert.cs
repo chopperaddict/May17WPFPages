@@ -38,5 +38,6 @@ namespace WPFPages . Converts
 
 			return ( double ) temp;
 		}
-	}
+	}	
+
 }

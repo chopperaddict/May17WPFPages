@@ -79,7 +79,7 @@
 		PreviewMouseRightButtonDown="NwStandard_PreviewMouseRightButtonDown">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="25"/>
-			<RowDefinition Height="*"/>
+			<RowDefinition Height="120"/>
 			<RowDefinition Height="25"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="25"/>
@@ -114,17 +114,17 @@
 			CanUserSortColumns="True"
 			CanUserAddRows="False"
 			HorizontalScrollBarVisibility="Auto"
-			    VerticalScrollBarVisibility="Auto"
-			    VerticalAlignment="Top"
+			VerticalScrollBarVisibility="Auto"
 			IsSynchronizedWithCurrentItem="True"
 			SelectedItem="CustomersGrid_Selected"
 			RowHeight="20"
-			Height="75"
-			MinHeight="65"
+			MaxHeight="95"
+			MinHeight="95"
 			RowStyle="{StaticResource dgStyle1}"
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
-			SelectionChanged="CustomerGrid_SelectionChanged" >
+			SelectionChanged="CustomerGrid_SelectionChanged" 
+			VerticalAlignment="Top">
 			<!--VirtualizingStackPanel.IsVirtualizing="False"-->
 			<!--Loaded="CustomersGrid_Loaded"-->
 
@@ -570,14 +570,13 @@
 			Grid.Row="7"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
-			MaxHeight="65"
 			 AutoGenerateColumns="False"
 			AlternatingRowBackground="{StaticResource Yellow4}"
 		    CanUserAddRows="False"
 			HorizontalScrollBarVisibility="Hidden"
 			HorizontalAlignment="Left"
 			IsSynchronizedWithCurrentItem="True"
-			VerticalAlignment="Top"
+			VerticalAlignment="Stretch"
 			RowHeight="20"
 			RowBackground="Bisque"
 			SelectionChanged="OrderDetailsGrid_SelectionChanged"
@@ -696,7 +695,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTemplateColumn Header="Name" Width="140" SortMemberPath="Name">
+				<DataGridTemplateColumn Header="Name" Width="auto" SortMemberPath="Name">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding Path=CategoryName}" 
@@ -707,7 +706,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTemplateColumn Header="Description" Width="280" SortMemberPath="Description">
+				<DataGridTemplateColumn Header="Description" Width="auto" SortMemberPath="Description">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding Path=Description}" 
@@ -776,20 +775,29 @@
 			<!--Command="{Binding Command, Source={StaticResource Commands}}"-->
 
 		</Button>
-		<!--This allows MOST standard properties to be changed at the user design stage-->
+		<!--This allows MOST standard properties to be changed at this stage (the user design stage)-->
 		<userctrl:CloseReturnButton			
-				FontSize="18"
-				BorderThickness="0.5"			
-				FontWeight="DemiBold"
-				Fill="Green"
-				Foreground="Blue"
-				ButtonText="dfghtyu"
-				Content="Close here"
-				Grid.Column="6" Grid.Row="8"  
-				PreviewMouseLeftButtonDown="CloseReturnButton_PreviewMouseLeftButtonDown"
-				HorizontalAlignment="Left" 
-				Height="66"
-				Width="93" Margin="47,0,0,10"
+			BorderColor ="{StaticResource Blue0}"
+			FillColor="{StaticResource Yellow0}"
+			ButtonText="Close"
+			ButtonWidth="90" 
+			ButtonHeight="48"
+			ColorBackground="Transparent"
+			FontSize="21"
+			FontWeight="Bold"
+			FontFamily="Lucida Sans"
+			Foreground="Blue"
+			Grid.Column="6" Grid.Row="8"  
+			HorizontalAlignment="Left" 
+			Loaded="CloseReturnButton_Loaded"
+			MouseOverColor="{StaticResource Blue2}"
+			MouseoverButtonText="Closing"
+			PreviewMouseLeftButtonDown="CloseReturnButton_PreviewMouseLeftButtonDown"
+			PreviewMouseMove="CloseReturnButton_PreviewMouseMove"
+			StrokeWidth="2"
+			MouseoverTextColor="{StaticResource White1}"
+			TextColor="{StaticResource Black1}"
+			Margin="47,0,0,10"
 				/>
 		<!--ColorBackground="Red"-->
 		<!--</StackPanel>-->

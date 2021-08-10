@@ -333,7 +333,6 @@
 				Grid.Column="1"
 				Grid.ColumnSpan="3"
 				HorizontalContentAlignment="Stretch" 
-				IsMouseCaptureWithinChanged="TextBox_IsMouseCaptureWithinChanged"
 				MouseDoubleClick="TextBox_MouseDoubleClick"
 				IsTabStop="False" 
 				HorizontalScrollBarVisibility="Auto" 			
@@ -343,8 +342,10 @@
 				DragEnter="TextBox_DragEnter"
 				PreviewDrop="Textbox_PreviewDrop"
 				PreviewDragOver="TextBox_PreviewDragOver" 
-			   TextChanged="textBox_TextChanged"
+				PreviewQueryContinueDrag="TextBox_PreviewQueryContinueDrag "
+			   TextChanged="textBox_TextChanged" 
 			     >
+			<!--IsMouseCaptureWithinChanged="TextBox_IsMouseCaptureWithinChanged"-->
 
 			<TextBox.Resources>
 				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"  Color="Green" />

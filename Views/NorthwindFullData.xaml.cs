@@ -34,109 +34,113 @@ namespace WPFPages . Views
 		protected void OnPropertyChanged ( string PropertyName )
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
-			if ( handler != null  )
-			{handler ( this,new PropertyChangedEventArgs ( PropertyName ) );}
+			if ( handler != null )
+			{
+				handler ( this, new PropertyChangedEventArgs ( PropertyName ) );
+			}
 		}
 
 		#endregion PropertyChanged	
 
 		#region Full Properties
 
-		private int customersTotal;
-		private int productsTotal;
-		private int ordersTotal;
-		private int orderdetailsTotal;
-		private int categoriesTotal;
-		private int customerCurrent;
-		private int orderCurrent;
-		public int CustomersTotal
-		{
-			get
-			{
-				return customersTotal;
-			}
-			set
-			{
-				customersTotal = value;
-				OnPropertyChanged ( nameof ( CustomersTotal ));
-			}
-		}
-		public int ProductsTotal
-		{
-			get
-			{
-				return productsTotal;
-			}
-			set
-			{
-				productsTotal = value;
-				OnPropertyChanged ( nameof ( ProductsTotal ) );
-			}
-		}
-		public int OrdersTotal
-		{
-			get
-			{
-				return ordersTotal;
-			}
-			set
-			{
-				ordersTotal = value;
-				OnPropertyChanged ( nameof ( OrdersTotal ) );
-			}
-		}
-		public int OrderDetailsTotal
-		{
-			get
-			{
-				return orderdetailsTotal;
-			}
-			set
-			{
-				orderdetailsTotal = value;
-				OnPropertyChanged ( nameof ( OrderDetailsTotal ) );
-			}
-		}
-		public int CategoriesTotal
-		{
-			get
-			{
-				return categoriesTotal;
-			}
-			set
-			{
-				categoriesTotal = value;
-				OnPropertyChanged ( nameof ( CategoriesTotal ) );
-			}
-		}
-		public int CustomerCurrent
-		{
-			get
-			{
-				return customerCurrent;
-			}
-			set
-			{
-				customerCurrent = value;
-				OnPropertyChanged ( nameof(CustomerCurrent) );
-			}
-		}
-		public int OrderCurrent
-		{
-			get
-			{
-				return this . orderCurrent;
-			}
-			set
-			{
-				this . orderCurrent = value;
-				OnPropertyChanged ( nameof ( OrderCurrent ) );
-			}
-		}
+		//private int customersTotal;
+		//private int productsTotal;
+		//private int ordersTotal;
+		//private int orderdetailsTotal;
+		//private int categoriesTotal;
+		//private int customerCurrent;
+		//private int orderCurrent;
+		//public int CustomersTotal
+		//{
+		//	get
+		//	{
+		//		return customersTotal;
+		//	}
+		//	set
+		//	{
+		//		customersTotal = value;
+		//		OnPropertyChanged ( nameof ( CustomersTotal ) );
+		//	}
+		//}
+		//public int ProductsTotal
+		//{
+		//	get
+		//	{
+		//		return productsTotal;
+		//	}
+		//	set
+		//	{
+		//		productsTotal = value;
+		//		OnPropertyChanged ( nameof ( ProductsTotal ) );
+		//	}
+		//}
+		//public int OrdersTotal
+		//{
+		//	get
+		//	{
+		//		return ordersTotal;
+		//	}
+		//	set
+		//	{
+		//		ordersTotal = value;
+		//		OnPropertyChanged ( nameof ( OrdersTotal ) );
+		//	}
+		//}
+		//public int OrderDetailsTotal
+		//{
+		//	get
+		//	{
+		//		return orderdetailsTotal;
+		//	}
+		//	set
+		//	{
+		//		orderdetailsTotal = value;
+		//		OnPropertyChanged ( nameof ( OrderDetailsTotal ) );
+		//	}
+		//}
+		//public int CategoriesTotal
+		//{
+		//	get
+		//	{
+		//		return categoriesTotal;
+		//	}
+		//	set
+		//	{
+		//		categoriesTotal = value;
+		//		OnPropertyChanged ( nameof ( CategoriesTotal ) );
+		//	}
+		//}
+		//public int CustomerCurrent
+		//{
+		//	get
+		//	{
+		//		return customerCurrent;
+		//	}
+		//	set
+		//	{
+		//		customerCurrent = value;
+		//		OnPropertyChanged ( nameof ( CustomerCurrent ) );
+		//	}
+		//}
+		//public int OrderCurrent
+		//{
+		//	get
+		//	{
+		//		return this . orderCurrent;
+		//	}
+		//	set
+		//	{
+		//		this . orderCurrent = value;
+		//		OnPropertyChanged ( nameof ( OrderCurrent ) );
+		//	}
+		//}
 		#endregion Full Properties
-	
 
-		public nwcustomer NwCust= new nwcustomer ( );
+		public DataSet ds = new DataSet ( );
+
+		public nwcustomer NwCust = new nwcustomer ( );
+//		public CustCollection NwCustCollection = new CustCollection ( );
 		public NwOrderCollection NwOrdCollection = new NwOrderCollection ( "" );
 		public NwOrderDetails NwOdCollection = new NwOrderDetails ( -1 );
 		public NwProductCollection NwProdCollection = new NwProductCollection ( -1 );
@@ -148,10 +152,15 @@ namespace WPFPages . Views
 		public NorthwindFullData ( )
 		{
 			InitializeComponent ( );
-			nwc = new ObservableCollection<nwcustomer>() ;
+			nwc = new ObservableCollection<nwcustomer> ( );
 			nwc = NwCust . Loadcustomers ( );
 			CustomersGrid . ItemsSource = nwc;
-			CustomersGrid . DataContext = NwCust;
+			NwCust . CustomersTotal = CustomersGrid . Items . Count;
+			CustomersTot . Text = CustomersGrid.Items.Count.ToString ( );
+
+			DataContext = NwCust;
+			//			CustomersGrid . DataContext = NwCust;
+			//			this .  nwc;
 			EventControl . NwCustomerSelected += EventControl_NwCustomerSelected;
 
 		}
@@ -179,7 +188,7 @@ namespace WPFPages . Views
 			Utils . SetupWindowDrag ( this );
 			CustomersGrid . Focus ( );
 			IsLoading = false;
-			CustomersGrid . DataContext = nwc;
+			//			CustomersGrid . DataContext = nwc;
 			this . Refresh ( );
 		}
 		/// <summary>
@@ -229,7 +238,7 @@ namespace WPFPages . Views
 				if ( v2 != null )
 				{
 					NwOrderDetails NwOdCollection = new NwOrderDetails ( v2 . OrderId );
-					OrderDetailsGrid . DataContext = NwOdCollection;
+					//					OrderDetailsGrid . DataContext = NwOdCollection;
 					OrderDetailsGrid . ItemsSource = NwOdCollection;
 					OrderDetailsGrid . SelectedIndex = 0;
 					OrderDetailsGrid . SelectedItem = 0;
@@ -246,7 +255,7 @@ namespace WPFPages . Views
 				if ( v4 != null )
 				{
 					NwProductCollection NwProdCollection = new NwProductCollection ( v4 . ProductId );
-					ProductsGrid . DataContext = NwProdCollection;
+					//					ProductsGrid . DataContext = NwProdCollection;
 					ProductsGrid . ItemsSource = NwProdCollection;
 					ProductsGrid . SelectedIndex = 0;
 					ProductsGrid . SelectedItem = 0;
@@ -262,7 +271,7 @@ namespace WPFPages . Views
 				if ( srchitem4 != null )
 				{
 					NwCatCollection NwcatCollection = new NwCatCollection ( srchitem4 . CategoryId );
-					CategoriesGrid . DataContext = NwcatCollection;
+					//					CategoriesGrid . DataContext = NwcatCollection;
 					CategoriesGrid . ItemsSource = NwcatCollection;
 					CategoriesGrid . SelectedIndex = 0;
 					CategoriesGrid . SelectedItem = 0;
@@ -283,9 +292,19 @@ namespace WPFPages . Views
 					nworder cvm = item as nworder;
 					if ( cvm == null )
 						break;
-					if ( cvm . CustomerId == search )
+					if ( SearchType == "ORDERID" )
 					{
-						break;
+						if ( cvm . OrderId == Convert . ToInt32 ( srchitem ) )
+						{
+							break;
+						}
+					}
+					else if ( SearchType == "CUSTOMERID" )
+					{
+						if ( (string)cvm . CustomerId ==  (string)srchitem )
+						{
+							break;
+						}
 					}
 					index++;
 				}
@@ -383,8 +402,7 @@ namespace WPFPages . Views
 		}
 		public DataSet FillMultiTables ( )
 		{
-			DataSet ds = new DataSet ( );
-			DataTable dt = new DataTable ( "Products" );
+			//			DataTable dt = new DataTable ( "Products" );
 			string ConString = ( string ) Properties . Settings . Default [ "NorthwindConnectionString" ];
 			//int Ordervalue = Convert . ToInt32 ( orderId );
 			string CmdString = string . Empty;
@@ -423,58 +441,93 @@ namespace WPFPages . Views
 			DataTable dt4 = ds . Tables [ 0 ] . DataSet . Tables [ 3 ];
 			DataTable dt5 = ds . Tables [ 0 ] . DataSet . Tables [ 4 ];
 			LoadFullDataGrids ( );
-			CustomersTot . Text = CustomersTotal . ToString ( );
-			OrdersTot . Text = OrdersTotal . ToString ( );
-			ProductsTot . Text = ProductsTotal . ToString ( );
-			OrderDetailsTot . Text = OrderDetailsTotal . ToString ( );
-			CategoriesTot . Text = CategoriesTotal . ToString ( );
+			CustomersTot . Text = NwCust.CustomersTotal . ToString ( );
+			OrdersTot . Text = NwCust . OrdersTotal . ToString ( );
+			ProductsTot . Text = NwCust . ProductTotal . ToString ( );
+			OrderDetailsTot . Text = NwCust . OrderDetailsTotal . ToString ( );
+			CategoriesTot . Text = NwCust . CategoriesTotal . ToString ( );
 			this . Refresh ( );
 			return ds;
+		}
+		private CustCollection LoadCustomerData ( )
+		{
+			int count = 0;
+			DataTable dtCust = ds . Tables [ 0 ];
+			CustCollection Custinternalcollection = new CustCollection ( );
+			try
+			{
+				for ( int i = 0 ; i < dtCust . Rows . Count ; i++ )
+				{
+					Custinternalcollection . Add ( new CustomerViewModel
+					{
+						Id = Convert . ToInt32 ( dtCust . Rows [ i ] [ 0 ] ),
+						CustNo = dtCust . Rows [ i ] [ 1 ] . ToString ( ),
+						BankNo = dtCust . Rows [ i ] [ 2 ] . ToString ( ),
+						AcType = Convert . ToInt32 ( dtCust . Rows [ i ] [ 3 ] ),
+						FName = dtCust . Rows [ i ] [ 4 ] . ToString ( ),
+						LName = dtCust . Rows [ i ] [ 5 ] . ToString ( ),
+						Addr1 = dtCust . Rows [ i ] [ 6 ] . ToString ( ),
+						Addr2 = dtCust . Rows [ i ] [ 7 ] . ToString ( ),
+						Town = dtCust . Rows [ i ] [ 8 ] . ToString ( ),
+						County = dtCust . Rows [ i ] [ 9 ] . ToString ( ),
+						PCode = dtCust . Rows [ i ] [ 10 ] . ToString ( ),
+						Phone = dtCust . Rows [ i ] [ 11 ] . ToString ( ),
+						Mobile = dtCust . Rows [ i ] [ 12 ] . ToString ( ),
+						Dob = Convert . ToDateTime ( dtCust . Rows [ i ] [ 13 ] ),
+						ODate = Convert . ToDateTime ( dtCust . Rows [ i ] [ 14 ] ),
+						CDate = Convert . ToDateTime ( dtCust . Rows [ i ] [ 15 ] )
+					} );
+					count = i;
+				}
+			}
+			catch ( Exception ex )
+			{
+				Debug . WriteLine ( $"CUSTOMERS : ERROR {ex . Message} + {ex . Data} ...." );
+				MessageBox . Show ( $"CUSTOMERS : ERROR :\n		Error was  : [{ex . Message}] ...." );
+			}
+			Flags . CustCollection = Custinternalcollection;
+			return Custinternalcollection;
 		}
 
 		private void LoadFullDataGrids ( )
 		{
 			IsLoading = true;
 
-			//CustomersGrid . ItemsSource = nwc;
-			////CustomersGrid . DataContext = nwc;
-			CustomersGrid . SelectedIndex = 0;
-			CustomersGrid . SelectedItem = 0;
-			Utils . SetGridRowSelectionOn ( CustomersGrid, 0 );
-			CustomersTotal = CustomersGrid . Items . Count;
+			//			CustomersGrid . Items . Clear ( );
+			//			DataTable dt = ds . Tables [ 0 ];
+			//			LoadCustomerData ( );
+			//			CustomersGrid . ItemsSource = NwCustCollection;
+			//			CustomersGrid . SelectedIndex = 0;
+			//			CustomersGrid . SelectedItem = 0;
+			//			Utils . SetGridRowSelectionOn ( CustomersGrid, 0 );
+			//			CustomersTotal = CustomersGrid . Items . Count;
+			//Force the selected row to be FULLY selected
+			Utils . SetUpGridSelection ( this . CustomersGrid, 0);
 
-			//NwOrderCollection NwOrdCollection = new NwOrderCollection ( "" );
 			OrdersGrid . Items . Clear ( );
 			OrdersGrid . ItemsSource = NwOrdCollection;
-			OrdersGrid . DataContext = NwOrdCollection;
 			OrdersGrid . SelectedIndex = 0;
 			OrdersGrid . SelectedItem = 0;
 			Utils . SetGridRowSelectionOn ( this . OrdersGrid, 0 );
-			OrdersTotal = this . OrdersGrid . Items . Count;
+			NwCust . OrdersTotal = this . OrdersGrid . Items . Count;
 
-			//NwOrderDetails NwOdCollection = new NwOrderDetails ( -1 );
-			OrderDetailsGrid . DataContext = NwOdCollection;
 			OrderDetailsGrid . ItemsSource = NwOdCollection;
 			OrderDetailsGrid . SelectedIndex = 0;
 			OrderDetailsGrid . SelectedItem = 0;
 			Utils . SetGridRowSelectionOn ( OrderDetailsGrid, 0 );
-			OrderDetailsTotal = OrderDetailsGrid . Items . Count;
+			NwCust . OrderDetailsTotal = OrderDetailsGrid . Items . Count;
 
-			//NwProductCollection NwProdCollection = new NwProductCollection ( -1 );
-			ProductsGrid . DataContext = NwProdCollection;
 			ProductsGrid . ItemsSource = NwProdCollection;
 			ProductsGrid . SelectedIndex = 0;
 			ProductsGrid . SelectedItem = 0;
 			Utils . SetGridRowSelectionOn ( ProductsGrid, 0 );
-			ProductsTotal = ProductsGrid . Items . Count;
+			NwCust . ProductTotal = ProductsGrid . Items . Count;
 
-			//NwCatCollection NwcatCollection = new NwCatCollection ( -1 );
-			CategoriesGrid . DataContext = NwcatCollection;
 			CategoriesGrid . ItemsSource = NwcatCollection;
 			CategoriesGrid . SelectedIndex = 0;
 			CategoriesGrid . SelectedItem = 0;
 			Utils . SetGridRowSelectionOn ( CategoriesGrid, 0 );
-			CategoriesTotal = CategoriesGrid . Items . Count;
+			NwCust . CategoriesTotal = CategoriesGrid . Items . Count;
 			IsLoading = false;
 
 		}
@@ -485,11 +538,18 @@ namespace WPFPages . Views
 			var v = CustomersGrid . SelectedItem as nwcustomer;
 			if ( v == null )
 				return;
+			Debug . WriteLine ( $"this.DataContext = {this . DataContext}" );
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentCustomer = CustomersGrid . SelectedIndex;
+			CustCurrent . Refresh ( );
 			//Find 1st match in Orders Db Grid and select it
 			IsLoading = true;
-			int rec = FindMatchingRecord ( v . CustomerId, OrdersGrid );
+			int rec = FindMatchingRecord ( v . CustomerId, OrdersGrid, "CUSTOMERID" );
+//			OrdersGrid . SelectedIndex = rec;
 			Utils . SetGridRowSelectionOn ( OrdersGrid, rec );
 
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentOrder = OrdersGrid . SelectedIndex;
 
 			var v2 = OrdersGrid . SelectedItem as nworder;
 			if ( v2 == null )
@@ -497,19 +557,29 @@ namespace WPFPages . Views
 				IsLoading = false;
 				return;
 			}
+
+			IsLoading = true;
 			//Find 1st match in Orders Db Grid and select it
 			rec = FindMatchingRecord ( v2 . OrderId, OrderDetailsGrid );
+			OrderDetailsGrid . SelectedIndex = rec;
 			Utils . SetGridRowSelectionOn ( OrderDetailsGrid, rec );
-			OrderCurrent = rec;
+			NwCust . OrderCurrent = rec;
 			var v3 = OrderDetailsGrid . SelectedItem as nworderdetail;
 			if ( v3 == null )
 			{
 				IsLoading = false;
 				return;
 			}
+			IsLoading = true;
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentOrderDetail = OrderDetailsGrid . SelectedIndex;
 			//Find 1st match in Products Db Grid and select it
 			rec = FindMatchingRecord ( v3 . ProductId, ProductsGrid );
+			ProductsGrid . SelectedIndex = rec;
 			Utils . SetGridRowSelectionOn ( ProductsGrid, rec );
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentProduct = ProductsGrid . SelectedIndex;
 			ProductsGrid . Refresh ( );
 
 			var v4 = ProductsGrid . SelectedItem as nwproduct;
@@ -518,13 +588,22 @@ namespace WPFPages . Views
 				IsLoading = false;
 				return;
 			}
+			IsLoading = true;
+			// NB We MUST set the datacontext to the current selected Customer Record for XAML updates to work
+			//this . DataContext = v4;
 			//Find 1st match in Products Db Grid and select it
 			rec = FindMatchingRecord ( v4 . CategoryId, CategoriesGrid );
 			Utils . SetGridRowSelectionOn ( CategoriesGrid, rec );
-			CustomersTot.Text = CustomersTotal.ToString();
-			CustomerCurrent = CustomersGrid . SelectedIndex;
+			CategoriesGrid . SelectedIndex = rec;
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentCategory = CategoriesGrid . SelectedIndex;
+
+			CustomersTot . Text = NwCust . CustomersTotal . ToString ( );
 			//CustCurrent . Text = CustomerCurrent . ToString ( );
+			
 			IsLoading = false;
+			
 			if ( Flags . NwSelectionWindow != null )
 			{
 				EventControl . TriggerNwCustomerSelected ( this, new NwGridArgs { ArgumentParameter = v . CustomerId } );
@@ -538,10 +617,19 @@ namespace WPFPages . Views
 			var v = OrdersGrid . SelectedItem as nworder;
 			if ( v == null )
 				return;
+			//			this . DataContext = v;
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentOrder = OrdersGrid . SelectedIndex;
+
 			//Find 1st match in Orders Db Grid and select it
 			IsLoading = true;
-			int rec = FindMatchingRecord ( v . OrderId, OrderDetailsGrid );
+			int rec = FindMatchingRecord ( v . OrderId, OrderDetailsGrid);
 			Utils . SetGridRowSelectionOn ( OrderDetailsGrid, rec );
+			OrderDetailsGrid . SelectedIndex = rec;
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentOrderDetail = OrderDetailsGrid . SelectedIndex;
 
 			var v3 = OrderDetailsGrid . SelectedItem as nworderdetail;
 			if ( v3 == null )
@@ -549,6 +637,7 @@ namespace WPFPages . Views
 				IsLoading = false;
 				return;
 			}
+
 			IsLoading = true;
 			//Find 1st match in Products Db Grid and select it
 			rec = FindMatchingRecord ( v3 . ProductId, ProductsGrid );
@@ -561,11 +650,16 @@ namespace WPFPages . Views
 				IsLoading = false;
 				return;
 			}
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentProduct = ProductsGrid . SelectedIndex;
+
 			IsLoading = true;
 			//Find 1st match in Products Db Grid and select it
 			rec = FindMatchingRecord ( v4 . CategoryId, CategoriesGrid );
 			Utils . SetGridRowSelectionOn ( CategoriesGrid, rec );
-			this . OrderCurrent = this . OrdersGrid . SelectedIndex;
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentCategory = CategoriesGrid . SelectedIndex;
 
 			IsLoading = false;
 		}
@@ -576,6 +670,8 @@ namespace WPFPages . Views
 			var v = ProductsGrid . SelectedItem as nwproduct;
 			if ( v == null )
 				return;
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentProduct = ProductsGrid . SelectedIndex;
 			IsLoading = true;
 
 			//Find 1st match in Orders Db Grid and select it
@@ -585,6 +681,8 @@ namespace WPFPages . Views
 			IsLoading = true;
 			rec = FindMatchingRecord ( v . ProductId, OrderDetailsGrid, "PRODUCTID" );
 			Utils . SetGridRowSelectionOn ( OrderDetailsGrid, rec );
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentOrderDetail = OrderDetailsGrid . SelectedIndex;
 			IsLoading = false;
 
 		}
@@ -595,10 +693,14 @@ namespace WPFPages . Views
 			var v = CategoriesGrid . SelectedItem as nwcategory;
 			if ( v == null )
 				return;
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentCategory = CategoriesGrid . SelectedIndex;
 			IsLoading = true;
 			//Find 1st match in Products Db Grid and select it
-			int rec = FindMatchingRecord ( v .CategoryId, ProductsGrid , "PRODUCTID");
+			int rec = FindMatchingRecord ( v . CategoryId, ProductsGrid, "PRODUCTID" );
 			Utils . SetGridRowSelectionOn ( ProductsGrid, rec );
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentProduct = ProductsGrid . SelectedIndex;
 			IsLoading = false;
 		}
 		private void OrderDetailsGrid_SelectionChanged ( object sender, SelectionChangedEventArgs e )
@@ -608,9 +710,19 @@ namespace WPFPages . Views
 			var v = OrderDetailsGrid . SelectedItem as nworderdetail;
 			if ( v == null )
 				return;
+
 			IsLoading = true;
 			//Find 1st match in Products Db Grid and select it
-			int rec = FindMatchingRecord ( v . ProductId, ProductsGrid );
+			int rec = FindMatchingRecord ( v . OrderId, OrdersGrid, "ORDERID" );
+			OrdersGrid . SelectedIndex = rec;
+			Utils . SetGridRowSelectionOn ( OrdersGrid, rec );
+			IsLoading = true;
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentOrder = OrdersGrid . SelectedIndex;
+
+			//Find 1st match in Products Db Grid and select it
+			rec = FindMatchingRecord ( v . ProductId, ProductsGrid );
 			Utils . SetGridRowSelectionOn ( ProductsGrid, rec );
 			ProductsGrid . Refresh ( );
 
@@ -621,12 +733,16 @@ namespace WPFPages . Views
 				return;
 			}
 			IsLoading = true;
+
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentProduct = ProductsGrid . SelectedIndex;
+
 			//Find 1st match in Products Db Grid and select it
 			rec = FindMatchingRecord ( v2 . CategoryId, CategoriesGrid );
 			Utils . SetGridRowSelectionOn ( CategoriesGrid, rec );
-
+			// NB This next line triggers the actual update on screen
+			NwCust . CurrentCategory = CategoriesGrid . SelectedIndex;
 			IsLoading = false;
-
 		}
 		public static void SelectRowByIndex ( DataGrid dataGrid, int rowIndex )
 		{
@@ -682,71 +798,46 @@ namespace WPFPages . Views
 			Close ( );
 		}
 
-		private void CategoriesGrid_DataContextChanged ( object sender, DependencyPropertyChangedEventArgs e )
-		{
-			int x = 0;
-		}
-
-		private void CustomersGrid_DataContextChanged ( object sender, DependencyPropertyChangedEventArgs e )
-		{
-			int x = 0;
-		}
-
-		private void OrdersGrid_DataContextChanged ( object sender, DependencyPropertyChangedEventArgs e )
-		{
-			int x = 0;
-		}
-
-		private void ProductsGrid_DataContextChanged ( object sender, DependencyPropertyChangedEventArgs e )
-		{
-			int x = 0;
-		}
-
-		private void OrderDetailsGrid_DataContextChanged ( object sender, DependencyPropertyChangedEventArgs e )
-		{
-			int x = 0;
-		}
-
 		private void Export_Click ( object sender, RoutedEventArgs e )
 		{
 			//Export Orders  data to CSV
 			StringBuilder sb = new StringBuilder ( );
 			string Output = "";
-			foreach ( var item in OrdersGrid.Items)
+			foreach ( var item in OrdersGrid . Items )
 			{
 				nworder nwo = new nworder ( );
 				nwo = item as nworder;
 				sb . Append ( nwo . OrderId . ToString ( ) + "," );
-				sb . Append(nwo . CustomerId . ToString ( ) + ",");
-				sb . Append ( nwo .EmployeeId. ToString ( ) + ",");
-				sb . Append ( nwo .OrderDate. ToString ( ) + ",");
-				sb . Append ( nwo .RequiredDate. ToString ( ) + "," );
+				sb . Append ( nwo . CustomerId . ToString ( ) + "," );
+				sb . Append ( nwo . EmployeeId . ToString ( ) + "," );
+				sb . Append ( nwo . OrderDate . ToString ( ) + "," );
+				sb . Append ( nwo . RequiredDate . ToString ( ) + "," );
 				sb . Append ( nwo . ShippedDate . ToString ( ) + "," );
 				sb . Append ( nwo . ShipVia . ToString ( ) + "\n" );
 				sb . Append ( nwo . Freight . ToString ( ) + "," );
 				sb . Append ( nwo . ShipName . ToString ( ) + "," );
-				sb . Append ( nwo .ShipAddress. ToString ( ) + "," );
-				sb . Append ( nwo .ShipCity. ToString ( ) + "," );
+				sb . Append ( nwo . ShipAddress . ToString ( ) + "," );
+				sb . Append ( nwo . ShipCity . ToString ( ) + "," );
 				sb . Append ( nwo . ShipRegion . ToString ( ) + "," );
-				sb . Append ( nwo .ShipPostalCode. ToString ( ) + "," );
+				sb . Append ( nwo . ShipPostalCode . ToString ( ) + "," );
 				sb . Append ( nwo . ShipCountry . ToString ( ) + "," );
 			}
 			Output = sb . ToString ( );
-			File .WriteAllText(@"C:\users\ianch\Documents\nworders.csv",Output );
+			File . WriteAllText ( @"C:\users\ianch\Documents\nworders.csv", Output );
 		}
 
 		private void Import_Click ( object sender, RoutedEventArgs e )
 		{
-			string Output = "", line="";
+			string Output = "", line = "";
 			string [ ] lines, fields;
 			int x = 0;
 			nworder nw = new nworder ( );
-			Output = File . ReadAllText ( @"C:\users\ianch\Documents\nworders.csv");
-			while(true)
+			Output = File . ReadAllText ( @"C:\users\ianch\Documents\nworders.csv" );
+			while ( true )
 			{
 				lines = Output . Split ( '\n' );
 				fields = lines [ x ] . Split ( ',' );
-				nw . OrderId = Convert.ToInt32(fields [ 0 ]);
+				nw . OrderId = Convert . ToInt32 ( fields [ 0 ] );
 			}
 
 		}
@@ -776,7 +867,7 @@ namespace WPFPages . Views
 
 		private void ShowDetailedView_Click ( object sender, RoutedEventArgs e )
 		{
-			
+
 			nwcustomer cg = new nwcustomer ( );
 			cg = CustomersGrid . SelectedItem as nwcustomer;
 			EventControl . TriggerNwCustomerSelected ( this, new NwGridArgs { ArgumentParameter = cg . CustomerId } );
@@ -794,8 +885,23 @@ namespace WPFPages . Views
 			string arg = "";
 			nwcustomer nwc = new nwcustomer ( );
 			nwc = CustomersGrid . SelectedItem as nwcustomer;
-			SelectedNwDetails snd = new SelectedNwDetails ( nwc.CustomerId);
-			snd . Show ();
+			SelectedNwDetails snd = new SelectedNwDetails ( nwc . CustomerId );
+			snd . Show ( );
+		}
+
+		private void CloseReturnButton_Loaded ( object sender, RoutedEventArgs e )
+		{
+//			UserControl uc = sender as UserControl;
+//			var b = Utils . BrushFromColors ( Colors . Red );
+//			Txtblk.Background = b;
+//			b = Utils.BrushFromHashString ( "FF00FF00" );
+//			Txtblk . Background = b;
+		}
+
+		private void CloseReturnButton_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			UserControl uc = sender as UserControl;
+			
 		}
 	}
 }

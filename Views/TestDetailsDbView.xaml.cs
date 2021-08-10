@@ -152,7 +152,7 @@ namespace WPFPages.Views
 			if (e.CallerType == "TESTDETAILSDBVIEW")
 				return;
 			//Update our own data tyoe only
-			DetailCollection.LoadDet(null, "DETAILS", 1, true);
+			DetailCollection.LoadDet("DETAILS", 1, true);
 
 		}
 		#region DATA BASED EVENT HANDLERS

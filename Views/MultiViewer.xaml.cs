@@ -24,13 +24,13 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class MultiViewer : Window
 	{
-		public DetCollection BankMultiViewerDbcollection = null;
-		public DetCollection CustMultiViewerDbcollection = null;
-		public DetCollection DetMultiViewerDbcollection = null;
+		private DetCollection BankMultiViewerDbcollection = null;
+		private DetCollection CustMultiViewerDbcollection = null;
+		private DetCollection DetMultiViewerDbcollection = null;
 
-		public BankCollection MBankcollection = null;
-		public CustCollection MCustcollection = null;
-		public DetCollection MDetcollection = null;
+		private BankCollection MBankcollection = null;
+		private CustCollection MCustcollection = null;
+		private DetCollection MDetcollection = null;
 		public Stopwatch stopwatch1 = new Stopwatch ( );
 		public Stopwatch stopwatch2 = new Stopwatch ( );
 		public Stopwatch stopwatch3 = new Stopwatch ( );
@@ -197,10 +197,10 @@ namespace WPFPages . Views
 			Mouse . OverrideCursor = Cursors . Wait;
 			Application . Current . Dispatcher . Invoke ( ( ) =>
 			{
+				Flags . SqlBankActive  = true;
 				BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			} );
-
-			Thread . Sleep ( 5000 );
+//			Thread . Sleep ( 5000 );
 			return t1;
 		}
 		private Task ReloadCustDb ( )
@@ -209,9 +209,10 @@ namespace WPFPages . Views
 			Application . Current . Dispatcher . Invoke ( ( ) =>
 			{
 				Mouse . OverrideCursor = Cursors . Wait;
+				Flags . SqlCustActive  = true;
 				CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			} );
-			Thread . Sleep ( 5000 );
+//			Thread . Sleep ( 5000 );
 			return t1;
 		}
 		private Task ReloadDetDb ( )
@@ -220,9 +221,10 @@ namespace WPFPages . Views
 			Application . Current . Dispatcher . Invoke ( ( ) =>
 			{
 				Mouse . OverrideCursor = Cursors . Wait;
-				DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet ( "MULTIVIEWER", 3, true );
 			} );
-			Thread . Sleep ( 5000 );
+//			Thread . Sleep ( 5000 );
 			return t1;
 		}
 
@@ -237,8 +239,9 @@ namespace WPFPages . Views
 		private async void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
 			if ( e . DataSource == null ) return; //|| this . BankGrid . Items . Count > 0 ) return;
-//			if ( e . CallerDb != "MULTIVIEWER" )
-//				return;
+							      //			if ( e . CallerDb != "MULTIVIEWER" )
+							      //				return;
+			Flags . SqlBankActive  = false;
 			Debug . WriteLine ($"\n*** Loading Bank data in BankDbView after BankDataLoaded trigger\n" );
 							      // ONLY proceed if we triggered the new data request
 							      //			if ( e . CallerDb != "MULTIVIEWER" ) return;
@@ -288,6 +291,7 @@ namespace WPFPages . Views
 		{
 			if ( e . DataSource == null ) return; //|| this . CustomerGrid . Items . Count > 0 ) return;
 							      // ONLY proceeed if we triggered the new data request
+			Flags . SqlCustActive  = false;
 			if ( e . CallerDb != "MULTIVIEWER" ) return;
 			this . CustomerGrid . ItemsSource = null;
 
@@ -323,6 +327,7 @@ namespace WPFPages . Views
 			if ( e . CallerDb != "MULTIVIEWER" && e . CallerType != "SQLSERVER" ) return;
 			this . DetailsGrid . ItemsSource = null;
 
+			Flags . SqlDetActive  = false;
 			stopwatch3 . Stop ( );
 			Debug . WriteLine ( $"MULTIVIEWER : Details Data fully loaded : {stopwatch3 . ElapsedMilliseconds} ms" );
 			LoadingDbData = true;
@@ -369,13 +374,21 @@ namespace WPFPages . Views
 				return;
 			// update all grids EXCEPT the default in AccountType
 			//Update our own data tyoe only
-			if (CurrentDb == "BANKACCOUNT")
-				BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
-			else if (CurrentDb == "CUSTOMER")
-				await CustCollection . LoadCust(null, "CUSTOMER", 2, true);
-			else if (CurrentDb == "DETAILS")
-				await DetailCollection . LoadDet(null, "DETAILS", 1, true);
-
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				Flags . SqlBankActive = true;
+				BankCollection . LoadBank ( null, "BANKACCOUNT", 1, true );
+			}
+			else if ( CurrentDb == "CUSTOMER" )
+			{
+				Flags . SqlCustActive = true;
+				await CustCollection . LoadCust ( null, "CUSTOMER", 2, true );
+			}
+			else if ( CurrentDb == "DETAILS" )
+			{
+				Flags . SqlDetActive = true;
+				await DetailCollection . LoadDet ( "DETAILS", 1, true );
+			}
 		}
 
 		private async void EventControl_ViewerIndexChanged ( object sender, IndexChangedArgs e )
@@ -525,7 +538,7 @@ namespace WPFPages . Views
 			Utils . SaveProperty ( "Multi_dindex", dindex . ToString ( ) );
 			// Clear databases
 			MBankcollection?.Clear ( );
-			MCustcollection?.Clear ( );
+//			MCustcollection?.Clear ( );
 			MDetcollection?.Clear ( );
 			Flags . SqlMultiViewer = null;
 		}
@@ -537,18 +550,21 @@ namespace WPFPages . Views
 			//			if ( MultiBankcollection == null || MultiBankcollection . Count == 0 )
 			MBankcollection = null;
 			stopwatch1 . Start ( );
+			Flags . SqlBankActive  = true;
 			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			//BankGrid . ItemsSource = MultiBankcollection;
 			//			if ( MultiCustcollection == null || MultiCustcollection . Count == 0 )
 			MCustcollection = null;
 			stopwatch2 . Start ( );
+			Flags . SqlCustActive  = true;
 			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			//			if ( MultiDetcollection == null || MultiDetcollection . Count == 0 )
 			MDetcollection = null;
 
 			DetCollection det = new DetCollection ( );
 			stopwatch3 . Start ( );
-			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 2, true );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "MULTIVIEWER", 2, true );
 
 			Flags . SqlMultiViewer = this;
 		}
@@ -659,13 +675,16 @@ namespace WPFPages . Views
 			//MultiDetcollection = null;
 
 			/// Reoad the data into our Items Source collections
+			Flags . SqlBankActive  = true;
 			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
 			//			MultiBankcollection = BankCollection . MultiBankcollection;
 
+			Flags . SqlCustActive  = true;
 			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 			//			MultiCustcollection = CustCollection . MultiCustcollection;
 
-			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "MULTIVIEWER", 3, true );
 			//			MultiDetcollection = DetCollection . MultiDetcollection;
 
 			//this . BankGrid . ItemsSource = MBankcollection;
@@ -1220,20 +1239,23 @@ namespace WPFPages . Views
 			}
 			this . BankGrid . ItemsSource = null;
 			this . BankGrid . Items . Clear ( );
+			Flags . SqlBankActive  = true;
 			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 1, true );
-			this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MBankcollection );
-			this . BankGrid . Refresh ( );
+//			this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MBankcollection );
+//			this . BankGrid . Refresh ( );
 			this . CustomerGrid . ItemsSource = null;
 			this . CustomerGrid . Items . Clear ( );
+			Flags . SqlCustActive  = true;
 			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
-			this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MCustcollection );
-			this . CustomerGrid . Refresh ( );
+			//this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MCustcollection );
+			//this . CustomerGrid . Refresh ( );
 			//			ExtensionMethods . Refresh ( this . CustomerGrid );
 			this . DetailsGrid . ItemsSource = null;
 			this . DetailsGrid . Items . Clear ( );
-			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
-			this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MDetcollection );
-			this . DetailsGrid . Refresh ( );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "MULTIVIEWER", 3, true );
+			//this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( MDetcollection );
+			//this . DetailsGrid . Refresh ( );
 			//			ExtensionMethods . Refresh ( this . DetailsGrid );
 		}
 
@@ -1812,8 +1834,10 @@ namespace WPFPages . Views
 			if ( sender == MBankcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Bank updated a row, so just update Customer and Details
+				Flags . SqlCustActive  = true;
 				await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
-				await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
+				Flags . SqlDetActive  = true;
+				await DetailCollection . LoadDet ( "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
 				return;
@@ -1821,8 +1845,10 @@ namespace WPFPages . Views
 			else if ( sender == MCustcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Customer updated a row, so just update Bank and Details
+				Flags . SqlBankActive  = true;
 				BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
-				await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
+				Flags . SqlDetActive  = true;
+				await DetailCollection . LoadDet ( "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
 				return;
@@ -1830,7 +1856,9 @@ namespace WPFPages . Views
 			else if ( sender == MDetcollection )// || sender == MultiCustcollection || sender == MultiDetcollection )
 			{
 				// Details updated a row, so just update Customer and Bank
+				Flags . SqlBankActive  = true;
 				BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+				Flags . SqlCustActive  = true;
 				await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 				inprogress = false;
@@ -1849,9 +1877,12 @@ namespace WPFPages . Views
 
 			if ( e . CallerDb == "MULTIVIEWER" ) return;
 
+			Flags . SqlBankActive  = true;
 			BankCollection . LoadBank ( MBankcollection, "MULTIVIEWER", 3, true );
+			Flags . SqlCustActive  = true;
 			await CustCollection . LoadCust ( MCustcollection, "MULTIVIEWER", 3, true );
-			await DetailCollection . LoadDet ( MDetcollection, "MULTIVIEWER", 3, true );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "MULTIVIEWER", 3, true );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			inprogress = false;
 			return;

@@ -90,7 +90,7 @@ namespace WPFPages . Views
 			//Identify individual windows for update protection
 			this . Tag = ( Guid ) Guid . NewGuid ( );
 			this . Refresh ( );
-			DataFields . DataContext = this . BankGrid;
+			this . DataContext = BankviewerView;
 		}
 		#region Mouse support
 		//private void DoDragMove ( )
@@ -114,7 +114,6 @@ namespace WPFPages . Views
 			bindex = int . Parse ( ndx );
 			this . BankGrid . SelectedIndex = bindex < 0 ? 0 : bindex;
 
-			//			this . MouseDown += delegate { DoDragMove ( ); };
 			Utils . SetupWindowDrag ( this );
 			// An EditDb has changed the current index 
 			EventControl . EditIndexChanged += EventControl_EditIndexChanged;
@@ -127,7 +126,7 @@ namespace WPFPages . Views
 
 			EventControl . GlobalDataChanged += EventControl_GlobalDataChanged;
 
-
+			Flags . SqlBankActive = true;
 			BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 
 			SaveBttn . IsEnabled = false;
@@ -160,12 +159,14 @@ namespace WPFPages . Views
 			t1 . Priority = ThreadPriority . Lowest;
 			t1 . Start ( );
 			Startup = false;
+			Utils . SetGridRowSelectionOn ( BankGrid, 0 );
 		}
 
 		private void EventControl_GlobalDataChanged ( object sender, GlobalEventArgs e )
 		{
 			if ( e . CallerType == "BANKDBVIEW" )
 				return;
+			Flags . SqlBankActive = true;
 			BankCollection . LoadBank ( null, "BANKACCOUNT", 1, true );
 		}
 
@@ -184,7 +185,7 @@ namespace WPFPages . Views
 			Triggered = false;
 		}
 
-		private  void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
+		private void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
 		{
 			if ( e . CallerDb == "BANKDBVIEW" || e . CallerDb == "BANKACCOUNT" )
 				return;
@@ -194,7 +195,8 @@ namespace WPFPages . Views
 			this . BankGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
 			//Reload our data base data, it will be loaded when we are notified it is ready via the BankDataLoaded Event
-			BankViewcollection = BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
+			Flags . SqlBankActive = true;
+			BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 3, true );
 			IsDirty = false;
 		}
 
@@ -257,6 +259,7 @@ namespace WPFPages . Views
 				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
 				// and this will notify any other open viewers as well
 				bvmCurrent = null;
+				Flags . SqlBankActive = true;
 				BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
 				return;
 			}
@@ -344,6 +347,7 @@ namespace WPFPages . Views
 			// Event handler for BankDataLoaded
 			if ( e . DataSource == null )
 				return;
+			Flags . SqlBankActive = false;
 			// ONLY proceeed if we triggered the new data request
 			if ( e . CallerDb != "BANKDBVIEW" )
 				return;
@@ -377,7 +381,9 @@ namespace WPFPages . Views
 		}
 
 		private void Close_Click ( object sender, RoutedEventArgs e )
-		{Close ( );}
+		{
+			Close ( );
+		}
 
 		private void Window_Closing ( object sender, System . ComponentModel . CancelEventArgs e )
 		{
@@ -419,8 +425,6 @@ namespace WPFPages . Views
 			try
 			{
 
-				bindex = this . BankGrid . SelectedIndex;
-				Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 				Startup = true;
 				try
 				{
@@ -431,6 +435,8 @@ namespace WPFPages . Views
 				{
 					Debug . WriteLine ( $"{ex . Message}, {ex . Data}" );
 				}
+				bindex = this . BankGrid . SelectedIndex;
+				Utils . SetUpGridSelection ( this . BankGrid, this . BankGrid . SelectedIndex );
 				if ( LinkToAllRecords )// && Triggered == false )
 				{
 					TriggerViewerIndexChanged ( this . BankGrid );
@@ -632,9 +638,10 @@ namespace WPFPages . Views
 			}
 			else
 			{
-				//				Flags . LinkviewerRecords = false;
+				Flags . LinkviewerRecords = false;
 				LinkToAllRecords = false;
 			}
+			LinkRecords . Refresh ( );
 			if ( Flags . SqlBankViewer != null )
 				Flags . SqlBankViewer . LinkRecords . IsChecked = Flags . LinkviewerRecords;
 			if ( Flags . SqlCustViewer != null )
@@ -689,6 +696,34 @@ namespace WPFPages . Views
 					Row = grid . SelectedIndex
 				} );
 		}
+		private void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
+			cm . PlacementTarget = this . BankGrid as DataGrid;
+			cm . IsOpen = true;
+		}
+
+
+		#region Drag/Drop handlers
+
+		private void BankGrid_GiveFeedback ( object sender, GiveFeedbackEventArgs e )
+		{
+			Mouse . SetCursor ( Cursors . Hand );
+			//e . Handled = true;
+		}
+
+
+		private void BankGrid_PreviewQueryContinueDrag ( object sender, QueryContinueDragEventArgs e )
+		{
+			Mouse . SetCursor ( Cursors . Hand );
+			e . Action = DragAction . Continue;
+		}
+
+		private void BankGrid_DragEnter ( object sender, DragEventArgs e )
+		{
+			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
+			Mouse . SetCursor ( Cursors . Hand );
+		}
 
 		private void BankGrid_PreviewMouseLeftButtondown ( object sender, MouseButtonEventArgs e )
 		{
@@ -728,12 +763,18 @@ namespace WPFPages . Views
 						DragDrop . DoDragDrop (
 						BankGrid,
 						dataObject,
-						DragDropEffects . Move );
+						DragDropEffects . Copy );
 						IsLeftButtonDown = false;
 					}
 				}
 			}
 		}
+		private void BankGrid_PreviewDragOver ( object sender, DragEventArgs e )
+		{
+			Point mousePos = e . GetPosition ( BankGrid );
+			Vector diff = _startPoint - mousePos;
+		}
+		#endregion Drag/Drop handlers
 
 		#region Menu Linq handlers
 
@@ -896,13 +937,6 @@ namespace WPFPages . Views
 			}
 		}
 
-		private  void BankGrid_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
-		{
-			ContextMenu cm = this . FindResource ( "ContextMenu1" ) as ContextMenu;
-			cm . PlacementTarget = this . BankGrid as DataGrid;
-			cm . IsOpen = true;
-		}
-
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
 		{
 			IsDirty = true;
@@ -1026,28 +1060,16 @@ namespace WPFPages . Views
 			while ( true )
 			{
 				int AllLinks = 0;
-				Thread . Sleep ( 5000 );
+				Thread . Sleep ( 3500 );
 
-				//				if( LinkToParent )
 				bool reslt = LinktoParent;
 				if ( LinkToAllRecords == false && LinkToAllRecords == false )
 				{
 					// Link to  ALL is UNCHECKED, so make sure Parent link is ENABLED
-					//if( LinktoParent )
-					//{
-					//AllLinks++;
 					Application . Current . Dispatcher . Invoke ( ( ) =>
 					{
 						ResetLinkages ( "LINKTOPARENT", true );
 					} );
-					//}
-					//else
-					//{
-					//	Application . Current . Dispatcher . Invoke ( ( ) =>
-					//	{
-					//		ResetLinkages ( "LINKTOPARENT", false );
-					//	} );
-					//}
 				}
 				else
 				{
@@ -1073,16 +1095,16 @@ namespace WPFPages . Views
 						ResetLinkages ( "MULTILINKTOPARENT", true );
 					} );
 				}
-				if ( AllLinks >= 1 )
-					Application . Current . Dispatcher . Invoke ( ( ) =>
-					{
-						ResetLinkages ( "ALLLINKS", true );
-					} );
-				else
-					Application . Current . Dispatcher . Invoke ( ( ) =>
-					{
-						ResetLinkages ( "ALLLINKS", false );
-					} );
+				//				if ( AllLinks >= 1 )
+				Application . Current . Dispatcher . Invoke ( ( ) =>
+				{
+					ResetLinkages ( "ALLLINKS", Flags . LinkviewerRecords );
+				} );
+				//else
+				//	Application . Current . Dispatcher . Invoke ( ( ) =>
+				//	{
+				//		ResetLinkages ( "ALLLINKS", false );
+				//	} );
 
 			}
 		}
@@ -1091,6 +1113,7 @@ namespace WPFPages . Views
 			if ( linktype == "LINKTOPARENT" )
 			{
 				LinkToParent . IsEnabled = value;
+				LinktoParent = value;
 				if ( value )
 					SqlParentViewer = Flags . SqlBankViewer;
 				else
@@ -1115,13 +1138,9 @@ namespace WPFPages . Views
 					LinktoMultiParent = false;
 				}
 			}
-			if ( linktype == "ALLLINKS" && value )
-			{
-				if ( LinkToAllRecords == true )
-					LinkRecords . IsEnabled = true;
-			}//
-			 //else
-			 //	LinkRecords . IsEnabled = false;
+			if ( linktype == "ALLLINKS" )
+				LinkRecords . IsChecked = value;
+
 			#endregion HANDLERS for linkage checkboxes, inluding Thread montior
 
 		}
@@ -1135,10 +1154,6 @@ namespace WPFPages . Views
 			this . WindowState = WindowState . Normal;
 		}
 
-		private void BankGrid_DragEnter ( object sender, DragEventArgs e )
-		{
-			e . Effects = ( DragDropEffects ) DragDropEffects . Move;
-		}
 
 		private void ContextShowJson_Click ( object sender, RoutedEventArgs e )
 		{
@@ -1155,7 +1170,7 @@ namespace WPFPages . Views
 			MessageBox . Show ( Output, "Currently selected record in JSON format", MessageBoxButton . OK, MessageBoxImage . Information, MessageBoxResult . OK );
 		}
 
-		private  void ContextEdit_Click ( object sender, RoutedEventArgs e )
+		private void ContextEdit_Click ( object sender, RoutedEventArgs e )
 		{
 			// handle flags to let us know WE have triggered the selectedIndex change
 			//MainWindow . DgControl . SelectionChangeInitiator = 2; // tells us it is a EditDb initiated the record change
@@ -1180,8 +1195,9 @@ namespace WPFPages . Views
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
 				//Reload our data base data, it will be loaded when we are notified it is ready via the BankDataLoaded Event
+				Flags . SqlBankActive = true;
 				BankCollection . LoadBank ( BankViewcollection, "BANKDBVIEW", 1, true );
-//				this . BankGrid . ItemsSource = BankviewerView;
+				//				this . BankGrid . ItemsSource = BankviewerView;
 				// Notify everyone else of the data change
 				EventControl . TriggerViewerDataUpdated ( BankviewerView,
 					new LoadedEventArgs
@@ -1207,7 +1223,7 @@ namespace WPFPages . Views
 			//Count . Text = $"{this . BankGrid . SelectedIndex} / { this . BankGrid . Items . Count . ToString ( )}";
 			// This is essential to get selection activated again
 			BankGrid . Focus ( );
-			Utils . SetGridRowSelectionOn ( BankGrid, BankGrid . SelectedIndex );				
+			Utils . SetGridRowSelectionOn ( BankGrid, BankGrid . SelectedIndex );
 			this . BankGrid . Focus ( );
 		}
 
@@ -1293,6 +1309,11 @@ namespace WPFPages . Views
 				FontsizeIcon2 . Margin = t;
 				//				FontsizeIcon . Width = 30;
 			}
+		}
+		private void sysColors_Click ( object sender, RoutedEventArgs e )
+		{
+			SysColors sc = new SysColors ( );
+			sc . Show ( );
 		}
 		//#####################
 		#region Custom Commands
@@ -1439,6 +1460,7 @@ namespace WPFPages . Views
 			MessageBox . Show ( "Custom Command is closing the current Window" );
 			this . Close ( );
 		}
+
 		#endregion Close menu option Command
 
 		#endregion Commands

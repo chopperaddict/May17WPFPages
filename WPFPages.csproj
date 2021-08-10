@@ -92,10 +92,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Commands\CustomCommands.cs" />
     <Compile Include="Converts\Color2Hex.cs" />
     <Compile Include="Converts\dateconvertor.cs" />
+    <Compile Include="Converts\GeneralConverters.cs" />
     <Compile Include="Converts\HexConvert.cs" />
+    <Compile Include="Converts\OpacityToDecimalConverter.cs" />
     <Compile Include="Converts\ValueToTextConverter.cs" />
     <Compile Include="DataSet1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -103,13 +104,17 @@
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
     <Compile Include="Commands\MyCommands.cs" />
+    <Compile Include="ExceptionHandlingSample.xaml.cs">
+      <DependentUpon>ExceptionHandlingSample.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NorthWind.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>NorthWind.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Views\Colorpicker.xaml.cs">
-      <DependentUpon>Colorpicker.xaml</DependentUpon>
+    <Compile Include="ViewModels\ObservableObject.cs" />
+    <Compile Include="Views\BackgroundDesigner.xaml.cs">
+      <DependentUpon>BackgroundDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ColorsSelector.xaml.cs">
       <DependentUpon>ColorsSelector.xaml</DependentUpon>
@@ -118,9 +123,9 @@
     <Compile Include="Views\DropDataGridData.xaml.cs">
       <DependentUpon>DropDataGridData.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DummyDebugConverter.cs" />
+    <Compile Include="Converts\DummyDebugConverter.cs" />
     <Compile Include="Views\Folder.cs" />
-    <Compile Include="Views\HeaderToImageConverter.cs" />
+    <Compile Include="Converts\HeaderToImageConverter.cs" />
     <Compile Include="Views\MenuItem.cs" />
     <Compile Include="Views\MyConverters.cs" />
     <Compile Include="ListBoxScroll.cs" />
@@ -198,12 +203,15 @@
     <Compile Include="Views\SelectedNwDetails.xaml.cs">
       <DependentUpon>SelectedNwDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SelectedToYesNoConverter.cs" />
+    <Compile Include="Converts\SelectedToYesNoConverter.cs" />
     <Compile Include="Views\Setup.xaml.cs">
       <DependentUpon>Setup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SQLHandlers.cs" />
     <Compile Include="Views\SupportMethods.cs" />
+    <Compile Include="Views\SysColors.xaml.cs">
+      <DependentUpon>SysColors.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TestBankCollection.cs" />
     <Compile Include="Views\TestBankDbView.xaml.cs">
       <DependentUpon>TestBankDbView.xaml</DependentUpon>
@@ -288,6 +296,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ExceptionHandlingSample.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Page0.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -300,15 +312,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\BackgroundDesigner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CloseReturnButton.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\BankDbView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Colorpicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -425,6 +437,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dicts\TestDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SysColors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

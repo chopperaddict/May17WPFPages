@@ -10,7 +10,6 @@
 	  xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase" 	  
 	  xmlns:command="clr-namespace:WPFPages.Commands" 
 	  
-	  d:DataContext="{d:DesignInstance Type=local:nwcustomer}"
 	  
 	  mc:Ignorable="d"
 	  MinHeight=" 650"
@@ -21,9 +20,10 @@
 	  Height="650" 
 	  Width="850"
 	  Background="{StaticResource Cyan6}">
-	<!--d:DataContext="{d:DesignInstance Type=local:NorthwindFullData}"-->
+	<!--d:DataContext="{d:DesignInstance Type=local:nwcustomer}"-->
 
 	<Window.Resources>
+
 		<userctrl:CloseReturnButton x:Key="CloseButton"/>
 		<local:SelectedToYesNoConverter x:Key="SelectedToYesNo"/>
 		<local:DummyDebugConverter x:Key="DummyConverter"/>
@@ -31,7 +31,8 @@
 		<conv:ValueToTextConverter  x:Key="ValueToText"/>
 		<local:nwcustomer  x:Key="CustDb"/>
 		<local:nworder  x:Key="OrderDb"/>
-		<!--<data:nwcustomer x:Key="customerdatacontext"/>-->
+		<!--Bind customer object-->
+		<local:nwcustomer x:Key="customerdatacontext"/>
 		<!--<local:NorthWindFullData x:Key="Commands"/>-->
 
 		<SolidColorBrush x:Key="Blue4" Color="#FF5579BD" />
@@ -97,36 +98,24 @@
 					<Image Source="/Icons/text-message.png"  />
 				</MenuItem.Icon>
 			</MenuItem>
-
-			<!--<MenuItem Header="Find current Customer type in Selective Viewer"
-				    Click="ShowDetailedView_Click"/>
-			<Separator Style="{StaticResource Menu_Separator}"/>
-			<MenuItem Header="Find current Order type in Selective Viewer"
-				    Click="ShowOrderDetailedView_Click"/>-->
-
+	
 		</ContextMenu>
 
+		
 	</Window.Resources>
-
-
-	<!--/*
-	CustomersGrid
-	OrdersGrid
-	ProductsFrid
-	CategoriesGrid
-	*/-->
-
+	
 	<Grid 
-		PreviewMouseRightButtonDown="NwStandard_PreviewMouseRightButtonDown"
+		PreviewMouseRightButtonDown="NwStandard_PreviewMouseRightButtonDown"		
+	d:DataContext="{d:DesignInstance Type=local:nwcustomer}"
 		>
-		<Grid.Background>
+
+		<Grid.Background>			
 			<!--  create an elegant left to right light-> Dark gradient as a background  -->
 			<LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
 				<GradientStop Offset="0.9" Color="#333333" />
 				<GradientStop Offset="0.4" Color="#35F6FB" />
 			</LinearGradientBrush>
 		</Grid.Background>
-
 
 		<!--#region Grid Setup-->
 		<Grid.RowDefinitions>
@@ -164,9 +153,18 @@
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
 
+			<TextBlock x:Name="CustTotal"
+				Text="{Binding CustomersTotal}"
+			     Height="25"
+			     FontWeight="Bold"
+			     Padding="3"
+			     VerticalAlignment="Center"
+			     Background="Transparent"
+			     Width="30"				     
+			     Foreground="{StaticResource Black1}"/>
+
 			<TextBlock x:Name="CustomersTot"
-				DataContext="{Binding CustDb}"
-				Text="{Binding CustomersTotal , UpdateSourceTrigger=PropertyChanged}"
+				Text="{Binding CustomerTotal}"
 			     FontWeight="Bold"
 			     Height="25"
 			     Padding="3"
@@ -184,9 +182,10 @@
 			<!--Text="{Biding UpdateSourceTrigger=Explicit, Path=Sample, RelativeSource={RelativeSource FindAncestor, AncestorType=Window, AncestorLevel=1}}"-->
 			<!--Text="{Binding CustomerCurrent, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource FindAncestor, AncestorType=local:nwcustomer}}"-->
 
-			<TextBlock x:Name="CustCurrent"	
-				DataContext="{Binding DbCust}"
-				Text="{Binding CustomerCurrent, diag:PresentationTraceSources.TraceLevel=High}"
+			<!--<TextBlock d:DataContext="{d:DesignInstance Type=local:CustomerCollection}" x:Name="CustCurrent"-->
+			<!--<TextBlock x:Name="CustCurrent"-->
+			<TextBlock x:Name="CustCurrent"
+				Text="{Binding CurrentCustomer}"
 			     Height="25"
 			     FontWeight="Bold"
 			     Padding="3"
@@ -209,7 +208,6 @@
 			CanUserSortColumns="True"
 			IsSynchronizedWithCurrentItem="False"
 			SelectedItem="CustomersGrid_Selected"
-			DataContextChanged="CustomersGrid_DataContextChanged"			    
 			RowHeight="20"
 			MinHeight="80"
 			VerticalAlignment="Stretch"
@@ -217,7 +215,7 @@
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
 			SelectionChanged="CustomerGrid_SelectionChanged" 
-			>
+			    >
 			<!--VirtualizingStackPanel.IsVirtualizing="False"-->
 			<!--Loaded="CustomersGrid_Loaded"-->
 
@@ -428,9 +426,9 @@
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
 
-			<TextBlock x:Name="OrdCurrent"
-			     DataContext="{Binding OrderDb}"
-				Text="{Binding OrderCurrent, diag:PresentationTraceSources.TraceLevel=High, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+			<!--<TextBlock x:Name="OrdCurrent"-->
+			<TextBlock x:Name="currentOrder"
+				Text="{Binding CurrentOrder}"
 			     Height="25"
 			     FontWeight="Bold"
 			     Padding="3"
@@ -460,7 +458,6 @@
 			VerticalAlignment="Stretch"
 			Foreground="Black"
 			SelectionChanged="OrdersGrid_SelectionChanged"
-			DataContextChanged="OrdersGrid_DataContextChanged"			    
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
 			MinHeight="80">
@@ -565,14 +562,22 @@
 			     Padding="3"
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
+			<!--<TextBlock x:Name="ProductsTot"-->
 			<TextBlock x:Name="ProductsTot"
-				Text="{Binding ProductsTotal}"
+				Text="{Binding ProductTotal}"
 			     Height="25"
 			     FontWeight="Bold"
 			     Padding="3"
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
 			<TextBlock Text=" : Current : "
+			     Height="25"
+			     FontWeight="Bold"
+			     Padding="3"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+			<TextBlock x:Name="Currentproducts"
+				Text="{Binding CurrentProduct}"
 			     Height="25"
 			     FontWeight="Bold"
 			     Padding="3"
@@ -594,7 +599,6 @@
 			RowHeight="25"
 			RowBackground="Bisque"
 			SelectionChanged="ProductsGrid_SelectionChanged"
-			DataContextChanged="ProductsGrid_DataContextChanged"			    
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
 			Foreground="Black"
@@ -709,7 +713,7 @@
 				Margin="0,3,0,0"
 			     Grid.ColumnSpan="2">
 
-			<TextBlock Text="Order Details Db  :  Total Records : "
+			<TextBlock Text="Order Details Db  :  Total : "
 			     Height="25"
 			     FontWeight="Bold"
 			     Padding="3"
@@ -720,6 +724,20 @@
 				Text="{Binding OrderDetailsTotal}"
 			     FontWeight="Bold"
 			     Height="25"
+			     Padding="3"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+
+			<TextBlock Text=" : Current : "
+			     Height="25"
+			     FontWeight="Bold"
+			     Padding="3"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+			<TextBlock x:Name="CurrentOrdDetails"
+				Text="{Binding CurrentOrderDetail}"
+			     Height="25"
+			     FontWeight="Bold"
 			     Padding="3"
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
@@ -741,7 +759,21 @@
 
 			<TextBlock x:Name="CategoriesTot"
 				Text="{Binding CategoriesTotal}"
-			     Height="25"
+			     Height="20"
+			     FontWeight="Bold"
+			     Padding="3"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+
+			<TextBlock Text=" : Current : "
+			     Height="20"
+			     FontWeight="Bold"
+			     Padding="3"
+			     VerticalAlignment="Center"
+			     Foreground="{StaticResource Black1}"/>
+			<TextBlock x:Name="CurrentCategory"
+				Text="{Binding CurrentCategory}"
+			     Height="20"
 			     FontWeight="Bold"
 			     Padding="3"
 			     VerticalAlignment="Center"
@@ -767,11 +799,10 @@
 			HorizontalAlignment="Left"
 			IsSynchronizedWithCurrentItem="True"
 			MinWidth="110"
-			MinHeight="120"
+			MinHeight="20"
 			RowHeight="20"
 			RowBackground="Bisque"
 			SelectionChanged="OrderDetailsGrid_SelectionChanged"
-			DataContextChanged="OrderDetailsGrid_DataContextChanged"			    
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
 			VerticalScrollBarVisibility="Visible"
@@ -877,7 +908,6 @@
 			VerticalAlignment="Stretch"
 			Margin="10,3,0,0"
 			RowHeight="30"
-			DataContextChanged="CategoriesGrid_DataContextChanged"
 			SelectionChanged="CategoriesGrid_SelectionChanged"
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
@@ -907,7 +937,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTemplateColumn Header="Description" Width="400" SortMemberPath="Description">
+				<DataGridTemplateColumn Header="Description" Width="auto" SortMemberPath="Description">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding Path=Description}" 
@@ -1011,22 +1041,29 @@
 		</DataGrid>
 		<!--</StackPanel>-->
 		<!--This allows MOST standard properties to be changed at the user design stage-->
-		<userctrl:CloseReturnButton			
-				FontSize="18"
-				BorderThickness="0.5"				
-				FontWeight="DemiBold"
-				Grid.Column="6" Grid.Row="8"  
-				Foreground="Red"
-				Content="Close here"	
-				Fill="Green"	
-				ButtonText="fghjkl"
-				PreviewMouseLeftButtonDown="CloseReturnButton_PreviewMouseLeftButtonDown"
-				HorizontalAlignment="Left" 
-				Width="93" 
-			Height="68"
-			Margin="47,15,0,10"
-				/>
-
+		<userctrl:CloseReturnButton		
+			BorderColor ="{StaticResource Blue0}"
+			FillColor="{StaticResource Yellow0}"
+			ButtonText="Close"
+			ButtonWidth="90" 
+			ButtonHeight="48"
+			ColorBackground="Transparent"
+			FontSize="21"
+			FontWeight="Bold"
+			FontFamily="Lucida Sans"
+			Foreground="Blue"
+			Grid.Column="6" Grid.Row="8"  
+			HorizontalAlignment="Left" 
+			Loaded="CloseReturnButton_Loaded"
+			Margin="55,10,0,10"
+			MouseOverColor="{StaticResource Blue2}"
+			MouseoverButtonText="Closing"
+			PreviewMouseLeftButtonDown="CloseReturnButton_PreviewMouseLeftButtonDown"
+			PreviewMouseMove="CloseReturnButton_PreviewMouseMove"
+			StrokeWidth="2"
+			MouseoverTextColor="{StaticResource White1}"
+			TextColor="{StaticResource Black1}"
+			/>
 		<Button
 			Width="80"
 			Height="40"
@@ -1053,13 +1090,27 @@
 			Width="180"
 			Click="ShowSelectedView_Click"
 			Height="40"
-				Grid.Column="5" Grid.Row="8"  
+			Grid.Column="5" Grid.Row="8"  
 			Margin="-29,15,0,15"
 			Background="Blue"
 			FontSize="18"
 			Content="Selected Item View"
 			Foreground="White" HorizontalAlignment="Left"/>
+		
+		<!--Test of binding a TextBlock to a TextBOX text-->
+		<!--<StackPanel Orientation="Vertical"
+				Grid.Row="8"
+				Grid.Column="1"
+				Background="CadetBlue"
+				Margin="5"
+				>
+			<TextBlock Name="Txtblk" Margin="5"
+			     Text="{Binding Path=Text, ElementName=Txtbox, UpdateSourceTrigger=PropertyChanged}"/>
 
+			<TextBox Name="Txtbox" Margin="3"
+				   Text="abcdefg"/>
+
+		</StackPanel>-->
 		<!--ColorBackground="{StaticResource Green4}"-->
 	</Grid>
 </Window>

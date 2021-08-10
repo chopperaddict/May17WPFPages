@@ -22,9 +22,13 @@ namespace WPFPages
 
 	public static class Flags
 	{
-
+		public static bool SqlBankActive = false;
+		public static bool SqlCustActive = false;
+		public static bool SqlDetActive = false;
 		public static DataGrid SqlBankGrid;// = null;
 		public static SqlDbViewer SqlBankViewer;// = null;
+		public static SqlDbViewer SqlCustViewer;// = null;
+		public static SqlDbViewer SqlDetViewer;// = null;
 		public static MultiViewer SqlMultiViewer;// = null;
 		public static DataGrid CurrentEditDbViewerBankGrid;// = null;
 		public static Window NwSelectionWindow;
@@ -41,27 +45,25 @@ namespace WPFPages
 		private struct AllFlags
 		{
 
-			DataGrid SqlBankGrid;
-			DataGrid CurrentEditDbViewerBankGrid;
-			DataGrid SqlCustGrid;
-			DataGrid CurrentEditDbViewerCustomerGrid;
-			DataGrid SqlDetGrid;
-			bool isMultiMode;
-			string MultiAccountCommandString;
-			bool IsMultiMode;
-			bool SqlViewerIsLoading;
-			bool SqlViewerIndexIsChanging;
-			int SqlBankCurrentIndex;
-			int SqlCustCurrentIndex;
-			int SqlDetCurrentIndex;
+			//DataGrid SqlBankGrid;
+			//DataGrid CurrentEditDbViewerBankGrid;
+			//DataGrid SqlCustGrid;
+			//DataGrid CurrentEditDbViewerCustomerGrid;
+			//DataGrid SqlDetGrid;
+			//bool isMultiMode;
+			//string MultiAccountCommandString;
+			//bool IsMultiMode;
+			//bool SqlViewerIsLoading;
+			//bool SqlViewerIndexIsChanging;
+			//int SqlBankCurrentIndex;
+			//int SqlCustCurrentIndex;
+			//int SqlDetCurrentIndex;
 		}
 
 		public static DataGrid SqlCustGrid;// = null;
-		public static SqlDbViewer SqlCustViewer;// = null;
 		public static DataGrid CurrentEditDbViewerCustomerGrid;//= null;
 
 		public static DataGrid SqlDetGrid = null;
-		public static SqlDbViewer SqlDetViewer = null;
 		public static DataGrid CurrentEditDbViewerDetailsGrid = null;
 
 		public static List<DataGrid> CurrentEditDbViewerBankGridList;
@@ -527,11 +529,11 @@ namespace WPFPages
 			//$"Bank : MultiBankcollection					: { BankCollection . MultiBankcollection . Count}\n" +
 			//$"Bank : BankViewerDbcollection				: { BankCollection . BankViewerDbcollection . Count}\n" +
 
-			$"\nCustcollection								: { CustCollection . Custcollection . Count}\n" +
-			$"CustViewerDbcollection						: { CustCollection . CustViewDbcollection . Count}\n" +
-			$"SqlViewerCustcollection	  					: { CustCollection . SqlViewerCustcollection . Count}\n" +
-			$"EditDbCustcollection 						: { CustCollection . EditDbCustcollection . Count}\n" +
-			$"MultiCustcollection							: { CustCollection . MultiCustcollection . Count}\n" +
+//			$"\nCustcollection								: { CustCollection . Custcollection . Count}\n" +
+//			$"CustViewerDbcollection						: { CustCollection . CustViewDbcollection . Count}\n" +
+//			$"SqlViewerCustcollection	  					: { CustCollection . SqlViewerCustcollection . Count}\n" +
+//			$"EditDbCustcollection 						: { CustCollection . EditDbCustcollection . Count}\n" +
+//			$"MultiCustcollection							: { CustCollection . MultiCustcollection . Count}\n" +
 
 			$"\nDetcollection								: { DetCollection . Detcollection . Count}\n" +
 			$"DetViewerDbcollection						: { DetCollection . DetViewerDbcollection . Count}\n" +

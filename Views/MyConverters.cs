@@ -6,8 +6,11 @@ using System . Globalization;
 using System . Linq;
 using System . Text;
 using System . Threading . Tasks;
+using System . Windows;
 using System . Windows . Data;
 using System . Windows . Media;
+
+using Newtonsoft . Json . Linq;
 
 using WPFPages . ViewModels;
 
@@ -32,10 +35,14 @@ namespace WPFPages . MyConvertors
 		{
 			// Receives an int value 1-4 
 			// Returns the AC type as a word "Checking A/c"
+			if ( value  == DependencyProperty . UnsetValue )
+				return DependencyProperty . UnsetValue;
 			try
 			{
 				int val = System . Convert . ToInt32 ( value );
-				if ( val == 1 )
+				if ( val == 0 )
+					return "Unknown";
+				else if ( val == 1 )
 					return "Checking A/C";
 				else if ( val == 2 )
 					return "Deposit A/C";
@@ -63,6 +70,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue ) 
+				return DependencyProperty . UnsetValue;
 			// Receives a FULL date with time = "01/01/1933 12:13:54"
 			// Returns just the date part = "01/01/1933"
 			string date = value . ToString ( );
@@ -79,6 +88,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue  )
+				return DependencyProperty . UnsetValue;
 
 			// Assumes receiving a date as "10041932" or similar
 			string date = value . ToString ( );
@@ -98,6 +109,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue ) 
+				return DependencyProperty . UnsetValue;
 			// Receives full date/Time string and returns just the date part of it as a string
 			return value . ToString ( ) . Substring ( 0, 10 );
 		}
@@ -113,6 +126,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue ) 
+				return DependencyProperty . UnsetValue;
 			// Assumes receiving a date as "10/04/1932" or similar
 			// Returns "1932/04/10"
 			string date = value . ToString ( );
@@ -139,6 +154,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue ) 
+				return DependencyProperty . UnsetValue;
 			// Assumes receiving an int value and Returns a Brush
 			// Used by AcType to color each datagrid row to match the AcType of the account
 			Brush br = null;
@@ -162,6 +179,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue ) 
+				return DependencyProperty . UnsetValue;
 			// We receive a Resource name and Return a Brush
 			return ( Brush ) Utils . GetDictionaryBrush ( parameter . ToString ( ) );
 		}
@@ -178,6 +197,8 @@ namespace WPFPages . MyConvertors
 	{
 		public object Convert ( object value, Type targetType, object parameter, CultureInfo culture )
 		{
+			if ( value == DependencyProperty . UnsetValue ) 
+				return DependencyProperty . UnsetValue;
 			// obtain the conveter for the target type
 			TypeConverter converter = TypeDescriptor . GetConverter ( targetType );
 			try

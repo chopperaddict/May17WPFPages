@@ -48,7 +48,7 @@ namespace WPFPages
 	// Delegate for use with dragand drop operations
 	public delegate Point GetDragDropPosition ( IInputElement theElement );
 
-	public partial class SqlDbViewer : Window, INotifyPropertyChanged
+	public partial class SqlDbViewer : Window, System . ComponentModel.INotifyPropertyChanged
 	{
 		// Used by Drag&Drop code
 		int prevRowIndex = -1;
@@ -67,14 +67,17 @@ namespace WPFPages
 		private DetCollection DetReserved = new DetCollection ( );
 
 		// Declare all 3 of the local Db pointers
-		public BankCollection SqlBankcollection = null;
-		public CustCollection SqlCustcollection = null;
-		public DetCollection SqlDetcollection = null;
+		private BankCollection SqlBankcollection = null;
+		private CustCollection SqlCustcollection = null;
+		private DetCollection SqlDetcollection = null;
 
 		// Crucial structure for use when a Grid row is being edited
 		private static RowData bvmCurrent = null;
 		private static CustRowData cvmCurrent = null;
 		private static RowData dvmCurrent = null;
+		private bool IsRightMouseDown = false;
+		private Point currentpos
+		{get; set;}
 		private static Point _startPoint
 		{
 			get; set;
@@ -586,7 +589,7 @@ namespace WPFPages
 		/// </summary>
 		/// <param name="caller"></param>
 		/// <returns></returns>
-		private void LoadData ( string caller )
+		private async void LoadData ( string caller )
 		{
 
 
@@ -600,6 +603,7 @@ namespace WPFPages
 					Mouse . OverrideCursor = Cursors . Wait;
 					Debug . WriteLine ( "\nSQLDBVIEWER : awaiting Load of Bank Data" );
 					stopwatch . Start ( );
+					Flags . SqlBankActive  = true;
 					BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 					break;
 
@@ -611,6 +615,7 @@ namespace WPFPages
 					Mouse . OverrideCursor = Cursors . Wait;
 					stopwatch . Start ( );
 					Debug . WriteLine ( "\nSQLDBVIEWER : awaiting Load of Customer Data" );
+					Flags . SqlCustActive  = true;
 					CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 					break;
 
@@ -623,7 +628,8 @@ namespace WPFPages
 					stopwatch . Start ( );
 					Debug . WriteLine ( "\nSQLDBVIEWER : awaiting Load of Details Data" );
 
-					DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+					Flags . SqlDetActive  = true;
+					DetailCollection . LoadDet ( "SQLDBVIEWER", 1, true );
 					break;
 
 				default:
@@ -678,13 +684,19 @@ namespace WPFPages
 				return;
 			//Update our own data tyoe only
 			if ( CurrentDb == "BANKACCOUNT" )
-				BankCollection . LoadBank ( null, "BANKACCOUNT", 1, true );
-			else if ( CurrentDb == "CUSTOMER" )
-				CustCollection . LoadCust ( null, "CUSTOMER", 2, true );
-			else if ( CurrentDb == "DETAILS" )
-				DetailCollection . LoadDet ( null, "DETAILS", 1, true );
 			{
-
+				Flags . SqlBankActive = true;
+				BankCollection . LoadBank ( null, "BANKACCOUNT", 1, true );
+			}
+			else if ( CurrentDb == "CUSTOMER" )
+			{
+				Flags . SqlCustActive  = true;
+				CustCollection . LoadCust ( null, "CUSTOMER", 2, true );
+			}
+			else if ( CurrentDb == "DETAILS" )
+			{
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet ( "DETAILS", 1, true );
 			}
 		}
 
@@ -863,6 +875,7 @@ namespace WPFPages
 			{
 				// Save our current position
 				SavedBankRow = this . BankGrid . SelectedIndex;
+				Flags . SqlBankActive = true;
 				BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 				Console . WriteLine ( $"\nDEBUG RELOADING : Entered SQLDBVIEWER EventControl_SqlDataUpdated : Bank data triggered by BankCollection\nData is being loaded here ?\n " );
 			}
@@ -870,6 +883,7 @@ namespace WPFPages
 			{
 				// Save our current position
 				SavedCustRow = this . CustomerGrid . SelectedIndex;
+				Flags . SqlCustActive  = true;
 				CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 				Console . WriteLine ( $"\nDEBUG RELOADING : Entered SQLDBVIEWER EventControl_SqlDataUpdated : Customer data triggered by BankCollection\nData is being loaded here ?\n " );
 			}
@@ -877,12 +891,16 @@ namespace WPFPages
 			{
 				// Save our current position
 				SavedDetRow = this . DetailsGrid . SelectedIndex;
-				DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet ( "SQLDBVIEWER", 1, true );
 				Console . WriteLine ( $"\nDEBUG RELOADING : Entered SQLDBVIEWER EventControl_SqlDataUpdated : Details data triggered by BankCollection\nData is being loaded here ?\n " );
 			}
 		}
 		private void EventControl_BankDataLoaded ( object sender, LoadedEventArgs e )
 		{
+			if ( Flags . SqlBankActive == false )
+				return;
+
 			// Event handler for BankDataLoaded
 			// it was us, ignore it
 			if ( sender == null && e . DataSource == null )
@@ -902,6 +920,7 @@ namespace WPFPages
 			if ( SqlBankcollection ?. Count == 0 )
 				return;
 
+			Flags . SqlBankActive = false;
 			Debug . WriteLine ( $"SQLDBVIEWER : BankAccount  BankDataLoaded = Data fully loaded: {stopwatch . ElapsedMilliseconds} ms" );
 			LoadingDbData = true;
 			WaitMessage . Visibility = Visibility . Collapsed;
@@ -943,6 +962,8 @@ namespace WPFPages
 		}
 		private void EventControl_CustDataLoaded ( object sender, LoadedEventArgs e )
 		{
+			if ( Flags . SqlCustActive == false )
+				return;
 			// it was us, ignore it
 			if ( e . SenderGuid == this . Tag . ToString ( ) )
 				return;
@@ -963,6 +984,8 @@ namespace WPFPages
 
 			if ( CollectionViewSource . GetDefaultView ( SqlCustcollection ) . IsEmpty )
 				return;
+
+			Flags . SqlCustActive  = false;
 			// Get our personal Collection view of the Db
 			_SQLCustviewerView = CollectionViewSource . GetDefaultView ( SqlCustcollection );
 			_SQLCustviewerView . Refresh ( );
@@ -1001,6 +1024,8 @@ namespace WPFPages
 		}
 		private void EventControl_DetDataLoaded ( object sender, LoadedEventArgs e )
 		{
+			if ( Flags . SqlDetActive == false )
+				return;
 			//Triggered by any viewer updating a rows data
 			// it was us, ignore it
 			if ( e . SenderGuid == this . Tag . ToString ( ) )
@@ -1015,6 +1040,7 @@ namespace WPFPages
 			if ( e . RowCount == 0 )
 				return;
 
+			Flags . SqlDetActive  = false;
 			WaitMessage . Visibility = Visibility . Collapsed;
 			this . DetailsGrid . Visibility = Visibility . Visible;
 			Debug . WriteLine ( $"SQLDBVIEWER : Details Data fully loaded: {stopwatch . ElapsedMilliseconds} ms" );
@@ -1235,7 +1261,7 @@ namespace WPFPages
 		/// <param name="c"></param>
 		//*************************************************************************************************************//
 		//		private void OnDeletion ( string sender, string bank, string cust, int CurrentRow )
-		private void OnDeletion ( object sender, LoadedEventArgs e )
+		private async void OnDeletion ( object sender, LoadedEventArgs e )
 		{
 			//Process the deletion for this grid here....
 			if ( CurrentDb == "BANKACCOUNT" )
@@ -1252,6 +1278,7 @@ namespace WPFPages
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
+				Flags . SqlBankActive = true;
 				BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
@@ -1265,7 +1292,8 @@ namespace WPFPages
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
+				Flags . SqlCustActive  = true;
+				await CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -1279,7 +1307,8 @@ namespace WPFPages
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet("SQLDBVIEWER", 1, true );
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 		}
@@ -1652,11 +1681,10 @@ namespace WPFPages
 			// LOAD THE NEW DATA
 			//This calls  LoadBankAsyncTask for us after sorting out the command line sort order requested
 			///and it clears down any  existing data in DataTable or Collection
+			Flags . SqlBankActive  = true;
 			BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 
 			CurrentActiveGrid = this . BankGrid;
-			//			this.BankGrid.ItemsSource = SqlBankcollection;
-
 			//// create GV[] variables for this new viewer grid
 			DbSelector . UpdateControlFlags ( Flags . CurrentSqlViewer, CurrentDb, "" );
 
@@ -1735,6 +1763,7 @@ namespace WPFPages
 			// LOAD THE NEW DATA
 			//This calls  LoadCustomerTask for us after sorting out the command line sort order requested
 			///and it clears down any  existing data in DataTable or Collection
+			Flags . SqlCustActive  = true;
 			CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 
 			CurrentActiveGrid = this . CustomerGrid;
@@ -1819,7 +1848,8 @@ namespace WPFPages
 			// LOAD THE NEW DATA
 			//This calls  LoadCustomerTask for us after sorting out the command line sort order requested
 			///and it clears down any  existing data in DataTable or Collection
-			DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+			Flags . SqlDetActive  = true;
+			DetailCollection . LoadDet ( "SQLDBVIEWER", 1, true );
 
 			CurrentActiveGrid = this . DetailsGrid;
 			this . DetailsGrid . ItemsSource = SqlDetcollection;
@@ -1905,6 +1935,7 @@ namespace WPFPages
 				this . BankGrid . ItemsSource = null;
 				this . BankGrid . Items . Clear ( );
 				//				dtBank . Clear ( );
+				Flags . SqlBankActive  = true;
 				BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 				//this . BankGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerBankcollection );
 				////				ExtensionMethods . Refresh ( this . BankGrid );
@@ -1917,6 +1948,7 @@ namespace WPFPages
 				this . CustomerGrid . ItemsSource = null;
 				this . CustomerGrid . Items . Clear ( );
 				//				dtCust . Clear ( );
+				Flags . SqlCustActive  = true;
 				CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 				//this . CustomerGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerCustcollection );
 				//this . CustomerGrid . Refresh ( );
@@ -1930,7 +1962,8 @@ namespace WPFPages
 				this . DetailsGrid . Items . Clear ( );
 				//				dtDetails . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet ( "SQLDBVIEWER", 1, true );
 				//this . DetailsGrid . ItemsSource = CollectionViewSource . GetDefaultView ( SqlViewerDetcollection );
 				//this . DetailsGrid . Refresh ( );
 				////				ExtensionMethods . Refresh ( this . DetailsGrid );
@@ -2412,6 +2445,7 @@ namespace WPFPages
 				// ESCAPE was hit, so we need to reload our grid with new data JIC
 				// and this will notify any other open viewers as well
 				bvmCurrent = null;
+				Flags . SqlBankActive  = true;
 				BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 				return;
 			}
@@ -2526,6 +2560,7 @@ namespace WPFPages
 				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
 				// and this will notify any other open viewers as well
 				cvmCurrent = null;
+				Flags . SqlCustActive  = true;
 				CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 2, true );
 				return;
 			}
@@ -2622,7 +2657,7 @@ namespace WPFPages
 				// ESCAPE was hit, so we need to reload our grid with new data JIC
 				// and this will notify any other open viewers as well
 				dvmCurrent = null;
-				DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 2, true );
+				DetailCollection . LoadDet ( "SQLDBVIEWER", 2, true );
 				return;
 			}
 
@@ -4090,6 +4125,7 @@ namespace WPFPages
 					// Save our reserve collection
 					BankReserved = null;
 
+					Flags . SqlBankActive  = true;
 					BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 				}
 				else if ( CurrentDb == "CUSTOMER" )
@@ -4106,6 +4142,7 @@ namespace WPFPages
 					this . CustomerGrid . Items . Clear ( );
 					SqlCustcollection = null;
 
+					Flags . SqlCustActive  = true;
 					CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 				}
 				else if ( CurrentDb == "DETAILS" )
@@ -4122,7 +4159,8 @@ namespace WPFPages
 					this . DetailsGrid . Items . Clear ( );
 					SqlDetcollection = null;
 
-					DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+					Flags . SqlDetActive  = true;
+					DetailCollection . LoadDet ( "SQLDBVIEWER", 1, true );
 				}
 				Debug . WriteLine ( $"End of ReloadGrid() : Thread = { Thread . CurrentThread . ManagedThreadId}" );
 				Mouse . OverrideCursor = Cursors . Arrow;
@@ -5597,6 +5635,7 @@ namespace WPFPages
 			{
 				BankReserved . Clear ( );
 				BankGrid . ItemsSource = null;
+				Flags . SqlBankActive  = true;
 				BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 				BankGrid . Refresh ( );
 				BankFiltered = false;
@@ -5605,6 +5644,7 @@ namespace WPFPages
 			else if ( CurrentDb == "CUSTOMER" )
 			{
 				CustomerGrid . ItemsSource = null;
+				Flags . SqlCustActive  = true;
 				CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 				CustomerGrid . Refresh ( );
 				CustFiltered = false;
@@ -5613,7 +5653,8 @@ namespace WPFPages
 			else if ( CurrentDb == "DETAILS" )
 			{
 				DetailsGrid . ItemsSource = null;
-				DetailCollection . LoadDet ( SqlDetcollection, "SQLDBVIEWER", 1, true );
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet ( "SQLDBVIEWER", 1, true );
 				DetailsGrid . Refresh ( );
 				DetFiltered = false;
 				Count . Text = $"{this . DetailsGrid . SelectedIndex} / { this . DetailsGrid . Items . Count . ToString ( )}";
@@ -6180,6 +6221,7 @@ namespace WPFPages
 					//Get full Bank data into a DataTable
 					dtbank = BankCollection . LoadBankDirect ( dtbank );
 					// Get a Details Collection  from the DataTable above
+					Flags . SqlBankActive  = true;
 					OriginalBankcollection = BankCollection . LoadBankCollectionDirect ( OriginalBankcollection, dtbank );
 
 					int index = 0;
@@ -6625,6 +6667,7 @@ namespace WPFPages
 					this . BankGrid . Items . Clear ( );
 					// Save our reserve collection
 					BankReserved = null;
+					Flags . SqlBankActive  = true;
 					BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 					this . BankGrid . ItemsSource = SqlBankcollection;
 				}
@@ -6633,6 +6676,7 @@ namespace WPFPages
 					this . CustomerGrid . Items . Clear ( );
 					// Save our reserve collection
 					CustReserved = null;
+					Flags . SqlCustActive  = true;
 					CustCollection . LoadCust ( SqlCustcollection, "SQLDBVIEWER", 1, true );
 					this . CustomerGrid . ItemsSource = SqlCustcollection;
 				}
@@ -6641,8 +6685,9 @@ namespace WPFPages
 					this . DetailsGrid . Items . Clear ( );
 					// Save our reserve collection
 					BankReserved = null;
-					DetCollection . LoadDet ( SqlDetcollection, 1, true );
-					this . DetailsGrid . ItemsSource = SqlDetcollection;
+					Flags . SqlDetActive  = true;
+					DetailCollection . LoadDet ("DETAILS",1, true );
+					//this . DetailsGrid . ItemsSource = SqlDetcollection;
 				}
 				StatusBar . Text = "Current Record Updated Successfully...";
 				// Notify everyone else of the data change
@@ -6818,5 +6863,58 @@ namespace WPFPages
 			}
 			MessageBox . Show ( Output, "Currently selected record in JSON format", MessageBoxButton . OK, MessageBoxImage . Information, MessageBoxResult . OK );
 		}
+
+		private void Window_PreviewMouseRightButtonDown ( object sender, MouseButtonEventArgs e )
+		{
+			IsRightMouseDown = true;
+		}
+
+		/// <summary>
+		/// Drag left/right with Right mouse down changes opacity of the windows grid
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Window_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			LinearGradientBrush newbrush = new LinearGradientBrush ( );
+
+			SqlDbViewer sql = sender as SqlDbViewer;
+			if ( IsRightMouseDown )
+			{
+				Point newpos = new Point ( );
+				newpos = e . GetPosition ( null );
+				if ( newpos . X > currentpos . X )
+				{
+					newbrush = sqlgrid. Background as LinearGradientBrush;
+					if ( newbrush . Opacity > 0 )
+						newbrush . Opacity -= 0.03;
+					if ( BankGrid . Opacity > 0 )
+					{
+						WaitMessage . Opacity -= 0.5;
+						BankGrid . Opacity -= 0.01;
+					}
+					this . Refresh ( );
+				}
+				else
+				{
+					newbrush = sqlgrid . Background as LinearGradientBrush;
+					if ( newbrush . Opacity < 1 )
+						newbrush . Opacity += 0.03;
+					if ( BankGrid . Opacity < 1 )
+					{
+						WaitMessage . Opacity += 0.5;
+						BankGrid . Opacity += 0.01;
+					}
+					this . Refresh ( );
+				}
+				currentpos = newpos;
+			}
+		}
+
+		private void Window_PreviewMouseRightButtonUp ( object sender, MouseButtonEventArgs e )
+		{
+			IsRightMouseDown = false;
+		}
+
 	}
 }

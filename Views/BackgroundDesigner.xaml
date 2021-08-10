@@ -1,0 +1,992 @@
+﻿<Window x:Class="WPFPages.Views.BackgroundDesigner"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:WPFPages.Views"
+		xmlns:conv="clr-namespace:WPFPages.Converts"
+		xmlns:colors="clr-namespace:WPFPages.Views" 
+		xmlns:wpfpages="clr-namespace:WPFPages" 
+		mc:Ignorable="d"
+		WindowStartupLocation="CenterScreen"
+		WindowStyle="SingleBorderWindow"
+	  MinHeight="680" MinWidth="665"
+	  MaxHeight="680" MaxWidth="665"
+		Title="Background's Designer" 
+	  Height="680" Width="665">
+
+	<Window.Resources>
+		<!--<colors:Colorpicker 	x:Key="Colors"/>-->
+		<!--<conv:HexConvert x:Key="DectoHex"/>-->
+		<!--<local:ColorsSelector x:Key="THIS"/>-->
+		<conv:OpacityToDecimalConvert x:Key="OpacToDecimalConverter"/>
+		<conv:OpacityToDecimalConvert x:Key="DoubleToIntConverter"/>
+
+
+		<ControlTemplate x:Key="MyButtonTemplate" TargetType="Button">
+			<Grid>
+				<Border Background="Black" Margin="5 5 0 0" />
+				<Border BorderBrush="Black" BorderThickness="1"
+                Background="{Binding}" Margin="0 0 5 5">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">OK</TextBlock>
+				</Border>
+			</Grid>
+		</ControlTemplate>
+
+		<Style x:Key="OvalButtonsStyleMain" TargetType="Ellipse">
+		</Style>
+		
+		
+		<Style x:Key="OvalButtonsStyleMain1" TargetType="Ellipse">
+			<Setter Property="Fill" Value="{StaticResource Orange4}"/>
+			<Style.Triggers>
+			</Style.Triggers>
+		</Style>
+
+		<Style x:Key="OvalButtonsStyleMain2" TargetType="Ellipse">
+			<Setter Property="Fill" Value="{StaticResource White4}"/>
+			<Setter Property="Stroke" Value="{StaticResource Green2}"/>
+			<Setter Property="StrokeThickness" Value="5"/>
+
+			<!--<Style.Triggers>
+					<MultiTrigger>
+						<MultiTrigger.Conditions>
+							<Condition Property="IsMouseOver" Value="True"/>
+						</MultiTrigger.Conditions>
+						<MultiTrigger.Setters>
+							<Setter Property="Fill" Value="{StaticResource White0}"/>
+							--><!--<Setter Property="Text" Value="Wheeeeeeee"/>--><!--
+						</MultiTrigger.Setters>
+					</MultiTrigger>
+					--><!--<MultiTrigger>
+						<MultiTrigger.Conditions>
+							<Condition Property="IsMouseOver" Value="False"/>
+						</MultiTrigger.Conditions>
+						<MultiTrigger.Setters>
+							<Setter Property="Background" Value="{StaticResource Red2}"/>
+						</MultiTrigger.Setters>
+					</MultiTrigger>--><!--
+			</Style.Triggers>-->
+		</Style>
+
+		<!--<Style x:Key="ContentP" TargetType="ContentPresenter">
+		</Style>-->
+		
+		<Style x:Key="TextDisplay" TargetType="TextBlock">
+			<!--<Setter Property="Text" Value="Reverse Pattern display"/>-->
+			<Setter Property="Panel.ZIndex" Value="4"/>
+			<Style.Triggers>
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<Condition Property="IsMouseOver" Value="True"/>
+					</MultiTrigger.Conditions>
+					<MultiTrigger.Setters>
+						<Setter Property="Background" Value="{StaticResource Red2}"/>
+						<Setter Property="Text" Value="Wheeeeeeee"/>
+					</MultiTrigger.Setters>
+				</MultiTrigger>
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<Condition Property="IsMouseOver" Value="False"/>
+					</MultiTrigger.Conditions>
+					<MultiTrigger.Setters>
+						<Setter Property="Background" Value="{StaticResource Red2}"/>
+					</MultiTrigger.Setters>
+				</MultiTrigger>
+			</Style.Triggers>
+		</Style>
+		
+	</Window.Resources>
+
+	<Grid
+		     AllowDrop="True"
+	    >
+		<!--<Grid.DataContext>
+				<colors:ColorsSelector/>
+			</Grid.DataContext>-->
+		
+	<!--#region Grid Setup-->
+		<Grid.Background>
+			<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
+				<GradientStop Color="Gray" Offset="0.7" />
+				<GradientStop Color="Gray" Offset="0.17" />
+			</LinearGradientBrush>
+		</Grid.Background>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="10"/>
+			<RowDefinition Height="40"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="75"/>
+			<RowDefinition Height="95"/>
+			<RowDefinition Height="210"/>
+			<RowDefinition Height="170"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="5"/>
+			<ColumnDefinition Width="50"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="50"/>
+			<ColumnDefinition Width="250"/>
+			<ColumnDefinition Width="10"/>
+		</Grid.ColumnDefinitions>
+		<!--#endregion Grid Setup-->
+
+		<!--#region Hex Values-->
+
+		<StackPanel
+		     AllowDrop="True"
+			Orientation="Horizontal"
+		     Grid.Row="1"
+			Grid.RowSpan="2"
+			Height="45"
+			Margin="0,-5,0,0"
+			VerticalAlignment="Top"
+		     Grid.Column="1"
+			Grid.ColumnSpan="4">
+
+			<TextBlock Text="Opacity" 
+				     AllowDrop="True"
+				     HorizontalAlignment="Left"
+				     FontSize="12"
+				     Foreground="White" 
+					Height="15"
+				     Width="50"/>
+
+			<TextBlock x:Name="opVal"
+				     AllowDrop="True"
+					Text="{Binding ElementName=OpacitySlider, Path=Value, StringFormat=000}" 
+				     TextAlignment="Center"				     
+				     Background="{StaticResource White4}"
+				     FontWeight="Bold"
+				     Foreground="Red" 
+				     Height="20"
+				     Padding="2"
+				     Width="31"
+					    />
+			<TextBlock Text="   Red" 
+				     AllowDrop="True"
+				     HorizontalAlignment="Left"
+				     FontSize="12"
+				     Foreground="White" 
+					Height="15"
+				     Width="45"/>
+
+			<TextBlock x:Name="opRed"
+				     AllowDrop="True"
+					TextAlignment="Center"
+				     HorizontalAlignment="Left"
+				     Background="{StaticResource White4}"
+				     Foreground="Red" 
+				     FontWeight="Bold"
+				     Height="20"
+				     Margin="-8,0,0,0"
+					Text="{Binding ElementName=RedSlider, Path=Value, StringFormat=000}" 
+				     Padding="2"
+				     Width="31">
+			</TextBlock>
+			<TextBlock Text="  Green " 
+				     AllowDrop="True"
+				     HorizontalAlignment="Left"
+				     FontSize="12"
+				     Foreground="White" 
+					Height="15"
+				     Width="40"/>
+
+			<TextBlock x:Name="opGreen"
+				     AllowDrop="True"
+					Text="{Binding ElementName=GreenSlider, Path=Value, StringFormat=000}" 
+					TextAlignment="Center"
+				     HorizontalAlignment="Left"
+				     VerticalAlignment="Center"
+				     Padding="2"
+				     Background="{StaticResource White4}"
+				     FontWeight="Bold"
+				     Foreground="Red" 
+				     Margin="5,0,0,0"
+				     Height="20"
+				     Width="31"/>
+
+			<TextBlock Text="   Blue" 
+				     AllowDrop="True"
+				     HorizontalAlignment="Center"
+				     FontSize="12"
+				     Foreground="White" 
+					Height="15"
+				     Width="40"/>
+
+			<TextBlock x:Name="opBlue"
+				     AllowDrop="True"
+					Text="{Binding ElementName=BlueSlider, Path=Value}"
+				     TextAlignment="Center"
+				     HorizontalAlignment="Center"
+				     Background="{StaticResource White4}"
+				     FontWeight="Bold"
+				     Foreground="Red" 
+				     Padding="2"
+				     Margin="-2,0,0,0"
+				     Height="20"
+				     Width="31"/>
+			<TextBlock Text="     RGB" 
+				     AllowDrop="True"
+				     HorizontalAlignment="Left"
+				     FontSize="12"
+				     Foreground="White" 
+				     Margin="100,0,0,0"
+					Height="15"
+				     Width="45"/>
+
+			<TextBlock x:Name="opAll"
+				     AllowDrop="True"
+				     DragEnter="OpAll_DragEnter"
+				     Padding="2"
+					Text="{Binding OpacityValue}"
+				     HorizontalAlignment="Center"
+				     TextAlignment="Center"
+				     Background="{StaticResource White4}"
+				     FontWeight="Bold"
+				     Margin="2,0,0,0"
+				     Foreground="Red" 
+				     ToolTip="This can be dragged as a Color code ..."
+				     PreviewMouseLeftButtonDown="OpAll_PreviewMouseLeftButtonDown"
+				     PreviewMouseMove="OpAll_PreviewMouseMove"
+				     PreviewDragOver="OpAll_PreviewDragOver"
+				     PreviewQueryContinueDrag="OpAll_PreviewQueryContinueDrag"
+
+				     Height="20"
+				     Width="70"/>
+
+			<Button x:Name="ClipSave"
+				     AllowDrop="True"
+				Content="Save to ClipBoard"
+				FontSize="12"				 
+				Height="40"
+				VerticalAlignment="Center"
+				Width="117"
+				Margin="10,0,5,0"
+				Click="ClipSave_Click"
+				Background="Green"
+				Foreground="White"
+				/>
+		</StackPanel>
+
+
+		<TextBlock x:Name="opacityLevel"
+			Grid.Row="2"
+			Grid.Column="1"
+			Background="Gray"
+			Foreground="{StaticResource White1}"
+		     Padding="2"
+			TextAlignment="Center"
+			Text="{Binding Path=OpacityValue, Converter={StaticResource OpacToDecimalConverter}}" 
+			Width="40"
+			Height="25"
+			/>
+		<!--#endregion Hex Values-->
+
+		<!--#region Sliders-->
+
+		<Slider  x:Name="OpacitySlider" 
+			   Grid.Row="2"
+			   Grid.Column="2"
+			   Height="20"
+			   Background="Gray"
+			   ValueChanged="OpacitySlider_ValueChanged"
+			   Minimum="0.0" Maximum="255.00" 
+			   />
+		<!--Value="{Binding opacity}"-->
+
+		<TextBlock x:Name="RedLevel"
+			Grid.Row="3"
+			Grid.Column="1"
+			Background="Red"
+			Foreground="{StaticResource White1}"
+		     Padding="2"
+			TextAlignment="Center"
+			Text="{Binding ElementName=RedSlider, Path=Value}" 
+			Width="40"
+			Height="25"
+			/>
+		<!--Text="{Binding ElementName=RedSlider, Path=Value}"-->
+
+
+		<Slider  x:Name="RedSlider" 
+			   Grid.Row="3"
+			   Grid.Column="2"
+			   Height="20"
+			   Background="Red"
+			   ValueChanged="RedSlider_ValueChanged"
+			   Minimum="0" Maximum="255" 
+				Value="{Binding RedValue}"/>
+		<!--, Converter={StaticResource Colors}}"/>-->
+
+		<TextBlock x:Name="GreenLevel"
+			Grid.Row="2"
+			Grid.Column="3"
+			Background="Green"
+			Foreground="{StaticResource White1}"
+		     Padding="2"
+			TextAlignment="Center"
+			Text="{Binding ElementName=GreenSlider, Path=Value}" 
+			Width="40"
+			Height="25"
+			/>
+		<Slider  x:Name="GreenSlider" 
+			   Grid.Row="2"
+			   Grid.Column="4"
+			   Height="20"
+			   Background="Green"
+			   ValueChanged="GreenSlider_ValueChanged"
+			   Minimum="0" Maximum="255" 
+				Value="{Binding GreenValue}"/>
+
+		<TextBlock x:Name="BlueLevel"
+			Grid.Row="3"
+			Grid.Column="3"
+			Background="Blue"
+			Foreground="{StaticResource White1}"
+		     Padding="2"
+			TextAlignment="Center"
+			Text="{Binding ElementName=BlueSlider, Path=Value}" 
+			Width="40"
+			Height="25"
+			/>
+		<Slider  x:Name="BlueSlider" 
+			Grid.Row="3"
+			Grid.Column="4"
+			Height="20"
+			Background="Blue"
+			ValueChanged="BlueSlider_ValueChanged"
+			Minimum="0" Maximum="255" 
+			Value="{Binding BlueValue}"/>
+		<!--#endregion Sliders-->
+
+		<!--#region Value Labels-->
+
+		<Label   x:Name="Btn1"
+			   Grid.Row="5"
+			   Grid.RowSpan="2"
+			  Grid.Column="1"
+			  Grid.ColumnSpan="4"
+			  Background="Transparent"
+			  Foreground="{StaticResource White0}"
+			  FontWeight="Bold"
+			  HorizontalAlignment="Left"
+			  Content=""
+			  VerticalContentAlignment="Center"
+			  Margin="75,-90,0,0"
+			  Height="25"
+			  Width="65"
+			   Panel.ZIndex="3"/>
+
+		<Label x:Name="Btn2"
+			Grid.Row="5"
+			  Grid.Column="3"
+			  Grid.ColumnSpan="4"
+			   Grid.RowSpan="2"
+			  Background="Transparent"
+			  Foreground="{StaticResource White0}"
+			  FontWeight="Bold"
+			  HorizontalAlignment="Left"
+			  Content=""
+			  VerticalContentAlignment="Center"
+			  Margin="-50,-90,0,0"
+			  Height="25"
+			  Width="65"
+			 Panel.ZIndex="3"/>
+
+		<Label   x:Name="Btn3"
+			   Grid.Row="5"
+			  Grid.Column="4"
+			   Grid.RowSpan="2"
+			  Background="Transparent"
+			  Foreground="{StaticResource White0}"
+			  FontWeight="Bold"
+			  HorizontalAlignment="Left"
+			  Margin="115,-90,0,1"
+			  Content=""
+			  VerticalContentAlignment="Center"
+			  Height="25"
+			  Width="65" 
+			   Panel.ZIndex="3"/>
+
+		<Label   x:Name="Btn4"
+			   Grid.Row="6"
+			  Grid.Column="2"
+			   Grid.ColumnSpan="3"
+			  Background="Transparent"
+			  Foreground="{StaticResource White0}"
+			  FontWeight="Bold"
+			  HorizontalAlignment="Left"
+			  Margin="135,115,0,1"
+			  Content=""			   
+			  VerticalContentAlignment="Center"
+			  Height="25"
+			  Width="85"
+			Panel.ZIndex="5"/>
+
+		<!--#endregion Value Labels-->
+
+		<!--#region Buttons-->
+		<Button x:Name="LinkPanels"
+			Grid.Row="4"
+			Grid.Column="2"
+			Grid.ColumnSpan="4"
+			Grid.RowSpan="1"
+			BorderBrush="{StaticResource White1}"
+			BorderThickness="1"
+			Click="LinkPanels_Click"
+			Height="80"
+			Width="200"
+			Margin="-35,-10,0,0"
+			Background="{StaticResource Green1}"
+			Foreground="{StaticResource White0}"
+			  HorizontalAlignment="Left"
+			VerticalAlignment="Center"
+			VerticalContentAlignment="Center">
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn1Template">
+					<Grid
+						Grid.ColumnSpan="4">
+						<Ellipse x:Name="LinkMain"
+							Height="60"
+							Width="185"
+							Margin="5,3,0,0"
+							Fill="{StaticResource White1}"
+							   />
+						<Ellipse 
+							Height="55"
+							Width="180"
+							Fill="{StaticResource Green4}"
+							   />
+						<ContentPresenter  x:Name="Btn1Content"
+									Height="20"
+									Width="140"
+									 Content="Horizontal Gradient panel"
+									 MouseLeftButtonDown="LinkPanels_Click"
+									 HorizontalAlignment="Left"
+									Panel.ZIndex="3"
+									 VerticalAlignment="Center"
+									Margin="30,3,0,0"									 
+									/>
+					</Grid>
+				</ControlTemplate>
+			</Button.Template>
+		</Button>
+
+		<Button  x:Name="VerticalOption"
+			Grid.Row="3"
+			Grid.Column="1"
+			Grid.ColumnSpan="5"
+			Grid.RowSpan="3"
+			Click="VerticalOption_Click"
+			Height="80"
+			Width="200"
+			Margin="20,-75,0,0"
+			Background="{StaticResource Yellow2}"
+			   Foreground="{StaticResource Black0}"
+			PreviewMouseMove="VerticalOption_PreviewMouseMove"
+			VerticalAlignment="Center"
+			VerticalContentAlignment="Center"
+			   >
+			<!--Template="{StaticResource MyButtonTemplate}"-->
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn2Template">
+					<Grid
+						Grid.ColumnSpan="3">
+						<Ellipse 
+							Height="60"
+							Width="185"
+							Margin="5,3,0,0"
+							Fill="{StaticResource White1}"
+							   />
+						<Ellipse x:Name="Ellipse1"
+							Height="55"
+							Width="180"
+							   StrokeThickness="1"
+							   Stroke="{StaticResource Black1}"
+							Fill="{StaticResource Yellow1}"
+							   />
+						<ContentPresenter  x:Name="Btn2Content"
+									Height="20"
+									Width="140"
+									 Content="Vertical Gradient Pattern"
+									MouseLeftButtonDown="VerticalOption_Click"
+									 HorizontalAlignment="Left"
+									 VerticalAlignment="Center"
+									Panel.ZIndex="3"
+									Margin="40,3,0,0"									 
+									/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+							<!--<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
+							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
+							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue7}"/>
+							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black3}"/>
+							<Setter TargetName="Btn3Content" Property="Margin" Value="30,-5,0,0"/>
+
+							<Setter TargetName="D1" Property="StrokeThickness" Value="0.5"/>
+
+							<Setter TargetName="D1" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="D2" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="D3" Property="Margin" Value="0,4,0,0"/>
+
+							<Setter TargetName="D1" Property="Height" Value="50"/>
+							<Setter TargetName="D2" Property="Height" Value="60"/>
+							<Setter TargetName="D3" Property="Height" Value="57"/>
+							<Setter TargetName="D1" Property="Width" Value="155"/>
+							<Setter TargetName="D2" Property="Width" Value="165"/>
+							<Setter TargetName="D3" Property="Width" Value="170"/>-->
+
+						</DataTrigger>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+							<!--<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
+							<Setter TargetName="Btn3Content" Property="Margin" Value="30,5,0,0"/>
+
+							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
+							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue5}"/>
+							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black1}"/>
+
+							<Setter TargetName="D1" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="D1" Property="Stroke" Value="{StaticResource White0}"/>
+
+							<Setter TargetName="D1" Property="Margin" Value="0,2,0,0"/>
+							<Setter TargetName="D2" Property="Margin" Value="0,8,0,0"/>
+							<Setter TargetName="D3" Property="Margin" Value="0,-5,0,0"/>
+
+							<Setter TargetName="D1" Property="Height" Value="55"/>
+							<Setter TargetName="D2" Property="Height" Value="55"/>
+							<Setter TargetName="D3" Property="Height" Value="65"/>
+
+							<Setter TargetName="D1" Property="Width" Value="155"/>
+							<Setter TargetName="D2" Property="Width" Value="155"/>
+							<Setter TargetName="D3" Property="Width" Value="155"/>-->
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Button.Template>
+		</Button>
+
+		<Button x:Name="DiagonalOption"
+			Grid.Row="3"
+			Grid.Column="3"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="3"
+			BorderBrush="{StaticResource White1}"
+			BorderThickness="1"
+			Click="DiagonalOption_Click"
+			Height="80"
+			Width="200"
+			Margin="80,-75,0,0"
+			Foreground="{StaticResource White1}"
+			VerticalAlignment="Center"
+			VerticalContentAlignment="Center">
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn3Template">
+					<Grid
+						Grid.ColumnSpan="3">
+						<!--// MAIN-->
+						<Ellipse x:Name="D1"
+							Margin="-3,0,0,0"
+							Panel.ZIndex="3"
+							   />
+						<!--// middle-->
+						<Ellipse  x:Name="D2"
+							StrokeThickness="1"
+							Margin="-3,0,0,0"
+							Stroke="{StaticResource Black1}"
+							Panel.ZIndex="2"
+							   />
+						<!--/ Background-->
+						<Ellipse x:Name="D3" 
+							Margin="5,1,0,0"
+							Panel.ZIndex="1"
+							   />
+						<ContentPresenter  x:Name="Btn3Content"
+									Height="20"
+									Width="140"
+									 Content="Diagonal Gradient Pattern"
+									MouseLeftButtonDown="DiagonalOption_Click"
+									 HorizontalAlignment="Left"
+									 VerticalAlignment="Center"
+									Panel.ZIndex="4"
+									Margin="30,3,0,0"									 
+									/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+							<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
+							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
+							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue7}"/>
+							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black3}"/>
+							<Setter TargetName="Btn3Content" Property="Margin" Value="30,-5,0,0"/>
+
+							<Setter TargetName="D1" Property="StrokeThickness" Value="0.5"/>
+
+							<Setter TargetName="D1" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="D2" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="D3" Property="Margin" Value="0,4,0,0"/>
+
+							<Setter TargetName="D1" Property="Height" Value="50"/>
+							<Setter TargetName="D2" Property="Height" Value="60"/>
+							<Setter TargetName="D3" Property="Height" Value="57"/>
+							<Setter TargetName="D1" Property="Width" Value="155"/>
+							<Setter TargetName="D2" Property="Width" Value="165"/>
+							<Setter TargetName="D3" Property="Width" Value="170"/>
+
+						</DataTrigger>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+							<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
+							<Setter TargetName="Btn3Content" Property="Margin" Value="30,5,0,0"/>
+
+							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
+							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue5}"/>
+							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black1}"/>
+
+							<Setter TargetName="D1" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="D1" Property="Stroke" Value="{StaticResource White0}"/>
+
+							<Setter TargetName="D1" Property="Margin" Value="0,2,0,0"/>
+							<Setter TargetName="D2" Property="Margin" Value="0,8,0,0"/>
+							<Setter TargetName="D3" Property="Margin" Value="0,-5,0,0"/>
+
+							<Setter TargetName="D1" Property="Height" Value="55"/>
+							<Setter TargetName="D2" Property="Height" Value="55"/>
+							<Setter TargetName="D3" Property="Height" Value="65"/>
+
+							<Setter TargetName="D1" Property="Width" Value="155"/>
+							<Setter TargetName="D2" Property="Width" Value="155"/>
+							<Setter TargetName="D3" Property="Width" Value="155"/>
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Button.Template>
+
+		</Button>
+
+		<StackPanel Orientation="Horizontal"
+			Grid.Row="3"
+			Grid.Column="1"
+			Grid.ColumnSpan="7"
+			Grid.RowSpan="3"
+>
+
+		<Button x:Name="ToggleDirectionOption"
+			BorderBrush="{StaticResource White1}"
+			BorderThickness="1"
+			Click="ToggleOption_Click"
+			Height="70"
+			Width="200"
+			Margin="130,75,0,0"
+			Foreground="Black"
+			  Background="Red"
+			VerticalAlignment="Center"
+			  Panel.ZIndex="6"
+			VerticalContentAlignment="Center">
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn4Template">
+					<Grid
+						Grid.ColumnSpan="3">
+						<Ellipse  x:Name="Emain"
+							Height="50"
+							Width="170"
+							Margin="-3,0,0,0"
+						    Stroke="{StaticResource Black0}"
+						    StrokeThickness="0.5"
+							Panel.ZIndex="3"
+							   />
+						<Ellipse  x:Name="Emain2"
+							Height="60"
+							Width="185"
+							Margin="5,3,0,0"
+							Panel.ZIndex="1"
+							   />
+						<Ellipse  x:Name="Emain1"
+							Height="55"
+							Width="180"
+							StrokeThickness="1"
+							Panel.ZIndex="2"
+							/>
+						<ContentPresenter  x:Name="Btn4Content"
+									MouseLeftButtonDown="ToggleOption_Click"
+									 HorizontalAlignment="Left"
+									 VerticalAlignment="Center"
+									 Focusable="True"
+									Panel.ZIndex="4"
+									 Content="{TemplateBinding Content}"
+									 RecognizesAccessKey="false"
+									 Opacity="1"
+									Margin="32,3,0,0"	
+									/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+							<Setter TargetName="Btn4Content" Property="Content" Value="Toggle display direction "/>
+							<Setter TargetName="Emain" Property="Fill" Value="{StaticResource Orange5}"/>
+							<Setter TargetName="Emain1" Property="Fill" Value="{StaticResource Orange0}"/>
+							<Setter TargetName="Emain2" Property="Fill" Value="{StaticResource Black3}"/>
+							<Setter TargetName="Btn4Content" Property="Margin" Value="40,-5,0,0"/>
+							<Setter TargetName="Emain" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="Emain1" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="Emain2" Property="Margin" Value="0,-3,0,0"/>
+							<Setter TargetName="Emain" Property="Height" Value="60"/>
+							<Setter TargetName="Emain1" Property="Height" Value="68"/>
+							<Setter TargetName="Emain2" Property="Height" Value="75"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+							<Setter TargetName="Emain" Property="Fill" Value="{StaticResource Orange5}"/>
+							<Setter TargetName="Emain" Property="StrokeThickness" Value="2"/>
+							<Setter TargetName="Emain" Property="Stroke" Value="{StaticResource White2}"/>
+							<Setter TargetName="Emain1" Property="Fill" Value="{StaticResource Orange0}"/>
+							<Setter TargetName="Emain2" Property="Fill" Value="{StaticResource Black1}"/>
+							<!--<Setter TargetName="Btn4Content" Property="Margin" Value="0,5,0,0"/>-->
+							<Setter TargetName="Btn4Content" Property="Margin" Value="40,5,0,0"/>
+
+							<Setter TargetName="Emain1" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="Emain" Property="Margin" Value="0,3,0,0"/>
+							<Setter TargetName="Emain1" Property="Margin" Value="0,0,0,0"/>
+							<Setter TargetName="Emain2" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="Emain" Property="Height" Value="60"/>
+							<Setter TargetName="Emain1" Property="Height" Value="60"/>
+							<Setter TargetName="Emain1" Property="Width" Value="160"/>
+							<Setter TargetName="Emain2" Property="Height" Value="70"/>
+							<Setter TargetName="Btn4Content" Property="Content" Value="Toggle display direction "/>
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Button.Template>
+
+		</Button>
+		
+
+		<Button x:Name="ReverseOption"
+			Background="{StaticResource Orange2}"
+			BorderBrush="{StaticResource White1}"
+			BorderThickness="1"
+			Click="ToggleOption_Click"
+			Height="70"
+			Width="220"
+			Margin="0,75,0,0"
+			Foreground="Black"
+			VerticalAlignment="Center"
+			VerticalContentAlignment="Center"
+			Panel.ZIndex="0"
+			  >
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn5Template">
+					<Grid
+						Grid.ColumnSpan="3">
+							<!--//MAIN ELLIPSE PANEL-->
+							<Ellipse  x:Name="RmainM"
+							Height="60"
+							Width="165"
+							Margin="0,10,0,0"
+							StrokeThickness="0.5"
+							Stroke="{StaticResource Black1}"
+							    Visibility="Visible"
+							Panel.ZIndex="3"
+							   />
+
+						<!--// ORANGE BORDER-->
+							<Ellipse x:Name="Rmainborder"
+							Height="70"
+							Width="175"
+							Margin="0,4,0,0"
+							StrokeThickness="1"
+							Stroke="{StaticResource Black1}"
+							   Visibility="Visible"
+							Panel.ZIndex="2"
+							   />
+						
+						<!--// BLACK BACKGROUND-->
+						<Ellipse x:Name="Rbackground"
+							Height="60"
+							Width="180"
+							Margin="0,5,0,0"
+							   Visibility="Visible"
+							Panel.ZIndex="1"
+							>
+						</Ellipse>
+						
+						<ContentPresenter  x:Name="Btn5Content"
+							Height="20"
+							Width="150"
+							MouseLeftButtonDown="ToggleOption_Click"
+								Content="Reverse Gradient Slope"
+										 
+								HorizontalAlignment="Left"
+								VerticalAlignment="Center"
+							Margin="50,3,0,0"									 
+							Panel.ZIndex="3"
+							/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+							<Setter TargetName="Btn5Content" Property="Content" Value="Toggle display direction "/>
+							<Setter TargetName="RmainM" Property="Fill" Value="{StaticResource Orange5}"/>
+							<Setter TargetName="Rmainborder" Property="Fill" Value="{StaticResource Orange0}"/>
+							<Setter TargetName="Rbackground" Property="Fill" Value="{StaticResource Black3}"/>
+							<!--<Setter TargetName="Btn5Content" Property="Margin" Value="45,-5,0,0"/>-->
+							
+							<Setter TargetName="RmainM" Property="StrokeThickness" Value="0.5"/>
+							
+							<Setter TargetName="RmainM" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="Rmainborder" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="Rbackground" Property="Margin" Value="0,0,0,0"/>
+							
+							<Setter TargetName="RmainM" Property="Height" Value="55"/>
+							<Setter TargetName="Rmainborder" Property="Height" Value="68"/>
+							<Setter TargetName="Rbackground" Property="Height" Value="70"/>
+
+						</DataTrigger>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+							<Setter TargetName="Btn5Content" Property="Content" Value="Toggle display direction "/>
+							<Setter TargetName="Btn5Content" Property="Margin" Value="50,15,0,0"/>
+
+							<Setter TargetName="RmainM" Property="Fill" Value="{StaticResource Orange5}"/>
+							<Setter TargetName="Rmainborder" Property="Fill" Value="{StaticResource Orange0}"/>
+							<Setter TargetName="Rbackground" Property="Fill" Value="{StaticResource Black1}"/>
+
+							<Setter TargetName="RmainM" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="RmainM" Property="Stroke" Value="{StaticResource White0}"/>
+
+							<Setter TargetName="RmainM" Property="Margin" Value="0,2,0,0"/>
+							<Setter TargetName="Rmainborder" Property="Margin" Value="0,8,0,0"/>
+							<Setter TargetName="Rbackground" Property="Margin" Value="0,-5,0,0"/>
+							
+							<Setter TargetName="RmainM" Property="Height" Value="55"/>
+							<Setter TargetName="Rmainborder" Property="Height" Value="55"/>
+							<Setter TargetName="Rbackground" Property="Height" Value="65"/>
+
+							<Setter TargetName="Rmainborder" Property="Width" Value="145"/>
+							</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Button.Template>
+
+		</Button>
+		
+		</StackPanel>
+		<!--#endregion Buttons-->
+
+
+		<!--#region Individual color panels-->
+
+		<Border x:Name="Output1"
+			Grid.Row="3"
+			Grid.Column="0"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="4"
+			BorderThickness="2"
+			Margin="-120,85,0,0"
+			CornerRadius="8"
+			BorderBrush="{StaticResource White0}"
+			Background="Transparent"
+			PreviewMouseLeftButtonDown="Output_PreviewMouseLeftButtonDown"
+			ToolTip="Click to set this as the focused Panel.."
+			Height="120"
+			  Width="210"
+			  />
+
+		<Border x:Name="Output2"
+			Grid.Row="3"
+			Grid.Column="2"
+			Grid.ColumnSpan="3"
+			Grid.RowSpan="4"
+			BorderThickness="2"
+			CornerRadius="8"
+			BorderBrush="{StaticResource White0}"
+			Background="Transparent"
+			PreviewMouseLeftButtonDown="Output2_PreviewMouseLeftButtonDown"
+			Margin="-45,85,0,0"
+			ToolTip="Click to set this as the focused Panel.."
+			Height="120"
+			Width="210"/>
+
+		<Border x:Name="Output3"
+			Grid.Row="3"
+			Grid.Column="4"
+			Grid.ColumnSpan="4"
+			Grid.RowSpan="4"
+			BorderThickness="2"
+			Margin="40,85,0,0"
+			CornerRadius="8"
+			BorderBrush="{StaticResource White0}"
+			Background="Transparent"
+			PreviewMouseLeftButtonDown="Output3_PreviewMouseLeftButtonDown"
+			ToolTip="Click to set this as the focused Panel.."
+			Height="120"
+			Width="210"/>
+
+		<!--#endregion Individual color panels-->
+		
+		<TextBlock x:Name="GradientText"
+			Background="Transparent"
+			Foreground="White"
+			Grid.Row="7"
+			Grid.Column="1"
+			Grid.ColumnSpan="4"
+			Grid.RowSpan="3"
+			Margin="-220,-95,0,0"
+			Height="30"
+			Width="420"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Top"
+			Padding="8,5"
+			/>
+		<StackPanel 			
+			Grid.Row="4"
+			Grid.Column="1"
+			Grid.ColumnSpan="4"
+			Grid.RowSpan="6"
+			VerticalAlignment="Top"
+			Margin="-0,160,0,0"
+			Height="400"
+			Orientation="Horizontal"
+			>
+		<Border x:Name="Final"
+			BorderThickness="2"
+			Margin="0,90,0,0"
+			CornerRadius="8"
+			BorderBrush="{StaticResource White0}"
+			Background="Transparent"
+			PreviewMouseLeftButtonDown="Output4_PreviewMouseLeftButtonDown"
+			  PreviewMouseRightButtonDown="Final_PreviewMouseRightButtonDown"
+			ToolTip="Sample of the selected Gradient based on colors selected above..  Right Click to save to ClipBoard !" 
+			Height="180"
+			Width="425"/>
+			<StackPanel Orientation="Vertical"
+				Margin="0,185,0,0"
+					>
+			<Button x:Name="VBtn"
+				Height="45"
+				Width="150"
+				Background="Red"
+				Margin="35,-20,0,0"
+				Content="Vertical"
+				Foreground="{StaticResource White2}"
+				  BorderBrush="{StaticResource White0}"
+				/>
+				<Button x:Name="HBtn"
+				Height="45"
+				Width="150"
+				Background="{StaticResource Green3}"
+				Margin="35,10,0,0"
+				Content="Horizontal"
+				Foreground="{StaticResource White2}"
+				  BorderBrush="{StaticResource White0}"
+				/>
+				<Button x:Name="DBtn"
+				Height="45"
+				Width="150"
+				Margin="35,10,0,0"
+				Content="Diagonal"
+				Background="{StaticResource Yellow1}"
+				Foreground="{StaticResource Black2}"
+				  BorderBrush="{StaticResource White0}"
+				/>
+			</StackPanel>
+		</StackPanel>
+	</Grid>
+</Window>

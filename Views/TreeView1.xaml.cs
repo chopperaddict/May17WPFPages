@@ -725,7 +725,7 @@ namespace WPFPages . Views
 		}
 	}
 	//======================================================================
-	public class FileViewModel : INotifyPropertyChanged
+	public class FileViewModel : System . ComponentModel.INotifyPropertyChanged
 	{
 		private bool _isSelected;
 		public bool IsSelected

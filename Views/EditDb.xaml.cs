@@ -20,7 +20,7 @@ namespace WPFPages . Views
 	//	public delegate void UpdateGridRowSelected ( int bankno, int custno , DataGrid grid);
 	//	public delegate void UpdateGridRowSelected ( string CurrentDb, int bankno, int custno );
 
-	public partial class EditDb : INotifyPropertyChanged
+	public partial class EditDb : System . ComponentModel.INotifyPropertyChanged
 	{
 		#region CLASS DECLARATIONS
 
@@ -270,7 +270,8 @@ namespace WPFPages . Views
 				this . DataGrid1 . ItemsSource = null;
 				this . DataGrid1 . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				EditDbBankcollection = BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
+				Flags . SqlBankActive  = true;
+				BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 				//this . DataGrid1 . ItemsSource = EditDbBankcollection;
 				//this . DataGrid1 . SelectedIndex = currsel;
 				//this . DataGrid1 . Refresh ( );
@@ -294,7 +295,8 @@ namespace WPFPages . Views
 				this . DataGrid2 . ItemsSource = null;
 				this . DataGrid2 . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB", 2, true );
+				Flags . SqlCustActive  = true;
+				await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB", 2, true );
 				//this . DataGrid2 . ItemsSource = EditDbCustcollection;
 				//this . DataGrid2 . SelectedIndex = currsel;
 				//this . DataGrid2 . Refresh ( );
@@ -318,7 +320,8 @@ namespace WPFPages . Views
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . Items . Clear ( );
 				Mouse . OverrideCursor = Cursors . Wait;
-				EditDbDetcollection = await DetCollection . LoadDet ( EditDbDetcollection, 2, true );
+				Flags . SqlDetActive  = true;
+				await DetailCollection . LoadDet ( "EDITDB", 2, true );
 				//this . DetailsGrid . ItemsSource = EditDbDetcollection;
 				//this . DetailsGrid . SelectedIndex = currsel;
 				//this . DetailsGrid . Refresh ( );
@@ -411,14 +414,15 @@ namespace WPFPages . Views
 		{
 			if ( EditDbDetcollection == null || EditDbDetcollection . Count == 0 )
 				Mouse . OverrideCursor = Cursors . Wait;
-			await DetailCollection . LoadDet ( EditDbDetcollection, "EDITDB", 2, true );
+			await DetailCollection . LoadDet ( "EDITDB", 2, true );
 			Mouse . OverrideCursor = Cursors . Arrow;
 			//this  . DetailsGrid . ItemsSource = EditDbDetcollection;
 			return EditDbDetcollection;
 		}
 		private async static Task<BankCollection> LoadBankData ( BankCollection EditDbBankcollection )
 		{
-			EditDbBankcollection = BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
+			Flags . SqlBankActive  = true;
+			BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 			return EditDbBankcollection;
 		}
 
@@ -593,7 +597,10 @@ namespace WPFPages . Views
 				{
 					ThisDataGrid = this . DataGrid1;
 					if ( EditDbBankcollection == null || EditDbBankcollection . Count == 0 )
+					{
+						Flags . SqlBankActive  = true;
 						EditDbBankcollection = await LoadBankData ( EditDbBankcollection );
+					}
 				}
 				else
 				{
@@ -608,7 +615,10 @@ namespace WPFPages . Views
 				this . MinHeight = 640;
 				ThisDataGrid = this . DetailsGrid;
 				if ( EditDbCustcollection == null || EditDbCustcollection . Count == 0 )
-					await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB",2, true );
+				{
+					Flags . SqlCustActive  = true;
+					await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB", 2, true );
+				}
 //				this . DataGrid2 . ItemsSource = EditDbDetcollection;
 			}
 			ViewerButton . IsEnabled = false;
@@ -816,13 +826,21 @@ namespace WPFPages . Views
 			if (e.CallerType == "EDITDB" && e.AccountType == CurrentDb)
 				return;
 			//Update our own data tyoe only
-			if (CurrentDb == "BANKACCOUNT")
-				BankCollection.LoadBank(null, "BANKACCOUNT", 1, true);
-			else if (CurrentDb == "CUSTOMER")
-				CustCollection.LoadCust(null, "CUSTOMER", 2, true);
-			else if (CurrentDb == "DETAILS")
-				DetailCollection.LoadDet(null, "DETAILS", 1, true);
-
+			if ( CurrentDb == "BANKACCOUNT" )
+			{
+				Flags . SqlBankActive  = true;
+				BankCollection . LoadBank ( null, "BANKACCOUNT", 1, true );
+			}
+			else if ( CurrentDb == "CUSTOMER" )
+			{
+				Flags . SqlCustActive  = true;
+				CustCollection . LoadCust ( null, "CUSTOMER", 2, true );
+			}
+			else if ( CurrentDb == "DETAILS" )
+			{
+				Flags . SqlDetActive  = true;
+				DetailCollection . LoadDet ( "DETAILS", 1, true );
+			}
 		}
 
 		private void OnDeletion ( object sender, LoadedEventArgs e )
@@ -1321,6 +1339,7 @@ namespace WPFPages . Views
 				this . DataGrid2 . ItemsSource = null;
 
 				this . DataGrid2 . ItemsSource = EditDbCustcollection;
+				Flags . SqlCustActive  = true;
 				await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB", 2, true );
 				this . DataGrid2 . SelectedIndex = currsel;
 			}
@@ -1353,7 +1372,7 @@ namespace WPFPages . Views
 
 				this . DetailsGrid . ItemsSource = null;
 				this . DetailsGrid . ItemsSource = EditDbDetcollection;
-				await DetailCollection . LoadDet ( EditDbDetcollection, "EDITDB", 2, true );
+				await DetailCollection . LoadDet ( "EDITDB", 2, true );
 				this . DetailsGrid . SelectedIndex = currsel;
 			}
 		}
@@ -1888,16 +1907,17 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid1 . SelectedItem );
 				IsDirty = false;
-				EditDbBankcollection = BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
+				Flags . SqlBankActive  = true;
+				BankCollection . LoadBank ( EditDbBankcollection, "EDITDB", 2, true );
 				dGrid . ItemsSource = null;
-				dGrid . ItemsSource = EditDbBankcollection;
-				dGrid . SelectedIndex = currsel;
+//				dGrid . ItemsSource = EditDbBankcollection;
+//				dGrid . SelectedIndex = currsel;
 				// Crucial flag for updating
 				Flags . DataLoadIngInProgress = true;
 				SendDataChanged ( CurrentDb );
 				dGrid . Refresh ( );
-				Utils . ScrollRecordInGrid ( dGrid, currsel );
-				dGrid . SelectedIndex = currsel;
+//				Utils . ScrollRecordInGrid ( dGrid, currsel );
+//				dGrid . SelectedIndex = currsel;
 				Mouse . OverrideCursor = Cursors . Arrow;
 
 			}
@@ -1908,16 +1928,17 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DataGrid2 . SelectedItem );
 				IsDirty = false;
+				Flags . SqlCustActive  = true;
 				EditDbCustcollection = await CustCollection . LoadCust ( EditDbCustcollection, "EDITDB", 2, true );
 				dGrid . ItemsSource = null;
-				dGrid . ItemsSource = EditDbCustcollection;
-				dGrid . SelectedIndex = currsel;
+//				dGrid . ItemsSource = EditDbCustcollection;
+//				dGrid . SelectedIndex = currsel;
 				// Crucial flag for updating
 				Flags . DataLoadIngInProgress = true;
 				SendDataChanged ( CurrentDb );
 				dGrid . Refresh ( );
-				Utils . ScrollRecordInGrid ( dGrid, currsel );
-				dGrid . SelectedIndex = currsel;
+//				Utils . ScrollRecordInGrid ( dGrid, currsel );
+//				dGrid . SelectedIndex = currsel;
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			else if ( CurrentDb == "DETAILS" )
@@ -1927,16 +1948,17 @@ namespace WPFPages . Views
 				Mouse . OverrideCursor = Cursors . Wait;
 				sqlh . UpdateDbRow ( CurrentDb, this . DetailsGrid . SelectedItem );
 				IsDirty = false;
-				 await DetailCollection . LoadDet ( EditDbDetcollection,"DETAILS", 2, true );
+				Flags . SqlDetActive  = true;
+				await DetailCollection . LoadDet ( "DETAILS", 2, true );
 				dGrid . ItemsSource = null;
-				dGrid . ItemsSource = EditDbDetcollection;
-				dGrid . SelectedIndex = currsel;
+//				dGrid . ItemsSource = EditDbDetcollection;
+//				dGrid . SelectedIndex = currsel;
 				// Crucial flag for updating
 				Flags . DataLoadIngInProgress = true;
 				SendDataChanged ( CurrentDb );
 				dGrid . Refresh ( );
-				Utils . ScrollRecordInGrid ( dGrid, currsel );
-				dGrid . SelectedIndex = currsel;
+//				Utils . ScrollRecordInGrid ( dGrid, currsel );
+//				dGrid . SelectedIndex = currsel;
 				Mouse . OverrideCursor = Cursors . Arrow;
 			}
 			EditStart = false;

@@ -16,6 +16,8 @@ using System . Windows . Input;
 using System . Windows . Media;
 using System . Windows . Media . Imaging;
 
+using Microsoft . CSharp . RuntimeBinder;
+
 using WPFPages . Properties;
 using WPFPages . ViewModels;
 
@@ -65,8 +67,9 @@ namespace WPFPages . Views
 		}
 		private bool IsDirty = false;
 		private bool Startup = true;
-		private static bool LinktoParent = false;
-		private static bool LinktoMultiParent = false;
+		private bool LinktoParent = false;
+		private bool LinkToAllRecords = false;
+		private bool LinktoMultiParent = false;
 		private bool IsFiltered = false;
 		public static bool Triggered = false;
 		private bool TriggeredDataUpdate = false;
@@ -147,11 +150,10 @@ namespace WPFPages . Views
 			EventControl . ViewerIndexChanged += EventControl_EditIndexChanged;      // Callback in THIS FILE
 			EventControl . ViewerDataUpdated += EventControl_DataUpdated;
 			EventControl . DetDataLoaded += EventControl_DetDataLoaded;
-
 			EventControl . GlobalDataChanged += EventControl_GlobalDataChanged;
 
-
-			await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "DETAILSDBVIEW", 2, true );
 
 			SaveBttn . IsEnabled = false;
 			// Save linkage setting as we need to disable it while we are loading
@@ -162,33 +164,38 @@ namespace WPFPages . Views
 			OntopChkbox . IsChecked = true;
 			this . Topmost = true;
 			this . Focus ( );
+
+			// Reset linkage setting
+			Flags . LinkviewerRecords = tmp;
+			if ( Flags . LinkviewerRecords )
+			{
+				LinkRecords . IsChecked = true;
+				LinkToAllRecords = true;
+				LinktoParent = true;
+			}
+			else
+			{
+				LinkRecords . IsChecked = false;
+				LinkToAllRecords = false;
+				LinktoParent = false;
+			}
+			LinktoMultiParent = false;
 			// start our linkage monitor
 			t1 = new Thread ( checkLinkages );
 			t1 . IsBackground = true;
 			t1 . Priority = ThreadPriority . Lowest;
 			t1 . Start ( );
 			// Reset linkage setting
-			Flags . LinkviewerRecords = tmp;
-			if ( Flags . LinkviewerRecords )
-			{
-				LinkRecords . IsChecked = true;
-				LinktoParent = false;
-			}
-			else
-			{
-				LinkRecords . IsChecked = false;
-				LinktoParent = false;
-			}
-			LinktoMultiParent = false;
 			Startup = false;
 		}
 
-		private void EventControl_GlobalDataChanged ( object sender, GlobalEventArgs e )
+		private async void EventControl_GlobalDataChanged ( object sender, GlobalEventArgs e )
 		{
 			if ( e . CallerType == "DETAILSDBVIEWER" )
 				return;
 			//Update our own data tyoe only
-			DetailCollection . LoadDet ( null, "DETAILS", 1, true );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "DETAILS", 2, true );
 
 		}
 
@@ -231,6 +238,8 @@ namespace WPFPages . Views
 				TriggeredDataUpdate = false;
 				return;
 			}
+
+			Flags . SqlDetActive  = false;
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
 
@@ -252,6 +261,7 @@ namespace WPFPages . Views
 			Mouse . OverrideCursor = Cursors . Arrow;
 			this . DetGrid . Refresh ( );
 			Debug . WriteLine ( "BANKDBVIEW : Details Data fully loaded" );
+			Utils . SetGridRowSelectionOn ( DetGrid, 0 );
 			bool reslt = false;
 		}
 		private async void EventControl_DataUpdated ( object sender, LoadedEventArgs e )
@@ -270,7 +280,8 @@ namespace WPFPages . Views
 			this . DetGrid . ItemsSource = null;
 			this . DetGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
-			await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+			Flags . SqlDetActive  = true;
+			await DetailCollection . LoadDet ( "DETAILSDBVIEW", 2, true );
 			IsDirty = false;
 		}
 		#endregion DATA BASED EVENT HANDLERS
@@ -378,6 +389,22 @@ namespace WPFPages . Views
 			Utils . SetUpGridSelection ( this . DetGrid, this . DetGrid . SelectedIndex );
 			Startup = true;
 			DataFields . DataContext = this . DetGrid . SelectedItem;
+
+			// Test addition
+			if ( LinkToAllRecords )// && Triggered == false )
+			{
+				TriggerViewerIndexChanged ( this . DetGrid );
+			}
+
+			// check to see if an SqlDbViewer has been opened that we can link to
+			if ( Flags . SqlDetViewer != null && LinkToParent . IsEnabled == false )
+			{
+				LinkToParent . IsEnabled = true;
+				SqlParentViewer = Flags . SqlDetViewer;
+			}
+			// end of Test addition
+
+
 
 			if ( Flags . LinkviewerRecords && Triggered == false )
 				TriggerViewerIndexChanged ( DetGrid );
@@ -754,7 +781,7 @@ namespace WPFPages . Views
 				}
 				else
 				{
-					LinkToParent . IsEnabled = false;
+					//LinkToParent . IsEnabled = false;
 					LinktoParent = false;
 				}
 
@@ -1066,7 +1093,8 @@ namespace WPFPages . Views
 				// So we go ahead and reload our grid with new data
 				// and this will notify any other open viewers as well
 				bvmCurrent = null;
-				await DetailCollection . LoadDet ( DetViewerDbcollection, "DETAILSDBVIEW", 2, true );
+				Flags . SqlDetActive  = true;
+				await DetailCollection . LoadDet ( "DETAILSDBVIEW", 2, true );
 				return;
 			}
 
@@ -1220,6 +1248,7 @@ namespace WPFPages . Views
 		#region HANDLERS for linkage checkboxes, inluding Thread montior
 		static bool IsLinkActive ( bool ParentLinkTo )
 		{
+			//Check for Details SqlDbViewer being open
 			return Flags . SqlDetViewer != null && ParentLinkTo == false;
 		}
 
@@ -1266,27 +1295,19 @@ namespace WPFPages . Views
 			while ( true )
 			{
 				int AllLinks = 0;
-				Thread . Sleep ( 2000 );
+				Thread . Sleep ( 3500 );
 
-				bool reslt = false;
-				if ( IsLinkActive ( reslt ) )
+				bool reslt = LinktoParent;
+				// Link to  ALL , make sure Parent link is Set CORRECTLY
+				Application . Current . Dispatcher . Invoke ( ( ) =>
 				{
-					AllLinks++;
-					Application . Current . Dispatcher . Invoke ( ( ) =>
-					{
-						ResetLinkages ( "LINKTOPARENT", true );
-					} );
-				}
-				else
-				{
-					Application . Current . Dispatcher . Invoke ( ( ) =>
-					{
-						ResetLinkages ( "LINKTOPARENT", false );
-					} );
-				}
+					ResetLinkages ( "LINKTOPARENT", reslt );
+				} );
 
+				// check below is this : (LinktoParent && Flags . SqlDetViewer != null && ParentLinkTo == false)
 				if ( IsMultiLinkActive ( reslt ) == false )
 				{
+					//Uncheck/Disable MultiViewer Link
 					Application . Current . Dispatcher . Invoke ( ( ) =>
 					{
 						ResetLinkages ( "MULTILINKTOPARENT", false );
@@ -1295,21 +1316,24 @@ namespace WPFPages . Views
 				else
 				{
 					AllLinks++;
+					//check/Enable MultiViewer Link
 					Application . Current . Dispatcher . Invoke ( ( ) =>
 					{
 						ResetLinkages ( "MULTILINKTOPARENT", true );
 					} );
 				}
-				if ( AllLinks >= 1 )
+				//if ( AllLinks >= 1 )
+					//Check/Enable All Viewers Link
 					Application . Current . Dispatcher . Invoke ( ( ) =>
 					{
-						ResetLinkages ( "ALLLINKS", true );
+						ResetLinkages ( "ALLLINKS", LinkToAllRecords);
 					} );
-				else
-					Application . Current . Dispatcher . Invoke ( ( ) =>
-					{
-						ResetLinkages ( "ALLLINKS", false );
-					} );
+				//else
+				//	//Uncheck/Disable All Viewers Link
+				//	Application . Current . Dispatcher . Invoke ( ( ) =>
+				//	{
+				//		ResetLinkages ( "ALLLINKS", false );
+				//	} );
 
 			}
 		}
@@ -1325,6 +1349,7 @@ namespace WPFPages . Views
 					LinktoParent = false;
 					SqlParentViewer = null;
 				}
+				return;
 			}
 			if ( linktype == "MULTILINKTOPARENT" )
 			{
@@ -1340,11 +1365,12 @@ namespace WPFPages . Views
 					MultiParentViewer = null;
 					LinktoMultiParent = false;
 				}
+				return;
 			}
-			if ( linktype == "ALLLINKS" && value )
-				LinkRecords . IsEnabled = true;
-			else
-				LinkRecords . IsEnabled = false;
+			if ( linktype == "ALLLINKS")
+				LinkRecords . IsChecked = LinkToAllRecords;
+			//			else
+			//				LinkRecords . IsEnabled = false;
 			#endregion HANDLERS for linkage checkboxes, inluding Thread montior
 
 		}
@@ -1398,7 +1424,7 @@ namespace WPFPages . Views
 		}
 		private string CreateVisualDetailsRecord ( int mode = 1 )
 		{
-			if ( IsLeftButtonDown && LeftClickinprogress == false)
+			if ( IsLeftButtonDown && LeftClickinprogress == false )
 			{
 				LeftClickinprogress = true;
 				string Output = "";
@@ -1440,7 +1466,7 @@ namespace WPFPages . Views
 			if ( e . LeftButton == MouseButtonState . Pressed )
 			{
 				IsLeftButtonDown = true;
-//				ShowItemData ( sender, e );
+				//				ShowItemData ( sender, e );
 			}
 		}
 		private void DetGrid_PreviewMouseMove ( object sender, MouseEventArgs e )
@@ -1535,7 +1561,8 @@ namespace WPFPages . Views
 			{
 				this . DetGrid . ItemsSource = null;
 				this . DetGrid . Items . Clear ( );
-				await DetCollection . LoadDet ( DetViewerDbcollection, 1, true );
+				Flags . SqlDetActive  = true;
+				await DetailCollection . LoadDet ( "DETAILS", 2, true );
 				this . DetGrid . ItemsSource = DetviewerView;
 				// Notify everyone else of the data change
 				EventControl . TriggerViewerDataUpdated ( DetviewerView,
@@ -1589,12 +1616,12 @@ namespace WPFPages . Views
 			LeftClickinprogress = false;
 		}
 
-		public  void changesize_Click ( object sender, RoutedEventArgs e )
+		public void changesize_Click ( object sender, RoutedEventArgs e )
 		{
 			Thickness t = new Thickness ( );
 			// All get the RUNNING directory "debug or release"
 			//string syspath = System . AppDomain . CurrentDomain . BaseDirectory;
-			string syspath = Directory . GetCurrentDirectory ( );
+			//string syspath = Directory . GetCurrentDirectory ( );
 			//syspath = Environment . CurrentDirectory;
 			//syspath = Path . GetDirectoryName ( Assembly . GetExecutingAssembly ( ) . Location );
 			//syspath = Application .
@@ -1605,7 +1632,7 @@ namespace WPFPages . Views
 			//) . FirstOrDefault ( );
 
 			//Read entry from App Configuration system
-			syspath =Utils . ReadConfigSetting ( "AppRoot");
+			string syspath = Utils . ReadConfigSetting ( "AppRoot" );
 			if ( DetGrid . RowHeight == 32 )
 			{
 				DetGrid . RowHeight = 25;
@@ -1616,7 +1643,7 @@ namespace WPFPages . Views
 				SizeChangeMenuItem . Margin = t;
 				Brush br = Utils . GetDictionaryBrush ( "Black0" );
 				SizeChangeMenuItem . Foreground = br;
-				
+
 				string path = @"/Views/magnify plus red.png";
 				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
 				t . Top = 0;
@@ -1628,21 +1655,31 @@ namespace WPFPages . Views
 				DetGrid . RowHeight = 32;
 				SizeChangeMenuItem . Header = "Smaller Font";
 				SizeChangeMenuItem . FontSize = 10;
-				t . Top = (double)8;
+				t . Top = ( double ) 8;
 				SizeChangeMenuItem . Margin = t;
 				Brush br = Utils . GetDictionaryBrush ( "Red0" );
 				SizeChangeMenuItem . Foreground = br;
 
 				string path = @"/Views/magnify minus red.png";
-				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind.RelativeOrAbsolute));
+				FontsizeIcon . Source = new BitmapImage ( new Uri ( path, UriKind . RelativeOrAbsolute ) );
 				t . Top = -5;
-//				t . Bottom = 5;
-//				t . Right = 5;
+				//				t . Bottom = 5;
+				//				t . Right = 5;
 				FontsizeIcon . Margin = t;
-//				FontsizeIcon . Width = 30;
+				//				FontsizeIcon . Width = 30;
 
 
 			}
+		}
+
+		private void CloseWin ( object sender, ExecutedRoutedEventArgs e )
+		{
+			this . Close ( );
+		}
+		private void Close_CanExecute ( object sender, CanExecuteRoutedEventArgs e )
+		{
+			e . CanExecute = true;
+
 		}
 	}
 }

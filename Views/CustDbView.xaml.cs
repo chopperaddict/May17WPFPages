@@ -22,9 +22,9 @@ namespace WPFPages . Views
 	/// </summary>
 	public partial class CustDbView : Window
 	{
-		public static CustCollection CustDbViewcollection = null;// = new CustCollection ( );//. CustViewerDbcollection;
-									 // Get our personal Collection view of the Db
-		public ICollectionView CustviewerView { get; set; }
+		private static CustCollection CustDbViewcollection = null;// = new CustCollection ( );//. CustViewerDbcollection;
+									  // Get our personal Collection view of the Db
+		private ICollectionView CustviewerView { get; set; }
 
 		private CustomerCollection Custcollection = new CustomerCollection ( );
 
@@ -94,8 +94,10 @@ namespace WPFPages . Views
 
 
 			EventControl.GlobalDataChanged += EventControl_GlobalDataChanged;
+			EventControl . WindowLinkChanged += EventControl_WindowLinkChanged;
 
 
+			Flags . SqlCustActive  = true;
 			await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
 
 			SaveBttn . IsEnabled = false;
@@ -132,7 +134,8 @@ namespace WPFPages . Views
 			if (e.CallerType == "CUSTDBVIEWER" )
 				return;
 			//Update our own data tyoe only
-			CustCollection.LoadCust(null, "CUSTOMER", 2, true);
+			Flags . SqlCustActive  = true;
+			CustCollection . LoadCust(null, "CUSTOMER", 2, true);
 
 		}
 
@@ -160,6 +163,7 @@ namespace WPFPages . Views
 			this . CustGrid . ItemsSource = null;
 			this . CustGrid . Items . Clear ( );
 			Mouse . OverrideCursor = Cursors . Wait;
+			Flags . SqlCustActive  = true;
 			CustDbViewcollection = await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 3, true );
 			IsDirty = false;
 		}
@@ -207,6 +211,7 @@ namespace WPFPages . Views
 				// ENTER was hit, so data has been saved - go ahead and reload our grid with new data
 				// and this will notify any other open viewers as well
 				cvmCurrent = null;
+				Flags . SqlCustActive  = true;
 				await CustCollection . LoadCust ( CustDbViewcollection, "CUSTDBVIEW", 2, true );
 				return;
 			}
@@ -276,6 +281,7 @@ namespace WPFPages . Views
 			this . CustGrid . Items . Clear ( );
 			if ( e . DataSource == null ) return;
 
+			Flags . SqlCustActive  = false;
 			LoadingDbData = true;
 
 			CustviewerView = CollectionViewSource . GetDefaultView ( e . DataSource as CustCollection );
@@ -332,8 +338,15 @@ namespace WPFPages . Views
 			EventControl . CustDataLoaded -= EventControl_CustDataLoaded;
 
 			EventControl.GlobalDataChanged -= EventControl_GlobalDataChanged;
+			EventControl . WindowLinkChanged -= EventControl_WindowLinkChanged;
 
-			Utils. SaveProperty ( "CustDbView_cindex", cindex . ToString ( ) );
+			Utils . SaveProperty ( "CustDbView_cindex", cindex . ToString ( ) );
+		}
+
+		private void EventControl_WindowLinkChanged ( object sender, LinkageChangedArgs e )
+		{
+			if ( e . sender != this )
+				checkLinkages ( );
 		}
 
 		private void CustGrid_SelectionChanged ( object sender, System . Windows . Controls . SelectionChangedEventArgs e )
@@ -565,6 +578,7 @@ namespace WPFPages . Views
 				else
 					LinkToParent . IsEnabled = false;
 			}
+//			EventControl . TriggerWindowLinkChanged ( this, new LinkageChangedArgs { LinkToAll = Flags . LinkviewerRecords } );
 		}
 
 		/// <summary>
@@ -710,6 +724,7 @@ namespace WPFPages . Views
 			}
 			else
 				LinktoParent = !LinktoParent;
+//			EventControl . TriggerWindowLinkChanged ( this, new LinkageChangedArgs { LinkToCustomerViewer= LinktoParent } );
 		}
 		private void Edit_LostFocus ( object sender, RoutedEventArgs e )
 		{
@@ -841,7 +856,7 @@ namespace WPFPages . Views
 						CustGrid,
 						dataObject,
 						DragDropEffects.Move);
-						IsLeftButtonDown = false;
+						//IsLeftButtonDown = false;
 					}
 				}
 			}
@@ -872,6 +887,7 @@ namespace WPFPages . Views
 					LinktoMultiParent = false;
 				}
 			}
+//			EventControl . TriggerWindowLinkChanged ( this, new LinkageChangedArgs { LinkToMulti = LinktoMultiParent } );
 		}
 		/// <summary>
 		/// Runs as a thread to monitor SqlDbviewer & Multiviewer availabilty
@@ -918,16 +934,16 @@ namespace WPFPages . Views
 							ResetLinkages ( "MULTILINKTOPARENT", true );
 						} );
 					}
-					if ( AllLinks >= 1 )
-						Application . Current . Dispatcher . Invoke ( ( ) =>
-						{
-							ResetLinkages ( "ALLLINKS", true );
-						} );
-					else
-						Application . Current . Dispatcher . Invoke ( ( ) =>
-						{
-							ResetLinkages ( "ALLLINKS", false );
-						} );
+					//if ( AllLinks >= 1 )
+					//	Application . Current . Dispatcher . Invoke ( ( ) =>
+					//	{
+					//		ResetLinkages ( "ALLLINKS", true );
+					//	} );
+					//else
+					//	Application . Current . Dispatcher . Invoke ( ( ) =>
+					//	{
+					//		ResetLinkages ( "ALLLINKS", false );
+					//	} );
 				}
 				catch (Exception ex)
 				{
@@ -947,6 +963,7 @@ namespace WPFPages . Views
 					LinktoParent = false;
 					SqlParentViewer = null;
 				}
+				return;
 			}
 			if ( linktype == "MULTILINKTOPARENT" )
 			{
@@ -962,6 +979,7 @@ namespace WPFPages . Views
 					MultiParentViewer = null;
 					LinktoMultiParent = false;
 				}
+				return;
 			}
 			if ( linktype == "ALLLINKS" && value )
 				LinkRecords . IsEnabled = true;
@@ -1013,6 +1031,7 @@ namespace WPFPages . Views
 			{
 				this . CustGrid . ItemsSource = null;
 				this . CustGrid . Items . Clear ( );
+				Flags . SqlCustActive  = true;
 				await CustCollection . LoadCust( CustDbViewcollection, "CUSTDBVIEW", 1, true );
 				this . CustGrid . ItemsSource = CustviewerView;
 				// Notify everyone else of the data change

@@ -15,10 +15,10 @@ using System . ComponentModel;
 namespace WPFPages . Views
 {
 	
-	public class nwcustomer : INotifyPropertyChanged
+	public class nwcustomer : System . ComponentModel.INotifyPropertyChanged
 	{
-//		public nwcustomer NwCustomer = new nwcustomer ( );
-//		public ObservableCollection<nwcustomer> nwCustCollection;
+		//		public nwcustomer NwCustomer = new nwcustomer ( );
+		//		public ObservableCollection<nwcustomer> nwCustCollection;
 
 
 		//public event PropertyChangedEventHandler PropertyChanged;
@@ -30,22 +30,55 @@ namespace WPFPages . Views
 		//		this . PropertyChanged ( this, new PropertyChangedEventArgs ( propertyName ) );
 		//	}
 		//}
+
 		#region PropertyChanged
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		//protected void OnPropertyChanged ( string PropertyName )
-		//{
-		//	if ( null != PropertyChanged )
-		//	{
-		//		PropertyChanged ( this,
-		//			new PropertyChangedEventArgs ( PropertyName ) );
-		//	}
-		//}
 		private void OnPropertyChanged ( string propertyName )
 		{
-			PropertyChanged?.Invoke ( this, new PropertyChangedEventArgs ( propertyName ) );
+			//PropertyChanged?.Invoke ( this, new PropertyChangedEventArgs ( propertyName ) );
+//			this . VerifyPropertyName ( propertyName );
+
+			if ( this . PropertyChanged != null )
+			{
+				var e = new PropertyChangedEventArgs ( propertyName );
+				this . PropertyChanged ( this, e );
+			}
 		}
+		/// <summary>
+		/// Warns the developer if this object does not have
+		/// a public property with the specified name. This
+		/// method does not exist in a Release build.
+		/// </summary>
+		[Conditional ( "DEBUG" )]
+		[DebuggerStepThrough]
+		public virtual void VerifyPropertyName ( string propertyName )
+		{
+			// Verify that the property name matches a real,
+			// public, instance property on this object.
+			if ( TypeDescriptor . GetProperties ( this ) [ propertyName ] == null )
+			{
+				string msg = "Invalid property name: " + propertyName;
+
+				if ( this . ThrowOnInvalidPropertyName )
+					throw new Exception ( msg );
+				else
+					Debug . Fail ( msg );
+			}
+		}
+
+		/// <summary>
+		/// Returns whether an exception is thrown, or if a Debug.Fail() is used
+		/// when an invalid property name is passed to the VerifyPropertyName method.
+		/// The default value is false, but subclasses used by unit tests might
+		/// override this property's getter to return true.
+		/// </summary>
+		protected virtual bool ThrowOnInvalidPropertyName
+		{
+			get; private set;
+		}
+
 		#endregion PropertyChanged
 
 		#region declarations
@@ -62,19 +95,138 @@ namespace WPFPages . Views
 		private string region;
 		private string city;
 		private int currentSelection;
-		private int customerCurrent;
 		private int orderCurrent;
-
-		public int CustomerCurrent
+		private int currentCustomer;
+		private int currentProduct;
+		private int currentOrder;
+		private int currentOrderDetail;
+		private int currentCategory;
+		private int customerstotal;
+		private int orderstotal;
+		private int producttotal;
+		private int orderdetailstotal;
+		private int categoriestotal;
+		
+		public int CustomersTotal
 		{
 			get
 			{
-				return customerCurrent;
+				return customerstotal;
 			}
 			set
 			{
-				customerCurrent = value;
-				OnPropertyChanged ( nameof ( CustomerCurrent ) );
+				customerstotal = value;
+				OnPropertyChanged ( nameof ( CustomersTotal ) );
+			}
+		}
+		public int OrdersTotal
+		{
+			get
+			{
+				return orderstotal;
+			}
+			set
+			{
+				orderstotal = value;
+				OnPropertyChanged ( nameof ( OrdersTotal ) );
+			}
+		}
+		public int ProductTotal
+		{
+			get
+			{
+				return producttotal;
+			}
+			set
+			{
+				producttotal = value;
+				OnPropertyChanged ( nameof ( ProductTotal ) );
+			}
+		}
+		public int OrderDetailsTotal
+		{
+			get
+			{
+				return orderdetailstotal;
+			}
+			set
+			{
+				orderdetailstotal = value;
+				OnPropertyChanged ( nameof (OrderDetailsTotal ) );
+			}
+		}
+		public int CategoriesTotal
+		{
+			get
+			{
+				return categoriestotal;
+			}
+			set
+			{
+				categoriestotal = value;
+				OnPropertyChanged ( nameof ( CategoriesTotal ) );
+			}
+		}
+		public int CurrentCategory
+		{
+			get
+			{
+				return currentCategory;
+			}
+			set
+			{
+				currentCategory = value;
+				OnPropertyChanged ( nameof ( CurrentCategory ) );
+			}
+		}
+		public int CurrentOrderDetail
+		{
+			get
+			{
+				return currentOrderDetail;
+			}
+			set
+			{
+				currentOrderDetail = value;
+				OnPropertyChanged ( nameof ( CurrentOrderDetail ) );
+			}
+		}
+		public int CurrentOrder
+		{
+			get
+			{
+				return currentOrder;
+			}
+			set
+			{
+				currentOrder = value;
+				OnPropertyChanged ( nameof ( CurrentOrder ) );
+			}
+		}
+
+		public int CurrentProduct
+		{
+			get
+			{
+				return currentProduct;
+			}
+			set
+			{
+				currentProduct = value;
+				OnPropertyChanged ( nameof ( CurrentProduct ) );
+			}
+		}
+
+		public int CurrentCustomer
+		{
+			get
+			{
+				return currentCustomer;
+			}
+			set
+			{
+				currentCustomer = value;
+				OnPropertyChanged ( nameof ( CurrentCustomer ) );
 			}
 		}
 		public int OrderCurrent

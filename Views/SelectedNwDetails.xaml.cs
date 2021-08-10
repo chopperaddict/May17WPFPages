@@ -18,6 +18,9 @@ using System . Windows . Media . Imaging;
 using System . Windows . Shapes;
 using System . IO;
 using static WPFPages . NorthWind;
+using WPFPages . UserControls;
+using System . Net;
+using System . Threading;
 
 namespace WPFPages . Views
 {
@@ -32,16 +35,28 @@ namespace WPFPages . Views
 		public ObservableCollection<nwcustomer> nwc2;
 		private string argument = "";
 
-		public SelectedNwDetails ( string arg = "" )
+		public  SelectedNwDetails ( string arg = "" )
 		{
+			Thread t1;
 			InitializeComponent ( );
 			argument = arg;
+			// start our linkage monitor
+			//t1 = new Thread ( LoadNorthWindData );
+			//t1 . IsBackground = true;
+			//t1 . Priority = ThreadPriority . Lowest;
+			//t1 . Start ( );
+			//Debug . WriteLine ( t1 . ThreadState . ToString ( ) );
+			LoadNorthWindData ( );
+		}
+		private  void  LoadNorthWindData ( )
+		{
 			nwc2 = new ObservableCollection<nwcustomer> ( );
-			nwc2 = NwCustomer . LoadSpecificCustomers ( arg );
+			nwc2 =  NwCustomer . LoadSpecificCustomers ( argument );
 			CustomersGrid . ItemsSource = nwc2;
 			CustomersGrid . DataContext = NwCustomer;
 			EventControl . NwCustomerSelected += EventControl_NwCustomerSelected;
-			Flags.NwSelectionWindow = this;
+			Flags . NwSelectionWindow = this;
+//			return true;
 		}
 		public void SwitchCustomer (string arg )
 		{
@@ -853,6 +868,19 @@ namespace WPFPages . Views
 			cm . IsOpen = true;
 		}
 
+		private void CloseReturnButton_PreviewMouseMove ( object sender, MouseEventArgs e )
+		{
+			SolidColorBrush scb = new SolidColorBrush ( );
+			CloseReturnButton cb = sender as CloseReturnButton;
+//			scb = cb .Ellipse9.Fill as SolidColorBrush;
+//			Color c = scb . Color;
+//			scb = this . Background as SolidColorBrush;
+		}
+
+		private void CloseReturnButton_Loaded ( object sender, RoutedEventArgs e )
+		{
+
+		}
 	}
 
 }

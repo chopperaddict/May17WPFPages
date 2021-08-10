@@ -7,6 +7,7 @@ using System;
 using System . Collections . Generic;
 using System . Collections . ObjectModel;
 using System . ComponentModel;
+using System . Diagnostics;
 using System . Windows . Controls;
 
 using WPFPages . Views;
@@ -16,8 +17,57 @@ using WPFPages . Views;
 /// </summary>
 namespace WPFPages . ViewModels
 {
-	public partial class BankAccountViewModel// : Observable
+	public partial class BankAccountViewModel : INotifyPropertyChanged
 	{
+		#region PropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void OnPropertyChanged ( string propertyName )
+		{
+			if ( Flags . SqlBankActive == false )
+//				this . VerifyPropertyName ( propertyName );
+
+			if ( this . PropertyChanged != null )
+			{
+				var e = new PropertyChangedEventArgs ( propertyName );
+				this . PropertyChanged ( this, e );
+			}
+		}
+		/// <summary>
+		/// Warns the developer if this object does not have
+		/// a public property with the specified name. This
+		/// method does not exist in a Release build.
+		/// </summary>
+		[Conditional ( "DEBUG" )]
+		[DebuggerStepThrough]
+		public virtual void VerifyPropertyName ( string propertyName )
+		{
+			// Verify that the property name matches a real,
+			// public, instance property on this object.
+			if ( TypeDescriptor . GetProperties ( this ) [ propertyName ] == null )
+			{
+				string msg = "Invalid property name: " + propertyName;
+
+				if ( this . ThrowOnInvalidPropertyName )
+					throw new Exception ( msg );
+				else
+					Debug . Fail ( msg );
+			}
+		}
+
+		/// <summary>
+		/// Returns whether an exception is thrown, or if a Debug.Fail() is used
+		/// when an invalid property name is passed to the VerifyPropertyName method.
+		/// The default value is false, but subclasses used by unit tests might
+		/// override this property's getter to return true.
+		/// </summary>
+		protected virtual bool ThrowOnInvalidPropertyName
+		{
+			get; private set;
+		}
+
+		#endregion PropertyChanged
 
 		#region CONSTRUCTORS
 
@@ -28,6 +78,8 @@ namespace WPFPages . ViewModels
 		{
 		}
 		#endregion CONSTRUCTORS
+
+		public static DataGrid ActiveEditDbViewer = null;
 
 		#region STANDARD CLASS PROPERTIES SETUP
 
@@ -42,62 +94,116 @@ namespace WPFPages . ViewModels
 
 		public int Id
 		{
-			get { return id; }
-			set { id = value; OnPropertyChanged ( Id . ToString ( ) ); }
+			get
+			{
+				return id;
+			}
+			set
+			{
+				id = value;
+				OnPropertyChanged ( Id . ToString ( ) );
+			}
 		}
 
 		public string BankNo
 		{
-			get { return bankno; }
-			set { bankno = value; OnPropertyChanged ( BankNo . ToString ( ) ); }
+			get
+			{
+				return bankno;
+			}
+			set
+			{
+				bankno = value;
+				OnPropertyChanged ( BankNo );
+			}
 		}
 
 		public string CustNo
 		{
-			get { return custno; }
-			set { custno = value; OnPropertyChanged ( CustNo . ToString ( ) ); }
+			get
+			{
+				return custno;
+			}
+			set
+			{
+				custno = value;
+				OnPropertyChanged ( CustNo );
+			}
 		}
 
 		public int AcType
 		{
-			get { return actype; }
+			get
+			{
+				return actype;
+			}
 
 			set
-			{ actype = value; OnPropertyChanged ( AcType . ToString ( ) ); }
+			{
+				actype = value;
+				OnPropertyChanged ( AcType . ToString ( ) );
+			}
 		}
 
 		public decimal Balance
 		{
-			get { return balance; }
+			get
+			{
+				return balance;
+			}
 
 			set
-			{ balance = value; OnPropertyChanged ( Balance . ToString ( ) ); }
+			{
+				balance = value;
+				OnPropertyChanged ( Balance . ToString ( ) );
+			}
 		}
 
 		public decimal IntRate
 		{
-			get { return intrate; }
-			set { intrate = value; OnPropertyChanged ( IntRate . ToString ( ) ); }
+			get
+			{
+				return intrate;
+			}
+			set
+			{
+				intrate = value;
+				OnPropertyChanged ( IntRate . ToString ( ) );
+			}
 		}
 
 		public DateTime ODate
 		{
-			get { return odate; }
-			set { odate = value; OnPropertyChanged ( ODate . ToString ( ) ); }
+			get
+			{
+				return odate;
+			}
+			set
+			{
+				odate = value;
+				OnPropertyChanged ( ODate . ToString ( ) );
+			}
 		}
 
 		public DateTime CDate
 		{
-			get { return cdate; }
-			set { cdate = value; OnPropertyChanged ( CDate . ToString ( ) ); }
+			get
+			{
+				return cdate;
+			}
+			set
+			{
+				cdate = value;
+				OnPropertyChanged ( CDate . ToString ( ) );
+			}
 		}
 
-		public  string ToString ( bool full = false )
+		public string ToString ( bool full = false )
 		{
-//			if ( full )
-//				return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
-//			else
-				return base . ToString ( );
+			//			if ( full )
+			//				return CustNo + ", " + BankNo + ", " + AcType + ", " + IntRate + ", " + Balance + ", " + ODate + ", " + CDate;
+			//			else
+			return base . ToString ( );
 		}
 		public override string ToString ( )
 		{
@@ -107,53 +213,9 @@ namespace WPFPages . ViewModels
 
 		#region SETUP/DECLARATIONS
 
-		//public  EditDb EditdbWndBank = null;
-		//public  EditDb EditdbWndBankCust = null;
-		//public  EditDb EditdbWndBankDet = null;
-
-		//**********************
-		// dbEdit db viewer GLOBALS
-		//**********************
-		//public static List<DataGrid> CurrentEditDbViewerCustomerGridList = new List<DataGrid> ( );
-		//public static List<DataGrid> CurrentEditDbViewerDetailsGridList = new List<DataGrid> ( );
-		public static  DataGrid ActiveEditDbViewer = null;
 
 
 		#endregion SETUP/DECLARATIONS
-
-
-		// MVVM TO DO STUFF/INFO
-		// How to configure a RelayCommand with lambda expressions:
-		#region PropertyChanged
-		public event PropertyChangedEventHandler PropertyChanged;
-		protected void OnPropertyChanged ( string PropertyName )
-		{
-			if ( null != PropertyChanged )
-			{
-				PropertyChanged ( this,
-					new PropertyChangedEventArgs ( PropertyName ) );
-			}
-		}
-		#endregion PropertyChanged
-		#region MVVMstuff
-
-		//**************************************************************************************************************************************************************//
-		//		private RelayCommand _saveCommand; public ICommand SaveCommand
-
-		//		{
-		//			get
-		//			{
-		//				if ( _saveCommand == null )
-		//				{
-		//#pragma MVVM TODO
-		//					//_saveCommand = new RelayCommand (param => this.Save (),
-		//					//    param => this.CanSave);
-		//				}
-		//				return _saveCommand;
-		//			}
-		//		}
-
-		#endregion MVVMstuff
 	}
 }
 

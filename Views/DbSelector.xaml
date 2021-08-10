@@ -352,7 +352,7 @@
 			<!--Menu ONE Drag Client-->
 			<MenuItem  Header="Drag Client"
 				     Name ="menu1"
-					Background="{StaticResource Gray0}"
+					Background="Transparent"
 					Click="LoadDragClient_Click"
 					Foreground="{StaticResource White0}"
 					Margin="2"
@@ -360,7 +360,7 @@
 					IsTabStop="False"
 					Height="25">
 
-				<MenuItem  Header="Show Drag Client Window"
+				<!--<MenuItem  Header="Show Drag Client Window"
 						Click="LoadDragClient_Click"
 					     MinWidth="200"
 						FontWeight="Bold"
@@ -369,14 +369,14 @@
 						IsTabStop="False"
 						Style="{StaticResource MenuItemBlue}"
 						Background="{StaticResource Red0}"
-					     Foreground="{StaticResource White0}"/>
+					     Foreground="{StaticResource White0}"/>-->
 
 			</MenuItem>
 
 			<!--Menu TWO Data Viewers-->
 			<MenuItem  Header="Data Viewers"
 						Name ="menu2"
-						Background="{StaticResource Gray0}"
+					Background="Transparent"
 						Foreground="{StaticResource White0}"
 						Margin="2"
 						FontWeight="DemiBold"
@@ -508,7 +508,7 @@
 
 			<MenuItem  Header="Execute System"
 				     Name ="menu3"
-					Background="{StaticResource Gray0}"
+					Background="Transparent"
 					Foreground="{StaticResource White0}"
 					Margin="2"
 					FontWeight="DemiBold"
@@ -538,15 +538,27 @@
 					     Foreground="{StaticResource Black2}"/>
 			</MenuItem>
 
-			<MenuItem  Header="Colors"
+			<MenuItem  Header="All Colors"
 				     Name ="Colors"
 				     Click="Colors_Click"
-					Background="{StaticResource Gray0}"
+					Background="Transparent"
 					Foreground="{StaticResource White0}"
 					Margin="2"
 					FontWeight="DemiBold"
 					IsTabStop="False"
 					Height="25"/>
+
+			<MenuItem Header="  System Colors" 
+				    Click="sysColors_Click" 						
+					FontWeight="DemiBold"
+					Background="Transparent"
+					Foreground="{StaticResource White0}"/>
+
+			<MenuItem Header="  Backgrounds" 
+				    Click="Backgrounds_Click" 						
+					FontWeight="DemiBold"
+					Background="Transparent"
+					Foreground="{StaticResource White0}"/>
 
 		</Menu>
 

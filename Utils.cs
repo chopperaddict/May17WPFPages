@@ -259,6 +259,36 @@ namespace WPFPages
 			}
 		}
 
+		#region BRUSHES SUPPORT
+		//Working well 4/8/21
+		/// <summary>
+		/// Accepts color in Colors.xxxx format = "Blue" etc
+		/// </summary>
+		/// <param name="color"></param>
+		/// <returns></returns>
+		public static Brush BrushFromColors ( Color color )
+		{
+			Brush brush = new SolidColorBrush ( color );
+			return brush;
+		}
+		//Working well 4/8/21
+		/// <summary>
+		/// Accpets string in "#XX00FF00" or similar
+		/// </summary>
+		/// <param name="color"></param>
+		/// <returns></returns>
+		public static Brush BrushFromHashString( string color)
+		{
+			//Must start with  '#'
+			string s = color . ToString ( );
+			if ( !s . Contains ( "#" ) )
+				return Utils . BrushFromColors( Colors.Transparent );
+			Brush brush = (Brush)new BrushConverter().ConvertFromString(color );
+			return brush;
+		}
+
+		#endregion BRUSHES SUPPORT
+
 		public static BankAccountViewModel CreateBankRecordFromString ( string type, string input )
 		{
 			int index = 0;

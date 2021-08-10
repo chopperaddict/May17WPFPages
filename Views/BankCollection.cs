@@ -41,6 +41,7 @@ namespace WPFPages . Views
 			object lockobject = new object ( );
 			Notify = NotifyAll;
 			Caller = caller;
+
 			try
 			{
 				// Called to Load/reload the One & Only Bankcollection data source
@@ -50,14 +51,10 @@ namespace WPFPages . Views
 				//				Debug . WriteLine ( $"\n ***** SQL WARNING Created a NEW MasterBankCollection ..................." );
 				if ( USEFULLTASK )
 				{
-					// lock the process - JIC
-					//					lock (lockobject)
-					//					{
 					Bankinternalcollection = null;
 					Bankinternalcollection = new BankCollection ( );
 					Bankinternalcollection . LoadBankTaskInSortOrderasync ( );
 					cc = Bankinternalcollection;
-					//					}
 					return Bankinternalcollection;
 				}
 				else

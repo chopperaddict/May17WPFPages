@@ -25,7 +25,7 @@ namespace WPFPages . Views
 		}
 	}
 
-	public partial class DbSelector : Window, INotifyPropertyChanged
+	public partial class DbSelector : Window, System . ComponentModel.INotifyPropertyChanged
 	{
 		private static BankAccountViewModel bvm = MainWindow . bvm;
 		private static CustomerViewModel cvm = MainWindow . cvm;
@@ -154,11 +154,6 @@ namespace WPFPages . Views
 			string selectedItem = "";
 			string CallingType = "";
 
-			//if ( listbox . Items . Count == 4 && Command != "DELETE" )
-			//{
-			//	MessageBox . Show ( "there are already 3 viewers open.  Duplicates are not allowed" );
-			//	return;
-			//}
 			selected = listbox . SelectedIndex;
 			if ( Command == "NEW" )
 			{
@@ -234,7 +229,6 @@ namespace WPFPages . Views
 					Flags . CurrentSqlViewer . Show ( );
 				}
 				//When loading a new viewer, the  MainWindow.gv structure is completed correctly !!!!
-				//				MessageBox.Show ("DbSelector has completed the load");
 
 				// LOAD THE VIEWERS LIST HERE TO AVOID ISSUES
 				Flags . SqlViewerIsLoading = true;
@@ -253,21 +247,10 @@ namespace WPFPages . Views
 			}
 			else if ( Command == "DELETE" )
 			{
-				//				Window win = null;
 				//Close selected viewer window
 #pragma TODO  - DOES NOT WORK
 				DeleteCurrentViewer ( );
-				//Handle Flags entries here  ?
-				//				if ( Flags . CurrentSqlViewer == null )
-				//				{
-				//					win = SelectAnyOpenViewer ( );
-				//				}
 				Flags . CurrentSqlViewer . Close ( );
-				//				Flags . CurrentSqlViewer . CloseViewer_Click ( null, null );
-				//Set the viewer Delete one/All/Select buttons up correctly
-				//				if ( win != null )
-				//					win . Close ( );
-				//				else
 				UpdateSelectorButtons ( );
 			}
 			else if ( Command == "SELECT" )
@@ -1359,7 +1342,8 @@ namespace WPFPages . Views
 		private void LoadDragClient_Click ( object sender, RoutedEventArgs e )
 		{
 			DragDropClient ddc = new DragDropClient ( );
-			ddc . Show ( );
+			e . Handled = true;
+			//ddc . Show ( );
 		}
 
 		private void xxxt_Click ( object sender, RoutedEventArgs e )
@@ -1504,7 +1488,7 @@ namespace WPFPages . Views
 
 		private void Colors_Click ( object sender, RoutedEventArgs e )
 		{
-			ColorsSelector cs = new ColorsSelector ( );
+			ColorsSelector cs = new ColorsSelector ( "");
 			cs . Show ( );
 		}
 
@@ -1529,6 +1513,18 @@ namespace WPFPages . Views
 //			NorthWindGrid nwg = new NorthWindGrid ( );
 			
 //			nwg . Show ( );
+		}
+
+		private void sysColors_Click ( object sender, RoutedEventArgs e )
+		{
+			SysColors sc = new SysColors ( );
+			sc . Show ( );
+		}
+
+		private void Backgrounds_Click ( object sender, RoutedEventArgs e )
+		{
+			BackgroundDesigner bd = new BackgroundDesigner ("" );
+			//bd . Show ( );
 		}
 	}
 }

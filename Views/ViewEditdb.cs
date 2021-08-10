@@ -6,7 +6,7 @@ using System . Threading . Tasks;
 
 namespace WPFPages . Views
 {
-	public class ViewEditdb : Observable
+	public class ViewEditdb : INotifyPropertyChanged
 	{
 
 		EditDb Editdb;

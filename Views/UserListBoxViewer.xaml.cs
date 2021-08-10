@@ -221,6 +221,7 @@ namespace WPFPages . Views
 			this . Show ( );
 			Utils . SetupWindowDrag ( this );
 			EventControl . BankDataLoaded += EventControl_BankDataLoaded;
+			Flags . SqlBankActive  = true;
 			BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 
 			//Events declared by my ListBox UserControl : DbListWindowControl 
@@ -880,6 +881,7 @@ namespace WPFPages . Views
 			//			BackupBankcollection = null;
 			SqlBankcollection = null;
 			UCListbox . ItemsSource = null;
+			Flags . SqlCustActive  = true;
 			BankCollection . LoadBank ( SqlBankcollection, "SQLDBVIEWER", 1, true );
 			UCListbox . Refresh ( );
 		}

@@ -81,6 +81,7 @@ namespace WPFPages . Views
 			OntopChkbox . IsChecked = true;
 			ExecuteFile . Visibility = Visibility . Collapsed;
 			this . Topmost = true;
+			this . Show ( );
 		}
 
 
@@ -349,9 +350,18 @@ namespace WPFPages . Views
 			//	e . Effects = DragDropEffects . None;
 			//}
 			//else
+			Point mousePos = e . GetPosition ( this );
+			Vector diff = _startPoint - mousePos;
 			e . Effects = DragDropEffects . Copy;
+			//Mouse.SetCursor(Cursors . Hand);
 			//this line is CRITICAL - witohut it the TextBo does  not recognize a drop in progress
 //			e . Handled = true;
+		}
+		private void TextBox_PreviewQueryContinueDrag ( object sender, QueryContinueDragEventArgs e )
+		{
+			//NEVER TRIGGERED
+			Mouse . SetCursor ( Cursors . Hand );
+			e . Action = DragAction . Continue;
 		}
 
 		private void DataGrid_ColumnReordered ( object sender, DataGridColumnEventArgs e )
@@ -600,7 +610,7 @@ namespace WPFPages . Views
 
 
 
-		#region END Drag & Drop 
+		#region  Drag & Drop 
 		/// <summary>
 		/// sets cursor to a hand if dragged over the dataGrid
 		/// </summary>
@@ -612,6 +622,11 @@ namespace WPFPages . Views
 			{
 				e . UseDefaultCursors = false;
 				Mouse . SetCursor ( Cursors . Hand );
+			}
+			else if ( e . Effects == DragDropEffects . Move )
+			{
+				e . UseDefaultCursors = false;
+				Mouse . SetCursor ( Cursors .Wait);
 			}
 			else
 				e . UseDefaultCursors = true;
@@ -767,17 +782,67 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 				textBox . Refresh ( );
 				e . Handled = true;
 			}
+			else if ( e . Data . GetDataPresent ( DataFormats .Xaml) )
+			{
+				// get the data sent in  the drag message so we can verify what it is 
+				dataString = ( string ) e . Data . GetData ( DataFormats . Xaml);
+
+				if ( dataString . Contains ( "COLOR:" ) )
+				{
+					string o = "", r = "", g = "", b = "";
+					string tmp = dataString . Substring ( 6 );
+
+					o = tmp . Substring ( 0, 2 );
+					r = tmp . Substring ( 2, 2 );
+					g = tmp . Substring ( 4, 2 );
+					b = tmp . Substring ( 6, 2 );
+					byte bo = ( byte ) Convert . ToInt32 ( o, 16 );
+					byte br = ( byte ) Convert . ToInt32 ( r, 16 );
+					byte bg = ( byte ) Convert . ToInt32 ( g, 16 );
+					byte bb = ( byte ) Convert . ToInt32 ( b, 16 );
+					Brush brush = new SolidColorBrush (
+						Color . FromArgb ( bo,
+						 br,
+						 bg,
+						bb ) );
+					textBox . Background = brush;
+				}
+				e . Handled = true;
+			}
 			else if ( e . Data . GetDataPresent ( DataFormats . StringFormat ) )
 			{
 				// get the data sent in  the drag message so we can verify what it is 
 				dataString = ( string ) e . Data . GetData ( DataFormats . StringFormat );
-				if ( addCr )
-					textBox . Text += dataString + "\n";
+				if ( dataString . Contains ( "COLOR:" ) )
+				{
+					string o = "", r = "", g = "", b = "";
+					string tmp = dataString . Substring ( 6 );
+
+					o = tmp . Substring ( 0, 2 );
+					r = tmp . Substring ( 2, 2 );
+					g = tmp . Substring ( 4, 2 );
+					b = tmp . Substring ( 6, 2 );
+					byte bo = ( byte ) Convert . ToInt32 ( o,16 );
+					byte br = ( byte ) Convert . ToInt32 ( r ,16);
+					byte bg = ( byte ) Convert . ToInt32 ( g , 16);
+					byte bb = ( byte ) Convert . ToInt32 ( b, 16 );
+					Brush brush = new SolidColorBrush(
+						Color . FromArgb ( bo,
+						 br ,
+						 bg, 
+						bb ));
+					textBox . Background = brush;
+				}
 				else
-					textBox . Text += dataString;
-				int textlen = textBox . Text . Length;
-				textBox . CaretIndex = textlen;
-				textBox . Focus ( );
+				{
+					if ( addCr )
+						textBox . Text += dataString + "\n";
+					else
+						textBox . Text += dataString;
+					int textlen = textBox . Text . Length;
+					textBox . CaretIndex = textlen;
+					textBox . Focus ( );
+				}
 				e . Handled = true;
 			}
 			else if ( e . Data . GetDataPresent ( DataFormats . Text ) )
@@ -799,10 +864,9 @@ if ( dataString . Contains ( "CUSTOMER" ) )
 			}
 			e . Handled = true;
 		}
+	
 
-		#endregion END Drag & Drop 
-
-
+		#endregion Drag RGB color data elsewhere
 	}
 }
 

@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFPages", "WPFPages.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colorpicker", "..\Users\ianch\source\repos\Colorpicker\Colorpicker.csproj", "{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductView", "..\Users\ianch\source\repos\ProductView\ProductView.csproj", "{AE8AC9F5-2121-4F3A-B1EC-EB88B90561AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductsTest", "..\Users\ianch\source\repos\ProductsTest\ProductsTest.csproj", "{F0927F44-2A43-447E-AAF0-3806977A51E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FE52B8B-8F7E-4E80-8DBF-8D87A5DCD292}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE8AC9F5-2121-4F3A-B1EC-EB88B90561AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE8AC9F5-2121-4F3A-B1EC-EB88B90561AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE8AC9F5-2121-4F3A-B1EC-EB88B90561AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE8AC9F5-2121-4F3A-B1EC-EB88B90561AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0927F44-2A43-447E-AAF0-3806977A51E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0927F44-2A43-447E-AAF0-3806977A51E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0927F44-2A43-447E-AAF0-3806977A51E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0927F44-2A43-447E-AAF0-3806977A51E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

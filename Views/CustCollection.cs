@@ -1,4 +1,6 @@
 ﻿using System;
+using WPFPages;
+
 using System . Collections . ObjectModel;
 using System . Data;
 using System . Data . SqlClient;
@@ -16,23 +18,21 @@ namespace WPFPages . Views
 	public class CustCollection : ObservableCollection<CustomerViewModel>
 	{
 		//Declare a global pointer to Observable Customers Collection
-		public static CustCollection Custcollection = new CustCollection ( );
+//		public static CustCollection Custcollection = new CustCollection ( );
 		public static DataTable dtCust = new DataTable ( );
-		public static CustCollection CustViewDbcollection = new CustCollection ( );
-		public static CustCollection SqlViewerCustcollection = new CustCollection ( );
-		public static CustCollection EditDbCustcollection = new CustCollection ( );
-		public static CustCollection MultiCustcollection = new CustCollection ( );
+		//public static CustCollection CustViewDbcollection = new CustCollection ( );
+		//public static CustCollection SqlViewerCustcollection = new CustCollection ( );
+		//public static CustCollection EditDbCustcollection = new CustCollection ( );
+		//public static CustCollection MultiCustcollection = new CustCollection ( );
 		public static CustCollection Custinternalcollection = new CustCollection ( );
-		public static BankCollection temp = new BankCollection ( );
+		//public static BankCollection temp = new BankCollection ( );
 		public static bool USEFULLTASK = true;
 		public static bool Notify = false;
 
-		private readonly object LockCustReadData = new object ( );
-		private readonly object LockCustLoadData = new object ( );
 		public static string Caller = "";
 		#region CONSTRUCTOR
 
-		public CustCollection ( ) : base ( )
+		public CustCollection ( ) 
 		{
 		}
 
@@ -49,7 +49,6 @@ namespace WPFPages . Views
 
 				if ( USEFULLTASK )
 				{
-//					lock ( lockobj )
 					{
 						Custinternalcollection = new CustCollection ( );
 						Custinternalcollection . LoadCustomerTaskInSortOrderAsync ( );
@@ -58,19 +57,19 @@ namespace WPFPages . Views
 				}
 				else
 				{
-					// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
-					Flags . CustCollection = Custinternalcollection;
-					if ( Flags . IsMultiMode == false )
-					{
-						// Finally fill and return The global Dataset
-						SelectViewer ( ViewerType, Custinternalcollection );
-						return null;
-					}
-					else
-					{
-						// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
-						return null;
-					}
+					//// We now have the ONE AND ONLY pointer the the Bank data in variable Bankcollection
+					//Flags . CustCollection = Custinternalcollection;
+					//if ( Flags . IsMultiMode == false )
+					//{
+					//	// Finally fill and return The global Dataset
+					//	SelectViewer ( ViewerType, Custinternalcollection );
+					//	return null;
+					//}
+					//else
+					//{
+					//	// return the "working  copy" pointer, it has  filled the relevant collection to match the viewer
+					//	return null;
+					//}
 				}
 				if ( Flags . IsMultiMode == false )
 				{
@@ -98,7 +97,6 @@ namespace WPFPages . Views
 
 			if ( USEFULLTASK )
 			{
-//				lock ( lockobject )
 				{
 					Custinternalcollection = null;
 					Custinternalcollection = new CustCollection ( );
@@ -275,7 +273,8 @@ namespace WPFPages . Views
 			//			CustCollection bptr = new CustCollection ( );
 			//			lock ( bptr . LockCustLoadData )
 			//			{
-//			lock ( bptr )
+			//			lock ( bptr )
+			Flags . SqlCustActive  = true;
 			{
 				try
 				{
@@ -372,22 +371,22 @@ namespace WPFPages . Views
 			bool result = false;
 			switch ( ViewerType )
 			{
-				case 1:
-					SqlViewerCustcollection = tmp;
-					result = true;
-					break;
-				case 2:
-					EditDbCustcollection = tmp;
-					result = true;
-					break;
-				case 3:
-					MultiCustcollection = tmp;
-					result = true;
-					break;
-				case 4:
-					CustViewDbcollection = tmp;
-					result = true;
-					break;
+				//case 1:
+				//	SqlViewerCustcollection = tmp;
+				//	result = true;
+				//	break;
+				//case 2:
+				//	EditDbCustcollection = tmp;
+				//	result = true;
+				//	break;
+				//case 3:
+				//	MultiCustcollection = tmp;
+				//	result = true;
+				//	break;
+				//case 4:
+				//	CustViewDbcollection = tmp;
+				//	result = true;
+				//	break;
 				//case 5:
 				//	CustViewerDbcollection = tmp;
 				//	result = true;
@@ -404,7 +403,7 @@ namespace WPFPages . Views
 				//	SqlViewerDetcollection = tmp;
 				//	result = true;
 				//	break;
-				case 9:
+				default:
 					//					= tmp;
 					result = true;
 					break;
