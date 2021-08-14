@@ -297,7 +297,7 @@ namespace WPFPages . Views
 					else
 					{
 						// Create a valid Query Command string including any active sort ordering
-						commandline = "Select * from BankAccount order by ";
+						commandline = "Select * from [BankAccount] order by ";
 						commandline = Utils . GetDataSortOrder ( commandline );
 					}
 					//					lock (bptr)

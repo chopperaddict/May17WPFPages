@@ -34,7 +34,9 @@ namespace WPFPages.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = 'C:\USERS\IANCH\APPDATA\LOCAL\MICROSOFT\MICROSOFT SQL SERVER LOCAL DB\INSTANCES\MSSQLLOCALDB\IAN1.MDF'; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=Tru" +
+            "e;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationInten" +
+            "t=ReadWrite;MultiSubnetFailover=False")]
         public string BankSysConnectionString {
             get {
                 return ((string)(this["BankSysConnectionString"]));
@@ -275,9 +277,9 @@ namespace WPFPages.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Northwind;Integrated Security=" +
-            "True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIn" +
-            "tent=ReadWrite;MultiSubnetFailover=False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DINO-PC;Initial Catalog=Northwind;Integrated Security=True;Connect Ti" +
+            "meout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;" +
+            "MultiSubnetFailover=False")]
         public string NorthwindConnectionString {
             get {
                 return ((string)(this["NorthwindConnectionString"]));

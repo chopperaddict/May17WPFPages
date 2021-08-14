@@ -1524,7 +1524,15 @@ namespace WPFPages . Views
 		private void Backgrounds_Click ( object sender, RoutedEventArgs e )
 		{
 			BackgroundDesigner bd = new BackgroundDesigner ("" );
+			e . Handled = true;
 			//bd . Show ( );
+		}
+
+		private void Animate_Click ( object sender , RoutedEventArgs e )
+		{
+			AnimationTest at = new  AnimationTest();
+			at . Show ( );
+			//e . Handled = true;
 		}
 	}
 }

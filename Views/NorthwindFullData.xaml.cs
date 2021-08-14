@@ -848,12 +848,6 @@ namespace WPFPages . Views
 			nwg . Show ( );
 		}
 
-		private void MenuItem_Click ( object sender, RoutedEventArgs e )
-		{
-
-		}
-
-
 		private void Window_Closing ( object sender, CancelEventArgs e )
 		{
 			EventControl . NwCustomerSelected -= EventControl_NwCustomerSelected;
@@ -891,11 +885,11 @@ namespace WPFPages . Views
 
 		private void CloseReturnButton_Loaded ( object sender, RoutedEventArgs e )
 		{
-//			UserControl uc = sender as UserControl;
-//			var b = Utils . BrushFromColors ( Colors . Red );
-//			Txtblk.Background = b;
-//			b = Utils.BrushFromHashString ( "FF00FF00" );
-//			Txtblk . Background = b;
+			//			UserControl uc = sender as UserControl;
+			//			var b = Utils . BrushFromColors ( Colors . Red );
+			//			Txtblk.Background = b;
+			//			b = Utils.BrushFromHashString ( "FF00FF00" );
+			Foreground= (Brush)FindResource("Red5");
 		}
 
 		private void CloseReturnButton_PreviewMouseMove ( object sender, MouseEventArgs e )

@@ -1,0 +1,207 @@
+﻿<UserControl x:Class="WPFPages.Views.ThreeDeeBtnControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFPages.Views" 
+		 Loaded="ThreeDBttn_Loaded"
+		 x:Name="ThreeDBttn" 
+		 mc:Ignorable="d"
+			d:DataContext="{Binding ThreeDeeBtnControl}"
+
+		 Height="130"
+		 Width="200">
+
+	<UserControl.Resources>
+		<!--// Brushes used on my 3D buttons-->
+		<LinearGradientBrush x:Key="Greenbackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FF00FF00" />
+			<GradientStop Offset="1" Color="#99006000" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Yellowbackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFFEF00" />
+			<GradientStop Offset="1" Color="#FFFF9B00" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Bluebackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FF12B1FF" />
+			<GradientStop Offset="1" Color="#E5555BCD" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Orangebackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFFBC41" />
+			<GradientStop Offset="1" Color="#FFFF8841" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Magentabackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFF92FF" />
+			<GradientStop Offset="1" Color="#FFFF33D6" />
+		</LinearGradientBrush>
+
+		<!--// Template Kludge to stop Mouseover being activated on my 3D Buttons-->
+		<ControlTemplate x:Key="ButtonBaseControlTemplate2" TargetType="{x:Type ButtonBase}">
+			<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+				  Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+				<ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+			</Border>
+			<ControlTemplate.Triggers>
+				<Trigger Property="Button.IsDefaulted" Value="True">
+					<Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+				</Trigger>
+				<Trigger Property="ToggleButton.IsChecked" Value="True">
+					<Setter Property="Background" TargetName="border" Value="#FFBCDDEE"/>
+					<Setter Property="BorderBrush" TargetName="border" Value="#FF245A83"/>
+				</Trigger>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" TargetName="border" Value="#FFF4F4F4"/>
+					<Setter Property="BorderBrush" TargetName="border" Value="#FFADB2B5"/>
+					<Setter Property="Foreground" Value="#FF838383"/>
+				</Trigger>
+			</ControlTemplate.Triggers>
+		</ControlTemplate>
+
+	</UserControl.Resources>
+	<Viewbox x:Name="border"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}"  >
+
+		<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="76"
+			  BorderThickness="2">
+
+			<Button x:Name="ThreeDBtn"
+			  Background="Red"
+				Click="Button_Click"
+				FontStyle="{Binding Path=FontDecoration}"
+				FontSize="{Binding Path=TextSize}"
+				Foreground="{Binding Path=BtnTextColor}"
+				Content="{Binding Path=BtnText}" 
+			  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="30" Margin="-7,0,6,0"
+				>
+				<Button.Template>
+					<ControlTemplate TargetType="{x:Type Button}" x:Name="ThreeDBtnTemplate">
+						<Grid	Name="InnerBtnGrid"
+						
+						Grid.ColumnSpan="4">
+							<!--Height="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Height}"-->
+							<Ellipse x:Name="H1"
+							Margin="0,0,0,0"
+							StrokeThickness="6"
+							   Height="{Binding Path=Ellip1Height}"
+							   Width="{Binding Path=Ellip1Width}"
+							Panel.ZIndex="3"
+							   Fill="{StaticResource Greenbackground}"
+							/>
+							<!--Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Parent.Height,  Converter={StaticResource Ellipse2Converter}}"-->
+							<Ellipse x:Name="H2"
+							Margin="0,3,0,0"
+							StrokeThickness="6"
+							Panel.ZIndex="2"
+							   Height="{Binding Path=Ellip2Height}"
+							   Width="{Binding Path=Ellip2Width}"
+							   Fill="{StaticResource Red3}"
+							/>
+							<!--Height="69"
+							   Width="150"-->
+							<!--Width="175"-->
+							<Ellipse x:Name="H3"
+							Margin="0,0,0,0"
+							   Stroke="Black"
+							   StrokeThickness="8"							   
+							Panel.ZIndex="1"
+							   Fill="Black"
+							   Height="{Binding Path=Ellip3Height}"
+							   Width="{Binding Path=Ellip3Width}" RenderTransformOrigin="0.5,0.5"
+							   
+							>
+								<Ellipse.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="-1"/>
+										<SkewTransform/>
+										<RotateTransform/>
+										<TranslateTransform/>
+									</TransformGroup>
+								</Ellipse.RenderTransform>
+							</Ellipse>
+							<!--Height="60"
+							   Width="145"-->
+							<ContentPresenter  x:Name="Btn6Content"
+							Height="40"
+							Width="auto"
+							HorizontalAlignment="Center"
+							Panel.ZIndex="4"
+							VerticalAlignment="Center"
+						>
+								<!--<ContentPresenter.ContentTemplate >
+								<DataTemplate>
+									<TextBlock x:Name="ContentText"
+										Foreground="White">
+									</TextBlock>
+								</DataTemplate>
+							</ContentPresenter.ContentTemplate>-->
+							</ContentPresenter>
+						</Grid>
+
+						<ControlTemplate.Triggers>
+							<!--<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource AncestorType=Ellipse, AncestorLevel=}}" Value="false">-->
+							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+								<Setter TargetName="Btn6Content" Property="Margin" Value="0,10,0,0"/>
+								<Setter TargetName="H1" Property="Height" Value="{Binding Path=Ellip1Height}"/>
+								<Setter TargetName="H2" Property="Height" Value="{Binding Path=Ellip2Height}"	/>
+								<Setter TargetName="H3" Property="Height" Value="{Binding Path=Ellip3Height}"/>
+								<Setter TargetName="H1" Property="Width" Value="{Binding Path=Ellip1Width}"/>
+								<Setter TargetName="H2" Property="Width" Value="{Binding Path=Ellip2Width}"	/>
+								<Setter TargetName="H3" Property="Width" Value="{Binding Path=Ellip3Width}"/>
+								<Setter TargetName="H1" Property="Fill" Value="{Binding Path=FillTop}"/>
+								<Setter TargetName="H2" Property="Fill" Value="{Binding Path=FillSide}"	/>
+								<Setter TargetName="H3" Property="Fill" Value="{Binding Path=FillHole}"/>
+
+								<!--<Setter TargetName="H1" Property="Margin" Value="0,15,0,0"/>
+							<Setter TargetName="H2" Property="Margin" Value="0,26,0,0"/>
+							<Setter TargetName="H3" Property="Margin" Value="0,25,0,0"/>-->
+								<!--<Setter TargetName="H2" Property="Fill" Value="{Binding Path=Brush2, ElementName=ThreeDeeBtnControl}"/>-->
+								<!--<Setter TargetName="H3" Property="Fill" Value="{DynamicResource Black2}"/>-->
+
+								<!--<Setter TargetName="H1" Property="Fill" Value="{Binding ElementName=ThreeDBtnTemplate.Brush1}"/>-->
+
+								<!--<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="H2" Property="StrokeThickness" Value="1"/>-->
+							</DataTrigger>
+
+							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+								<!--<Setter TargetName="Btn6Content" Property="TextElement.Foreground" Value="{Binding Path=BtnTextColor}"/>
+							<Setter TargetName="Btn6Content" Property="TextElement.FontSize" Value="{Binding Path=TextSize}"/>
+							<Setter TargetName="Btn6Content" Property="TextElement.FontStyle" Value="{Binding Path=FontDecoration}"/>-->
+								<!--<Setter TargetName="Btn6Content" Property="Content" Value="Horizontal Gradient"/>-->
+								<Setter TargetName="Btn6Content" Property="Margin" Value="0,23,0,0"/>
+
+								<Setter TargetName="H1" Property="Height" Value="{Binding Path=Ellip1Height}"/>
+								<Setter TargetName="H2" Property="Height" Value="{Binding Path=Ellip2Height}"	/>
+								<Setter TargetName="H3" Property="Height" Value="{Binding Path=Ellip3Height}"/>
+								<Setter TargetName="H1" Property="Width" Value="{Binding Path=Ellip1Width}"/>
+								<Setter TargetName="H2" Property="Width" Value="{Binding Path=Ellip2Width}"	/>
+								<Setter TargetName="H3" Property="Width" Value="{Binding Path=Ellip3Width}"/>
+								<Setter TargetName="H1" Property="Fill" Value="{Binding Path=FillTop}"/>
+								<Setter TargetName="H2" Property="Fill" Value="{Binding Path=FillSide}"	/>
+								<Setter TargetName="H3" Property="Fill" Value="{Binding Path=FillHole}"/>
+
+								<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
+								<!--<Setter TargetName="H1" Property="Stroke" Value="{DynamicResource Green8}"/>-->
+								<Setter TargetName="H2" Property="StrokeThickness" Value="1"/>
+
+								<Setter TargetName="H1" Property="Margin" Value="-16,6,0,0"/>
+								<Setter TargetName="H2" Property="Margin" Value="-16,10,0,0"/>
+								<Setter TargetName="H3" Property="Margin" Value="-16,0,0,0"/>
+
+								<!--<Setter TargetName="H1" Property="Height" Value="55"/>
+							<Setter TargetName="H2" Property="Height" Value="65"/>
+
+							<Setter TargetName="H1" Property="Width" Value="155"/>
+							<Setter TargetName="H2" Property="Width" Value="170"/>-->
+							</DataTrigger>
+
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+
+		</Border>
+	</Viewbox>
+</UserControl>

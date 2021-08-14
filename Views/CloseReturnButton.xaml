@@ -9,39 +9,12 @@
 		 Loaded="CloseReturnBtn_Loaded"
 		 mc:Ignorable="d" 
 		   x:Name="CloseReturnBtn">
-	
+
 	<UserControl.Resources>
 
-		
-		<Style x:Key="MyEllipse" TargetType="Ellipse">
-			<Setter Property="Margin" Value="5" />
-			<Setter Property="Fill">
-				<Setter.Value>
-					<LinearGradientBrush StartPoint="0.1,0" EndPoint="1,.6">
-						<GradientStop Offset="0.0" Color="Red" />
-						<GradientStop Offset="0.6" Color="#FFFFD190" />
-						<GradientStop Offset="1" Color="#FFFEBA07" />
-					</LinearGradientBrush>
-				</Setter.Value>
-			</Setter>
-			<Style.Triggers>
-				<Trigger Property="IsMouseOver" Value="True">
-					<Setter Property="Fill">
-						<Setter.Value>
-							<LinearGradientBrush StartPoint="1,0" EndPoint="1,1">
-								<GradientStop Offset=".5" Color="#FFe57218" />
-								<GradientStop Offset="0.75" Color="#FFd6e868" />
-								<GradientStop Offset="1" Color="#FF291711" />
-							</LinearGradientBrush>
-						</Setter.Value>
-					</Setter>
-				</Trigger>
-			</Style.Triggers>
-		</Style>
-		
 	</UserControl.Resources>
-	
-			<!--//This user control works, and DOES allow the end designer to resize 
+
+	<!--//This user control works, and DOES allow the end designer to resize 
 				it as required while the control maintains the text positioning etc-->
 	<Grid x:Name="EllipseGrid"
 		>
@@ -51,58 +24,47 @@
 			to access the leftMouseDown anywhere a control does not 
 			support LeftMouseDown of any type -->
 
-			<!--This is how to create a pseudo Button shaped like an Ellipse with 
+		<!--This is how to create a pseudo Button shaped like an Ellipse with 
 			what appears to be normal Button.Content Text on top of it and normal 
 			Button functionality so that any styling of the Ellipse does not get 
 			intefered with by mousing over the TextBlock that contains the 
 			"Buttons" Text/Content Element-->
-			<!--NB to stop the TextBlock from intefering with the Ellipses 
+		<!--NB to stop the TextBlock from intefering with the Ellipses 
 			MouseOver Event the Property ISHITTESTVISIBLE is set to FALSE
 			in it's enclosing StackPanel so that anything inside it does not receive 
 			any Interface events such as Mouse events-->
 		<!--Style="{StaticResource MyEllipse}"-->
-		<Ellipse x:Name="Ellipse9"			   
+		<Ellipse x:Name="Ellipse9"	
+			     Stroke="{Binding Path=BorderColor, ElementName=CloseReturnBtn}"
+				StrokeThickness="{Binding Path=StrokeWidth, ElementName=CloseReturnBtn}"
 				PreviewMouseDown="CloseButton_Click"
 				MouseEnter="Ellipse9_MouseEnter"
 				MouseLeave="Ellipse9_MouseLeave"
-				StrokeThickness="1"
-				Stroke="{StaticResource Black1}"
-				Opacity="1"
-				Fill="{Binding FillColor}"
+				Opacity="1"	 			   
+				Fill="{Binding Path=FillColor, ElementName=CloseReturnBtn}"
 				MouseMove="EllipseGrid_MouseMove"
 				HorizontalAlignment="Stretch"  
 				VerticalAlignment="Stretch"
-			   Visibility="Visible">
+			   Visibility="Visible"
+				Width="{Binding Path=ButtonWidth, ElementName=CloseReturnBtn}"
+			   >
 		</Ellipse>
-		<!--<Ellipse x:Name="MouseOverEllipse"			   
-				PreviewMouseDown="CloseButton_Click"
-				MouseEnter="Ellipse9_MouseEnter"
-				MouseLeave="Ellipse9_MouseLeave"
-				StrokeThickness="1"
-				Stroke="{StaticResource Black1}"
-			   d:Fill="Yellow"
-				Opacity="0.5"
-				HorizontalAlignment="Stretch"  
-				Margin="-5,-5,-5,-5"
-				Visibility="Hidden"
-				VerticalAlignment="Stretch">
-		</Ellipse>-->
 		<!--//Display the "Button Text"-->
 		<StackPanel 
-			IsHitTestVisible="false"
+			IsHitTestVisible="False"
 			Background="Transparent"
 			HorizontalAlignment="Center"
-			VerticalAlignment="Center">
-					
+			VerticalAlignment="Center" Margin="8,8,15,10" Width="117" Height="52">
+
 			<!--The Horizontal/Vertical settings keep the text in the centrer of the ellipse-->
 			<TextBlock x:Name="BtnText"
-				Background="{Binding Path=Background, ElementName=BtnText}"			   
-				Foreground="{Binding}"			   
-				FontSize="{Binding ElementName=CloseReturnBtn, Path=FontSize}"			   
+				Foreground="{Binding Path=Foreground, ElementName=CloseReturnBtn}"
+				FontSize="{Binding Path=FontHeight, ElementName=CloseReturnBtn}"
 				FontFamily="Segoe Script"
 				HorizontalAlignment="Center"
-				Text="Close"
+			     Text="{Binding ButtonText}"
 				VerticalAlignment="Center"
+				     Height="35"
 				Padding="25" 
 				/>
 		</StackPanel>

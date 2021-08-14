@@ -10,92 +10,58 @@
 		mc:Ignorable="d"
 		WindowStartupLocation="CenterScreen"
 		WindowStyle="SingleBorderWindow"
-	  MinHeight="680" MinWidth="665"
-	  MaxHeight="680" MaxWidth="665"
+	  MinHeight="620" MinWidth="665"
+	  MaxHeight="620" MaxWidth="665"
 		Title="Background's Designer" 
-	  Height="680" Width="665">
+	  Height="620" Width="665">
 
 	<Window.Resources>
-		<!--<colors:Colorpicker 	x:Key="Colors"/>-->
-		<!--<conv:HexConvert x:Key="DectoHex"/>-->
-		<!--<local:ColorsSelector x:Key="THIS"/>-->
 		<conv:OpacityToDecimalConvert x:Key="OpacToDecimalConverter"/>
 		<conv:OpacityToDecimalConvert x:Key="DoubleToIntConverter"/>
+		<!--// Brushes used on my 3D buttons-->
+		<LinearGradientBrush x:Key="Greenbackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FF00FF00" />
+			<GradientStop Offset="1" Color="#99006000" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Yellowbackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFFEF00" />
+			<GradientStop Offset="1" Color="#FFFF9B00" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Bluebackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FF12B1FF" />
+			<GradientStop Offset="1" Color="#E5555BCD" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Orangebackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFFBC41" />
+			<GradientStop Offset="1" Color="#FFFF8841" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Magentabackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFF92FF" />
+			<GradientStop Offset="1" Color="#FFFF33D6" />
+		</LinearGradientBrush>
 
-
-		<ControlTemplate x:Key="MyButtonTemplate" TargetType="Button">
-			<Grid>
-				<Border Background="Black" Margin="5 5 0 0" />
-				<Border BorderBrush="Black" BorderThickness="1"
-                Background="{Binding}" Margin="0 0 5 5">
-					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">OK</TextBlock>
-				</Border>
-			</Grid>
+		<!--// Template Kludge to stop Mouseover being activated on my 3D Buttons-->
+		<ControlTemplate x:Key="ButtonBaseControlTemplate2" TargetType="{x:Type ButtonBase}">
+			<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+				  Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+				<ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+			</Border>
+			<ControlTemplate.Triggers>
+				<Trigger Property="Button.IsDefaulted" Value="True">
+					<Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+				</Trigger>
+				<Trigger Property="ToggleButton.IsChecked" Value="True">
+					<Setter Property="Background" TargetName="border" Value="#FFBCDDEE"/>
+					<Setter Property="BorderBrush" TargetName="border" Value="#FF245A83"/>
+				</Trigger>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" TargetName="border" Value="#FFF4F4F4"/>
+					<Setter Property="BorderBrush" TargetName="border" Value="#FFADB2B5"/>
+					<Setter Property="Foreground" Value="#FF838383"/>
+				</Trigger>
+			</ControlTemplate.Triggers>
 		</ControlTemplate>
 
-		<Style x:Key="OvalButtonsStyleMain" TargetType="Ellipse">
-		</Style>
-		
-		
-		<Style x:Key="OvalButtonsStyleMain1" TargetType="Ellipse">
-			<Setter Property="Fill" Value="{StaticResource Orange4}"/>
-			<Style.Triggers>
-			</Style.Triggers>
-		</Style>
-
-		<Style x:Key="OvalButtonsStyleMain2" TargetType="Ellipse">
-			<Setter Property="Fill" Value="{StaticResource White4}"/>
-			<Setter Property="Stroke" Value="{StaticResource Green2}"/>
-			<Setter Property="StrokeThickness" Value="5"/>
-
-			<!--<Style.Triggers>
-					<MultiTrigger>
-						<MultiTrigger.Conditions>
-							<Condition Property="IsMouseOver" Value="True"/>
-						</MultiTrigger.Conditions>
-						<MultiTrigger.Setters>
-							<Setter Property="Fill" Value="{StaticResource White0}"/>
-							--><!--<Setter Property="Text" Value="Wheeeeeeee"/>--><!--
-						</MultiTrigger.Setters>
-					</MultiTrigger>
-					--><!--<MultiTrigger>
-						<MultiTrigger.Conditions>
-							<Condition Property="IsMouseOver" Value="False"/>
-						</MultiTrigger.Conditions>
-						<MultiTrigger.Setters>
-							<Setter Property="Background" Value="{StaticResource Red2}"/>
-						</MultiTrigger.Setters>
-					</MultiTrigger>--><!--
-			</Style.Triggers>-->
-		</Style>
-
-		<!--<Style x:Key="ContentP" TargetType="ContentPresenter">
-		</Style>-->
-		
-		<Style x:Key="TextDisplay" TargetType="TextBlock">
-			<!--<Setter Property="Text" Value="Reverse Pattern display"/>-->
-			<Setter Property="Panel.ZIndex" Value="4"/>
-			<Style.Triggers>
-				<MultiTrigger>
-					<MultiTrigger.Conditions>
-						<Condition Property="IsMouseOver" Value="True"/>
-					</MultiTrigger.Conditions>
-					<MultiTrigger.Setters>
-						<Setter Property="Background" Value="{StaticResource Red2}"/>
-						<Setter Property="Text" Value="Wheeeeeeee"/>
-					</MultiTrigger.Setters>
-				</MultiTrigger>
-				<MultiTrigger>
-					<MultiTrigger.Conditions>
-						<Condition Property="IsMouseOver" Value="False"/>
-					</MultiTrigger.Conditions>
-					<MultiTrigger.Setters>
-						<Setter Property="Background" Value="{StaticResource Red2}"/>
-					</MultiTrigger.Setters>
-				</MultiTrigger>
-			</Style.Triggers>
-		</Style>
-		
 	</Window.Resources>
 
 	<Grid
@@ -104,8 +70,8 @@
 		<!--<Grid.DataContext>
 				<colors:ColorsSelector/>
 			</Grid.DataContext>-->
-		
-	<!--#region Grid Setup-->
+
+		<!--#region Grid Setup-->
 		<Grid.Background>
 			<LinearGradientBrush EndPoint="0.0,1" StartPoint="1.3,0">
 				<GradientStop Color="Gray" Offset="0.7" />
@@ -117,7 +83,7 @@
 			<RowDefinition Height="40"/>
 			<RowDefinition Height="30"/>
 			<RowDefinition Height="30"/>
-			<RowDefinition Height="75"/>
+			<RowDefinition Height="95"/>
 			<RowDefinition Height="95"/>
 			<RowDefinition Height="210"/>
 			<RowDefinition Height="170"/>
@@ -132,7 +98,7 @@
 		</Grid.ColumnDefinitions>
 		<!--#endregion Grid Setup-->
 
-		<!--#region Hex Values-->
+	<!--#region Hex Values-->
 
 		<StackPanel
 		     AllowDrop="True"
@@ -150,12 +116,13 @@
 				     HorizontalAlignment="Left"
 				     FontSize="12"
 				     Foreground="White" 
+				     Margin="7,0,0,0"
 					Height="15"
 				     Width="50"/>
 
 			<TextBlock x:Name="opVal"
 				     AllowDrop="True"
-					Text="{Binding ElementName=OpacitySlider, Path=Value, StringFormat=000}" 
+					Text="{Binding ElementName=OpacitySlider, Path=Value}" 
 				     TextAlignment="Center"				     
 				     Background="{StaticResource White4}"
 				     FontWeight="Bold"
@@ -169,8 +136,9 @@
 				     HorizontalAlignment="Left"
 				     FontSize="12"
 				     Foreground="White" 
+				     Margin="8,0,0,0"
 					Height="15"
-				     Width="45"/>
+				     Width="30"/>
 
 			<TextBlock x:Name="opRed"
 				     AllowDrop="True"
@@ -180,8 +148,8 @@
 				     Foreground="Red" 
 				     FontWeight="Bold"
 				     Height="20"
-				     Margin="-8,0,0,0"
-					Text="{Binding ElementName=RedSlider, Path=Value, StringFormat=000}" 
+				     Margin="10,0,0,0"
+					Text="{Binding ElementName=RedSlider, Path=Value}" 
 				     Padding="2"
 				     Width="31">
 			</TextBlock>
@@ -190,12 +158,13 @@
 				     HorizontalAlignment="Left"
 				     FontSize="12"
 				     Foreground="White" 
+				     Margin="19,0,0,0"
 					Height="15"
-				     Width="40"/>
+				     Width="39"/>
 
 			<TextBlock x:Name="opGreen"
 				     AllowDrop="True"
-					Text="{Binding ElementName=GreenSlider, Path=Value, StringFormat=000}" 
+					Text="{Binding ElementName=GreenSlider, Path=Value}" 
 					TextAlignment="Center"
 				     HorizontalAlignment="Left"
 				     VerticalAlignment="Center"
@@ -203,7 +172,7 @@
 				     Background="{StaticResource White4}"
 				     FontWeight="Bold"
 				     Foreground="Red" 
-				     Margin="5,0,0,0"
+				     Margin="8,0,0,0"
 				     Height="20"
 				     Width="31"/>
 
@@ -212,6 +181,7 @@
 				     HorizontalAlignment="Center"
 				     FontSize="12"
 				     Foreground="White" 
+				     Margin="5,0,0,0"
 					Height="15"
 				     Width="40"/>
 
@@ -224,19 +194,20 @@
 				     FontWeight="Bold"
 				     Foreground="Red" 
 				     Padding="2"
-				     Margin="-2,0,0,0"
+				     Margin="0,0,0,0"
 				     Height="20"
 				     Width="31"/>
-			<TextBlock Text="     RGB" 
+			<TextBlock x:Name="Rgb"
+					Text="  RGB" 
 				     AllowDrop="True"
 				     HorizontalAlignment="Left"
 				     FontSize="12"
 				     Foreground="White" 
-				     Margin="100,0,0,0"
+				     Margin="15,0,0,0"
 					Height="15"
 				     Width="45"/>
 
-			<TextBlock x:Name="opAll"
+			<TextBox x:Name="opAll"
 				     AllowDrop="True"
 				     DragEnter="OpAll_DragEnter"
 				     Padding="2"
@@ -244,17 +215,32 @@
 				     HorizontalAlignment="Center"
 				     TextAlignment="Center"
 				     Background="{StaticResource White4}"
-				     FontWeight="Bold"
-				     Margin="2,0,0,0"
+					FontSize="16"  
+				   FontWeight="Bold"
+				     Margin="-7,0,0,0"
 				     Foreground="Red" 
-				     ToolTip="This can be dragged as a Color code ..."
 				     PreviewMouseLeftButtonDown="OpAll_PreviewMouseLeftButtonDown"
 				     PreviewMouseMove="OpAll_PreviewMouseMove"
 				     PreviewDragOver="OpAll_PreviewDragOver"
+				     PreviewDrop="Rgb_PreviewDrop"
 				     PreviewQueryContinueDrag="OpAll_PreviewQueryContinueDrag"
+				   PreviewKeyDown="opAll_PreviewKeyDown"
+				     Drop="opAll_Drop"
+				     Height="30"
+				     Width="100">
+				<TextBox.ToolTip>
+					<ToolTip ToolTipService.ShowDuration="1000000" HasDropShadow="True" Background="Blue" Foreground="White" VerticalOffset="10">
+						<StackPanel Orientation="Vertical">
+							<TextBlock Text="This value can be dragged to any other Drop Recipient, or Edited manually "/>
+							<TextBlock Text="and then pressing Enter or Escape to apply the color you have  entered "/>
+							<TextBlock Text="to the currently active color pane..."/>
+							<TextBlock Text=""/>
+							<TextBlock Text="It also accepts a valid color value to be 'Dropped' onto it in the same manner"/>
+						</StackPanel>
+					</ToolTip>
+				</TextBox.ToolTip>
 
-				     Height="20"
-				     Width="70"/>
+			</TextBox>
 
 			<Button x:Name="ClipSave"
 				     AllowDrop="True"
@@ -263,7 +249,7 @@
 				Height="40"
 				VerticalAlignment="Center"
 				Width="117"
-				Margin="10,0,5,0"
+				Margin="30,0,5,0"
 				Click="ClipSave_Click"
 				Background="Green"
 				Foreground="White"
@@ -274,8 +260,8 @@
 		<TextBlock x:Name="opacityLevel"
 			Grid.Row="2"
 			Grid.Column="1"
-			Background="Gray"
-			Foreground="{StaticResource White1}"
+			Background="LightGray"
+			Foreground="{StaticResource Black1}"
 		     Padding="2"
 			TextAlignment="Center"
 			Text="{Binding Path=OpacityValue, Converter={StaticResource OpacToDecimalConverter}}" 
@@ -284,17 +270,16 @@
 			/>
 		<!--#endregion Hex Values-->
 
-		<!--#region Sliders-->
+	<!--#region Sliders-->
 
 		<Slider  x:Name="OpacitySlider" 
 			   Grid.Row="2"
 			   Grid.Column="2"
 			   Height="20"
-			   Background="Gray"
+			   Background="Transparent"
 			   ValueChanged="OpacitySlider_ValueChanged"
 			   Minimum="0.0" Maximum="255.00" 
 			   />
-		<!--Value="{Binding opacity}"-->
 
 		<TextBlock x:Name="RedLevel"
 			Grid.Row="3"
@@ -307,8 +292,6 @@
 			Width="40"
 			Height="25"
 			/>
-		<!--Text="{Binding ElementName=RedSlider, Path=Value}"-->
-
 
 		<Slider  x:Name="RedSlider" 
 			   Grid.Row="3"
@@ -318,7 +301,6 @@
 			   ValueChanged="RedSlider_ValueChanged"
 			   Minimum="0" Maximum="255" 
 				Value="{Binding RedValue}"/>
-		<!--, Converter={StaticResource Colors}}"/>-->
 
 		<TextBlock x:Name="GreenLevel"
 			Grid.Row="2"
@@ -361,7 +343,7 @@
 			Value="{Binding BlueValue}"/>
 		<!--#endregion Sliders-->
 
-		<!--#region Value Labels-->
+	<!--#region Value Labels-->
 
 		<Label   x:Name="Btn1"
 			   Grid.Row="5"
@@ -427,20 +409,20 @@
 
 		<!--#endregion Value Labels-->
 
-		<!--#region Buttons-->
+	<!--#region Buttons-->
+		
+		<!--// Horizontal-->
 		<Button x:Name="LinkPanels"
 			Grid.Row="4"
 			Grid.Column="2"
 			Grid.ColumnSpan="4"
 			Grid.RowSpan="1"
-			BorderBrush="{StaticResource White1}"
-			BorderThickness="1"
 			Click="LinkPanels_Click"
-			Height="80"
+			Height="90"
 			Width="200"
-			Margin="-35,-10,0,0"
-			Background="{StaticResource Green1}"
+			Content="Horizontal Gradient panel"
 			Foreground="{StaticResource White0}"
+			Margin="-35,0,0,0"
 			  HorizontalAlignment="Left"
 			VerticalAlignment="Center"
 			VerticalContentAlignment="Center">
@@ -448,137 +430,183 @@
 				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn1Template">
 					<Grid
 						Grid.ColumnSpan="4">
-						<Ellipse x:Name="LinkMain"
+						<Ellipse x:Name="H1"
+							   Margin="0,-12,0,0"
 							Height="60"
-							Width="185"
-							Margin="5,3,0,0"
-							Fill="{StaticResource White1}"
+							Width="165"
+							   Stroke="{StaticResource Black6}"
+							   StrokeThickness="1"
+							Panel.ZIndex="3"
 							   />
-						<Ellipse 
-							Height="55"
+						<Ellipse x:Name="H2"
+							Margin="0,-4,0,0"
+							Height="75"
+							Width="175"
+							Stroke="{StaticResource Black4}"
+							StrokeThickness="0.3"
+							Panel.ZIndex="2"
+							   />
+						<Ellipse x:Name="H3"
+							Height="75"
 							Width="180"
-							Fill="{StaticResource Green4}"
+							Panel.ZIndex="1"
+							Fill="{StaticResource Black2}"
 							   />
-						<ContentPresenter  x:Name="Btn1Content"
+						<ContentPresenter  x:Name="Btn6Content"
 									Height="20"
 									Width="140"
-									 Content="Horizontal Gradient panel"
 									 MouseLeftButtonDown="LinkPanels_Click"
 									 HorizontalAlignment="Left"
-									Panel.ZIndex="3"
+									Panel.ZIndex="4"
 									 VerticalAlignment="Center"
-									Margin="30,3,0,0"									 
-									/>
+									Margin="33,-13,0,0"/>
 					</Grid>
+
+					<ControlTemplate.Triggers>
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+							<!--<Setter TargetName="Btn6Content" Property="Margin" Value="28,-5,0,0"/>-->
+							<!--<Setter TargetName="Btn6Content" Property="Content" Value="Horizontal Gradient "/>-->
+
+							<Setter TargetName="H1" Property="Fill" Value="{StaticResource Greenbackground}"/>
+							<Setter TargetName="H2" Property="Fill" Value="{StaticResource Green4}"/>
+
+							<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="H2" Property="StrokeThickness" Value="1"/>
+						</DataTrigger>
+						
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+							<Setter TargetName="Btn6Content" Property="Button.FontSize" Value="16"/>
+							<Setter TargetName="Btn6Content" Property="Button.Foreground" Value="White"/>
+							<Setter TargetName="Btn6Content" Property="Content" Value="Horizontal Gradient"/>
+							<Setter TargetName="Btn6Content" Property="Margin" Value="48,5,0,0"/>
+							<Setter TargetName="Btn6Content" Property="Margin" Value="32,3,0,0"/>
+
+							<Setter TargetName="H1" Property="Fill" Value="{StaticResource Greenbackground}"/>
+							<Setter TargetName="H2" Property="Fill" Value="{StaticResource Green4}"/>
+							<Setter TargetName="H3" Property="Fill" Value="{StaticResource Black2}"/>
+
+							<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
+							<Setter TargetName="H1" Property="Stroke" Value="{StaticResource Green8}"/>
+							<Setter TargetName="H2" Property="StrokeThickness" Value="1"/>
+							<!--<Setter TargetName="H2" Property="Stroke" Value="{StaticResource Black3}"/>-->
+
+							<Setter TargetName="H1" Property="Margin" Value="0,4,0,0"/>
+							<Setter TargetName="H2" Property="Margin" Value="0,8,0,0"/>
+
+							<Setter TargetName="H1" Property="Height" Value="55"/>
+							<Setter TargetName="H2" Property="Height" Value="65"/>
+
+							<Setter TargetName="H1" Property="Width" Value="155"/>
+							<Setter TargetName="H2" Property="Width" Value="170"/>
+						</DataTrigger>
+
+					</ControlTemplate.Triggers>
 				</ControlTemplate>
 			</Button.Template>
 		</Button>
 
+		<!--// Vertical-->
 		<Button  x:Name="VerticalOption"
-			Grid.Row="3"
-			Grid.Column="1"
-			Grid.ColumnSpan="5"
-			Grid.RowSpan="3"
+			Grid.Row="4"
+			Grid.Column="2"
+			Grid.ColumnSpan="4"
+			Grid.RowSpan="1"
 			Click="VerticalOption_Click"
-			Height="80"
+			   Content="Vertical Gradient"
+			Height="90"
 			Width="200"
-			Margin="20,-75,0,0"
-			Background="{StaticResource Yellow2}"
-			   Foreground="{StaticResource Black0}"
+			Margin="-50,0,0,0"
 			PreviewMouseMove="VerticalOption_PreviewMouseMove"
 			VerticalAlignment="Center"
 			VerticalContentAlignment="Center"
 			   >
-			<!--Template="{StaticResource MyButtonTemplate}"-->
+			 
 			<Button.Template>
 				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn2Template">
 					<Grid
 						Grid.ColumnSpan="3">
-						<Ellipse 
+						<Ellipse  x:Name="V1"
+							Margin="0,-12,0,0"
 							Height="60"
-							Width="185"
-							Margin="5,3,0,0"
-							Fill="{StaticResource White1}"
+							Width="165"
+							Stroke="{StaticResource Orange7}"
+							StrokeThickness="3"
+							Panel.ZIndex="3"
+								   />
+						<Ellipse x:Name="V2"
+							Margin="0,-4,0,0"
+							Height="75"
+							Width="175"
+							Stroke="{StaticResource Black4}"
+							StrokeThickness="0.3"
+							Panel.ZIndex="2"
 							   />
-						<Ellipse x:Name="Ellipse1"
-							Height="55"
+						<!--// BLACK BACKGROUND-->
+						<Ellipse x:Name="V3"
+							Height="75"
 							Width="180"
-							   StrokeThickness="1"
-							   Stroke="{StaticResource Black1}"
-							Fill="{StaticResource Yellow1}"
-							   />
+							Panel.ZIndex="1"
+							Fill="{StaticResource Black2}"
+							>
+						</Ellipse>
 						<ContentPresenter  x:Name="Btn2Content"
 									Height="20"
-									Width="140"
-									 Content="Vertical Gradient Pattern"
+									Width="100"
 									MouseLeftButtonDown="VerticalOption_Click"
 									 HorizontalAlignment="Left"
 									 VerticalAlignment="Center"
-									Panel.ZIndex="3"
-									Margin="40,3,0,0"									 
+									Panel.ZIndex="4"
+									Margin="50,-15,0,0"									 
 									/>
 					</Grid>
 					<ControlTemplate.Triggers>
 						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
-							<!--<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
-							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
-							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue7}"/>
-							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black3}"/>
-							<Setter TargetName="Btn3Content" Property="Margin" Value="30,-5,0,0"/>
-
-							<Setter TargetName="D1" Property="StrokeThickness" Value="0.5"/>
-
-							<Setter TargetName="D1" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="D2" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="D3" Property="Margin" Value="0,4,0,0"/>
-
-							<Setter TargetName="D1" Property="Height" Value="50"/>
-							<Setter TargetName="D2" Property="Height" Value="60"/>
-							<Setter TargetName="D3" Property="Height" Value="57"/>
-							<Setter TargetName="D1" Property="Width" Value="155"/>
-							<Setter TargetName="D2" Property="Width" Value="165"/>
-							<Setter TargetName="D3" Property="Width" Value="170"/>-->
-
+							<!--<Setter TargetName="Btn2Content" Property="Content" Value="Vertical Gradient"/>-->
+							<Setter TargetName="V1" Property="Fill" Value="{StaticResource Yellowbackground}"/>
+							<Setter TargetName="V2" Property="Fill" Value="{StaticResource Orange0}"/>
+							<Setter TargetName="V3" Property="Fill" Value="{StaticResource Black2}"/>
+							<Setter TargetName="Btn2Content" Property="Margin" Value="55,-5,0,0"/>
+							<Setter TargetName="V1" Property="StrokeThickness" Value="3"/>
 						</DataTrigger>
 						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
-							<!--<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
-							<Setter TargetName="Btn3Content" Property="Margin" Value="30,5,0,0"/>
+							<!--<Setter TargetName="Btn2Content" Property="Content" Value="Vertical Gradient"/>-->
+							<Setter TargetName="Btn2Content" Property="Margin" Value="55,5,0,0"/>
 
-							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
-							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue5}"/>
-							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black1}"/>
+							<Setter TargetName="V1" Property="Fill" Value="{StaticResource Yellowbackground}"/>
+							<Setter TargetName="V2" Property="Fill" Value="{StaticResource Orange0}"/>
+							<Setter TargetName="V3" Property="Fill" Value="{StaticResource Black1}"/>
 
-							<Setter TargetName="D1" Property="StrokeThickness" Value="1"/>
-							<Setter TargetName="D1" Property="Stroke" Value="{StaticResource White0}"/>
+							<Setter TargetName="V1" Property="StrokeThickness" Value="2"/>
+							<Setter TargetName="V1" Property="Stroke" Value="{StaticResource Yellow0}"/>
 
-							<Setter TargetName="D1" Property="Margin" Value="0,2,0,0"/>
-							<Setter TargetName="D2" Property="Margin" Value="0,8,0,0"/>
-							<Setter TargetName="D3" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="V1" Property="Margin" Value="0,11,0,0"/>
+							<Setter TargetName="V2" Property="Margin" Value="0,11,0,0"/>
+							<!--<Setter TargetName="V3" Property="Margin" Value="0,0,0,0"/>-->
 
-							<Setter TargetName="D1" Property="Height" Value="55"/>
-							<Setter TargetName="D2" Property="Height" Value="55"/>
-							<Setter TargetName="D3" Property="Height" Value="65"/>
+							<Setter TargetName="V1" Property="Height" Value="55"/>
+							<Setter TargetName="V2" Property="Height" Value="60"/>
+							<Setter TargetName="V3" Property="Height" Value="62"/>
 
-							<Setter TargetName="D1" Property="Width" Value="155"/>
-							<Setter TargetName="D2" Property="Width" Value="155"/>
-							<Setter TargetName="D3" Property="Width" Value="155"/>-->
+							<Setter TargetName="V1" Property="Width" Value="155"/>
+							<Setter TargetName="V2" Property="Width" Value="165"/>
+							<!--<Setter TargetName="V3" Property="Width" Value="170"/>-->
 						</DataTrigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
 			</Button.Template>
 		</Button>
 
+		<!--// Diagonal-->
 		<Button x:Name="DiagonalOption"
-			Grid.Row="3"
+			Grid.Row="4"
 			Grid.Column="3"
 			Grid.ColumnSpan="3"
-			Grid.RowSpan="3"
-			BorderBrush="{StaticResource White1}"
-			BorderThickness="1"
+			Grid.RowSpan="1"
 			Click="DiagonalOption_Click"
-			Height="80"
+			Height="90"
 			Width="200"
-			Margin="80,-75,0,0"
+			  Content="Diagonal Gradient"
+			Margin="80,0,0,0"
 			Foreground="{StaticResource White1}"
 			VerticalAlignment="Center"
 			VerticalContentAlignment="Center">
@@ -588,76 +616,65 @@
 						Grid.ColumnSpan="3">
 						<!--// MAIN-->
 						<Ellipse x:Name="D1"
-							Margin="-3,0,0,0"
+							Margin="0,-12,0,0"
+							Height="60"
+							Width="165"
+							Stroke="{StaticResource Cyan3}"
+							StrokeThickness="3"
 							Panel.ZIndex="3"
 							   />
 						<!--// middle-->
 						<Ellipse  x:Name="D2"
-							StrokeThickness="1"
-							Margin="-3,0,0,0"
-							Stroke="{StaticResource Black1}"
+							Margin="0,-4,0,0"
+							Height="75"
+							Width="175"
+							Stroke="{StaticResource Black4}"
+							StrokeThickness="0.3"
 							Panel.ZIndex="2"
 							   />
 						<!--/ Background-->
 						<Ellipse x:Name="D3" 
-							Margin="5,1,0,0"
+							Height="75"
+							Width="180"
 							Panel.ZIndex="1"
+							Fill="{StaticResource Black2}"
+
 							   />
 						<ContentPresenter  x:Name="Btn3Content"
 									Height="20"
 									Width="140"
-									 Content="Diagonal Gradient Pattern"
+									 Margin="50,-15,0,0"
 									MouseLeftButtonDown="DiagonalOption_Click"
 									 HorizontalAlignment="Left"
 									 VerticalAlignment="Center"
 									Panel.ZIndex="4"
-									Margin="30,3,0,0"									 
 									/>
 					</Grid>
 					<ControlTemplate.Triggers>
 						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
-							<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
-							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
-							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue7}"/>
-							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black3}"/>
-							<Setter TargetName="Btn3Content" Property="Margin" Value="30,-5,0,0"/>
-
-							<Setter TargetName="D1" Property="StrokeThickness" Value="0.5"/>
-
-							<Setter TargetName="D1" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="D2" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="D3" Property="Margin" Value="0,4,0,0"/>
-
-							<Setter TargetName="D1" Property="Height" Value="50"/>
-							<Setter TargetName="D2" Property="Height" Value="60"/>
-							<Setter TargetName="D3" Property="Height" Value="57"/>
-							<Setter TargetName="D1" Property="Width" Value="155"/>
-							<Setter TargetName="D2" Property="Width" Value="165"/>
-							<Setter TargetName="D3" Property="Width" Value="170"/>
+							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Bluebackground}"/>
+							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue3}"/>
+							<Setter TargetName="Btn3Content" Property="Margin" Value="50,-5,0,0"/>
 
 						</DataTrigger>
+						<!--// Diagonal Mouseover-->
 						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
-							<Setter TargetName="Btn3Content" Property="Content" Value="Diagonal Gradient Pattern"/>
-							<Setter TargetName="Btn3Content" Property="Margin" Value="30,5,0,0"/>
+							<Setter TargetName="Btn3Content" Property="Margin" Value="50,9,0,0"/>
 
-							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Blue4}"/>
-							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue5}"/>
-							<Setter TargetName="D3" Property="Fill" Value="{StaticResource Black1}"/>
+							<Setter TargetName="D1" Property="Fill" Value="{StaticResource Bluebackground}"/>
+							<Setter TargetName="D2" Property="Fill" Value="{StaticResource Blue3}"/>
 
 							<Setter TargetName="D1" Property="StrokeThickness" Value="1"/>
-							<Setter TargetName="D1" Property="Stroke" Value="{StaticResource White0}"/>
+							<Setter TargetName="D1" Property="Stroke" Value="{StaticResource Cyan3}"/>
 
-							<Setter TargetName="D1" Property="Margin" Value="0,2,0,0"/>
-							<Setter TargetName="D2" Property="Margin" Value="0,8,0,0"/>
-							<Setter TargetName="D3" Property="Margin" Value="0,-5,0,0"/>
+							<Setter TargetName="D1" Property="Margin" Value="2,8,0,0"/>
+							<Setter TargetName="D2" Property="Margin" Value="2,8,0,0"/>
 
 							<Setter TargetName="D1" Property="Height" Value="55"/>
-							<Setter TargetName="D2" Property="Height" Value="55"/>
-							<Setter TargetName="D3" Property="Height" Value="65"/>
+							<Setter TargetName="D2" Property="Height" Value="60"/>
 
-							<Setter TargetName="D1" Property="Width" Value="155"/>
-							<Setter TargetName="D2" Property="Width" Value="155"/>
-							<Setter TargetName="D3" Property="Width" Value="155"/>
+							<Setter TargetName="D1" Property="Width" Value="160"/>
+							<Setter TargetName="D2" Property="Width" Value="172"/>
 						</DataTrigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -670,45 +687,78 @@
 			Grid.Column="1"
 			Grid.ColumnSpan="7"
 			Grid.RowSpan="3"
->
+			>
+			<Grid
+				Height="70"
+				Width="180"
+				Margin="10,70,0,0"				
+				>
+				<Label
+				Height="25"
+				Width="150"
+				Margin="35,-30,0,0"				
+				Content="Gradient Center point"
+					Foreground="{StaticResource White0}"
+					/>
+				<TextBlock x:Name="OffsetVal"
+				Height="20" 
+				 Width="30" 
+				 Background="{StaticResource Blue5}"
+				 Foreground="{StaticResource White0}"
+				 Margin="-150,20,0,0"
+				     Padding="8,2,0,0"
+				Text="{Binding ElementName=GradientValue, Path=Value, FallbackValue=50}" 
+				 />
+				<Slider  x:Name="Gradientstop" 
+				Height="20"
+				Background="Transparent"
+				ValueChanged="GradientSlider_ValueChanged"
+				Minimum="0" Maximum="100" 
+				Margin="15,20,0,0"
+				Width="110"
+				Value="{Binding ElementName=GradientValue, Path=Value}" 
+				/>
+			</Grid>
+			
+			<!--// toggle  display Direction-->
+			<Button x:Name="ToggleDirectionOption"
+				Click="ToggleOption_Click"
+				Height="90"
+				Width="200"
+				Margin="35,95,0,0"
+				VerticalAlignment="Center"
+				Panel.ZIndex="6"
+				VerticalContentAlignment="Center">
 
-		<Button x:Name="ToggleDirectionOption"
-			BorderBrush="{StaticResource White1}"
-			BorderThickness="1"
-			Click="ToggleOption_Click"
-			Height="70"
-			Width="200"
-			Margin="130,75,0,0"
-			Foreground="Black"
-			  Background="Red"
-			VerticalAlignment="Center"
-			  Panel.ZIndex="6"
-			VerticalContentAlignment="Center">
-			<Button.Template>
-				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn4Template">
-					<Grid
+				<Button.Template>
+					<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn4Template">
+						<Grid
 						Grid.ColumnSpan="3">
-						<Ellipse  x:Name="Emain"
-							Height="50"
-							Width="170"
-							Margin="-3,0,0,0"
-						    Stroke="{StaticResource Black0}"
-						    StrokeThickness="0.5"
-							Panel.ZIndex="3"
-							   />
-						<Ellipse  x:Name="Emain2"
-							Height="60"
-							Width="185"
-							Margin="5,3,0,0"
-							Panel.ZIndex="1"
-							   />
-						<Ellipse  x:Name="Emain1"
-							Height="55"
-							Width="180"
-							StrokeThickness="1"
+							<!--//Main-->
+							<Ellipse  x:Name="Emain"
+								Margin="0,-12,0,0"
+								Height="60"
+								Width="165"
+								Stroke="{StaticResource Orange5}"
+								StrokeThickness="3"
+								Panel.ZIndex="3"
+									/>
+								<!--// border-->
+							<Ellipse  x:Name="Emain1"
+							Margin="0,-4,0,0"
+							Height="75"
+							Width="175"
+							StrokeThickness="0.3"
 							Panel.ZIndex="2"
-							/>
-						<ContentPresenter  x:Name="Btn4Content"
+								/>
+								<!--// Background-->
+							<Ellipse  x:Name="Emain2"
+							Height="75"
+							Width="180"
+							Panel.ZIndex="1"
+							Fill="{StaticResource Black2}"
+								/>
+							<ContentPresenter  x:Name="Btn4Content"
 									MouseLeftButtonDown="ToggleOption_Click"
 									 HorizontalAlignment="Left"
 									 VerticalAlignment="Center"
@@ -717,161 +767,160 @@
 									 Content="{TemplateBinding Content}"
 									 RecognizesAccessKey="false"
 									 Opacity="1"
-									Margin="32,3,0,0"	
+									Margin="37,-16,0,0"	
 									/>
-					</Grid>
-					<ControlTemplate.Triggers>
-						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
-							<Setter TargetName="Btn4Content" Property="Content" Value="Toggle display direction "/>
-							<Setter TargetName="Emain" Property="Fill" Value="{StaticResource Orange5}"/>
-							<Setter TargetName="Emain1" Property="Fill" Value="{StaticResource Orange0}"/>
-							<Setter TargetName="Emain2" Property="Fill" Value="{StaticResource Black3}"/>
-							<Setter TargetName="Btn4Content" Property="Margin" Value="40,-5,0,0"/>
-							<Setter TargetName="Emain" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="Emain1" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="Emain2" Property="Margin" Value="0,-3,0,0"/>
-							<Setter TargetName="Emain" Property="Height" Value="60"/>
-							<Setter TargetName="Emain1" Property="Height" Value="68"/>
-							<Setter TargetName="Emain2" Property="Height" Value="75"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
-							<Setter TargetName="Emain" Property="Fill" Value="{StaticResource Orange5}"/>
-							<Setter TargetName="Emain" Property="StrokeThickness" Value="2"/>
-							<Setter TargetName="Emain" Property="Stroke" Value="{StaticResource White2}"/>
-							<Setter TargetName="Emain1" Property="Fill" Value="{StaticResource Orange0}"/>
-							<Setter TargetName="Emain2" Property="Fill" Value="{StaticResource Black1}"/>
-							<!--<Setter TargetName="Btn4Content" Property="Margin" Value="0,5,0,0"/>-->
-							<Setter TargetName="Btn4Content" Property="Margin" Value="40,5,0,0"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+								<Setter TargetName="Btn4Content" Property="Content" Value="Toggle Display Direction "/>
+								<Setter TargetName="Emain" Property="Fill" Value="{StaticResource Orangebackground}"/>
+								<Setter TargetName="Emain1" Property="Fill" Value="{StaticResource Orange0}"/>
+								<Setter TargetName="Emain2" Property="Fill" Value="{StaticResource Black3}"/>
+								<Setter TargetName="Btn4Content" Property="Margin" Value="40,-8,0,0"/>
+							</DataTrigger>
 
-							<Setter TargetName="Emain1" Property="StrokeThickness" Value="1"/>
-							<Setter TargetName="Emain" Property="Margin" Value="0,3,0,0"/>
-							<Setter TargetName="Emain1" Property="Margin" Value="0,0,0,0"/>
-							<Setter TargetName="Emain2" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="Emain" Property="Height" Value="60"/>
-							<Setter TargetName="Emain1" Property="Height" Value="60"/>
-							<Setter TargetName="Emain1" Property="Width" Value="160"/>
-							<Setter TargetName="Emain2" Property="Height" Value="70"/>
-							<Setter TargetName="Btn4Content" Property="Content" Value="Toggle display direction "/>
-						</DataTrigger>
-					</ControlTemplate.Triggers>
-				</ControlTemplate>
-			</Button.Template>
+							<!--// Display   direction - Button Down-->
+							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+								<Setter TargetName="Btn4Content" Property="Content" Value="Toggle display direction "/>
+								<Setter TargetName="Emain" Property="StrokeThickness" Value="1"/>
+								<Setter TargetName="Emain1" Property="StrokeThickness" Value="2"/>
+								<Setter TargetName="Emain1" Property="Stroke" Value="{StaticResource Orange5}"/>
+								<!--<Setter TargetName="Emain2" Property="StrokeThickness" Value="1"/>-->
+								<!--<Setter TargetName="Emain2" Property="Stroke" Value="{StaticResource Black1}"/>-->
 
-		</Button>
-		
+								<Setter TargetName="Emain" Property="Fill" Value="{StaticResource Orangebackground}"/>
+								<Setter TargetName="Emain1" Property="Fill" Value="{StaticResource Orange0}"/>
+								<!--<Setter TargetName="Emain2" Property="Fill" Value="{StaticResource Black3}"/>-->
 
-		<Button x:Name="ReverseOption"
-			Background="{StaticResource Orange2}"
-			BorderBrush="{StaticResource White1}"
+								<Setter TargetName="Emain" Property="Margin" Value="0,8,0,0"/>
+								<Setter TargetName="Emain1" Property="Margin" Value="0,11,0,0"/>
+								<Setter TargetName="Btn4Content" Property="Margin" Value="40,5,0,0"/>
+
+								<Setter TargetName="Emain" Property="Height" Value="55"/>
+								<Setter TargetName="Emain1" Property="Height" Value="60"/>
+								<!--<Setter TargetName="Emain2" Property="Height" Value="70"/>-->
+
+								<Setter TargetName="Emain" Property="Width" Value="162"/>
+								<Setter TargetName="Emain1" Property="Width" Value="175"/>
+							</DataTrigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Button.Template>
+
+			</Button>
+
+		<!--// Show sample window-->
+			<Button x:Name="ReverseOption"
 			BorderThickness="1"
-			Click="ToggleOption_Click"
-			Height="70"
+			Click="DisplayOption_Click"
+			Height="90"
 			Width="220"
-			Margin="0,75,0,0"
+			Margin="0,95,0,0"
 			Foreground="Black"
 			VerticalAlignment="Center"
 			VerticalContentAlignment="Center"
 			Panel.ZIndex="0"
 			  >
-			<Button.Template>
-				<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn5Template">
-					<Grid
+				<Button.Template>
+					<ControlTemplate TargetType="{x:Type Button}" x:Name="Btn5Template">
+						
+						<Grid
 						Grid.ColumnSpan="3">
 							<!--//MAIN ELLIPSE PANEL-->
 							<Ellipse  x:Name="RmainM"
-							Height="60"
-							Width="165"
-							Margin="0,10,0,0"
-							StrokeThickness="0.5"
-							Stroke="{StaticResource Black1}"
-							    Visibility="Visible"
-							Panel.ZIndex="3"
-							   />
+								Margin="0,-12,0,0"
+								Height="60"
+								Width="165"
+								Stroke="{StaticResource Magenta7}"
+								StrokeThickness="3"
+								Panel.ZIndex="3"
+								   />
 
-						<!--// ORANGE BORDER-->
+							<!--// ORANGE BORDER-->
 							<Ellipse x:Name="Rmainborder"
-							Height="70"
+							Margin="0,-4,0,0"
+							Height="75"
 							Width="175"
-							Margin="0,4,0,0"
-							StrokeThickness="1"
-							Stroke="{StaticResource Black1}"
-							   Visibility="Visible"
+							Stroke="{StaticResource Black4}"
+							StrokeThickness="0.3"
 							Panel.ZIndex="2"
 							   />
-						
-						<!--// BLACK BACKGROUND-->
-						<Ellipse x:Name="Rbackground"
-							Height="60"
+
+							<!--// BLACK BACKGROUND-->
+							<Ellipse x:Name="Rbackground"
+								Height="75"
 							Width="180"
-							Margin="0,5,0,0"
-							   Visibility="Visible"
 							Panel.ZIndex="1"
-							>
-						</Ellipse>
-						
-						<ContentPresenter  x:Name="Btn5Content"
-							Height="20"
-							Width="150"
-							MouseLeftButtonDown="ToggleOption_Click"
-								Content="Reverse Gradient Slope"
-										 
+							Fill="{StaticResource Black2}"	   />
+
+							<ContentPresenter  x:Name="Btn5Content"
+								Height="20"
+								Width="150"
+								MouseLeftButtonDown="DisplayGradientOption_Click"
 								HorizontalAlignment="Left"
 								VerticalAlignment="Center"
-							Margin="50,3,0,0"									 
-							Panel.ZIndex="3"
-							/>
-					</Grid>
-					<ControlTemplate.Triggers>
-						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
-							<Setter TargetName="Btn5Content" Property="Content" Value="Toggle display direction "/>
-							<Setter TargetName="RmainM" Property="Fill" Value="{StaticResource Orange5}"/>
-							<Setter TargetName="Rmainborder" Property="Fill" Value="{StaticResource Orange0}"/>
-							<Setter TargetName="Rbackground" Property="Fill" Value="{StaticResource Black3}"/>
-							<!--<Setter TargetName="Btn5Content" Property="Margin" Value="45,-5,0,0"/>-->
-							
-							<Setter TargetName="RmainM" Property="StrokeThickness" Value="0.5"/>
-							
-							<Setter TargetName="RmainM" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="Rmainborder" Property="Margin" Value="0,-5,0,0"/>
-							<Setter TargetName="Rbackground" Property="Margin" Value="0,0,0,0"/>
-							
-							<Setter TargetName="RmainM" Property="Height" Value="55"/>
-							<Setter TargetName="Rmainborder" Property="Height" Value="68"/>
-							<Setter TargetName="Rbackground" Property="Height" Value="70"/>
-
-						</DataTrigger>
-						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
-							<Setter TargetName="Btn5Content" Property="Content" Value="Toggle display direction "/>
-							<Setter TargetName="Btn5Content" Property="Margin" Value="50,15,0,0"/>
-
-							<Setter TargetName="RmainM" Property="Fill" Value="{StaticResource Orange5}"/>
-							<Setter TargetName="Rmainborder" Property="Fill" Value="{StaticResource Orange0}"/>
-							<Setter TargetName="Rbackground" Property="Fill" Value="{StaticResource Black1}"/>
-
-							<Setter TargetName="RmainM" Property="StrokeThickness" Value="1"/>
-							<Setter TargetName="RmainM" Property="Stroke" Value="{StaticResource White0}"/>
-
-							<Setter TargetName="RmainM" Property="Margin" Value="0,2,0,0"/>
-							<Setter TargetName="Rmainborder" Property="Margin" Value="0,8,0,0"/>
-							<Setter TargetName="Rbackground" Property="Margin" Value="0,-5,0,0"/>
-							
-							<Setter TargetName="RmainM" Property="Height" Value="55"/>
-							<Setter TargetName="Rmainborder" Property="Height" Value="55"/>
-							<Setter TargetName="Rbackground" Property="Height" Value="65"/>
-
-							<Setter TargetName="Rmainborder" Property="Width" Value="145"/>
+										
+								Margin="45,-12,0,0"									 
+								Panel.ZIndex="4"
+								Content="Show Window Example"      										 
+								TextOptions.TextFormattingMode="Display"
+										 />
+						</Grid>
+						<ControlTemplate.Triggers>
+							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+								<!--<Setter TargetName="Btn5Content" Property="Content" Value="Show as Background"/>-->
+								<Setter TargetName="RmainM" Property="Fill" Value="{StaticResource Magentabackground}"/>
+								<Setter TargetName="Rmainborder" Property="Fill" Value="{StaticResource Magenta4}"/>
+								<Setter TargetName="Rbackground" Property="Fill" Value="{StaticResource Black3}"/>
+								<!--<Setter TargetName="RmainM" Property="StrokeThickness" Value="3"/>-->
 							</DataTrigger>
-					</ControlTemplate.Triggers>
-				</ControlTemplate>
-			</Button.Template>
+							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+								
+								<!--<Setter TargetName="Btn5Content" Property="Content" Value="Show as Background"/>-->
+								<Setter TargetName="Btn5Content" Property="Margin" Value="50,15,0,0"/>
 
-		</Button>
-		
+								<Setter TargetName="RmainM" Property="Fill" Value="{StaticResource Magentabackground}"/>
+								<Setter TargetName="Rmainborder" Property="Fill" Value="{StaticResource Magenta4}"/>
+								<Setter TargetName="Rbackground" Property="Fill" Value="{StaticResource Black1}"/>
+
+								<Setter TargetName="RmainM" Property="StrokeThickness" Value="2"/>
+								<Setter TargetName="RmainM" Property="Stroke" Value="{StaticResource Magenta6}"/>
+
+								<Setter TargetName="RmainM" Property="Margin" Value="0,5,0,0"/>
+								<Setter TargetName="Rmainborder" Property="Margin" Value="0,8,0,0"/>
+								<!--<Setter TargetName="Rbackground" Property="Margin" Value="0,-5,0,0"/>-->
+
+								<Setter TargetName="RmainM" Property="Height" Value="63"/>
+								<Setter TargetName="Rmainborder" Property="Height" Value="63"/>
+								<Setter TargetName="RmainM" Property="Width" Value="157"/>
+								<Setter TargetName="Rmainborder" Property="Width" Value="175"/>
+
+							</DataTrigger>
+
+							<!--<EventTrigger RoutedEvent="MouseEnter">
+								<BeginStoryboard >
+									<Storyboard>
+										<DoubleAnimation Duration="0:0:0.150" Storyboard.TargetProperty="Height" To="55" />
+									</Storyboard>
+								</BeginStoryboard>
+							</EventTrigger>
+							<EventTrigger RoutedEvent="MouseLeave">
+								<BeginStoryboard >
+									<Storyboard>
+										<DoubleAnimation Duration="0:0:0.600" Storyboard.TargetProperty="Height" To="65" />
+									</Storyboard>
+								</BeginStoryboard>
+							</EventTrigger>-->
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Button.Template>
+
+			</Button>
+
 		</StackPanel>
 		<!--#endregion Buttons-->
 
-
-		<!--#region Individual color panels-->
+	<!--#region Individual color panels-->
 
 		<Border x:Name="Output1"
 			Grid.Row="3"
@@ -879,15 +928,25 @@
 			Grid.ColumnSpan="3"
 			Grid.RowSpan="4"
 			BorderThickness="2"
-			Margin="-120,85,0,0"
+			Margin="-120,55,0,0"
 			CornerRadius="8"
 			BorderBrush="{StaticResource White0}"
 			Background="Transparent"
+			  IsHitTestVisible ="True"
 			PreviewMouseLeftButtonDown="Output_PreviewMouseLeftButtonDown"
-			ToolTip="Click to set this as the focused Panel.."
-			Height="120"
+			PreviewMouseRightButtonDown="SaveToClipBoard_Click"
+			Height="80"
 			  Width="210"
-			  />
+			  >
+			<ToolTipService.ToolTip>
+				<Border Background="Bisque">
+					<StackPanel Orientation="Vertical">
+						<TextBlock Text="Click to set this as the focused Panel.." Foreground="Red" FontWeight="DemiBold"/>
+						<TextBlock Text="or Right Click to save this color to the ClipBoard.." Foreground="Red" FontWeight="DemiBold"/>
+					</StackPanel>
+				</Border>
+			</ToolTipService.ToolTip>
+		</Border>
 
 		<Border x:Name="Output2"
 			Grid.Row="3"
@@ -899,10 +958,21 @@
 			BorderBrush="{StaticResource White0}"
 			Background="Transparent"
 			PreviewMouseLeftButtonDown="Output2_PreviewMouseLeftButtonDown"
-			Margin="-45,85,0,0"
+			PreviewMouseRightButtonDown="SaveToClipBoard_Click"
+			Margin="-45,55,0,0"
 			ToolTip="Click to set this as the focused Panel.."
-			Height="120"
-			Width="210"/>
+			  IsHitTestVisible ="True"
+			Height="80"
+			Width="210">
+			<ToolTipService.ToolTip>
+				<Border Background="Bisque">
+					<StackPanel Orientation="Vertical">
+						<TextBlock Text="Click to set this as the focused Panel.." Foreground="Red" FontWeight="DemiBold"/>
+						<TextBlock Text="or Right Click to save this color to the ClipBoard.." Foreground="Red" FontWeight="DemiBold"/>
+					</StackPanel>
+				</Border>
+			</ToolTipService.ToolTip>
+		</Border>
 
 		<Border x:Name="Output3"
 			Grid.Row="3"
@@ -910,42 +980,56 @@
 			Grid.ColumnSpan="4"
 			Grid.RowSpan="4"
 			BorderThickness="2"
-			Margin="40,85,0,0"
+			Margin="40,55,0,0"
 			CornerRadius="8"
 			BorderBrush="{StaticResource White0}"
 			Background="Transparent"
 			PreviewMouseLeftButtonDown="Output3_PreviewMouseLeftButtonDown"
-			ToolTip="Click to set this as the focused Panel.."
-			Height="120"
-			Width="210"/>
+			PreviewMouseRightButtonDown="SaveToClipBoard_Click"
+			  IsHitTestVisible ="True"
+			Height="80"
+			Width="210">
+			<ToolTipService.ToolTip>
+				<Border Background="Bisque">
+					<StackPanel Orientation="Vertical">
+						<TextBlock Text="Click to set this as the focused Panel.." Foreground="Red" FontWeight="DemiBold"/>
+						<TextBlock Text="or Right Click to save this color to the ClipBoard.." Foreground="Red" FontWeight="DemiBold"/>
+					</StackPanel>
+				</Border>
+			</ToolTipService.ToolTip>
+
+		</Border>
 
 		<!--#endregion Individual color panels-->
-		
+
+	<!--#region  gradientDisplay-->
 		<TextBlock x:Name="GradientText"
 			Background="Transparent"
 			Foreground="White"
 			Grid.Row="7"
 			Grid.Column="1"
-			Grid.ColumnSpan="4"
-			Grid.RowSpan="3"
-			Margin="-220,-95,0,0"
+			Grid.ColumnSpan="6"
+			Grid.RowSpan="1"
+			Margin="0,-147,0,0"
 			Height="30"
-			Width="420"
+			Width="635"
 			HorizontalAlignment="Center"
+			     PreviewMouseRightButtonDown="GradientText_PreviewMouseRightButtonDown"
 			VerticalAlignment="Top"
-			Padding="8,5"
-			/>
+			Padding="8,5">
+		</TextBlock>
+			
 		<StackPanel 			
 			Grid.Row="4"
 			Grid.Column="1"
 			Grid.ColumnSpan="4"
 			Grid.RowSpan="6"
 			VerticalAlignment="Top"
-			Margin="-0,160,0,0"
+			Margin="-0,125,0,0"
 			Height="400"
 			Orientation="Horizontal"
 			>
-		<Border x:Name="Final"
+			<Border x:Name="Final"
 			BorderThickness="2"
 			Margin="0,90,0,0"
 			CornerRadius="8"
@@ -959,23 +1043,30 @@
 			<StackPanel Orientation="Vertical"
 				Margin="0,185,0,0"
 					>
-			<Button x:Name="VBtn"
+				<Button x:Name="VBtn"
 				Height="45"
 				Width="150"
 				Background="Red"
 				Margin="35,-20,0,0"
-				Content="Vertical"
-				Foreground="{StaticResource White2}"
-				  BorderBrush="{StaticResource White0}"
-				/>
+				Foreground="{StaticResource White0}"
+				  BorderBrush="{StaticResource White0}" 
+			  	  ToolTip="Click to toggle Display layout as Vertical..."
+				  Template="{DynamicResource ButtonBaseControlTemplate2}"
+				Click="VBtn_Click"
+				  Content="Vertical"
+				  />
+
 				<Button x:Name="HBtn"
 				Height="45"
 				Width="150"
 				Background="{StaticResource Green3}"
 				Margin="35,10,0,0"
 				Content="Horizontal"
-				Foreground="{StaticResource White2}"
+				Foreground="{StaticResource White0}"
+				Click="HBtn_Click"
 				  BorderBrush="{StaticResource White0}"
+			  	  ToolTip="Click to toggle Display layout as Horizontal..."
+				  Template="{DynamicResource ButtonBaseControlTemplate2}"
 				/>
 				<Button x:Name="DBtn"
 				Height="45"
@@ -983,10 +1074,15 @@
 				Margin="35,10,0,0"
 				Content="Diagonal"
 				Background="{StaticResource Yellow1}"
-				Foreground="{StaticResource Black2}"
+				Click="DBtn_Click"
+				Foreground="{StaticResource White0}"
 				  BorderBrush="{StaticResource White0}"
+			  	  ToolTip="Click to toggle Display layout as Diagonal..."
+				  Template="{DynamicResource ButtonBaseControlTemplate2}"
 				/>
 			</StackPanel>
 		</StackPanel>
+		<!--#endregion  gradientDisplay-->
+
 	</Grid>
 </Window>

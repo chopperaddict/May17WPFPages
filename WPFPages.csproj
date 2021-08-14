@@ -113,6 +113,9 @@
       <DependentUpon>NorthWind.xsd</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\ObservableObject.cs" />
+    <Compile Include="Views\AnimationTest.xaml.cs">
+      <DependentUpon>AnimationTest.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\BackgroundDesigner.xaml.cs">
       <DependentUpon>BackgroundDesigner.xaml</DependentUpon>
     </Compile>
@@ -126,6 +129,9 @@
     <Compile Include="Converts\DummyDebugConverter.cs" />
     <Compile Include="Views\Folder.cs" />
     <Compile Include="Converts\HeaderToImageConverter.cs" />
+    <Compile Include="Views\GradientDisplay.xaml.cs">
+      <DependentUpon>GradientDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MenuItem.cs" />
     <Compile Include="Views\MyConverters.cs" />
     <Compile Include="ListBoxScroll.cs" />
@@ -220,6 +226,9 @@
     <Compile Include="Views\TestDetailsDbView.xaml.cs">
       <DependentUpon>TestDetailsDbView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ThreeDeeBtnControl.xaml.cs">
+      <DependentUpon>ThreeDeeBtnControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TreeView1.xaml.cs">
       <DependentUpon>TreeView1.xaml</DependentUpon>
     </Compile>
@@ -312,6 +321,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\AnimationTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\BackgroundDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -357,6 +370,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GetExportRecords.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GradientDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -449,6 +466,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TestDetailsDbView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ThreeDeeBtnControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

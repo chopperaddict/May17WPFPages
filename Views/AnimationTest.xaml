@@ -1,0 +1,85 @@
+﻿<Window x:Class="WPFPages.Views.AnimationTest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFPages.Views"
+	  xmlns:userctrl="clr-namespace:WPFPages.Views" 
+        mc:Ignorable="d"
+        Title="Animation Test" 
+	  Height="493" Width="648"
+	  MinHeight="120" MinWidth="200"
+	  WindowStartupLocation="CenterScreen"
+	  >
+
+	<Window.Resources>
+
+		<local:ThreeDeeBtnControl x:Key="ThreeDBtn"
+				  HorizontalAlignment="Stretch"
+				  VerticalAlignment="Stretch"/>
+
+
+
+		<!--<Style x:Key="Ellipse1" TargetType="Ellipse">
+			<Style.Triggers>
+				<EventTrigger RoutedEvent="MouseEnter">
+						<BeginStoryboard >
+								<Storyboard>
+									<DoubleAnimation Duration="0:0:0.150" Storyboard.TargetProperty="Width" To="200" />
+								</Storyboard>
+						</BeginStoryboard>
+				</EventTrigger>
+				<EventTrigger RoutedEvent="MouseLeave">
+						<BeginStoryboard >
+								<Storyboard>
+									<DoubleAnimation Duration="0:0:0.200" Storyboard.TargetProperty="Width" To="350" />
+								</Storyboard>
+						</BeginStoryboard>
+				</EventTrigger>
+			</Style.Triggers>
+		</Style>-->
+
+		<LinearGradientBrush x:Key="Greenbackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FF00FF00" />
+			<GradientStop Offset="1" Color="#99006000" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Yellowbackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFFEF00" />
+			<GradientStop Offset="1" Color="#FFFF9B00" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Bluebackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FF12B1FF" />
+			<GradientStop Offset="1" Color="#E5555BCD" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Orangebackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFFBC41" />
+			<GradientStop Offset="1" Color="#FFFF8841" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="Magentabackground" StartPoint="0.5,1" EndPoint="0.5,0">
+			<GradientStop Offset="0" Color="#FFFF92FF" />
+			<GradientStop Offset="1" Color="#FFFF33D6" />
+		</LinearGradientBrush>
+
+	</Window.Resources>
+
+	<Border x:Name="border"   >
+
+		<!--ControlHeight="{Binding Path=border.Height}"
+		     ControlWidth="{Binding Path=border.Width}"-->
+		<local:ThreeDeeBtnControl    x:Name="Btn1"
+		     ControlHeight="45"
+		     ControlWidth="125"
+			BtnText="Hello Idiot!"
+			FontDecoration="Normal"
+			TextSize ="16"
+		      BtnTextColor="{StaticResource White0}"
+			FillTop="{StaticResource Bluebackground}"
+			FillSide="{StaticResource Blue4}"
+			FillHole="{StaticResource Black0}" Margin="110,84,209,116"
+			/>
+		<!--Ellip2Height="70"
+		     Ellip2Width="160"
+		     Ellip3Height="74"
+		     Ellip3Width="165"-->
+	</Border>
+</Window>

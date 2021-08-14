@@ -106,8 +106,7 @@
 	
 	<Grid 
 		PreviewMouseRightButtonDown="NwStandard_PreviewMouseRightButtonDown"		
-	d:DataContext="{d:DesignInstance Type=local:nwcustomer}"
-		>
+		d:DataContext="{d:DesignInstance Type=local:nwcustomer}">	   	
 
 		<Grid.Background>			
 			<!--  create an elegant left to right light-> Dark gradient as a background  -->
@@ -139,7 +138,9 @@
 			<ColumnDefinition Width="150"/>
 			<ColumnDefinition Width="10"/>
 		</Grid.ColumnDefinitions>
+		<!--#endregion Grid Setup-->
 
+		<!--#region Customer header bar-->
 		<StackPanel Orientation="Horizontal"
 			     Grid.Row="0"
 			     Grid.Column="1"
@@ -195,8 +196,8 @@
 			     Foreground="{StaticResource Black1}"/>
 
 		</StackPanel>
+		<!--#endregion Customer header bar-->
 
-		<!--#endregion Grid Setup-->
 
 		<DataGrid x:Name="CustomersGrid"
 			Grid.Row="1"
@@ -397,6 +398,7 @@
 				</Style>
 			</DataGrid.CellStyle>
 		</DataGrid>
+		
 		<!--#region grid labels-->
 
 		<StackPanel Orientation="Horizontal"
@@ -705,7 +707,7 @@
 			</DataGrid.CellStyle>
 		</DataGrid>
 
-
+		  <!--#region Label row-->
 		<StackPanel Orientation="Horizontal"
 			     Grid.Row="6"
 			     Grid.Column="1"
@@ -742,6 +744,9 @@
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
 		</StackPanel>
+		<!--#endregion Label row-->
+
+		<!--#region Categories Label row-->
 
 		<StackPanel Orientation="Horizontal"
 			     Grid.Row="6"
@@ -779,14 +784,8 @@
 			     VerticalAlignment="Center"
 			     Foreground="{StaticResource Black1}"/>
 		</StackPanel>
+		<!--#endregion Categories Label row-->
 
-		<!--<StackPanel Orientation="Horizontal"
-				Grid.Row="7"
-				Grid.Column="1"
-				Grid.ColumnSpan="6"
-				MaxHeight="265"
-				VerticalAlignment="Top"
-				>-->
 		<DataGrid x:Name="OrderDetailsGrid"
 			AutoGenerateColumns="False"
 			AlternatingRowBackground="{StaticResource Blue9}"
@@ -1039,30 +1038,30 @@
 				</Style>
 			</DataGrid.CellStyle>
 		</DataGrid>
-		<!--</StackPanel>-->
+		
+		<!--#region buttons-->		
 		<!--This allows MOST standard properties to be changed at the user design stage-->
 		<userctrl:CloseReturnButton		
-			BorderColor ="{StaticResource Blue0}"
-			FillColor="{StaticResource Yellow0}"
-			ButtonText="Close"
+			BorderColor ="{StaticResource Magenta2}"
+			ButtonText="Close Me"
+			MouseoverButtonText="Closing"
 			ButtonWidth="90" 
-			ButtonHeight="48"
+			ButtonHeight="52"
 			ColorBackground="Transparent"
-			FontSize="21"
-			FontWeight="Bold"
+			FillColor="{StaticResource Yellow0}"
+			FontHeight="16"
 			FontFamily="Lucida Sans"
-			Foreground="Blue"
+			FontWeight="Bold"
 			Grid.Column="6" Grid.Row="8"  
 			HorizontalAlignment="Left" 
 			Loaded="CloseReturnButton_Loaded"
-			Margin="55,10,0,10"
+			Margin="45,5,0,10"
 			MouseOverColor="{StaticResource Blue2}"
-			MouseoverButtonText="Closing"
+			MouseoverTextColor="{StaticResource White1}"
 			PreviewMouseLeftButtonDown="CloseReturnButton_PreviewMouseLeftButtonDown"
 			PreviewMouseMove="CloseReturnButton_PreviewMouseMove"
-			StrokeWidth="2"
-			MouseoverTextColor="{StaticResource White1}"
-			TextColor="{StaticResource Black1}"
+			StrokeWidth="5"
+			TextColor="{StaticResource Red5}"
 			/>
 		<Button
 			Width="80"
@@ -1071,7 +1070,7 @@
 			Grid.ColumnSpan="2"
 			Background="Red"
 			FontSize="18"
-			Margin="160,0,0,0"
+			Margin="120,0,0,0"
 			Content="Export"
 			Click="Export_Click"
 			Foreground="White"/>
@@ -1079,7 +1078,7 @@
 			Width="80"
 			Height="40"
 				Grid.Column="5" Grid.Row="8"  
-			Margin="110,0,0,0"
+			Margin="70,0,0,0"
 			Background="Green"
 			FontSize="18"
 			Content="Import"
@@ -1091,26 +1090,12 @@
 			Click="ShowSelectedView_Click"
 			Height="40"
 			Grid.Column="5" Grid.Row="8"  
-			Margin="-29,15,0,15"
+			Margin="-49,15,0,15"
 			Background="Blue"
 			FontSize="18"
 			Content="Selected Item View"
 			Foreground="White" HorizontalAlignment="Left"/>
-		
-		<!--Test of binding a TextBlock to a TextBOX text-->
-		<!--<StackPanel Orientation="Vertical"
-				Grid.Row="8"
-				Grid.Column="1"
-				Background="CadetBlue"
-				Margin="5"
-				>
-			<TextBlock Name="Txtblk" Margin="5"
-			     Text="{Binding Path=Text, ElementName=Txtbox, UpdateSourceTrigger=PropertyChanged}"/>
+		<!--#endregion buttons-->
 
-			<TextBox Name="Txtbox" Margin="3"
-				   Text="abcdefg"/>
-
-		</StackPanel>-->
-		<!--ColorBackground="{StaticResource Green4}"-->
 	</Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System . Collections . Generic;
+using System . ComponentModel;
 using System . Linq;
 using System . Text;
 using System . Threading . Tasks;
@@ -21,19 +22,23 @@ namespace WPFPages . UserControls
 	/// <summary>
 	/// Interaction logic for CloseReturnButton.xaml
 	/// </summary>
-	public partial class CloseReturnButton : UserControl
+	public partial class CloseReturnButton : UserControl	
 	{
 		private CloseReturnButton ThisWin ;
-
+		static private Color c = Color . FromArgb ( 0xff , 0xff , 0x00 , 0x00 ) ;
+		static private SolidColorBrush b1 =  new SolidColorBrush(c);
 		public CloseReturnButton ( )
 		{
 			InitializeComponent ( );
+			this . DataContext = this;
 			// Needed to allow referencing of other control names in the Xaml
 			//this . DataContext = this;
 			ThisWin = this;
 			//force background fill to 
-			Ellipse9 . UpdateDefaultStyle ( );
-			Ellipse9 . Fill = FillColor as SolidColorBrush;
+//			Ellipse9 . UpdateDefaultStyle ( );
+//			Ellipse9 . Fill = FillColor as SolidColorBrush;
+//			FillColor = b1;
+//			Ellipse9 . UpdateLayout ( );
 		}
 
 		#region Declarations
@@ -106,26 +111,24 @@ namespace WPFPages . UserControls
 		{
 			get
 			{
-				return ( Brush ) GetValue ( FillProperty );
+				return ( Brush ) GetValue ( FillColorProperty );
 			}
 			set
 			{
-				SetValue ( FillProperty, value );
+//				SetValue ( FillColorProperty , value );
+//				OnPropertyChanged ( "FillColor" );
+//				Ellipse9 . Fill = FillColor;
+//				BtnText . Foreground = MouseoverTextColor;
+//				BtnText . Text = MouseoverButtonText;
+//				Ellipse9 . UpdateLayout ( );
 			}
 		}
 
-		public static readonly DependencyProperty FillProperty =
-			DependencyProperty . Register ( "FillColor",
+		public static readonly DependencyProperty FillColorProperty =
+			DependencyProperty . RegisterAttached ( "FillColor",
 			typeof ( Brush ),
 			typeof ( CloseReturnButton ),
-			new PropertyMetadata ( Brushes . White,
-			new PropertyChangedCallback ( SetFillColor ) ) );
-
-		private static void SetFillColor ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-//			var b = ( CloseReturnButton ) d;
-//			b . Ellipse9 . Fill = e . NewValue as Brush;
-		}
+			new PropertyMetadata ( default) );
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -140,42 +143,24 @@ namespace WPFPages . UserControls
 			}
 			set
 			{
-				SetValue ( MouseOverColorProperty, value );
+				//SetValue ( MouseOverColorProperty, value );
+				//OnPropertyChanged ( "MouseOverColor" );
+//				Ellipse9 . Fill = MouseOverColor;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+//				Ellipse9 . UpdateLayout ( );
 			}
 		}
 
 		public static readonly DependencyProperty MouseOverColorProperty =
-			DependencyProperty . Register ( "MouseOverColor",
+			DependencyProperty . RegisterAttached ( "MouseOverColor",
 			typeof ( Brush ),
 			typeof ( CloseReturnButton ),
-			new PropertyMetadata ( default,
-			new PropertyChangedCallback ( SetMouseOverColor) ) );
-
-		private static void SetMouseOverColor ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-//			var b = ( CloseReturnButton ) d;
-//			b . Ellipse9 . Fill = e . NewValue as Brush;
-		}
+			new PropertyMetadata ( default) );
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		//// Button's standard text color
-		public static readonly DependencyProperty TextColorProperty =
-			DependencyProperty . Register ( "TextColor",
-				typeof ( Brush ),
-				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( default, new PropertyChangedCallback ( OnTextColorChanged ) )
-				);
-		private static void OnTextColorChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton Control1 = d as CloseReturnButton;
-			Control1 . TextColorChanged ( e );
-		}
-		private void TextColorChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			TextColor = e . NewValue as Brush;
-//			BtnText . Foreground = e . NewValue as Brush;
-		}
 		public Brush TextColor
 		{
 			get
@@ -184,29 +169,34 @@ namespace WPFPages . UserControls
 			}
 			set
 			{
-				SetValue ( TextColorProperty, value );
+				SetValue ( TextColorProperty , value );
+				//OnPropertyChanged ( "TextColor" );
+//				SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				                        //Ellipse9 . Fill = sb;
+//								BtnText . Foreground = TextColor;
+//				BtnText . Text = MouseoverButtonText;
+//				Ellipse9 . UpdateLayout ( );
 			}
+		}    
+		public static readonly DependencyProperty TextColorProperty =
+			DependencyProperty . RegisterAttached ( "TextColor", 
+				typeof(Brush), 
+				typeof(CloseReturnButton), 
+				new PropertyMetadata(b1), 
+				validateValueCallback );
+
+		private static bool validateValueCallback ( object value )
+		{
+			Brush b = value  as Brush;
+			if ( b == ( Brush ) null )
+				return false;
+			else
+				return true;
 		}
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		//// Ellipse Button's text color on mouseover
-		public static readonly DependencyProperty MouseoverTextColorProperty =
-			DependencyProperty . Register ( "MouseoverTextColor",
-				typeof ( Brush ),
-				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( default, new PropertyChangedCallback ( OnMouseoverTextColorChanged ) )
-				);
-		private static void OnMouseoverTextColorChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton Control1 = d as CloseReturnButton;
-			Control1 . MouseoverTextColorChanged ( e );
-		}
-		private void MouseoverTextColorChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			MouseoverTextColor = e . NewValue as Brush;
-//			BtnText . Foreground = e . NewValue as Brush;
-		}
 		public Brush MouseoverTextColor
 		{
 			get
@@ -215,53 +205,49 @@ namespace WPFPages . UserControls
 			}
 			set
 			{
-				SetValue ( MouseoverTextColorProperty, value );
+				//SetValue ( MouseoverTextColorProperty , value );
+				//OnPropertyChanged ( "MouseOverTextColor" );
+
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+//				BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+//				Ellipse9 . UpdateLayout ( );
 			}
 		}
-
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-		//// Enclosing Grid Background color
-		public static readonly DependencyProperty ColorBackgroundProperty =
-			DependencyProperty . Register ( "ColorBackground",
+		public static readonly DependencyProperty MouseoverTextColorProperty =
+			DependencyProperty . RegisterAttached ( "MouseoverTextColor",
 				typeof ( Brush ),
 				typeof ( CloseReturnButton ),
-				new UIPropertyMetadata ( Brushes . Cyan ,
-				ColorBackgroundCallback ));
-
-		private static void  ColorBackgroundCallback ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-//			var b = ( CloseReturnButton ) d;
-//			b . EllipseGrid . Background= e . NewValue as Brush;
-		}
+				new PropertyMetadata ( default )
+				);
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		public Brush ColorBackground
 		{
 			get
-			{return ( Brush ) GetValue ( ColorBackgroundProperty );}
+			{ return ( Brush ) GetValue ( ColorBackgroundProperty ); }
 			set
-			{SetValue ( ColorBackgroundProperty, value );}
+			{
+				//SetValue ( ColorBackgroundProperty , value );
+				//OnPropertyChanged ( "ColorBackground" );
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+				//Ellipse9 . UpdateLayout ( );
+			}
 		}
+		//// Enclosing Grid Background color
+		public static readonly DependencyProperty ColorBackgroundProperty =
+			DependencyProperty . RegisterAttached ( "ColorBackground",
+				typeof ( Brush ),
+				typeof ( CloseReturnButton ),
+				new UIPropertyMetadata ( default ));
+
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-		//// Ellipse Button's text
-		public static readonly DependencyProperty ButtonTextProperty =
-			DependencyProperty . Register ( "ButtonText",
-				typeof ( string ),
-				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( default , new PropertyChangedCallback(OnButtonTextChanged)) 
-				);
-		private static void OnButtonTextChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton UserControl1Control = d as CloseReturnButton;
-			UserControl1Control. SetTextChanged ( e );
-		}
-		private void SetTextChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			ButtonText = e . NewValue . ToString ( );
-//			BtnText.Text = e . NewValue . ToString ( );
-		}
 		public string ButtonText
 		{
 			get
@@ -270,30 +256,25 @@ namespace WPFPages . UserControls
 			}
 			set
 			{
-				SetValue ( ButtonTextProperty, value );
+				//SetValue ( ButtonTextProperty , value );
+				//OnPropertyChanged ( "ButtonText" );
+				////SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+//				BtnText . Text = ButtonText;
+//				Ellipse9 . UpdateLayout ( );
 			}
 		}
-
+		//// Ellipse Button's text
+		public static readonly DependencyProperty ButtonTextProperty =
+			DependencyProperty . RegisterAttached ( "ButtonText",
+				typeof ( string ),
+				typeof ( CloseReturnButton ),
+				new PropertyMetadata ( default) 
+				);
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-		//// Ellipse Button's text
-		public static readonly DependencyProperty MouseoverButtonTextProperty =
-			DependencyProperty . Register ( "MouseoverButtonText",
-				typeof ( string ),
-				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( default, new PropertyChangedCallback ( OnMouseoverButtonTextChanged ) )
-				);
-		private static void OnMouseoverButtonTextChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton UserControl1Control = d as CloseReturnButton;
-			UserControl1Control . SetMouseoverTextChanged ( e );
-		}
-		private void SetMouseoverTextChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			MouseoverButtonText = e . NewValue . ToString ( );
-//			BtnText . Text = e . NewValue . ToString ( );
-		}
 		public string MouseoverButtonText
 		{
 			get
@@ -302,58 +283,25 @@ namespace WPFPages . UserControls
 			}
 			set
 			{
-				SetValue ( MouseoverButtonTextProperty, value );
+				//SetValue ( MouseoverButtonTextProperty , value );
+				//OnPropertyChanged ( "MouseoverButtonText" );
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+				//Ellipse9 . UpdateLayout ( );
 			}
 		}
-
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-		//// Ellipse Button's text color on mouseover
-		public static readonly DependencyProperty MouseOverTextColorProperty =
-			DependencyProperty . Register ( "MouseOverTextColor",
-				typeof ( Brush ),
+		//// Ellipse Button's text
+		public static readonly DependencyProperty MouseoverButtonTextProperty =
+			DependencyProperty . RegisterAttached ( "MouseoverButtonText",
+				typeof ( string ),
 				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( default, new PropertyChangedCallback ( OnMouseOverTextColorChanged ) )
+				new PropertyMetadata ( default )
 				);
-		private static void OnMouseOverTextColorChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton Control1 = d as CloseReturnButton;
-			Control1 . MouseOverTextColorChanged ( e );
-		}
-		private void MouseOverTextColorChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			MouseOverTextColor = e . NewValue as Brush;
-//			BtnText . Foreground = e . NewValue as Brush;
-		}
-		public Brush MouseOverTextColor
-		{
-			get
-			{
-				return ( Brush ) GetValue ( MouseOverTextColorProperty );
-			}
-			set
-			{
-				SetValue ( MouseOverTextColorProperty, value );
-			}
-		}
+	
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		////// Ellipse Border color
-		public static readonly DependencyProperty BorderColorProperty =
-			DependencyProperty . Register ( "BorderColor",
-				typeof ( Brush ),
-				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( default, new PropertyChangedCallback ( OnBorderColorChanged ) )
-				);
-		private static void OnBorderColorChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton UserControl1Control = d as CloseReturnButton;
-			UserControl1Control . BorderColorChanged ( e );
-		}
-		private void BorderColorChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			BorderColor = e . NewValue as Brush;
-//			Ellipse9 . Stroke =  e . NewValue as Brush;
-		}
 		public Brush BorderColor
 		{
 			get
@@ -362,44 +310,129 @@ namespace WPFPages . UserControls
 			}
 			set
 			{
-				SetValue ( BorderColorProperty, value as Brush);
+				//SetValue ( BorderColorProperty , value as Brush );
+				//OnPropertyChanged ( "BorderColor" );
+				//	SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//	Ellipse9 . Fill = sb;
+				//	BtnText . Foreground = MouseoverTextColor;
+				//	BtnText . Text = MouseoverButtonText;
+				//	Ellipse9 . UpdateLayout ( );
 			}
 		}
-
+		public static readonly DependencyProperty BorderColorProperty =
+			DependencyProperty . RegisterAttached ( "BorderColor",
+				typeof ( Brush ),
+				typeof ( CloseReturnButton ),
+				new PropertyMetadata ( default)
+				);
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		////// Ellipse Border width
-		public static readonly DependencyProperty StrokeWidthProperty =
-			DependencyProperty . Register ( "StrokeWidth",
-				typeof ( double),
-				typeof ( CloseReturnButton ),
-				new PropertyMetadata ( (double)1, new PropertyChangedCallback ( OnStrokeWidthChanged ) )
-				);
-		private static void OnStrokeWidthChanged ( DependencyObject d, DependencyPropertyChangedEventArgs e )
-		{
-			CloseReturnButton UserControl = d as CloseReturnButton;
-			UserControl . StrokeWidthChanged ( e );
-		}
-		private void StrokeWidthChanged ( DependencyPropertyChangedEventArgs e )
-		{
-//			double d = ( double ) e . NewValue;
-//			StrokeWidth =**** d;
-//			Ellipse9 . StrokeThickness = d;
-		}
 		public double StrokeWidth
 		{
 			get
 			{
-				return (double)GetValue ( StrokeWidthProperty ) ;
+				return ( double ) GetValue ( StrokeWidthProperty );
 			}
 			set
 			{
-				SetValue ( StrokeWidthProperty, (double) value);
+//				SetValue ( StrokeWidthProperty , ( double ) value );
+//				OnPropertyChanged ( "StrokeWidth" );
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+				//Ellipse9 . UpdateLayout ( );
 			}
 		}
+		public static readonly DependencyProperty StrokeWidthProperty =
+			DependencyProperty . RegisterAttached ( "StrokeWidth",
+				typeof ( double),
+				typeof ( CloseReturnButton ),
+				new PropertyMetadata ( (double)1 )
+				);
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	#endregion Dependency Properties
+
+		////// Ellipse Font Size
+		public int FontHeight
+		{
+			get
+			{
+				return ( int ) GetValue ( FontHeightProperty );
+			}
+			set
+			{
+				//				SetValue ( StrokeWidthProperty , ( double ) value );
+				//				OnPropertyChanged ( "StrokeWidth" );
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+				//Ellipse9 . UpdateLayout ( );
+			}
+		}
+		public static readonly DependencyProperty FontHeightProperty=
+			DependencyProperty . RegisterAttached ( "FontHeight",
+				typeof ( int),
+				typeof ( CloseReturnButton ),
+				new PropertyMetadata ( default)
+				);
+
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		////// Ellipse Width
+		public int BtnWidth
+		{
+			get
+			{
+				return ( int ) GetValue ( BtnWidthProperty );
+			}
+			set
+			{
+				//				SetValue ( StrokeWidthProperty , ( double ) value );
+				//				OnPropertyChanged ( "StrokeWidth" );
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+				//Ellipse9 . UpdateLayout ( );
+			}
+		}
+		public static readonly DependencyProperty BtnWidthProperty=
+			DependencyProperty . RegisterAttached ( "BtnWidth",
+				typeof ( int),
+				typeof ( CloseReturnButton ),
+				new PropertyMetadata ( default)
+				);
+
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		////// Ellipse Width
+		 public  int  BorderWidth
+		{
+			get
+			{
+				return ( int ) GetValue ( BorderWidthProperty );
+			}
+			set
+			{
+				//				SetValue ( StrokeWidthProperty , ( double ) value );
+				//				OnPropertyChanged ( "StrokeWidth" );
+				//SolidColorBrush sb = MouseOverColor as SolidColorBrush;
+				//Ellipse9 . Fill = sb;
+				//BtnText . Foreground = MouseoverTextColor;
+				//BtnText . Text = MouseoverButtonText;
+				//Ellipse9 . UpdateLayout ( );
+			}
+		}
+		public static readonly DependencyProperty BorderWidthProperty =
+			DependencyProperty . RegisterAttached ( "BorderWidth",
+				typeof ( int),
+				typeof ( CloseReturnButton ),
+				new PropertyMetadata ( default)
+				);
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+		#endregion Dependency Properties
 
 		private void CloseButton_Click ( object sender, MouseButtonEventArgs e )
 		{
@@ -407,23 +440,21 @@ namespace WPFPages . UserControls
 			//			ns.Navigate(MainWindow._Page1);
 
 		}
-
-		private void EllipseGrid_MouseMove ( object sender, MouseEventArgs e )
+			private void EllipseGrid_MouseMove ( object sender, MouseEventArgs e )
 		{
-			SolidColorBrush sb = new SolidColorBrush ( );
 			if ( IsmouseOver )
 			{
-				sb = MouseOverColor as SolidColorBrush;
-				Ellipse9 . Fill = sb;
+				Ellipse9 . Fill = MouseOverColor;
 				BtnText . Foreground = MouseoverTextColor;
 				BtnText . Text = MouseoverButtonText;
+				Ellipse9 . UpdateLayout ( );
 			}
 			else
 			{
-				sb = FillColor as SolidColorBrush;
-				Ellipse9 . Fill = sb;
+				Ellipse9 . Fill = FillColor;
 				BtnText . Foreground = TextColor;
 				BtnText . Text = ButtonText;
+				Ellipse9 . UpdateLayout ( );
 			}
 		}
 
@@ -442,10 +473,25 @@ namespace WPFPages . UserControls
 		private void CloseReturnBtn_Loaded ( object sender, RoutedEventArgs e )
 		{
 			//force button background to be the "ForeGround", not mouseover...
-			SolidColorBrush  sb = FillColor as SolidColorBrush;
-			Ellipse9 . Fill = sb;
-			BtnText . Text = ButtonText;
-			Ellipse9 . UpdateLayout ( );
+			//Ellipse9 . Fill = FillColor;
+			//BtnText . Text = ButtonText;
+			//Ellipse9 . UpdateLayout ( );
+		}
+		#region PropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void OnPropertyChanged ( string propertyName )
+		{
+			PropertyChanged?.Invoke ( this, new PropertyChangedEventArgs ( propertyName ) );
+			//	this . VerifyPropertyName ( propertyName );
+
+			if ( this . PropertyChanged != null )
+			{
+//				var e = new PropertyChangedEventArgs ( propertyName );
+	//			this . PropertyChanged ( this , e );
+			}
+			#endregion PropertyChanged
 		}
 	}
 }
