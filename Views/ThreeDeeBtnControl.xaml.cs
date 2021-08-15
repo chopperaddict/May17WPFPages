@@ -25,6 +25,11 @@ namespace WPFPages . Views
 		private GradientDisplay gw = null;
 		public bool Loading = true;
 		private LinearGradientBrush brush1;
+		public static Ellipse H1;
+		public static Ellipse H2;
+		public static Ellipse H3;
+
+		#region   colors for use in system
 		public LinearGradientBrush Brush1
 		{
 			get { return brush1; }
@@ -60,39 +65,50 @@ namespace WPFPages . Views
 		public Brush BorderOrange;
 		public Brush BorderBlue;
 		public Brush BorderBlack;
+		
+		#endregion   colors for use in system
+		
 		public ThreeDeeBtnControl ( )
 		{
-			InitializeComponent ( );
 			this . DataContext = this;
+			InitializeComponent ( );
 		}
 
 		private void ThreeDBttn_Loaded ( object sender , RoutedEventArgs e )
 		{
+			this . DataContext = this;
 			lgb = new LinearGradientBrush ( );
 			Brush1 = ( LinearGradientBrush ) FindResource ( "Greenbackground" );
-			BorderGreen = new SolidColorBrush(Colors.Green);
+			BorderGreen = new SolidColorBrush ( Colors . Green );
 			// Startup Setup
-			ControlWidth = 120;
-			ControlHeight = 80;
+			Ellipse  dp =  GetTemplateChild ( "H1" ) as Ellipse;
+
 			FillTop = Brush1;
 			FillSide = BorderGreen;
 			FillHole = BorderBlack;
-			TextSize= 16;
-			FontWeight = FontWeights . Normal;
-			FontDecoration = "Normal";
-			BtnTextColor = new SolidColorBrush ( Colors . Black );
-			TextSize = 16;
-			}
+			ThreeDBtn .Foreground = BtnTextColor;
+			ThreeDBtn . FontSize = TextSize;
+			H1 = new Ellipse ( );
+			H1Bak = H1;
+			H2 = new Ellipse ( );
+			H2Bak = H2;
+			H3 = new Ellipse ( );
+			H3Bak = H3; 
+			H1 . Fill = FillTop;
+			 H2 . Fill = FillSide;
+			 H3 . Fill = FillHole;
+			//			ThreeDBtn . FontStyle = FontDecoration;
+		}
 
 		#region internal variables
-		public int GradientStyle{get; set;}
+		public int GradientStyle { get; set; }
 		private double GradientValue { get; set; }
-		private int ActivePane {get; set;}
-		private Color ActiveColor {get; set;}
-		public Color Colors1 {get; set;}
-		public Color Colors2 {get; set;}
-		public Color Colors3 {get; set;}
-		public Color Colors4 {get; set;}
+		private int ActivePane { get; set; }
+		private Color ActiveColor { get; set; }
+		public Color Colors1 { get; set; }
+		public Color Colors2 { get; set; }
+		public Color Colors3 { get; set; }
+		public Color Colors4 { get; set; }
 		#endregion internal variables
 
 		#region Dependency properties
@@ -120,44 +136,126 @@ namespace WPFPages . Views
 		EllipWidth3	
 		FontHeight
 		  */
-		#region Control Settings
+
+		#region Control Settings   - UNUSED RIGHT NOW
+
 		//==================================================================================================//
-		public int ControlHeight
-		{
-			get { return ( int ) GetValue ( ControlHeightProperty ); }
-			set
-			{	SetValue ( ControlHeightProperty , value );
-				SetValue ( Ellip1HeightProperty , value );
-				SetValue ( Ellip2HeightProperty ,Convert.ToInt32( Ellip1Height * 1.1 ));
-				SetValue ( Ellip3HeightProperty , Convert . ToInt32 (  Ellip1Height + 10));}
-		}
-		public static readonly DependencyProperty ControlHeightProperty =
-			DependencyProperty . Register ( "ControlHeight",
-			typeof ( int),
-			typeof ( ThreeDeeBtnControl),
-			new PropertyMetadata ( default) );
-		public int ControlWidth
-		{
-			get { return ( int ) GetValue ( ControlWidthProperty ); }
-			set
-			{	SetValue ( ControlWidthProperty , value );
-				SetValue ( Ellip1WidthProperty ,  value  );
-				SetValue ( Ellip2WidthProperty , ( value / 150 ) + 155  );
-				SetValue ( Ellip3WidthProperty , ( Ellip1Width) + 6 );}
-		}
-		public static readonly DependencyProperty ControlWidthProperty =
-			DependencyProperty . Register ( "ControlWidth",
-			typeof ( int),
-			typeof ( ThreeDeeBtnControl),
-			new PropertyMetadata ( default) );
-		//==================================================================================================//
+		//public double ControlHeight
+		//{
+		//	get { return ( double ) GetValue ( ControlHeightProperty ); }
+		//	set
+		//	{
+		//		SetValue ( ControlHeightProperty , value );
+		//		//SetValue ( Ellip1HeightProperty , value - 30 );
+		//		//SetValue ( Ellip2HeightProperty , value - 10);
+		//		//SetValue ( Ellip3HeightProperty , value  );
+		//	}
+		//}
+		//public static readonly DependencyProperty ControlHeightProperty =
+		//	DependencyProperty . Register ( "ControlHeight",
+		//	typeof ( double),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//public double ControlWidth
+		//{
+		//	get { return ( double ) GetValue ( ControlWidthProperty ); }
+		//	set
+		//	{
+		//		SetValue ( ControlWidthProperty , value );
+		//		//SetValue ( Ellip1WidthProperty , value - 10 );
+		//		//SetValue ( Ellip2WidthProperty , value  - 10);
+		//		//SetValue ( Ellip3WidthProperty , value - 10 );
+		//	}
+		//}
+		//public static readonly DependencyProperty ControlWidthProperty =
+		//	DependencyProperty . Register ( "ControlWidth",
+		//	typeof ( double),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		////==================================================================================================//
+
+		//#region Ellipse Height/Width  Control Dependecnies
+
+		//public double Ellip1Height
+		//{
+		//	get { return ( double ) GetValue ( Ellip1HeightProperty ); }
+		//	set
+		//	{
+		//		SetValue ( Ellip1HeightProperty , value  );
+		//		//SetValue ( Ellip2HeightProperty , Ellip1Height );
+		//		//SetValue ( Ellip3HeightProperty , Ellip1Height + 10 );
+		//	}
+		//}
+		//public static readonly DependencyProperty Ellip1HeightProperty =
+		//	DependencyProperty . Register ( "Ellip1Height",
+		//	typeof ( double),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//public double Ellip2Height
+		//{
+		//	get { return ( double ) GetValue ( Ellip2HeightProperty ); }
+		//	set { SetValue ( Ellip2HeightProperty , value ); }
+		//	//				 SetValue ( Ellip1HeightProperty , Ellip1Height - 8 ); }
+		//}
+		//public static readonly DependencyProperty Ellip2HeightProperty =
+		//	DependencyProperty . Register ( "Ellip2Height",
+		//	typeof ( double ),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//public double Ellip3Height
+		//{
+		//	get { return ( double ) GetValue ( Ellip3HeightProperty ); }
+		//	set { SetValue ( Ellip3HeightProperty , value ); }
+		//}
+		//public static readonly DependencyProperty Ellip3HeightProperty =
+		//	DependencyProperty . Register ( "Ellip3Height",
+		//	typeof ( double ),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//public double Ellip1Width
+		//{
+		//	get { return ( double ) GetValue ( Ellip1WidthProperty ); }
+		//	set
+		//	{
+		//		SetValue ( Ellip1WidthProperty , value );
+		//		//SetValue ( Ellip2WidthProperty , Ellip1Width + 8 );
+		//		//SetValue ( Ellip3WidthProperty , Ellip1Width + 10 );
+		//	}
+		//}
+		//public static readonly DependencyProperty Ellip1WidthProperty =
+		//	DependencyProperty . Register ( "Ellip1Width",
+		//	typeof ( double ),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//public double Ellip2Width
+		//{
+		//	get { return ( double ) GetValue ( Ellip2WidthProperty ); }
+		//	set { SetValue ( Ellip2WidthProperty , value ); }
+		//}
+		//public static readonly DependencyProperty Ellip2WidthProperty =
+		//	DependencyProperty . Register ( "Ellip2Width",
+		//	typeof ( double ),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//public double Ellip3Width
+		//{
+		//	get { return ( double ) GetValue ( Ellip3WidthProperty ); }
+		//	set { SetValue ( Ellip3WidthProperty , value ); }
+		//}
+		//public static readonly DependencyProperty Ellip3WidthProperty =
+		//	DependencyProperty . Register ( "Ellip3Width",
+		//	typeof ( double ),
+		//	typeof ( ThreeDeeBtnControl),
+		//	new PropertyMetadata ( default) );
+		//#endregion Ellipse Height/Width  Control Dependecnies
+
 		#endregion Control Settings
 
 		#region Color Setting Dependencies
 		public Brush FillTop
 		{
 			get { return ( Brush ) GetValue ( FillTopProperty ); }
-			set{ }
+			set { }
 		}
 		public static readonly DependencyProperty FillTopProperty =
 			DependencyProperty . Register ( "FillTop",
@@ -191,12 +289,13 @@ namespace WPFPages . Views
 
 		#endregion Color Setting Dependencies
 
-		#region Text Dependecy settings 
+		#region Text Dependency settings 
 
 		public int TextSize
 		{
 			get { return ( int ) GetValue ( TextSizeProperty ); }
-			set { SetValue ( TextSizeProperty , value ); }
+//			set { SetValue ( TextSizeProperty , value ); }
+			set { }
 		}
 		public static readonly DependencyProperty TextSizeProperty =
 			DependencyProperty . Register ( "TextSize",
@@ -207,7 +306,8 @@ namespace WPFPages . Views
 		public string BtnText
 		{
 			get { return ( string ) GetValue ( BtnTextProperty ); }
-			set { SetValue ( BtnTextProperty , value ); }
+			//		set { SetValue ( BtnTextProperty , value ); }
+			set { }
 		}
 		public static readonly DependencyProperty BtnTextProperty =
 			DependencyProperty . Register ( "BtnText",
@@ -216,7 +316,7 @@ namespace WPFPages . Views
 			new PropertyMetadata ( "") );
 		public Brush BtnTextColor
 		{
-			get { return ( Brush) GetValue ( BtnTextColorProperty ); }
+			get { return ( Brush ) GetValue ( BtnTextColorProperty ); }
 			set { SetValue ( BtnTextColorProperty , value ); }
 		}
 		public static readonly DependencyProperty BtnTextColorProperty =
@@ -237,63 +337,43 @@ namespace WPFPages . Views
 			new PropertyMetadata ( default) );
 		#endregion Text Dependecy settings 
 
-		#region Ellipse Height/Width
 
-		public int Ellip1Height {
-			get { return ( int) GetValue ( Ellip1HeightProperty); }
-			set { }
+		#region Elipse Dependencies
+		public Ellipse H1Bak
+		{
+			get { return ( Ellipse ) GetValue ( H1BakProperty ); }
+			set { SetValue ( H1BakProperty , value ); }
+			//			set { SetValue ( TextSizeProperty, value); }
 		}
-		public static readonly DependencyProperty Ellip1HeightProperty =
-			DependencyProperty . Register ( "Ellip1Height",
-			typeof ( int),
+		public static readonly DependencyProperty H1BakProperty =
+			DependencyProperty . Register ( "H1Bak",
+			typeof ( Ellipse),
 			typeof ( ThreeDeeBtnControl),
 			new PropertyMetadata ( default) );
-		public int Ellip2Height {
-			get { return ( int ) GetValue ( Ellip2HeightProperty ); }
-			set { }
+		public Ellipse H2Bak
+		{
+			get { return ( Ellipse ) GetValue ( H2BakProperty ); }
+			set { SetValue ( H2BakProperty , value ); }
+			//			set { SetValue ( TextSizeProperty, value); }
 		}
-		public static readonly DependencyProperty Ellip2HeightProperty =
-			DependencyProperty . Register ( "Ellip2Height",
-			typeof ( int),
+		public static readonly DependencyProperty H2BakProperty =
+			DependencyProperty . Register ( "H2Bak",
+			typeof ( Ellipse),
 			typeof ( ThreeDeeBtnControl),
 			new PropertyMetadata ( default) );
-		public int Ellip3Height {
-			get { return ( int ) GetValue ( Ellip3HeightProperty ); }
-			set { }
+		public Ellipse H3Bak
+		{
+			get { return ( Ellipse ) GetValue ( H3BakProperty ); }
+			set { SetValue ( H3BakProperty , value ); }
+			//			set { SetValue ( TextSizeProperty, value); }
 		}
-		public static readonly DependencyProperty Ellip3HeightProperty =
-			DependencyProperty . Register ( "Ellip3Height",
-			typeof ( int),
+		public static readonly DependencyProperty H3BakProperty =
+			DependencyProperty . Register ( "H3Bak",
+			typeof ( Ellipse),
 			typeof ( ThreeDeeBtnControl),
 			new PropertyMetadata ( default) );
-		public int Ellip1Width {
-			get { return ( int ) GetValue ( Ellip1WidthProperty ); }
-			set { }
-		}
-		public static readonly DependencyProperty Ellip1WidthProperty =
-			DependencyProperty . Register ( "Ellip1Width",
-			typeof ( int),
-			typeof ( ThreeDeeBtnControl),
-			new PropertyMetadata ( default) );
-		public int Ellip2Width {
-			get { return ( int ) GetValue ( Ellip2WidthProperty ); }
-			set {  }
-		}
-		public static readonly DependencyProperty Ellip2WidthProperty =
-			DependencyProperty . Register ( "Ellip2Width",
-			typeof ( int),
-			typeof ( ThreeDeeBtnControl),
-			new PropertyMetadata ( default) );
-		public int Ellip3Width {
-			get { return ( int ) GetValue ( Ellip3WidthProperty ); }
-			set { }
-		}
-		public static readonly DependencyProperty Ellip3WidthProperty =
-			DependencyProperty . Register ( "Ellip3Width",
-			typeof ( int),
-			typeof ( ThreeDeeBtnControl),
-			new PropertyMetadata ( default) );
-		#endregion Ellipse Height/Width
+
+		#endregion Elipse Dependencies
 
 		#endregion Dependency properties
 
@@ -304,6 +384,7 @@ namespace WPFPages . Views
 		private void OnPropertyChanged ( string propertyName )
 		{
 			PropertyChanged?.Invoke ( this , new PropertyChangedEventArgs ( propertyName ) );
+			OnApplyTemplate ( );
 			//	this . VerifyPropertyName ( propertyName );
 
 			if ( this . PropertyChanged != null )
@@ -317,6 +398,40 @@ namespace WPFPages . Views
 		private void Button_Click ( object sender , RoutedEventArgs e )
 		{
 
+		}
+
+		private void ThreeDBtn_PreviewMouseMove ( object sender , MouseEventArgs e )
+		{
+			DependencyObject dp =  this . GetTemplateChild ( "H1" );
+			//			var t = ThreeDBtn.ThreeDBtnTemplate;
+			//			Ellipse el = (Ellipse)FindResource("H1");
+			//		el . Height = el . Height - 20;
+			//			el.H1.Height = el . H1.Height - 25;
+			H1 . Fill = new SolidColorBrush(Colors.Brown);
+		}
+		public override void OnApplyTemplate ( )
+		{
+			base . OnApplyTemplate ( );
+			if ( Template != null )
+			{
+				DependencyObject dp =  GetTemplateChild ( "H1" );
+
+				Ellipse partImage = Template.FindName("H1", this) as Ellipse;
+				if ( partImage != null )
+				{
+					//if ( String . IsNullOrEmpty ( Ellipse) )
+					//{
+					//	partImage . Visibility = Visibility . Hidden;
+					//	partImage . Width = 0;
+					//}
+					//else
+					//{
+					//	partImage . Visibility = Visibility . Visible;
+					//	partImage . Width = 16;
+					//}
+					partImage . Height -= 15;
+				}
+			}
 		}
 	}
 }

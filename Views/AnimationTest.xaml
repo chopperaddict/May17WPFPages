@@ -61,25 +61,45 @@
 		</LinearGradientBrush>
 
 	</Window.Resources>
-
-	<Border x:Name="border"   >
-
-		<!--ControlHeight="{Binding Path=border.Height}"
+	<Grid>
+	<Border x:Name="border"  
+		  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<!--ControlHeight="{Binding Path=border.Height}"
 		     ControlWidth="{Binding Path=border.Width}"-->
 		<local:ThreeDeeBtnControl    x:Name="Btn1"
-		     ControlHeight="45"
-		     ControlWidth="125"
-			BtnText="Hello Idiot!"
-			FontDecoration="Normal"
-			TextSize ="16"
+		     Grid.Column="0"
+		     Height="{Binding Path=border.Height}"
+		     Width="{Binding Path=border.Width}"
+			BtnText="Hello Idiots All!"
+			FontDecoration="Bold"
+			TextSize ="37"
 		      BtnTextColor="{StaticResource White0}"
 			FillTop="{StaticResource Bluebackground}"
 			FillSide="{StaticResource Blue4}"
-			FillHole="{StaticResource Black0}" Margin="110,84,209,116"
+			FillHole="{StaticResource Black0}" 
+			/>
+		<local:ThreeDeeBtnControl    x:Name="Btn2"
+		     Grid.Column="1"
+		     Height="{Binding Path=border.Height}"
+		     Width="{Binding Path=border.Width}"
+			BtnText="Hello Idiots All!"
+			FontDecoration="Bold"
+			TextSize ="32"
+		      BtnTextColor="{StaticResource White0}"
+			FillTop="{StaticResource Greenbackground}"
+			FillSide="{StaticResource Green4}"
+			FillHole="{StaticResource Red5}" Margin="60,27,60,291" 
 			/>
 		<!--Ellip2Height="70"
 		     Ellip2Width="160"
 		     Ellip3Height="74"
 		     Ellip3Width="165"-->
-	</Border>
+			</Grid>
+		</Border>
+	</Grid>
 </Window>

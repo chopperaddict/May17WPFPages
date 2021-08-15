@@ -23,8 +23,6 @@ namespace WPFPages . Views
 		public AnimationTest ( )
 		{
 			InitializeComponent ( );
-                  Btn1 . ControlHeight = 45;
-                  Btn1 . ControlWidth = 120;
             }
             //           PointAnimationExample pe = new PointAnimationExample();
 

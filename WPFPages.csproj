@@ -97,6 +97,7 @@
     <Compile Include="Converts\GeneralConverters.cs" />
     <Compile Include="Converts\HexConvert.cs" />
     <Compile Include="Converts\OpacityToDecimalConverter.cs" />
+    <Compile Include="Views\ReduceEllipseHeightConverter.cs" />
     <Compile Include="Converts\ValueToTextConverter.cs" />
     <Compile Include="DataSet1.Designer.cs">
       <AutoGen>True</AutoGen>
