@@ -7,6 +7,7 @@
 	  xmlns:userctrl="clr-namespace:WPFPages.Views" 
         mc:Ignorable="d"
         Title="Animation Test" 
+	  Name="AnimWin"
 	  Height="493" Width="648"
 	  MinHeight="120" MinWidth="200"
 	  WindowStartupLocation="CenterScreen"
@@ -17,27 +18,6 @@
 		<local:ThreeDeeBtnControl x:Key="ThreeDBtn"
 				  HorizontalAlignment="Stretch"
 				  VerticalAlignment="Stretch"/>
-
-
-
-		<!--<Style x:Key="Ellipse1" TargetType="Ellipse">
-			<Style.Triggers>
-				<EventTrigger RoutedEvent="MouseEnter">
-						<BeginStoryboard >
-								<Storyboard>
-									<DoubleAnimation Duration="0:0:0.150" Storyboard.TargetProperty="Width" To="200" />
-								</Storyboard>
-						</BeginStoryboard>
-				</EventTrigger>
-				<EventTrigger RoutedEvent="MouseLeave">
-						<BeginStoryboard >
-								<Storyboard>
-									<DoubleAnimation Duration="0:0:0.200" Storyboard.TargetProperty="Width" To="350" />
-								</Storyboard>
-						</BeginStoryboard>
-				</EventTrigger>
-			</Style.Triggers>
-		</Style>-->
 
 		<LinearGradientBrush x:Key="Greenbackground" StartPoint="0.5,1" EndPoint="0.5,0">
 			<GradientStop Offset="0" Color="#FF00FF00" />
@@ -61,44 +41,46 @@
 		</LinearGradientBrush>
 
 	</Window.Resources>
-	<Grid>
-	<Border x:Name="border"  
-		  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+	<Grid
+			UseLayoutRounding="True"
+		
+		>
+		<Border x:Name="border"  >
 			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition/>
-				</Grid.ColumnDefinitions>
-				<!--ControlHeight="{Binding Path=border.Height}"
-		     ControlWidth="{Binding Path=border.Width}"-->
-		<local:ThreeDeeBtnControl    x:Name="Btn1"
-		     Grid.Column="0"
-		     Height="{Binding Path=border.Height}"
-		     Width="{Binding Path=border.Width}"
-			BtnText="Hello Idiots All!"
-			FontDecoration="Bold"
-			TextSize ="37"
-		      BtnTextColor="{StaticResource White0}"
-			FillTop="{StaticResource Bluebackground}"
-			FillSide="{StaticResource Blue4}"
-			FillHole="{StaticResource Black0}" 
-			/>
-		<local:ThreeDeeBtnControl    x:Name="Btn2"
-		     Grid.Column="1"
-		     Height="{Binding Path=border.Height}"
-		     Width="{Binding Path=border.Width}"
-			BtnText="Hello Idiots All!"
-			FontDecoration="Bold"
-			TextSize ="32"
-		      BtnTextColor="{StaticResource White0}"
-			FillTop="{StaticResource Greenbackground}"
-			FillSide="{StaticResource Green4}"
-			FillHole="{StaticResource Red5}" Margin="60,27,60,291" 
-			/>
-		<!--Ellip2Height="70"
-		     Ellip2Width="160"
-		     Ellip3Height="74"
-		     Ellip3Width="165"-->
+
+				<local:ThreeDeeBtnControl    x:Name="Btn1"
+					FontDecoration="Bold"
+					TextSize ="21"
+					BtnText="Red Button"
+				     TextOffset="-12"
+					Height="Auto"
+					Width="Auto"
+					BtnTextColor="{StaticResource White0}"
+					BtnTextColorDown="{StaticResource Yellow0}"
+					BtnBorder="{StaticResource Magenta0}"
+					BorderWidth="3"
+					FillTop="{DynamicResource MultiRedRadial}"
+					FillSide="{StaticResource Red4}"
+					FillHole="{StaticResource Black0}" 
+					Margin="337,297,54,40" RenderTransformOrigin="0.743,0.833"/>
+
+				<local:ThreeDeeBtnControl    x:Name="Btn2"
+					BtnText="Yellow Btn"
+					BtnTextDown="Closing..."
+					FontDecoration="Normal"
+				     ToolTip="This will save the data to your hard disk ...."
+					TextSize ="61"
+					Height="195"
+					Width="440"
+					BtnTextColor="{StaticResource Black5}"
+					BtnTextColorDown="{StaticResource Red5}"
+					BtnBorder="{StaticResource Gray3}"
+					BorderWidth="1"
+					FillTop="{DynamicResource MultiYellowRadial}"
+					FillSide="{DynamicResource Orange6}"
+					FillHole="{StaticResource Black1}" 
+					Margin="46,66,154,201" Loaded="Btn2_Loaded"  />
 			</Grid>
 		</Border>
 	</Grid>

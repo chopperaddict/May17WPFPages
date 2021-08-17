@@ -559,6 +559,11 @@
 					FontWeight="DemiBold"
 					Background="Transparent"
 					Foreground="{StaticResource White0}"/>
+			<!--<MenuItem Header="  AnimMaster" 
+				    Click="AnimMaster_Click" 						
+					FontWeight="DemiBold"
+					Background="Transparent"
+					Foreground="{StaticResource White0}"/>-->
 			<MenuItem Header="  Animation" 
 				    Click="Animate_Click" 						
 					FontWeight="DemiBold"

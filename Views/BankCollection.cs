@@ -302,13 +302,13 @@ namespace WPFPages . Views
 					}
 					//					lock (bptr)
 					//					{
-					Debug . WriteLine ( $"BANK : SQL Locking BankCollection Datatable Load (307) in BankCollection (331) load function " );
+					Debug . WriteLine ( $"BANK : SQL Reading BankCollection Datatable (307) in BankCollection load function " );
 					SqlCommand cmd = new SqlCommand ( commandline, con );
 					SqlDataAdapter sda = new SqlDataAdapter ( cmd );
 					if ( dtBank == null )
 						dtBank = new DataTable ( );
 					sda . Fill ( dtBank );
-					Debug . WriteLine ( $"BANK : SQL UnLocking BankCollection Datatable Load (315) in BankCollection (331) load function " );
+//					Debug . WriteLine ( $"BANK : SQL UnLocking BankCollection Datatable Load (315) in BankCollection (331) load function " );
 					//					}
 				}
 			}

@@ -1534,5 +1534,12 @@ namespace WPFPages . Views
 			at . Show ( );
 			//e . Handled = true;
 		}
+
+		private void AnimMaster_Click ( object sender , RoutedEventArgs e )
+		{
+			ThreeDeeBtnControl tdbc = new ThreeDeeBtnControl()  ;
+//				tdbc . Show ( );
+			//e . Handled = true;
+		}
 	}
 }

@@ -7,6 +7,8 @@
 		xmlns:conv="clr-namespace:WPFPages.MyConvertors"
 		 Loaded="ThreeDBttn_Loaded"		 
 		 mc:Ignorable="d"
+		 Height="300"
+		 Width="476"
 		 x:Name="ThreeDBttn" >
 
 	<UserControl.Resources>
@@ -16,6 +18,7 @@
 		<!--<local:ReduceEllipseHeightConverter x:Key="ReduceEllipseHeight"/>-->
 
 		<!--// Brushes used on my 3D buttons-->
+		<!--#region two color gradients-->
 		<LinearGradientBrush x:Key="Greenbackground" StartPoint="0.5,1" EndPoint="0.5,0">
 			<GradientStop Offset="0" Color="#FF00FF00" />
 			<GradientStop Offset="1" Color="#99006000" />
@@ -36,8 +39,143 @@
 			<GradientStop Offset="0" Color="#FFFF92FF" />
 			<GradientStop Offset="1" Color="#FFFF33D6" />
 		</LinearGradientBrush>
+		<!--#endregion-->
+		<!--#region multilevel gradients-->
+	     <!--======================================================================================-->
+		<LinearGradientBrush x:Key="MultiBlue" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="1.0" Color="#FF70CADA" />
+			<GradientStop Offset="0.9" Color="#D270B2D8" />
+			<GradientStop Offset="0.7" Color="#D2709AD8" />
+			<GradientStop Offset="0.5" Color="#D27081E0" />
+			<GradientStop Offset="0.2" Color="#D27069C3" />
+			<GradientStop Offset="0.0" Color="#D27035C3" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="HeaderBorderBrushBlue" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="0.514" Color="#FF1D4855" />
+			<GradientStop Offset="0.753" Color="#FF007F96" />
+			<GradientStop Offset="1" Color="#FF0AEAFA" />
+		</LinearGradientBrush>
 
+		<!--Good example of a dummy "Dome" button-->
+		<RadialGradientBrush x:Key="MultiBlueRadial" GradientOrigin="0.5,0.3" Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+			<GradientStop Offset="0.0" Color="#FF70CADA" />
+			<GradientStop Offset="0.3" Color="#FC494BFB" />
+			<GradientStop Offset="0.4" Color="#FC7374FB" />
+			<GradientStop Offset="0.5" Color="#FC5052CC" />
+			<GradientStop Offset="0.8" Color="#FC5077FD" />
+			<GradientStop Offset="1.0" Color="#FF70CADA" />
+		</RadialGradientBrush>
+
+		<!--======================================================================================-->
+
+		<LinearGradientBrush x:Key="MultiRed" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="1.0" Color="#FBD0D1D2" />
+			<GradientStop Offset="0.9" Color="#FDD40000" />
+			<GradientStop Offset="0.7" Color="#FDB20000" />
+			<GradientStop Offset="0.5" Color="#FD8E0000" />
+			<GradientStop Offset="0.2" Color="#FDFF0000" />
+			<GradientStop Offset="0.0" Color="#FBD0D1D2" />
+		</LinearGradientBrush>
+
+		<LinearGradientBrush x:Key="HeaderBorderBrushRed" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="0.314" Color="#ff4f2225" />
+			<GradientStop Offset="0.553" Color="#FF9c2129" />
+			<GradientStop Offset="1" Color="#FFdb6069" />
+		</LinearGradientBrush>
+
+		<!--Good example of a dummy "Dome" button-->
+		<RadialGradientBrush x:Key="MultiRedRadial" GradientOrigin="0.5,0.3" Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+			<GradientStop Offset="0.0" Color="#FCFFD4D3" />
+			<GradientStop Offset="0.3" Color="#FDD40000" />
+			<GradientStop Offset="0.4" Color="#FDD40000" />
+			<GradientStop Offset="0.5" Color="#FDB20000" />
+			<GradientStop Offset="0.8" Color="#FFCB6A6B" />
+			<GradientStop Offset="1.0" Color="#FCFFD4D3" />
+		</RadialGradientBrush>
+
+		<!--======================================================================================-->
 		
+		<LinearGradientBrush x:Key="MultiYellow" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="1.0" Color="#FEFBFF00" />
+			<GradientStop Offset="0.9" Color="#FFf5d816" />
+			<GradientStop Offset="0.7" Color="#FEE6B400" />
+			<GradientStop Offset="0.5" Color="#D9C5B400" />
+			<GradientStop Offset="0.2" Color="#70C5CB00" />
+			<GradientStop Offset="0.0" Color="#708D9200" />
+		</LinearGradientBrush>
+	
+		<LinearGradientBrush x:Key="HeaderBorderBrushYellow" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="0.114" Color="#FF595013" />
+			<GradientStop Offset="0.853" Color="#FF7d7015" />
+			<GradientStop Offset="0.5" Color="#F5d816" />
+		</LinearGradientBrush>
+
+		<!--Good example of a dummy "Dome" button-->
+		<RadialGradientBrush x:Key="MultiYellowRadial" GradientOrigin="0.5,0.3" Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+			<GradientStop Offset="0.0" Color="#FCFFD4D3" />
+			<GradientStop Offset="0.3" Color="#FEFBFF00" />
+			<GradientStop Offset="0.4" Color="#FEFBFF00" />
+			<GradientStop Offset="0.5" Color="#FEE6B400" />
+			<GradientStop Offset="0.8" Color="#FEFBFF00" />
+			<GradientStop Offset="1.0" Color="#FCFFD4D3" />
+		</RadialGradientBrush>
+
+		<!--======================================================================================-->
+
+		<LinearGradientBrush x:Key="MultiGreen" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="1.0" Color="#FCE1FFE3" />
+			<GradientStop Offset="0.9" Color="#FE00D300" />
+			<GradientStop Offset="0.7" Color="#FE00AF00" />
+			<GradientStop Offset="0.5" Color="#FE00D300" />
+			<GradientStop Offset="0.2" Color="#FE00AF00" />
+			<GradientStop Offset="0.0" Color="#FE009600" />
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="HeaderBorderBrushGreen" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="0.314" Color="#FF224022" />
+			<GradientStop Offset="0.553" Color="#FF336633" />
+			<GradientStop Offset="1" Color="#FF00FF00" />
+		</LinearGradientBrush>
+
+		<!--Good example of a dummy "Dome" button-->
+		<RadialGradientBrush x:Key="MultiGreenRadial" GradientOrigin="0.5,0.3" Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+			<GradientStop Offset="0.0" Color="#FE00FC00" />
+			<GradientStop Offset="0.3" Color="#FE00AF00" />
+			<GradientStop Offset="0.4" Color="#FC3E963F" />
+			<GradientStop Offset="0.5" Color="#FE00AF00" />
+			<GradientStop Offset="0.8" Color="#FC3E503F" />
+			<GradientStop Offset="1.0" Color="#FC3E6C3F" />
+		</RadialGradientBrush>
+
+		<!--======================================================================================-->
+		
+		<LinearGradientBrush x:Key="MultiGray" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="1.0" Color="#FBD0D1D2" />
+			<GradientStop Offset="0.9" Color="#FBB4B3B5" />
+			<GradientStop Offset="0.7" Color="#FB989797" />
+			<GradientStop Offset="0.5" Color="#FBD0D1D2" />
+			<GradientStop Offset="0.2" Color="#FB696869" />
+			<GradientStop Offset="0.0" Color="#FB4A4C4A" />
+		</LinearGradientBrush>
+		
+		<LinearGradientBrush x:Key="BorderGray" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Offset="0.314" Color="#FBB4B3B5" />
+			<GradientStop Offset="0.553" Color="#FB696869" />
+			<GradientStop Offset="1" Color="#d5d3db" />
+		</LinearGradientBrush>
+
+		<RadialGradientBrush x:Key="MultiGrayRadial" GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+			<GradientStop Offset="1.0" Color="#FBD0D1D2" />
+			<GradientStop Offset="0.9" Color="#FBB4B3B5" />
+			<GradientStop Offset="0.7" Color="#FB989797" />
+			<GradientStop Offset="0.5" Color="#FBB4B3B5" />
+			<GradientStop Offset="0.2" Color="#FBB4B3B5" />
+			<GradientStop Offset="0.0" Color="#FBD0D1D2" />
+		</RadialGradientBrush>
+		
+		<!--======================================================================================-->
+				
+
+		<!--#endregion-->
 		<!--// Template Kludge to stop Mouseover being activated on my 3D Buttons-->
 		<!--<ControlTemplate x:Key="ButtonBaseControlTemplate2" TargetType="{x:Type ButtonBase}">
 			<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
@@ -62,172 +200,200 @@
 
 	</UserControl.Resources>
 
-	<!--<Border  x:Name="MainBorder"
-			  Height="{Binding Path=Parent.ActualHeight}"
-			  Width="{Binding Path=Parent.ActualWidth}"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch">-->
-	<Viewbox x:Name="root"
-				  Width="{Binding Path=Parent.Width, ElementName=ThreeDBttn}"
-		>
-		<!--DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}"-->
-		<Border   x:Name="Frame"
-				HorizontalAlignment="Stretch" 
-				  VerticalAlignment="Stretch" 
-				  Height="150"
-				  Width="250"
-				  BorderThickness="0" >
+	<!--<UserControl.DataContext>
+		<local:ThreeDeeBtnControl/>
+	</UserControl.DataContext>-->
 
-			<!--DataContext="{Binding ThreeDeeBtnControl}"-->
-			<Button x:Name="ThreeDBtn"
-						Click="Button_Click"
-						FontStyle="{Binding Path=FontDecoration, ElementName=ThreeDeeBtnControl}"
-						FontSize="{Binding RelativeSource={RelativeSource Self}, Path=Parent.FontSize}"
-						Foreground="{Binding Path=BtnTextColor, ElementName=ThreeDeeBtnControl}"
-						Content="{Binding Path=BtnText, ElementName=ThreeDeeBtnControl}"
-						PreviewMouseMove="ThreeDBtn_PreviewMouseMove"
-						TextElement.FontSize="{Binding Path=FontSize, ElementName=ThreeDeeBtnControl}"
-						 Margin="0 10 0 0" 
-				  >
-				<Button.Template>
-					<ControlTemplate TargetType="{x:Type Button}" x:Name="ThreeDBtnTemplate">
-						
-						<Grid	Name="InnerBtnGrid">
 
-							<Ellipse x:Name="H1"
-									Margin="-5 -30 0 0"
-									Height="95"
-									Width="230"
-									StrokeThickness="2"
-									Panel.ZIndex="3"
-									Fill="{StaticResource Yellowbackground}" 
-									/>
-							<Ellipse x:Name="H1Dummy"
-									Margin="0 5 0 0"
-								   Height="95"
-									Width="232"
-									StrokeThickness="2"
-									Panel.ZIndex="3"
-									   Fill="{Binding FillTop}" 
-								   Visibility="Collapsed"
-									/>
-							<Ellipse x:Name="H2"
-									Height="110"	
-									Width="240"
-									Margin="-3 -18 0 0"
-									StrokeThickness="2"
-									Panel.ZIndex="2"
-									   Fill="{Binding FillSide}" 
-									/>
-							<Ellipse x:Name="H2Dummy"
-									Height="85"	
-									Width="230"
-									Margin="-5 5 0 0"
-									StrokeThickness="2"
-									Panel.ZIndex="2"
-									   Fill="{Binding FillSide}" 
-								   Visibility="Collapsed"
-									/>
-							<Ellipse x:Name="H3"
-									Height="111"	
-									Width="240"
-									Margin="-3 -15 0  0"
-									   Stroke="Black"
-									   StrokeThickness="2"							   
-									Panel.ZIndex="1"
-									   Fill="{Binding FillHole}" 
-								   />
-							<ContentPresenter  x:Name="Btn6Content"
-									Height="40"
-									Width="auto"
-									HorizontalAlignment="Center"
-									Panel.ZIndex="4"
-									 Margin="0 5 0 0"
-									VerticalAlignment="Center" >
-							</ContentPresenter>
-						</Grid>
+	<Border   x:Name="Frame"
+				Height="{Binding Path=Height, ElementName=ThreeDBtn}"
+				Width="{Binding Path=Height, ElementName=ThreeDBtn}"
+				UseLayoutRounding="True"
+				BorderThickness="0" Margin="7,12,8,14" >
 
-						<ControlTemplate.Triggers>
-							<!--<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource AncestorType=Ellipse, AncestorLevel=}}" Value="false">-->
-							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
-								<Setter TargetName="Btn6Content" Property="Content" Value="Heres another"/>
-								<Setter TargetName="Btn6Content" Property="Margin" Value="0,10,0,0"/>
-								<!--<Setter TargetName="H1" Property="Height" Value="{Binding Path=Ellip1Height}"/>
+		<Button x:Name="ThreeDBtn"
+				Height="{Binding Path=Height, ElementName=ThreeDBtn}"
+				Width="{Binding Path=Height, ElementName=ThreeDBtn}"
+				FontStyle="{Binding Path=FontDecoration}"
+				FontSize="{Binding Path=TextSize}"
+				Foreground="{Binding Path=BtnTextColor}"
+				Content="{Binding Path=BtnText}"
+				MouseEnter="ThreeDBtn_MouseEnter"
+			  MouseLeave="ThreeDBtn_MouseLeave"
+				Margin="12,20,12,18" >
+
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}" x:Name="ThreeDBtnTemplate">
+
+					<Grid	Name="InnerBtnGrid" 
+							Height="Auto" 
+							Width="Auto" 
+							Margin="-106,-100,-101,-95">
+
+						<!--#region  Ellipses-->
+			  <!--#region Information--> 
+				<!--The available Radial gradients are available...
+						MultiRedRadial, MultiGreenRadial, MultiBlueRadial, MultiGrayRadial  -->
+			<!--#endregion-->
+						<!--Main Frontal Ellipse-->
+						<Ellipse x:Name="H1"
+								Margin="106,76,102,99"
+								Height="auto"
+								Width="auto"
+								Stroke="{Binding BtnBorder}"
+								Fill="{Binding FillTop}"
+								StrokeThickness="{Binding Path=BorderWidth}"
+								Panel.ZIndex="3" 
+								PreviewMouseLeftButtonDown="H1_PreviewMouseLeftButtonDown"/>
+
+						<!--Button Top Ellipse when Mouse Down-->
+						<Ellipse x:Name="H1Dummy"
+								Margin="105,97,98,77"
+								Height="{Binding Path=Height, ElementName=H1}"
+								Width="{Binding Path=Height, ElementName=H1}"
+								Fill="{Binding FillTop}"   							   
+								Stroke="Black"
+								StrokeThickness="1"
+								Panel.ZIndex="3"
+								Visibility="Hidden" Grid.RowSpan="1"/>
+
+						<!--Button Side itself-->
+						<Ellipse x:Name="H2"
+								Margin="98,76,90,78"
+								Height="{Binding Path=Height, ElementName=H1}"
+								Width="{Binding Path=Height, ElementName=H1}"						     								   
+								StrokeThickness="1"
+								Stroke="Black"
+								Panel.ZIndex="2"
+								Fill="{Binding FillSide}"   />
+
+						<!--Button Side - DUMMY-->
+						<Ellipse x:Name="H2Dummy"
+								Margin="101,80,93,78"
+								Height="{Binding Path=Height, ElementName=H2}"
+								Width="{Binding Path=Height, ElementName=H2}"						     								   
+								StrokeThickness="1"
+								Stroke="Black"
+								Panel.ZIndex="2"
+								Fill="{Binding FillSide}" 
+								Visibility="Hidden"
+								Grid.RowSpan="1" />
+
+						<!--Button  Hole itself-->
+						<Ellipse x:Name="H3"
+								Margin="102,78,96,77"
+								Height="{Binding Path=Height, ElementName=H1}"
+								Width="{Binding Path=Height, ElementName=H1}"						     								   
+								Stroke="Black"
+								StrokeThickness="1"							   
+								Fill="{Binding Path=FillHole}" 
+								Panel.ZIndex="1" Grid.RowSpan="1" />
+
+						<ContentPresenter  x:Name="Btn6Content"
+								Height="{Binding Path=Height, ElementName=H1}"
+								Width="{Binding Path=Height, ElementName=H1}"						     								   
+								Margin="{Binding Path=TextOffsetMargin, ElementName=ThreeDeeBtnControl}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center" 
+								Panel.ZIndex="4" Grid.RowSpan="2" >
+						</ContentPresenter>
+						<!--Margin="20 6 0 0"-->
+
+						<!--#endregion  Ellipses-->
+
+					</Grid>
+
+					<ControlTemplate.Triggers>
+						<!--Normal Display - NOT MouseOver -->
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="false">
+							<Setter TargetName="Btn6Content" Property="Margin" Value="5 -30  0  0"/>
+
+							<!--// Handle Ellipse Visibility //-->
+							<!--<Setter TargetName="H1" Property="Visibility" Value="Visible"/>
+							<Setter TargetName="H2" Property="Visibility" Value="Visible"/>-->
+							<!--<Setter TargetName="H2" Property="Fill" Value="{Binding Path=FillSide}"	/>
+							<Setter TargetName="H3" Property="Fill" Value="{Binding Path=FillHole}"/>-->
+
+							<!--#region unused-->
+							<!--/ Handle Text Vertical position on Mouseover //-->
+							<!--<Setter TargetName="H1" Property="Margin" Value="0  -20  0  0"/>
+								<Setter TargetName="H2" Property="Margin" Value="0  -10  0  0"/>
+								<Setter TargetName="Btn6Content" Property="Margin" Value="0 -15 0 0"/>-->
+
+							<!--<Setter Property="TextElement.FontSize" Value="{Binding Path=TextSize}"/>-->
+
+							<!--<Setter TargetName="H1" Property="Height" Value="{Binding Path=Ellip1Height}"/>
 								<Setter TargetName="H2" Property="Height" Value="{Binding Path=Ellip2Height}"	/>
 								<Setter TargetName="H3" Property="Height" Value="{Binding Path=Ellip3Height}"/>
 								<Setter TargetName="H1" Property="Width" Value="{Binding Path=Ellip1Width}"/>
 								<Setter TargetName="H2" Property="Width" Value="{Binding Path=Ellip2Width}"	/>
 								<Setter TargetName="H3" Property="Width" Value="{Binding Path=Ellip3Width}"/>-->
-								<Setter TargetName="H1" Property="Fill" Value="{Binding Path=FillTop}"/>
-								<Setter TargetName="H2" Property="Fill" Value="{Binding Path=FillSide}"	/>
-								<Setter TargetName="H3" Property="Fill" Value="{Binding Path=FillHole}"/>
 
-								<Setter TargetName="H1" Property="Visibility" Value="Visible"/>
-								<Setter TargetName="H1Dummy" Property="Visibility" Value="Collapsed"/>
-								<Setter TargetName="H2" Property="Visibility" Value="Visible"/>
-								<Setter TargetName="H2Dummy" Property="Visibility" Value="Collapsed"/>
+							<!--<Setter TargetName="H1" Property="Fill" Value="{Binding Path=FillTop, ElementName=frame}"/>-->
+							<!--<Setter TargetName="H2Dummy" Property="Fill" Value="{Binding Path=FillTop}"	/>-->
 
-								<Setter TargetName="Btn6Content" Property="TextElement.Foreground" Value="{Binding Path=BtnTextColor}"/>
+
+							<!--<Setter TargetName="Btn6Content" Property="TextElement.Foreground" Value="{Binding Path=BtnTextColor}"/>
 								<Setter TargetName="Btn6Content" Property="TextElement.FontSize" Value="{Binding Path=TextSize}"/>
-								<Setter TargetName="Btn6Content" Property="TextElement.FontStyle" Value="{Binding Path=FontDecoration}"/>
-								<Setter TargetName="Btn6Content" Property="Margin" Value="0 0 0 0"/>
-								<Setter TargetName="Btn6Content" Property="Content" Value="{Binding Path=BtnText}"/>
+								<Setter TargetName="Btn6Content" Property="TextElement.FontStyle" Value="{Binding Path=FontDecoration}"/>-->
+							<!--<Setter TargetName="Btn6Content" Property="Margin" Value="0 0 0 0"/>-->
+							<!--<Setter TargetName="Btn6Content" Property="Content" Value="{Binding Path=BtnText}"/>-->
 
-								<!--<Setter TargetName="H1" Property="Margin" Value="0,15,0,0"/>
+							<!--<Setter TargetName="H1" Property="Margin" Value="0,15,0,0"/>
 								<Setter TargetName="H2" Property="Margin" Value="0,26,0,0"/>
 								<Setter TargetName="H3" Property="Margin" Value="0,25,0,0"/>-->
-								<!--<Setter TargetName="H2" Property="Fill" Value="{Binding Path=Brush2, ElementName=ThreeDeeBtnControl}"/>-->
-								<!--<Setter TargetName="H3" Property="Fill" Value="{DynamicResource Black2}"/>-->
+							<!--<Setter TargetName="H2" Property="Fill" Value="{Binding Path=Brush2, ElementName=ThreeDeeBtnControl}"/>-->
+							<!--<Setter TargetName="H3" Property="Fill" Value="{DynamicResource Black2}"/>-->
 
-								<!--<Setter TargetName="H1" Property="Fill" Value="{Binding ElementName=ThreeDBtnTemplate.Brush1}"/>-->
+							<!--<Setter TargetName="H1" Property="Fill" Value="{Binding ElementName=ThreeDBtnTemplate.Brush1}"/>-->
 
-								<!--<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
+							<!--<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
 									<Setter TargetName="H2" Property="StrokeThickness" Value="1"/>-->
-							</DataTrigger>
+							<!--#endregion-->
+						</DataTrigger>
 
-							<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
-								<Setter TargetName="Btn6Content" Property="TextElement.Foreground" Value="{Binding Path=BtnTextColor}"/>
-								<Setter TargetName="Btn6Content" Property="TextElement.FontSize" Value="{Binding Path=TextSize}"/>
-								<Setter TargetName="Btn6Content" Property="TextElement.FontStyle" Value="{Binding Path=FontDecoration}"/>
-								<Setter TargetName="Btn6Content" Property="Margin" Value="0 23 0 0"/>
-								<Setter TargetName="Btn6Content" Property="Content" Value="{Binding Path=BtnText}"/>
+						<!--MouseOver  Display-->
+						<DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource Self}}" Value="true">
+							<!--// Handle Ellipse Visibility //-->
+							<Setter TargetName="H1" Property="Visibility" Value="Hidden"/>
+							<Setter TargetName="H1Dummy" Property="Visibility" Value="Visible"/>
+							<Setter TargetName="H2" Property="Visibility" Value="Hidden"/>
+							<Setter TargetName="H2Dummy" Property="Visibility" Value="Hidden"/>
+							<Setter TargetName="H1Dummy" Property="Fill" Value="{Binding Path=FillTop}"/>
+							<Setter TargetName="H2Dummy" Property="Fill" Value="{Binding Path=FillSide}"	/>
+							<Setter TargetName="H3" Property="Fill" Value="{Binding Path=FillHole}"/>
+							
+							<!--<Setter TargetName="H2Dummy" Property="Fill" Value="{Binding Path=FillHole}"	/>-->
+							<!--/ Handle Text Vertical position on Mouseover //-->
+							<Setter TargetName="Btn6Content" Property="Margin" Value="25 10  0  0"/>
+							<!--<Setter TargetName="H1" Property="Margin" Value="41,58,32,7"/>-->
+							<!--<Setter TargetName="H1Dummy" Property="Margin" Value="41,48,32,7"/>-->
+							<!--<Setter TargetName="H2" Property="Margin" Value="41,28,32,41"/>-->
+							<!--<Setter TargetName="H2Dummy" Property="Margin" Value="41,18,32,41"/>-->
+							<!--<Setter TargetName="Btn6Content" Property="Margin" Value="0  15  0  0"/>-->
+							<!--<Setter TargetName="H1Dummy" Property="StrokeThickness" Value="1"/>
+								<Setter TargetName="H2Dummy" Property="StrokeThickness" Value="1"/>-->
 
-								<Setter TargetName="H1" Property="Visibility" Value="Collapsed"/>
-								<Setter TargetName="H1Dummy" Property="Visibility" Value="Visible"/>
-								<Setter TargetName="H2" Property="Visibility" Value="Collapsed"/>
-								<Setter TargetName="H2Dummy" Property="Visibility" Value="Visible"/>
-								<!--<Setter TargetName="H1" Property="Height" Value="{Binding Ellip1Height, Converter={StaticResource UniversalConvert}}"/>-->
-								<!--<Setter TargetName="H2" Property="Height" Value="{Binding Path=Ellip2Height}"	/>
-								<Setter TargetName="H3" Property="Height" Value="{Binding Path=Ellip3Height}"/>
-								<Setter TargetName="H1" Property="Width" Value="{Binding Path=Ellip1Width}"/>
-								<Setter TargetName="H2" Property="Width" Value="{Binding Path=Ellip2Width}"	/>
-								<Setter TargetName="H3" Property="Width" Value="{Binding Path=Ellip3Width}"/>
-								<Setter TargetName="H1" Property="Fill" Value="{Binding Path=FillTop}"/>
-								<Setter TargetName="H2" Property="Fill" Value="{Binding Path=FillSide}"	/>
-								<Setter TargetName="H3" Property="Fill" Value="{Binding Path=FillHole}"/>-->
+							<!--#region UNUSED-->
 
-								<Setter TargetName="H1" Property="StrokeThickness" Value="1"/>
-								<!--<Setter TargetName="H1" Property="Stroke" Value="{DynamicResource Green8}"/>-->
-								<Setter TargetName="H2" Property="StrokeThickness" Value="1"/>
 
-								<!--<Setter TargetName="H1Dummy" Property="Margin" Value="0   5  0  0"/>
+							<!--<Setter TargetName="H1Dummy" Property="Margin" Value="0   5  0  0"/>
 								<Setter TargetName="H2Dummy" Property="Margin" Value="0  5  0  0"/>-->
-								<Setter TargetName="H3" Property="Margin" Value="0  -10  0  0"/>
-								<Setter TargetName="Btn6Content" Property="Margin" Value="0  30  0  0"/>
 
-								<!--<Setter TargetName="H1" Property="Height" Value="55"/>
+							<!--<Setter TargetName="H1" Property="Height" Value="55"/>
 									<Setter TargetName="H2" Property="Height" Value="65"/>
 
 									<Setter TargetName="H1" Property="Width" Value="155"/>
 									<Setter TargetName="H2" Property="Width" Value="170"/>-->
-							</DataTrigger>
+							<!--#endregion-->
+						</DataTrigger>
 
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Button.Template>
-			</Button>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Button.Template>
+		</Button>
 
-		</Border>
-	</Viewbox>
+	</Border>
+	<!--</Viewbox>-->
 	<!--</Border>-->
 </UserControl>

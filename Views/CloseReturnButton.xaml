@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFPages"
 		 DataContext="{Binding RelativeSource={RelativeSource Self}}"
-      d:DesignHeight="70" d:DesignWidth="140"
+		Height="70" Width="140"
 		 Loaded="CloseReturnBtn_Loaded"
 		 mc:Ignorable="d" 
 		   x:Name="CloseReturnBtn">
@@ -35,6 +35,8 @@
 			any Interface events such as Mouse events-->
 		<!--Style="{StaticResource MyEllipse}"-->
 		<Ellipse x:Name="Ellipse9"	
+		     Height="{Binding Path=Height, ElementName=Ellipse9}"
+		     Width="{Binding Path=Width, ElementName=Ellipse9}"
 			     Stroke="{Binding Path=BorderColor, ElementName=CloseReturnBtn}"
 				StrokeThickness="{Binding Path=StrokeWidth, ElementName=CloseReturnBtn}"
 				PreviewMouseDown="CloseButton_Click"
@@ -46,15 +48,16 @@
 				HorizontalAlignment="Stretch"  
 				VerticalAlignment="Stretch"
 			   Visibility="Visible"
-				Width="{Binding Path=ButtonWidth, ElementName=CloseReturnBtn}"
 			   >
 		</Ellipse>
 		<!--//Display the "Button Text"-->
 		<StackPanel 
+		     Height="{Binding Path=Height, ElementName=Ellipse9}"
+		     Width="{Binding Path=Width, ElementName=Ellipse9}"
 			IsHitTestVisible="False"
 			Background="Transparent"
 			HorizontalAlignment="Center"
-			VerticalAlignment="Center" Margin="8,8,15,10" Width="117" Height="52">
+			VerticalAlignment="Center" >
 
 			<!--The Horizontal/Vertical settings keep the text in the centrer of the ellipse-->
 			<TextBlock x:Name="BtnText"
@@ -64,7 +67,8 @@
 				HorizontalAlignment="Center"
 			     Text="{Binding ButtonText}"
 				VerticalAlignment="Center"
-				     Height="35"
+			     Height="{Binding Path=Height, ElementName=Ellipse9}"
+			     Width="{Binding Path=Width, ElementName=Ellipse9}"
 				Padding="25" 
 				/>
 		</StackPanel>

@@ -1043,13 +1043,13 @@
 		<!--This allows MOST standard properties to be changed at the user design stage-->
 		<userctrl:CloseReturnButton		
 			BorderColor ="{StaticResource Magenta2}"
-			ButtonText="Close Me"
+			ButtonText="Close"
 			MouseoverButtonText="Closing"
 			ButtonWidth="90" 
 			ButtonHeight="52"
 			ColorBackground="Transparent"
 			FillColor="{StaticResource Yellow0}"
-			FontHeight="16"
+			FontHeight="18"
 			FontFamily="Lucida Sans"
 			FontWeight="Bold"
 			Grid.Column="6" Grid.Row="8"  
